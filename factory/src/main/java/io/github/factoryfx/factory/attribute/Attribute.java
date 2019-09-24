@@ -22,7 +22,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
     }
 
     @Override
-    public void internal_merge(T newValue) {
+    public void internal_merge(T newValue, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
         set(newValue);
     }
 

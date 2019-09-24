@@ -6,7 +6,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import java.util.function.Consumer;
 
 /**
- * Attribute with factory
+ * Attribute with factory list
  * @param <L> liveobject created form the factory
  * @param <F> factory
  */

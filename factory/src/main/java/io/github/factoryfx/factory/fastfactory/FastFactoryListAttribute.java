@@ -7,7 +7,9 @@ import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -75,12 +77,12 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
     }
 
     @Override
-    public void internal_merge(List<V> newList){
+    public void internal_merge(List<V> newList, HashMap<UUID,FactoryBase<?,?>> idToFactory){
         List<V> oldList = valueGetter.apply(boundFactory);
         if (oldList==null){
             oldList=new ArrayList<>(newList);
         }
-        internal_mergeFactoryList(oldList,newList);
+        internal_mergeFactoryList(oldList,newList,idToFactory);
     }
 
 }

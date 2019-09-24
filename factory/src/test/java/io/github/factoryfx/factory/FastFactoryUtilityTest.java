@@ -96,6 +96,32 @@ public class FastFactoryUtilityTest {
     }
 
     @Test
+    public void test_merge_ref_null(){
+        FastExampleFactoryA original = new FastExampleFactoryA();
+        original.internal().finalise();
+
+        Assertions.assertEquals(1,original.internal().collectChildrenDeep().size());
+
+        {
+            FastExampleFactoryA update = original.utility().copy();
+            update.referenceAttribute = new FastExampleFactoryB();
+            DataMerger<FastExampleFactoryA> dataMerger = new DataMerger<>(original, original.utility().copy(), update);
+            dataMerger.mergeIntoCurrent((p) -> true);
+        }
+
+        Assertions.assertEquals(2,original.internal().collectChildrenDeep().size());
+
+        {
+            FastExampleFactoryA update = original.utility().copy();
+            update.referenceAttribute = null;
+            DataMerger<FastExampleFactoryA> dataMerger = new DataMerger<>(original, original.utility().copy(), update);
+            dataMerger.mergeIntoCurrent((p) -> true);
+        }
+
+        Assertions.assertEquals(1,original.internal().collectChildrenDeep().size());
+    }
+
+    @Test
     public void test_merge_add_to_nested_ref(){
         FastExampleFactoryA original = new FastExampleFactoryA();
         original.referenceListAttribute =List.of(new FastExampleFactoryB(),new FastExampleFactoryB());

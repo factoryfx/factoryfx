@@ -41,16 +41,16 @@ public class FileSystemFactoryStorageHistoryTest {
                     new MigrationManager<>(RootFactory.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { }),2);
             RootFactory rf = new RootFactory().internal().finalise();
             LocalDateTime time = LocalDateTime.of(2000,1,1,0,0,0);
-            StoredDataMetadata md1 = randomMetadata(time, rf);
+            StoredDataMetadata md1 = randomMetadata(time, rf,"dummy1");
             history.updateHistory(rf, md1);
             time = time.plusSeconds(1);
-            StoredDataMetadata md2 = randomMetadata(time, rf);
+            StoredDataMetadata md2 = randomMetadata(time, rf,"dummy2");
             history.updateHistory(rf, md2);
             Assertions.assertEquals(2,history.getHistoryFactoryList().size());
             Assertions.assertNotNull(history.getHistoryFactory(md1.id));
             Assertions.assertNotNull(history.getHistoryFactory(md2.id));
             time = time.plusSeconds(1);
-            StoredDataMetadata md3 = randomMetadata(time, rf);
+            StoredDataMetadata md3 = randomMetadata(time, rf,"dummy3");
             history.updateHistory(rf, md3);
             Assertions.assertEquals(2,history.getHistoryFactoryList().size());
             Assertions.assertNotNull(history.getHistoryFactory(md2.id));
@@ -87,10 +87,10 @@ public class FileSystemFactoryStorageHistoryTest {
         });
     }
 
-    private StoredDataMetadata randomMetadata(LocalDateTime creationTime, RootFactory rootFactory) {
+    private StoredDataMetadata randomMetadata(LocalDateTime creationTime, RootFactory rootFactory, String mergerVersionId ) {
         DataStorageMetadataDictionary dataStorageMetadataDictionary = rootFactory.internal().createDataStorageMetadataDictionaryFromRoot();
         return new StoredDataMetadata( creationTime,UUID.randomUUID().toString(), "", "", "",null,
-                dataStorageMetadataDictionary,null);
+                dataStorageMetadataDictionary, mergerVersionId);
     }
 
 }

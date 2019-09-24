@@ -24,10 +24,10 @@ public class StringMergeTest extends MergeHelperTestBase {
         update.stringA.set("11111111");
         update = update.internal().finalise();
 
-        Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), update).hasNoConflicts());
 
         update.stringA.set("11111111qqqqq");
-        Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals("11111111qqqqq",aTest1.stringA.get());
     }
 
@@ -41,7 +41,7 @@ public class StringMergeTest extends MergeHelperTestBase {
         aTest2.stringA.set("11111111qqqqq");
         aTest2 = aTest2.internal().finalise();
 
-        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), aTest2).hasNoConflicts());
         Assertions.assertEquals("11111111qqqqq",aTest1.stringA.get());
     }
 

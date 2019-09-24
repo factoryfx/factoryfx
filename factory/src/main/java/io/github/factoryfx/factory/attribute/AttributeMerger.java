@@ -4,31 +4,21 @@ import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
 public interface AttributeMerger<V> extends AttributeMatch<V> {
 
-    void internal_merge(V newValue);
+    void internal_merge(V newValue, HashMap<UUID,FactoryBase<?,?>> idToFactory);
 
     boolean internal_hasWritePermission(Function<String,Boolean> permissionChecker);
 
-    default <F extends FactoryBase<?,?>>  void internal_mergeFactoryList(List<F> oldList, List<F> newList) {
-        //keep old factories for the state
-        Map<UUID, F> previousMap=new HashMap<>();
-        for (F item : oldList) {
-            previousMap.put(item.getId(),item);
-        }
+    @SuppressWarnings("unchecked")
+    default <F extends FactoryBase<?,?>>  void internal_mergeFactoryList(List<F> oldList, List<F> newList, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
         oldList.clear();
-
         for (F newItem : newList) {
-            F oldItem = previousMap.get(newItem.getId());
-            if (oldItem!=null){
-                oldList.add(oldItem);
-            } else {
-                oldList.add(newItem);
-            }
+            F oldItem = (F) idToFactory.get(newItem.getId());
+            oldList.add(oldItem);
         }
     }
 }

@@ -49,7 +49,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         return new UpdateSummary(mergeDiffInfo.mergeInfos);
     }
 
-    public FactoryUpdateLog<R> updateCurrentFactory(DataUpdate<R> update) {
+    public synchronized FactoryUpdateLog<R> updateCurrentFactory(DataUpdate<R> update) {
         R commonVersion = dataStorage.getHistoryData(update.baseVersionId);
         FactoryUpdateLog<R> factoryLog = factoryManager.update(commonVersion,update.root, update.permissionChecker);
         if (!factoryLog.failedUpdate() && factoryLog.successfullyMerged()){
@@ -72,7 +72,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
     }
 
 
-    public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> possibleUpdate){
+    public synchronized MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> possibleUpdate){
         R commonVersion = dataStorage.getHistoryData(possibleUpdate.baseVersionId);
         return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, possibleUpdate.permissionChecker);
     }
@@ -81,7 +81,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
      *  prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
      *  @return new possible factory update with prepared ids/metadata
      * */
-    public DataUpdate<R> prepareNewFactory() {
+    public synchronized DataUpdate<R> prepareNewFactory() {
         if (!factoryManager.isStarted()){
            throw new IllegalStateException("Microservice is not started");
         }
@@ -94,7 +94,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
      * @param comment comment
      * @return new possible factory update with prepared ids/metadata
      */
-    public DataUpdate<R> prepareNewFactory(String user, String comment) {
+    public synchronized DataUpdate<R> prepareNewFactory(String user, String comment) {
         DataAndId<R> currentFactory = dataStorage.getCurrentData();//TODO optimise we need just the id
         return new DataUpdate<>(
                 factoryManager.getCurrentFactory().utility().copy(),
@@ -112,14 +112,14 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         return dataStorage.getHistoryDataList();
     }
 
-    public L start() {
+    public synchronized L start() {
         final DataAndId<R> currentFactory = dataStorage.getCurrentData();
         currentFactory.root.internal().setMicroservice(this);//also mind ExceptionResponseAction#reset
         currentFactory.root.internal().setFactoryTreeBuilder(factoryTreeBuilder);
         return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
     }
 
-    public void stop() {
+    public synchronized void stop() {
         factoryManager.stop();
     }
 

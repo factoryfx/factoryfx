@@ -50,7 +50,7 @@ public class MergeResult<R extends FactoryBase<?,R>> {
             }
             currentRoot.internal().needRecalculationForBackReferences();
             currentRoot.internal().finalise();
-            currentRoot.internal().fixDuplicateFactories();
+//            currentRoot.internal().fixDuplicateFactories();
         }
         return new MergeDiffInfo<>(mergeInfos, conflictInfos, mergePermissionViolations, previousRoot, currentRoot, (Class<R>) currentRoot.getClass());
 

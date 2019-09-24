@@ -49,7 +49,7 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public void internal_merge(List<F> newList) {
+    public void internal_merge(List<F> newList, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
         //nothing
     }
 

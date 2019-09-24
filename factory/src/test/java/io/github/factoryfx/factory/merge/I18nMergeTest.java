@@ -25,7 +25,7 @@ public class I18nMergeTest extends MergeHelperTestBase {
         aTest2.attribute.en("test1X").de("test2X");
         aTest2=aTest2.internal().finalise();
 
-        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), aTest2).hasNoConflicts());
         Assertions.assertEquals("test1X",aTest1.attribute.get().internal_getPreferred(Locale.ENGLISH));
         Assertions.assertEquals("test2X",aTest1.attribute.get().internal_getPreferred(Locale.GERMAN));
     }

@@ -29,7 +29,7 @@ public class MapMergeTest extends MergeHelperTestBase{
         update.mapAttribute.get().put("k3","v3");
         update=update.internal().finalise();
 
-        Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
+        Assertions.assertTrue(merge(original, original.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(3, original.mapAttribute.get().size());
         Assertions.assertEquals("v1", original.mapAttribute.get().get("k1"));
         Assertions.assertEquals("v2", original.mapAttribute.get().get("k2"));
@@ -50,7 +50,7 @@ public class MapMergeTest extends MergeHelperTestBase{
         update.mapAttribute.get().put("k3","v4");
         update=update.internal().finalise();
 
-        Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
+        Assertions.assertTrue(merge(original, original.internal().copy().internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(3, original.mapAttribute.get().size());
         Assertions.assertEquals("v1", original.mapAttribute.get().get("k1"));
         Assertions.assertEquals("v2", original.mapAttribute.get().get("k2"));
@@ -70,7 +70,7 @@ public class MapMergeTest extends MergeHelperTestBase{
         update.mapAttribute.get().put("k2","v2");
         update=update.internal().finalise();
 
-        Assertions.assertTrue(merge(original, original, update).hasNoConflicts());
+        Assertions.assertTrue(merge(original, original.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(2, original.mapAttribute.get().size());
         Assertions.assertEquals("v1", original.mapAttribute.get().get("k1"));
         Assertions.assertEquals("v2", original.mapAttribute.get().get("k2"));

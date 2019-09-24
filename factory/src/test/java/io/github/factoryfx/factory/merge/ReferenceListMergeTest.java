@@ -32,7 +32,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         update.referenceListAttribute.add(newValue3);
         update = update.internal().finalise();
 
-        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertTrue(merge(current, current.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(3, current.referenceListAttribute.size());
         Assertions.assertEquals(newValue1.stringAttribute.get(), current.referenceListAttribute.get(0).stringAttribute.get());
         Assertions.assertEquals(newValue2.stringAttribute.get(), current.referenceListAttribute.get(1).stringAttribute.get());
@@ -57,7 +57,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         UUID idBefore1=current.referenceListAttribute.get(0).getId();
         UUID idBefore2=current.referenceListAttribute.get(1).getId();
         UUID idBefore3=update.referenceListAttribute.get(2).getId();
-        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertTrue(merge(current, current.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(3, current.referenceListAttribute.size());
         Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
         Assertions.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
@@ -110,7 +110,7 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
 
         UUID idBefore1=current.referenceListAttribute.get(0).getId();
         UUID idBefore2=current.referenceListAttribute.get(1).getId();
-        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertTrue(merge(current, current.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(2, current.referenceListAttribute.size());
         Assertions.assertEquals(idBefore1, current.referenceListAttribute.get(0).getId());
         Assertions.assertEquals(idBefore2, current.referenceListAttribute.get(1).getId());
@@ -207,4 +207,6 @@ public class ReferenceListMergeTest extends MergeHelperTestBase{
         Assertions.assertTrue(existing==current.referenceListAttribute.get(0));
 
     }
+
+
 }

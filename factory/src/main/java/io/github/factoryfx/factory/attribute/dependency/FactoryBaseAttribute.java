@@ -25,12 +25,14 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
     @JsonProperty("v")
     private F value;
 
+    public FactoryBaseAttribute() {
+        super();
+    }
 
     @Override
     public boolean internal_mergeMatch(AttributeMatch<F> value) {
         return internal_referenceEquals(this.value,value.get());
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -54,7 +56,6 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
     public Optional<F> getOptional() {
         return Optional.ofNullable(value);
     }
-
 
     @Override
     public void set(F factory) {
@@ -90,21 +91,16 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
         }
     }
 
-    //    @JsonUnwrapped
-//    @JsonValue
     @JsonGetter
     @JsonMerge(OptBoolean.FALSE)
     protected F getValue() {
         return value;
     }
 
-    //    @JsonUnwrapped
-//    @JsonValue
     @JsonSetter
     protected void setValue(F value) {
         this.value = value;
     }
-
 
     @JsonIgnore
     @Override
@@ -125,15 +121,14 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
     }
 
     @Override
-    public void internal_merge(F newValue) {
-        this.value=newValue;//faster than call set, backreferences are updated anyway for all after merge
+    @SuppressWarnings("unchecked")
+    public void internal_merge(F newValue, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
+        if (newValue==null){
+            this.value=null;
+        } else {
+            this.value= (F) idToFactory.get(newValue.getId());//faster than call set, backreferences are updated anyway for all after merge
+        }
     }
-
-
-    public FactoryBaseAttribute() {
-        super();
-    }
-
 
     public L instance(){
         if (get()==null){

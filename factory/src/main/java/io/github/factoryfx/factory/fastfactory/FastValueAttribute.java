@@ -5,8 +5,10 @@ import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -38,7 +40,7 @@ public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     @Override
-    public void internal_merge(V newValue){
+    public void internal_merge(V newValue, HashMap<UUID,FactoryBase<?,?>> idToFactory){
         valueSetter.accept(boundFactory,newValue);
     }
 }

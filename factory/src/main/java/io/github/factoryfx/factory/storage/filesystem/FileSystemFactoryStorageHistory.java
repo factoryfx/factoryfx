@@ -126,12 +126,14 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>> {
         int numToRemove = collect.size()-maxConfigurationHistory;
         if (numToRemove > 0) {
             collect.stream().sorted(Comparator.comparing(a -> a.creationTime)).limit(numToRemove).forEach(smd -> {
-                try {
-                    Files.deleteIfExists(Paths.get(historyDirectory.toString() + "/" + smd.id + ".json"));
-                    Files.deleteIfExists(Paths.get(historyDirectory.toString() + "/" + smd.id + "_metadata.json"));
-                    cache.remove(smd.id);
-                } catch (IOException ohno) {
-                    logger.warn("Could not remove configration files", ohno);
+                if (!smd.isInitialFactory()) {
+                    try {
+                        Files.deleteIfExists(Paths.get(historyDirectory.toString() + "/" + smd.id + ".json"));
+                        Files.deleteIfExists(Paths.get(historyDirectory.toString() + "/" + smd.id + "_metadata.json"));
+                        cache.remove(smd.id);
+                    } catch (IOException ohno) {
+                        logger.warn("Could not remove configration files", ohno);
+                    }
                 }
             });
         }

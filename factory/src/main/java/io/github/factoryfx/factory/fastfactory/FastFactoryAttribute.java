@@ -6,7 +6,9 @@ import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -64,8 +66,13 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
     }
 
     @Override
-    public void internal_merge(V newValue){
-        valueSetter.accept(boundFactory,newValue);
+    @SuppressWarnings("unchecked")
+    public void internal_merge(V newValue, HashMap<UUID,FactoryBase<?,?>> idToFactory){
+        if (newValue==null){
+            valueSetter.accept(boundFactory,null);
+        } else {
+            valueSetter.accept(boundFactory,(V)idToFactory.get(newValue.getId()));
+        }
     }
 }
 

@@ -19,7 +19,7 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
 
         ExampleDataA newVersion = current.internal().copy();
 
-        MergeDiffInfo merge = this.merge(current, current, newVersion);
+        MergeDiffInfo merge = this.merge(current, current.internal().copy(), newVersion);
         Assertions.assertTrue( merge.hasNoConflicts());
         Assertions.assertEquals(0,merge.mergeInfos.size());
     }
@@ -37,7 +37,7 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         update = update.internal().finalise();
 
         UUID beforeMergeId=update.referenceAttribute.get().getId();
-        Assertions.assertTrue(merge(current, current, update).hasNoConflicts());
+        Assertions.assertTrue(merge(current, current.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(beforeMergeId, current.referenceAttribute.get().getId());
     }
 
@@ -52,7 +52,7 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
         newVersion.referenceAttribute.set(null);
         newVersion = newVersion.internal().finalise();
 
-        Assertions.assertTrue(merge(current, current, newVersion).hasNoConflicts());
+        Assertions.assertTrue(merge(current, current.internal().copy(), newVersion).hasNoConflicts());
         Assertions.assertEquals(null, current.referenceAttribute.get());
     }
 
@@ -61,18 +61,22 @@ public class ReferenceMergeTest extends MergeHelperTestBase{
     public void test_keep_old_for_moved(){
         ExampleDataA current = new ExampleDataA();
         ExampleDataB newValue = new ExampleDataB();
-        current.referenceAttribute.set(newValue);
+        current.referenceListAttribute.add(newValue);
         current = current.internal().finalise();
 
         ExampleDataA newVersion = current.internal().copy();
-        newVersion.referenceListAttribute.add(newVersion.referenceAttribute.get());
-        newVersion.referenceAttribute.set(null);
+        newVersion.referenceAttribute.set(newVersion.referenceListAttribute.get(0));
+        newVersion.referenceListAttribute.clear();
 
-        ExampleDataB oldRef = current.referenceAttribute.get();
-        MergeDiffInfo merge = this.merge(current, current, newVersion);
-        Assertions.assertEquals( oldRef,current.referenceListAttribute.get(0));
+        ExampleDataB oldRef = current.referenceListAttribute.get(0) ;
 
+        DataMerger<ExampleDataA> dataMerger = new DataMerger<>(current, current.internal().copy(), newVersion);
+        io.github.factoryfx.factory.merge.MergeResult<ExampleDataA> mergeResult = dataMerger.createMergeResult((p)->true);
+        mergeResult.executeMerge();
+
+        Assertions.assertEquals( oldRef,current.referenceAttribute.get());
     }
+
 
 
 }

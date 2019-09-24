@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Objects;
 
 public class EncryptedString implements Comparable<EncryptedString> {
     private final String encryptedString;
@@ -55,7 +56,7 @@ public class EncryptedString implements Comparable<EncryptedString> {
 
         EncryptedString that = (EncryptedString) o;
 
-        return encryptedString != null ? encryptedString.equals(that.encryptedString) : that.encryptedString == null;
+        return Objects.equals(encryptedString, that.encryptedString);
     }
 
     @Override

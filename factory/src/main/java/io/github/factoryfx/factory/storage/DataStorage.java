@@ -38,9 +38,12 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
      * @return current data
      * */
     default R getInitialData(){
-        List<StoredDataMetadata> historyDataList = new ArrayList<>(getHistoryDataList());
-        historyDataList.sort(Comparator.comparing(o -> o.creationTime));
-        return getHistoryData(historyDataList.get(0).id);
+        for (StoredDataMetadata metadata : getHistoryDataList()) {
+            if (metadata.isInitialFactory()){
+                return getHistoryData(metadata.id);
+            }
+        }
+        return  null;
     }
 
     /**

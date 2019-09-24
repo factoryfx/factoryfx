@@ -24,10 +24,10 @@ public class ByteArrayMergeTest extends MergeHelperTestBase {
         aTest2.byteArrayAttribute.set(new byte[]{1,2,3,4});
         aTest2=aTest1.internal().finalise();
 
-        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), aTest2).hasNoConflicts());
 
         aTest2.byteArrayAttribute.set(new byte[]{1,2,3,4,5});
-        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), aTest2).hasNoConflicts());
         Assertions.assertArrayEquals(new byte[]{1,2,3,4,5},aTest1.byteArrayAttribute.get());
     }
 

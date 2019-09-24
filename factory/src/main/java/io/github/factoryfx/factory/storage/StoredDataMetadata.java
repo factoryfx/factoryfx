@@ -52,4 +52,9 @@ public class StoredDataMetadata {
     public StoredDataMetadata(String id, String user, String comment, String baseVersionId, UpdateSummary changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary,String mergerVersionId) {
         this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId);
     }
+
+    @JsonIgnore
+    public boolean isInitialFactory() {
+        return  mergerVersionId==null;
+    }
 }

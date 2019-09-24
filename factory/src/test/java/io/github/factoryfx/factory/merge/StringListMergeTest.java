@@ -33,7 +33,7 @@ public class StringListMergeTest extends MergeHelperTestBase {
         update.refB.add("33333");
         update = update.internal().finalise();
 
-        Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals("11111", aTest1.refB.get(0));
         Assertions.assertEquals("222222", aTest1.refB.get(1));
         Assertions.assertEquals("33333", aTest1.refB.get(2));
@@ -54,7 +54,7 @@ public class StringListMergeTest extends MergeHelperTestBase {
         update = update.internal().finalise();
 
 
-        Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals("11111", aTest1.refB.get().get(0));
         Assertions.assertEquals("222222", aTest1.refB.get().get(1));
         Assertions.assertEquals("33333qqqqq", aTest1.refB.get().get(2));
@@ -74,7 +74,7 @@ public class StringListMergeTest extends MergeHelperTestBase {
         update.refB.add("222222");
         update = update.internal().finalise();
 
-        Assertions.assertTrue(merge(aTest1, aTest1, update).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), update).hasNoConflicts());
         Assertions.assertEquals(2, aTest1.refB.get().size());
         Assertions.assertEquals("11111", aTest1.refB.get().get(0));
         Assertions.assertEquals("222222", aTest1.refB.get().get(1));

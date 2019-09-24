@@ -37,8 +37,8 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     }
 
     @Override
-    public void internal_merge(List<F> newList) {
-        internal_mergeFactoryList(this.list,newList);
+    public void internal_merge(List<F> newList, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
+        internal_mergeFactoryList(this.list,newList,idToFactory);
     }
 
 

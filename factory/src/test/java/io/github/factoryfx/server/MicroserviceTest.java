@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MicroserviceTest {
@@ -251,23 +252,23 @@ public class MicroserviceTest {
         });
 
         List<Thread> threads = new ArrayList<>();
-        List<Exception> exceptions = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
+        AtomicInteger threadCount = new AtomicInteger(100);
+        for (int i = 0; i < threadCount.get(); i++) {
             Thread thread = new Thread(() -> {
                 try {
                     DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
                     update.root.referenceListAttribute.add(new ExampleFactoryB());
                     FactoryUpdateLog<ExampleFactoryA> exampleFactoryAFactoryUpdateLog = microservice.updateCurrentFactory(update);
+                    threadCount.decrementAndGet();
 //                    System.out.println(exampleFactoryAFactoryUpdateLog.successfullyMerged());
-                } catch (Exception e){
+                } catch (Throwable e){
                     exceptions.add(e);
                 }
             });
-            thread.start();
             threads.add(thread);
         }
-        Assertions.assertEquals(0,exceptions.size(), exceptions.size()>0?Throwables.getStackTraceAsString(exceptions.get(0)):"no exception");
-
+        threads.forEach(Thread::start);
         for (Thread thread : threads) {
             try {
                 thread.join();
@@ -275,8 +276,42 @@ public class MicroserviceTest {
                 throw new RuntimeException(e);
             }
         }
+        Assertions.assertEquals(0,exceptions.size(), exceptions.size()>0?Throwables.getStackTraceAsString(exceptions.get(0)):"no exception");
+        Assertions.assertEquals(0,threadCount.get());
+
 
 //        Assertions.assertEquals(10,microservice.prepareNewFactory().root.referenceListAttribute.size());
+
+    }
+
+
+    @Test
+    public void test_list_override_recreation() {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
+        microservice.start();
+
+        DataUpdate<ExampleFactoryA> updateFirst = microservice.prepareNewFactory();
+        DataUpdate<ExampleFactoryA> updateSecond = microservice.prepareNewFactory();
+
+        {
+            ExampleFactoryB value = new ExampleFactoryB();
+            value.stringAttribute.set("first update");
+            updateFirst.root.referenceListAttribute.add(value);
+        }
+        microservice.updateCurrentFactory(updateFirst);
+
+        Assertions.assertEquals("first update",microservice.prepareNewFactory().root.referenceListAttribute.get(0).stringAttribute.get());
+
+        {
+            ExampleFactoryB value = new ExampleFactoryB();
+            value.stringAttribute.set("second update");
+            updateSecond.root.referenceListAttribute.add(value);
+        }
+        FactoryUpdateLog<ExampleFactoryA> exampleFactoryAFactoryUpdateLog = microservice.updateCurrentFactory(updateSecond);
+
+        Assertions.assertEquals(1,exampleFactoryAFactoryUpdateLog.mergeDiffInfo.conflictInfos.size());
+        Assertions.assertEquals("first update",microservice.prepareNewFactory().root.referenceListAttribute.get(0).stringAttribute.get());
 
     }
 }

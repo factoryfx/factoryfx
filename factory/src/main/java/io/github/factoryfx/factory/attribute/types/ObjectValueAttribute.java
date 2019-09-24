@@ -1,9 +1,12 @@
 package io.github.factoryfx.factory.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -27,7 +30,7 @@ public class ObjectValueAttribute<T> extends ImmutableValueAttribute<T,ObjectVal
     }
 
     @Override
-    public void internal_merge(T newValue) {
+    public void internal_merge(T newValue, HashMap<UUID, FactoryBase<?,?>> idToFactory) {
         //nothing   ignore for merging
     }
 

@@ -28,7 +28,7 @@ public class EnumMergeTest extends MergeHelperTestBase {
         aTest2=aTest2.internal().finalise();
 
         Assertions.assertEquals(TestEnum.A,aTest1.attribute.get());
-        Assertions.assertTrue(merge(aTest1, aTest1, aTest2).hasNoConflicts());
+        Assertions.assertTrue(merge(aTest1, aTest1.internal().copy(), aTest2).hasNoConflicts());
         Assertions.assertEquals(TestEnum.B,aTest1.attribute.get());
 
         ObjectMapperBuilder.build().copy(aTest1);

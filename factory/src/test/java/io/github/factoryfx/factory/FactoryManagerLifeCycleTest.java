@@ -319,13 +319,9 @@ public class FactoryManagerLifeCycleTest {
         factoryManager.update(common,update,(permission)->true);
 
         Assertions.assertEquals(1,exampleFactoryA.destroyCalls.size());
-
         Assertions.assertEquals(1,exampleFactoryA.reCreateCalls.size());
-
         Assertions.assertEquals(1,exampleFactoryA.startCalls.size());
     }
-
-
 
     @Test
     public void test_changed_list_only_no_changes(){
@@ -371,10 +367,7 @@ public class FactoryManagerLifeCycleTest {
         factoryManager.update(common,update,(permission)->true);
         Assertions.assertEquals(1,factoryManager.getCurrentFactory().refList.get(0).createCalls.size());
         Assertions.assertEquals(1,factoryManager.getCurrentFactory().refList.get(1).createCalls.size());
-
     }
-
-
 
     @Test
     public void test_double_used(){

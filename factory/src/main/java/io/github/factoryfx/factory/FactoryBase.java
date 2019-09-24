@@ -309,11 +309,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
+    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentMerger, originalMerger, newMerger) -> {
             //for performance to execute compare only once
-            boolean newMergerMatchOriginalMerger= newMerger.internal_mergeMatch(originalMerger);
-            boolean currentMergerMatchOriginalMerger= currentMerger.internal_mergeMatch(originalMerger);
+            boolean newMergerMatchOriginalMerger= originalMerger.internal_mergeMatch(newMerger);
+            boolean currentMergerMatchOriginalMerger= originalMerger.internal_mergeMatch(currentMerger);
             boolean currentMergerMatchNewMerger= currentMerger.internal_mergeMatch(newMerger);
 
 
@@ -324,7 +324,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
                     final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
                     if (currentMerger.internal_hasWritePermission(permissionChecker)){
                         mergeResult.addMergeInfo(attributeDiffInfo);
-                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get()),this);
+                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get(),idToFactory),this);
                     } else {
                         mergeResult.addPermissionViolationInfo(attributeDiffInfo);
                     }
@@ -774,8 +774,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.validateFlat();
         }
 
-        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
-            factory.merge(originalValue,newValue,mergeResult,permissionChecker);
+        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
+            factory.merge(originalValue,newValue,mergeResult,permissionChecker,  idToFactory);
         }
         public List<FactoryBase<?,?> > getPathFromRoot() {
             return factory.getPathFromRoot();
@@ -1441,12 +1441,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private Attribute<?,?> getAttribute(String attributeVariableNameParam){
         Attribute[] result = new Attribute[1];
-        visitAttributesFlat(new AttributeVisitor() {
-            @Override
-            public void accept(String attributeVariableName, Attribute<?, ?> attribute) {
-                if (attributeVariableName.equals(attributeVariableNameParam)){
-                    result[0]=attribute;
-                }
+        visitAttributesFlat((attributeVariableName, attribute) -> {
+            if (attributeVariableName.equals(attributeVariableNameParam)){
+                result[0]=attribute;
             }
         });
         return result[0];
