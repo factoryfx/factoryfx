@@ -58,7 +58,6 @@ public class FactoryEditManager<R extends FactoryBase<?,R>> {
     //for testability, avoid Toolkit not initialized
     Consumer<Runnable> runLaterExecuter= Platform::runLater;
 
-
     public Optional<R> getLoadedFactory(){
         if (loadedRoot==null){
             return Optional.empty();
@@ -89,7 +88,6 @@ public class FactoryEditManager<R extends FactoryBase<?,R>> {
                 }
             }
         }
-
         return factoryLog;
     }
 
@@ -104,20 +102,16 @@ public class FactoryEditManager<R extends FactoryBase<?,R>> {
     public void loadFromFile(Path from) {
         try {
             RawFactoryDataAndMetadata wrapper = migrationManager.readRawFactoryDataAndMetadata(Files.readString(from));
-
             R serverFactory = migrationManager.read(wrapper.root,wrapper.metadata.dataStorageMetadataDictionary);
 
             DataUpdate<R> previousRoot=loadedRoot;
-
             DataUpdate<R> update = client.prepareNewFactory();
             loadedRoot=new DataUpdate<>(serverFactory,update.user,update.comment,update.baseVersionId);
-            this.save("reloaded from file: "+from.toFile().getAbsolutePath());
 
             updateNotify(loadedRoot, previousRoot);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public MergeDiffInfo<R> simulateUpdateCurrentFactory() {

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 
+import io.github.factoryfx.factory.attribute.types.I18nAttribute;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
@@ -39,6 +40,16 @@ import org.controlsfx.glyphfont.FontAwesome;
  */
 public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, FactoryRootChangeListener<R> {
 
+    public final I18nAttribute saveTooltip = new I18nAttribute().de("Änderungen auf den Server speichern").en("Apply changes to server");
+    public final I18nAttribute savedChanges = new I18nAttribute().de("Gespeicherte Änderungen").en("Applied changes");
+    public final I18nAttribute checkTooltip = new I18nAttribute().de("Änderungen anzeigen aber nicht speichern").en("Show changes (without applying them)");
+    public final I18nAttribute resetTooltip = new I18nAttribute().de("löscht alle aktuellen Änderungen").en("Reset local client changes");
+    public final I18nAttribute saveToFileTooltip = new I18nAttribute().de("die aktuelle Konfiguartion lokal speichern").en("Save the current configuration locally");
+    public final I18nAttribute loadFromFileTooltip = new I18nAttribute().de("Konfiguration importieren").en("Import configuration from file");
+    public final I18nAttribute validation = new I18nAttribute().de("Validierung").en("Validation");
+    public final I18nAttribute comment = new I18nAttribute().de("Kommentar").en("Comment");
+    public final I18nAttribute save = new I18nAttribute().de("Speichern").en("Save");
+
     private final LongRunningActionExecutor LongRunningActionExecutor;
     private final FactoryEditManager<R> factoryEditManager;
     private final FactoryAwareWidget<R> content;
@@ -64,7 +75,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
 
         {
             final Button save = new Button();
-            save.setTooltip(new Tooltip("Änderungen auf den Server speichern"));
+            save.setTooltip(new Tooltip(uniformDesign.getText(saveTooltip)));
             save.setOnAction(event -> {
                 Optional<String> result = showCommitDialog(factoryEditManager.getLoadedFactory().get(),dataEditor,uniformDesign);
 
@@ -82,7 +93,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
                             });
                         } else {
                             Platform.runLater(() -> {
-                                diffDialogBuilder.createDiffDialog(factoryLog, "Gespeicherte Änderungen", save.getScene().getWindow());
+                                diffDialogBuilder.createDiffDialog(factoryLog, uniformDesign.getText(savedChanges), save.getScene().getWindow());
                             });
                         }
                     });
@@ -93,7 +104,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
         }
         {
             final Button check = new Button();
-            check.setTooltip(new Tooltip("Änderungen anzeigen aber nicht speichern"));
+            check.setTooltip(new Tooltip(uniformDesign.getText(checkTooltip)));
             check.setOnAction(event -> {
                 LongRunningActionExecutor.execute(() -> {
                     final MergeDiffInfo<R> mergeDiff = factoryEditManager.simulateUpdateCurrentFactory();
@@ -109,7 +120,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
 
         {
             final Button resetButton = new Button();
-            resetButton.setTooltip(new Tooltip("löscht alle aktuellen Änderungen"));
+            resetButton.setTooltip(new Tooltip(uniformDesign.getText(resetTooltip)));
             uniformDesign.addDangerIcon(resetButton, FontAwesome.Glyph.UNDO);
             resetButton.setOnAction(event -> {
                 Alert alert = new Alert(CONFIRMATION);
@@ -129,7 +140,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
 
         {
             final Button saveToFile = new Button("export");
-            saveToFile.setTooltip(new Tooltip("die aktuelle Konfiguartion lokal speichern"));
+            saveToFile.setTooltip(new Tooltip( uniformDesign.getText(saveToFileTooltip)));
             uniformDesign.addIcon(saveToFile, FontAwesome.Glyph.HDD_ALT);
             saveToFile.setOnAction(event -> {
                 FileChooser fileChooser = new FileChooser();
@@ -149,7 +160,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
 
         {
             final Button loadFromFile = new Button("import");
-            loadFromFile.setTooltip(new Tooltip("Konfiguration importieren"));
+            loadFromFile.setTooltip(new Tooltip(uniformDesign.getText(loadFromFileTooltip)) );
             uniformDesign.addIcon(loadFromFile, FontAwesome.Glyph.HDD_ALT);
             loadFromFile.setOnAction(event -> {
                 FileChooser fileChooser = new FileChooser();
@@ -197,18 +208,18 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
 
         Alert  dialog = new Alert(Alert.AlertType.INFORMATION);
         dialog.initOwner(borderPane.getScene().getWindow());
-        dialog.setTitle("Speichern");
-        dialog.setHeaderText("Speichern");
+        dialog.setTitle(uniformDesign.getText(save));
+        dialog.setHeaderText(uniformDesign.getText(save));
 
 //        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
 //        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
         final BorderPane pane = new BorderPane();
-        pane.setCenter(wrap("Validierung",validationWidget.createContent()));
+        pane.setCenter(wrap(uniformDesign.getText(validation),validationWidget.createContent()));
         final TextArea comment = new TextArea();
         BorderPane.setMargin(comment,new Insets(6,0,0,0));
-        comment.setPromptText("Kommentar");
-        pane.setBottom(wrap("Kommentar",comment));
+        comment.setPromptText(uniformDesign.getText(this.comment));
+        pane.setBottom(wrap(uniformDesign.getText(this.comment),comment));
         pane.setPrefWidth(1000);
         pane.setPrefHeight(750);
         dialog.getDialogPane().setContent(pane);
