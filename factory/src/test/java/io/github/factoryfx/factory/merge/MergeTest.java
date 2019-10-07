@@ -9,6 +9,7 @@ import io.github.factoryfx.factory.DataTest;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
@@ -575,7 +576,7 @@ public class MergeTest {
 
         Assertions.assertEquals(currentModel.referenceAttribute.get(), currentModel.referenceListAttribute.get().get(0));
         //assert still serializable;
-        currentModel.internal().copy();
+        ObjectMapperBuilder.build().copy(currentModel);
     }
 
     @Test
@@ -607,7 +608,7 @@ public class MergeTest {
         Assertions.assertEquals(0, mergeDiff.getConflictCount());
 
         //assert still serializable;
-        currentModel.internal().copy();
+        ObjectMapperBuilder.build().copy(currentModel);
     }
 
     @Test
@@ -837,5 +838,7 @@ public class MergeTest {
         Assertions.assertEquals(1,original.referenceAttribute.get().internal().getParents().size());
         Assertions.assertEquals(original,original.referenceAttribute.get().internal().getParents().iterator().next());
     }
+
+
 
 }
