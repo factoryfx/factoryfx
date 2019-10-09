@@ -77,12 +77,12 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
     }
 
     @Override
-    public void internal_merge(List<V> newList, HashMap<UUID,FactoryBase<?,?>> idToFactory){
+    public void internal_merge(List<V> newList){
         List<V> oldList = valueGetter.apply(boundFactory);
         if (oldList==null){
             oldList=new ArrayList<>(newList);
         }
-        internal_mergeFactoryList(oldList,newList,idToFactory);
+        internal_mergeFactoryList(oldList,newList);
     }
 
 }

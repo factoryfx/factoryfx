@@ -67,12 +67,8 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
 
     @Override
     @SuppressWarnings("unchecked")
-    public void internal_merge(V newValue, HashMap<UUID,FactoryBase<?,?>> idToFactory){
-        if (newValue==null){
-            valueSetter.accept(boundFactory,null);
-        } else {
-            valueSetter.accept(boundFactory,(V)idToFactory.get(newValue.getId()));
-        }
+    public void internal_merge(V newValue){
+        valueSetter.accept(boundFactory,newValue);
     }
 }
 

@@ -309,7 +309,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
+    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentMerger, originalMerger, newMerger) -> {
             //for performance to execute compare only once
             boolean newMergerMatchOriginalMerger= originalMerger.internal_mergeMatch(newMerger);
@@ -324,7 +324,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
                     final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
                     if (currentMerger.internal_hasWritePermission(permissionChecker)){
                         mergeResult.addMergeInfo(attributeDiffInfo);
-                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get(),idToFactory),this);
+                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get()),this);
                     } else {
                         mergeResult.addPermissionViolationInfo(attributeDiffInfo);
                     }
@@ -774,8 +774,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.validateFlat();
         }
 
-        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
-            factory.merge(originalValue,newValue,mergeResult,permissionChecker,  idToFactory);
+        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
+            factory.merge(originalValue,newValue,mergeResult,permissionChecker);
         }
         public List<FactoryBase<?,?> > getPathFromRoot() {
             return factory.getPathFromRoot();
@@ -996,6 +996,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         public Attribute<?,?> getAttribute(String attributeVariableName){
             return factory.getAttribute(attributeVariableName);
+        }
+
+        public void fixDuplicateFactoriesFlat(HashMap<UUID, FactoryBase<?, R>> idToFactoryMap){
+            factory.visitFactoryEnclosingAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToFactoryMap));
         }
     }
 

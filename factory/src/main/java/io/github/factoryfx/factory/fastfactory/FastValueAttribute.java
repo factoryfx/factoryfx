@@ -40,7 +40,7 @@ public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     @Override
-    public void internal_merge(V newValue, HashMap<UUID,FactoryBase<?,?>> idToFactory){
+    public void internal_merge(V newValue){
         valueSetter.accept(boundFactory,newValue);
     }
 }

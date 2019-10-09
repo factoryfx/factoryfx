@@ -15,7 +15,7 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
 //    private Map<UUID, FactoryBase<?,R>> commonMap;
 //    private Map<UUID, FactoryBase<?,R>> newMap;
 
-    private final HashMap<UUID,FactoryBase<?,?>> idToFactory=new HashMap<>();
+    private final HashMap<UUID,FactoryBase<?,R>> idToFactory=new HashMap<>();
     
     List<Triple> mergeable=new ArrayList<>();
     private static class Triple<R extends FactoryBase<?,R>>{
@@ -126,7 +126,7 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
     public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
 
 
-        MergeResult<R> mergeResult = new MergeResult<>(currentData);
+        MergeResult<R> mergeResult = new MergeResult<>(currentData,idToFactory);
 
         for (Triple<R> entry : mergeable) {
             FactoryBase<?,R> originalValue = entry.commonFactory;
@@ -144,7 +144,7 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
 
             if (originalValue!=null && newValue!=null){
                 FactoryBase value = entry.currentFactory;
-                value.internal().merge(originalValue, newValue, mergeResult, permissionChecker, idToFactory);
+                value.internal().merge(originalValue, newValue, mergeResult, permissionChecker);
             }
         }
         return mergeResult;

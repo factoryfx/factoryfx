@@ -30,7 +30,7 @@ public class ObjectValueAttribute<T> extends ImmutableValueAttribute<T,ObjectVal
     }
 
     @Override
-    public void internal_merge(T newValue, HashMap<UUID, FactoryBase<?,?>> idToFactory) {
+    public void internal_merge(T newValue) {
         //nothing   ignore for merging
     }
 

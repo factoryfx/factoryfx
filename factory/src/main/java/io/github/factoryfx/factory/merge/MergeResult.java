@@ -4,10 +4,7 @@ package io.github.factoryfx.factory.merge;
 
 import io.github.factoryfx.factory.FactoryBase;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MergeResult<R extends FactoryBase<?,R>> {
     final R previousRoot;
@@ -19,9 +16,12 @@ public class MergeResult<R extends FactoryBase<?,R>> {
 
     final List<Runnable> mergeExecutions = new ArrayList<>();
 
-    public MergeResult(R currentRoot) {
+    final HashMap<UUID, FactoryBase<?, R>> idToFactory;
+
+    public MergeResult(R currentRoot, HashMap<UUID, FactoryBase<?, R>> idToFactory) {
         this.previousRoot = currentRoot.internal().copy();
         this.currentRoot = currentRoot;
+        this.idToFactory = idToFactory;
     }
 
     public void addConflictInfo(AttributeDiffInfo conflictInfo) {
@@ -49,8 +49,15 @@ public class MergeResult<R extends FactoryBase<?,R>> {
                 mergeAction.run();
             }
             currentRoot.internal().needRecalculationForBackReferences();
+
+            //fix duplicates and priorities old factories to keep there state
+            for (FactoryBase<?,R> factory: idToFactory.values()){
+                factory.internal().fixDuplicateFactoriesFlat(idToFactory);
+            }
+
+
             currentRoot.internal().finalise();
-            currentRoot.internal().fixDuplicateFactories();//TODO optimize performance, reuse map from DataMerger
+//            currentRoot.internal().fixDuplicateFactories();//TODO optimize performance, reuse map from DataMerger
         }
         return new MergeDiffInfo<>(mergeInfos, conflictInfos, mergePermissionViolations, previousRoot, currentRoot, (Class<R>) currentRoot.getClass());
 

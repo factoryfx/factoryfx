@@ -36,7 +36,7 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
     }
 
     @Override
-    public void internal_merge(F newFactory, HashMap<UUID,FactoryBase<?,?>> idToFactory) {
+    public void internal_merge(F newFactory) {
         //nothing
     }
 
