@@ -30,7 +30,7 @@ class MicroserviceDomResourceTest {
 
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->
-            new SimpleJettyServerBuilder<Server,JettyServerRootFactory>().withHost("localhost").withPort(8015).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
+                jetty.withHost("localhost").withPort(8015).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
         );
         builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 
