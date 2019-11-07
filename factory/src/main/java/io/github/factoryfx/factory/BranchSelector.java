@@ -58,6 +58,9 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
             return false;
         }
         String treeBuilderName = factory.internal().getTreeBuilderName();
+        if (name==null){
+            return true;
+        }
         return Objects.equals(name, treeBuilderName);
     }
 
