@@ -6,7 +6,7 @@ import io.github.factoryfx.factory.attribute.Attribute;
 
 import java.lang.invoke.MethodHandle;
 
-class AttributeFieldAccessor<R extends FactoryBase<?,R>, L,F extends FactoryBase<L,R>,A> {
+class AttributeFieldAccessor<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>,A> {
     //currently method handles are not faster than reflection but that may change in future versions, https://www.optaplanner.org/blog/2018/01/09/JavaReflectionButMuchFaster.html
     //LambdaMetafactory doesn't work for direct field access
 

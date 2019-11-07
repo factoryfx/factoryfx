@@ -358,7 +358,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
     }
 
     public AttributeStorageMetadata createAttributeStorageMetadata(String variableName){
-        return new AttributeStorageMetadata(variableName,getClass().getName(),false, null);
+        return new AttributeStorageMetadata(variableName,getClass().getName(), null);
     }
 
 

@@ -27,6 +27,9 @@ public class DataJsonNode {
     }
 
     public String getDataClassName(){
+        if (jsonNode==null){
+            System.out.println();
+        }
         return jsonNode.get("@class").textValue();
     }
 
@@ -209,6 +212,14 @@ public class DataJsonNode {
         }
         return result;
 
+    }
+
+    Map<String, DataJsonNode> cache;
+    public Map<String,DataJsonNode> collectChildrenMapFromRootCached() {
+        if (cache==null){
+            cache=collectChildrenMapFromRoot();
+        }
+        return cache;
     }
 
     public void applyRemovedAttribute(DataStorageMetadataDictionary dataStorageMetadataDictionary){

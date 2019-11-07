@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.storage.migration.metadata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
@@ -77,14 +78,11 @@ public class DataStorageMetadataDictionary {
         dataList.forEach(DataStorageMetadata::markRemovedAttributes);
     }
 
-    public boolean isReferenceAttribute(String dataClass, String attributeName) {
-        DataStorageMetadata dataStorageMetadata = getDataStorageMetadata(dataClass);
-        if (dataStorageMetadata!=null){
-            return dataStorageMetadata.isReferenceAttribute(attributeName);
-        }
-        return false;
+    public void markRetypedAttributes(){
+        dataList.forEach(DataStorageMetadata::markRetypedAttributes);
     }
 
+    @JsonIgnore
     public DataStorageMetadata getRootDataStorageMetadata(){
         return getDataStorageMetadata(rootClass);
     }

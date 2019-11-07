@@ -6,7 +6,7 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.*;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
@@ -24,10 +24,11 @@ import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.function.Consumer;
 
 public class SslContextFactoryFactoryTest {
 
-    public static class TestResourceFactory extends SimpleFactoryBase<TestResource,TestJettyServerFactory> {
+    public static class TestResourceFactory extends SimpleFactoryBase<TestResource, JettyServerRootFactory> {
 
         @Override
         protected TestResource createImpl() {
@@ -44,26 +45,15 @@ public class SslContextFactoryFactoryTest {
 
     }
 
-    public static class TestJettyServerFactory extends SimpleFactoryBase<Server, TestJettyServerFactory>{
-        public final FactoryAttribute<Server,JettyServerFactory<TestJettyServerFactory>> server = new FactoryAttribute<>();
 
-        @Override
-        protected Server createImpl() {
-            return server.instance();
-        }}
-
-    @SuppressWarnings("unchecked")
     @Test
     public void test_without_ssl() {
-        FactoryTreeBuilder<Server, TestJettyServerFactory> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<TestJettyServerFactory>()
-                    .withHost("localhost").withPort(8009)
-                    .withResource(ctx.get(TestResourceFactory.class)).build();
-        });
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty
+                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)));
+
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Server, TestJettyServerFactory> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
         try {
             microservice.start();
 
@@ -88,13 +78,15 @@ public class SslContextFactoryFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_with_ssl() {
-        FactoryTreeBuilder<Server, TestJettyServerFactory> builder = new FactoryTreeBuilder<>(TestJettyServerFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            SslContextFactoryFactoryCustom<TestJettyServerFactory> ssl = new SslContextFactoryFactoryCustom<>();
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty
+                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(SslContextFactoryFactoryCustom.class)));
+
+        builder.addFactory(SslContextFactoryFactoryCustom.class, Scope.SINGLETON, ctx->{
+            SslContextFactoryFactoryCustom<JettyServerRootFactory> ssl = new SslContextFactoryFactoryCustom<>();
             ssl.keyStoreType.set(KeyStoreType.jks);
             ssl.trustStoreType.set(KeyStoreType.jks);
             try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){
-                byte[] bytes = ByteStreams.toByteArray(in);
+                byte[] bytes = in.readAllBytes();
                 ssl.keyStore.set(bytes);
                 ssl.keyStorePassword.set("password");
 
@@ -104,13 +96,11 @@ public class SslContextFactoryFactoryTest {
                 throw new RuntimeException(e);
             }
 
-            return new JettyServerBuilder<TestJettyServerFactory>()
-                    .withHost("localhost").withPort(8009).withSsl(ssl)
-                    .withResource(ctx.get(TestResourceFactory.class)).build();
+            return ssl;
         });
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
-        Microservice<Server, TestJettyServerFactory> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
         try {
             microservice.start();
             fixUntrustCertificate();

@@ -20,6 +20,8 @@ import io.github.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AttributePathTest {
@@ -31,14 +33,14 @@ public class AttributePathTest {
         exampleDataB.stringAttribute.set("1234");
         exampleDataA.referenceAttribute.set(exampleDataB);
 
-        Assertions.assertEquals("1234", PathBuilder.value(String.class).pathElement("referenceAttribute").attribute("stringAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build()));
-    }
+        Assertions.assertEquals("1234", PathBuilder.<String>value().pathElement("referenceAttribute").attribute("stringAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueParser<>(ObjectMapperBuilder.build(),String.class)));
+}
 
     @Test
     public void test_resolve_string_root_attribute(){
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.stringAttribute.set("1234");
-        assertEquals("1234",PathBuilder.value(String.class).attribute("stringAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build()));
+        assertEquals("1234",PathBuilder.<String>value().attribute("stringAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueParser<>(ObjectMapperBuilder.build(),String.class)));
     }
 
     @Test
@@ -49,7 +51,7 @@ public class AttributePathTest {
         exampleDataA.referenceAttribute.set(exampleDataB);
 
 
-        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build());
+        ExampleDataB referenceAttribute = PathBuilder.<ExampleDataB>value().attribute("referenceAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueParser<>(ObjectMapperBuilder.build(),ExampleDataB.class));
         assertEquals("1234", referenceAttribute.stringAttribute.get());
     }
 
@@ -59,7 +61,7 @@ public class AttributePathTest {
         exampleDataA.referenceAttribute.set(null);
 
 
-        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build());
+        ExampleDataB referenceAttribute = PathBuilder.<ExampleDataB>value().attribute("referenceAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueParser<>(ObjectMapperBuilder.build(),ExampleDataB.class));
         assertNull(referenceAttribute);
     }
 
@@ -78,7 +80,7 @@ public class AttributePathTest {
         DataJsonNode root = new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA));
 
 
-        ExampleDataA referenceAttribute = PathBuilder.value(ExampleDataA.class).pathElement("referenceAttribute").attribute("referenceAttribute").resolveAttributeValue(root,ObjectMapperBuilder.build());
+        ExampleDataA referenceAttribute = PathBuilder.<ExampleDataA>value().pathElement("referenceAttribute").attribute("referenceAttribute").resolveAttributeValue(root,new AttributeValueParser<>(ObjectMapperBuilder.build(),ExampleDataA.class));
         assertEquals("1234", referenceAttribute.stringAttribute.get());
     }
 
@@ -94,7 +96,7 @@ public class AttributePathTest {
 
         dictionary.markRemovedAttributes();
 
-        assertTrue(PathBuilder.value(ExampleDataA.class).attribute("garbage").isPathToRemovedAttribute(dictionary, createDataJsonNode(root)));
+        assertTrue(PathBuilder.<ExampleDataA>value().attribute("garbage").isPathToRemovedAttribute(dictionary, createDataJsonNode(root)));
     }
 
     @Test
@@ -108,7 +110,7 @@ public class AttributePathTest {
 
         dictionary.markRemovedAttributes();
 
-        assertTrue(PathBuilder.value(ExampleDataA.class).attribute("garbage").isPathToRemovedAttribute(dictionary, createDataJsonNode(root)));
+        assertTrue(PathBuilder.<ExampleDataA>value().attribute("garbage").isPathToRemovedAttribute(dictionary, createDataJsonNode(root)));
     }
 
     @Test
@@ -119,7 +121,7 @@ public class AttributePathTest {
         exampleDataA.referenceListAttribute.add(new ExampleDataB());
         exampleDataA.referenceListAttribute.add(exampleDataB);
 
-        assertEquals("1234",PathBuilder.value(String.class).pathElement("referenceListAttribute",1).attribute("stringAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build()));
+        assertEquals("1234",PathBuilder.<String>value().pathElement("referenceListAttribute",1).attribute("stringAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueParser<>(ObjectMapperBuilder.build(),String.class)));
     }
 
     public static class PathFactoryExample extends SimpleFactoryBase<Object,PathFactoryExample> {
@@ -156,8 +158,8 @@ public class AttributePathTest {
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(dataStorageMetadataDictionaryFromRoot));
 
 
-        Assertions.assertFalse(new PathBuilder<>(ErrorPrinterFactory.class).pathElement("reference").attribute("ref2").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
-        Assertions.assertTrue(new PathBuilder<>(ErrorPrinterFactory.class).pathElement("reference").attribute("ref2Old").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
+        Assertions.assertFalse(new PathBuilder<ErrorPrinterFactory>().pathElement("reference").attribute("ref2").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
+        Assertions.assertTrue(new PathBuilder<ErrorPrinterFactory>().pathElement("reference").attribute("ref2Old").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
     }
 
     public static class PolymorphicFactoryExample extends SimpleFactoryBase<Object,PolymorphicFactoryExample> {
@@ -189,8 +191,8 @@ public class AttributePathTest {
         dataStorageMetadataDictionaryFromRoot.renameAttribute(AttributePrinterFactory.class.getName(),"attribute","attributeOld");
         dataStorageMetadataDictionaryFromRoot.markRemovedAttributes();
 
-        Assertions.assertTrue(new PathBuilder<>(ErrorPrinterFactory.class).pathElement("polyreference").attribute("attributeOld").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
-        Assertions.assertFalse(new PathBuilder<>(ErrorPrinterFactory.class).pathElement("polyreference").attribute("attribute").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
+        Assertions.assertTrue(new PathBuilder<ErrorPrinterFactory>().pathElement("polyreference").attribute("attributeOld").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
+        Assertions.assertFalse(new PathBuilder<ErrorPrinterFactory>().pathElement("polyreference").attribute("attribute").isPathToRemovedAttribute(dataStorageMetadataDictionaryFromRoot,createDataJsonNode(root)));
     }
 
     private DataJsonNode createDataJsonNode(FactoryBase<?,?> factory){
@@ -207,8 +209,8 @@ public class AttributePathTest {
         exampleDataA.referenceListAttribute.add(exampleDataB);
 
 
-        ExampleDataB referenceAttribute = PathBuilder.value(ExampleDataB.class).attribute("referenceListAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build());
-        assertEquals("1234", referenceAttribute.stringAttribute.get());
+        List<ExampleDataB> referenceAttribute = PathBuilder.<List<ExampleDataB>>value().attribute("referenceListAttribute").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueListParser<>(new AttributeValueParser<>(ObjectMapperBuilder.build(),ExampleDataB.class)));
+        assertEquals("1234", referenceAttribute.get(0).stringAttribute.get());
     }
 
     @Test
@@ -225,7 +227,7 @@ public class AttributePathTest {
             exampleDataA.referenceListAttribute.add(exampleDataB);
         }
 
-        ExampleDataB exampleDataResolved = PathBuilder.of(ExampleDataB.class,"referenceListAttribute[1]").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build());
+        ExampleDataB exampleDataResolved = PathBuilder.<ExampleDataB>of("referenceListAttribute[1]").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueParser<>(ObjectMapperBuilder.build(),ExampleDataB.class));
         assertEquals("2222", exampleDataResolved.stringAttribute.get());
     }
 
@@ -239,7 +241,7 @@ public class AttributePathTest {
             exampleDataA.referenceListAttribute.add(exampleDataB);
         }
 
-        ExampleDataB exampleDataResolved = PathBuilder.of(ExampleDataB.class,"referenceListAttribute[1]").resolveAttributeValue(createDataJsonNode(exampleDataA),ObjectMapperBuilder.build());
+        ExampleDataB exampleDataResolved = PathBuilder.<ExampleDataB>of("referenceListAttribute[1]").resolveAttributeValue(createDataJsonNode(exampleDataA),new AttributeValueParser<>(ObjectMapperBuilder.build(),ExampleDataB.class));
         assertEquals("1111", exampleDataResolved.stringAttribute.get());
     }
 

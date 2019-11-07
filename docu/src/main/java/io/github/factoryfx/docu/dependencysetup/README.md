@@ -1,12 +1,26 @@
 # Gradle example dependency setups
 
-#### minimal server
+## minimal server
 ```groovy
 compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
 ```
-#### [initializr](./../initializr) (code generator for initial project setup)  
+### [initializr](./../initializr) (code generator for initial project setup)  
 ```groovy
 compile(group: 'io.github.factoryfx', name: 'starter', version: factoryfxVersion)
+```
+
+## Common configurations
+
+#### http server
+```groovy
+compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'jettyFactory', version: factoryfxVersion)
+```
+
+#### http server with runtime configuration update API
+```groovy
+compile(group: 'io.github.factoryfx', name: 'factory', version: factoryfxVersion)
+compile(group: 'io.github.factoryfx', name: 'microserviceRestServer', version: factoryfxVersion)
 ```
 
 #### postgres storage with javafx gui

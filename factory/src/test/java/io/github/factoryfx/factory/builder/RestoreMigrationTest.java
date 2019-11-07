@@ -114,8 +114,8 @@ public class RestoreMigrationTest {
             builder.addFactory(ClientSystemFactory.class, Scope.SINGLETON);
             Microservice<Void, ServerFactory> msNew = builder.microservice().withFilesystemStorage(folder).
                 withRenameAttributeMigration(ClientSystemFactory.class, "url", (c) -> c.clientUrl).
-                withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory1").attribute("url"), (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v)).
-                withRestoreAttributeMigration(PathBuilder.value(String.class).pathElement("partnerFactory2").attribute("url"), (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v)).
+                withRestoreAttributeMigration(String.class, PathBuilder.of("partnerFactory1.url"), (r, v) -> r.clientSystemFactory1.get().partnerUrl.set(v)).
+                withRestoreAttributeMigration(String.class, (path)->path.pathElement("partnerFactory2").attribute("url"), (r, v) -> r.clientSystemFactory2.get().partnerUrl.set(v)).
             build();
             msNew.start();
 

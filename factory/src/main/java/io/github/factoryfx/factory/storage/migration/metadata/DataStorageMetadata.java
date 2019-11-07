@@ -1,9 +1,12 @@
 package io.github.factoryfx.factory.storage.migration.metadata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.ReferenceBaseAttribute;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
 
@@ -70,6 +73,7 @@ public class DataStorageMetadata {
         return false;
     }
 
+    @JsonIgnore
     public boolean isSingleton(){
         return count==1;
     }
@@ -101,6 +105,7 @@ public class DataStorageMetadata {
         }
     }
 
+
     @SuppressWarnings("unchecked")
     public void markRemovedAttributes(){
         try {
@@ -120,16 +125,33 @@ public class DataStorageMetadata {
                 attribute.markRemoved();
             }
         }
-
     }
 
+    @SuppressWarnings("unchecked")
+    public void markRetypedAttributes(){
+        try {
+            Class aClass = Class.forName(className);
+            FactoryMetadata metadata = FactoryMetadataManager.getMetadata(aClass);
+            FactoryBase<?,?> factory = metadata.newInstance();
+            metadata.addBackReferencesAndReferenceClassToAttributes(factory,null);
 
-    public boolean isReferenceAttribute(String attributeName) {
-        AttributeStorageMetadata attribute = getAttribute(attributeName);
-        if (attribute!=null) {
-            return attribute.isReference();
+
+            factory.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+                AttributeStorageMetadata attributeMetadata = getAttribute(attributeVariableName);
+                if (!attributeMetadata.attributeClassName.equals(attribute.getClass().getName())){
+                    attributeMetadata.markRetyped();
+                }
+
+                if (attribute instanceof ReferenceBaseAttribute){
+                    if (!attributeMetadata.referenceClass.equals(((ReferenceBaseAttribute)attribute).internal_getReferenceClass().getName())) {
+                        attributeMetadata.markRetyped();
+                    }
+                }
+            });
+
+        } catch (ClassNotFoundException e) {
+            //nothing
         }
-        return false;
     }
 
     public DataStorageMetadata getChild(String attribute, DataStorageMetadataDictionary dictionary) {

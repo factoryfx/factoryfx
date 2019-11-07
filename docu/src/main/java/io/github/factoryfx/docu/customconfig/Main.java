@@ -1,10 +1,9 @@
 package io.github.factoryfx.docu.customconfig;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
-import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
@@ -22,14 +21,15 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.ERROR);
 
-        FactoryTreeBuilder< Server, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<ServerFactory>()
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) ->
+                jetty
                 .withHost("localhost").withPort(8005)
-                .withResource(ctx.get(CustomConfigurationResourceFactory.class)).build());
+                .withResource(ctx.get(CustomConfigurationResourceFactory.class))
+        );
+
         builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
 
-
-        Microservice<Server, ServerFactory> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
         microservice.start();
 
         ping(8005);

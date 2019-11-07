@@ -13,8 +13,12 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     private final List<FactoryCreator<?,R>> factoryCreators = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    public <L, F extends FactoryBase<?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
-        return factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
+    public <F extends FactoryBase<?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
+        F factory = factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
+        if (factory!=null){
+            factory.internal().markAsCreatedWithBuilderTemplate();
+        }
+        return factory;
     }
 
     /*check if factory is available, used to and create improved error message*/
@@ -33,10 +37,18 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return get(fc -> fc.match(clazz,null));
     }
 
+    public <F extends FactoryBase<?,R>> F get(String name){
+        F result = get(fc -> fc.match(null,name));
+        if (result==null){
+            throw new IllegalStateException("builder missing, name: "+name);
+        }
+        return result;
+    }
+
     public <F extends FactoryBase<?,R>> F get(Class<F> clazz){
         F result = get(fc -> fc.match(clazz,null));
         if (result==null){
-           throw new IllegalStateException("builder missing Factory: "+clazz);
+            throw new IllegalStateException("builder missing, factory: "+clazz);
         }
         return result;
     }
@@ -44,16 +56,23 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     public <F extends FactoryBase<?,R>> F getUnsafe(Class<?> clazz){
         F result = get(fc -> fc.match(clazz,null));
         if (result==null){
-            throw new IllegalStateException("builder missing Factory: "+clazz);
+            throw new IllegalStateException("builder missing, factory: "+clazz);
         }
         return result;
     }
 
-
     public <F extends FactoryBase<?,R>> F get(Class<F> clazz, String name){
         F result = get(fc -> fc.match(clazz,name));
         if (result==null){
-            throw new IllegalStateException("builder missing Factory: "+clazz + "and name: "+name);
+            throw new IllegalStateException("builder missing, factory: "+clazz+ " name: "+name);
+        }
+        return result;
+    }
+
+    public <F extends FactoryBase<?,R>> F get(FactoryTemplateId<R,F> factoryTemplateId){
+        F result = get(fc -> fc.match(factoryTemplateId.clazz,factoryTemplateId.name));
+        if (result==null){
+            throw new IllegalStateException("builder missing, factory: "+factoryTemplateId.clazz+ " name: "+factoryTemplateId.name);
         }
         return result;
     }
@@ -108,5 +127,11 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
             throw new IllegalStateException("builder missing Factory: "+clazz);
         }
         return result;
+    }
+
+    public void reset() {
+        for (FactoryCreator<?, R> creator : factoryCreators) {
+            creator.reset();
+        }
     }
 }

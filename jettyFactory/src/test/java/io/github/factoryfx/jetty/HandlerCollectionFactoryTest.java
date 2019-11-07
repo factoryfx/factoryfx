@@ -1,6 +1,7 @@
 package io.github.factoryfx.jetty;
 
 import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.PolymorphicFactoryBase;
@@ -8,6 +9,8 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -73,14 +76,13 @@ public class HandlerCollectionFactoryTest {
     }
 
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test_add_handler_no_exception() {
         FactoryTreeBuilder<Server, HandlerCollectionRootFactory> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<HandlerCollectionRootFactory>()
-                    .withHost("localhost").withPort(8087).build();
-        });
+        builder.addBuilder(ctx->
+            new SimpleJettyServerBuilder<Server, HandlerCollectionRootFactory>()
+                        .withHost("localhost").withPort(8087)
+        );
 
 
         Microservice<Server, HandlerCollectionRootFactory> microservice = builder.microservice().build();
@@ -100,11 +102,11 @@ public class HandlerCollectionFactoryTest {
     @Test
     public void test_remove_handler() {
         FactoryTreeBuilder<Server, HandlerCollectionRootFactory> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<HandlerCollectionRootFactory>()
-                    .withResource(ctx.get(HandlerCollectionResourceFactory.class))
-                    .withHost("localhost").withPort(8087).build();
-        });
+        builder.addBuilder(ctx->new SimpleJettyServerBuilder<Server, HandlerCollectionRootFactory>()
+                .withHost("localhost").withPort(8087).withResource(ctx.get(HandlerCollectionResourceFactory.class))
+        );
+
+
         builder.addFactory(HandlerCollectionResourceFactory.class, Scope.SINGLETON);
 
 

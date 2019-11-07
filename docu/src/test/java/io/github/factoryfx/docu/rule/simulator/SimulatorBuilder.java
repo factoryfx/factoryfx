@@ -2,22 +2,19 @@ package io.github.factoryfx.docu.rule.simulator;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 
 public class SimulatorBuilder {
     public FactoryTreeBuilder<Server, SimulatorRootFactory> builder(){
-        FactoryTreeBuilder<Server, SimulatorRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(SimulatorRootFactory.class);
-
-        factoryTreeBuilder.addFactory(HelloJettyServerFactory.class, Scope.SINGLETON, context -> {
-            return new JettyServerBuilder<SimulatorRootFactory>()
+        FactoryTreeBuilder<Server, SimulatorRootFactory> builder = new FactoryTreeBuilder<>(SimulatorRootFactory.class);
+        builder.addBuilder(ctx->
+            new SimpleJettyServerBuilder<Server, SimulatorRootFactory>()
                     .withHost("localhost").withPort(18089)
-                    .withResource(context.get(HelloResourceFactory.class)).buildTo(new HelloJettyServerFactory());
-
-        });
-
-        factoryTreeBuilder.addFactory(HelloResourceFactory.class, Scope.SINGLETON);
-
-        return factoryTreeBuilder;
+                    .withResource(ctx.get(HelloResourceFactory.class))
+        );
+        builder.addFactory(HelloResourceFactory.class, Scope.SINGLETON);
+        return builder;
     }
 }

@@ -10,11 +10,15 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.exception.FactoryExceptionHandler;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributeValueParser;
+import io.github.factoryfx.factory.storage.migration.datamigration.PathBuilder;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.factory.storage.migration.datamigration.AttributePathTarget;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 
@@ -28,7 +32,6 @@ import java.util.function.Function;
  */
 public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
 
-    private final Class<R> rootClass;
     private final R initialFactory;
     private DataStorageCreator<R> dataStorageCreator;
     private FactoryExceptionHandler factoryExceptionHandler;
@@ -37,7 +40,6 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
     private final FactoryTreeBuilder<L,R> factoryTreeBuilder;
 
     public MicroserviceBuilder(Class<R> rootClass, R initialFactory, FactoryTreeBuilder<L,R> factoryTreeBuilder, SimpleObjectMapper objectMapper) {
-        this.rootClass = rootClass;
         this.initialFactory = initialFactory;
         migrationManager = new MigrationManager<>(rootClass, objectMapper, new FactoryTreeBuilderAttributeFiller<>(factoryTreeBuilder));
         this.objectMapper = objectMapper;
@@ -124,13 +126,42 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
     /**
      * restore data from removed data/attributes into the current model
      * select data based on path
+     * @param clazz value class
      * @param path path
      * @param setter setter
      * @param <AV> attribute value
      * @return builder
      */
-    public <AV> MicroserviceBuilder<L,R>  withRestoreAttributeMigration(AttributePathTarget<AV> path, BiConsumer<R,AV> setter){
-        this.migrationManager.restoreAttribute(path,setter);
+    public <AV> MicroserviceBuilder<L,R>  withRestoreAttributeMigration(Class<AV> clazz, AttributePathTarget<AV> path, BiConsumer<R,AV> setter){
+        this.migrationManager.restoreAttribute(clazz,path,setter);
+        return this;
+    }
+
+    /** @see #withRestoreAttributeMigration(Class, AttributePathTarget, BiConsumer)
+     *
+     * @param clazz value class
+     * @param pathCreator workaround for generics problems e.g.: (path)->path.pathElement("x").attribute("attribute")
+     * @param setter setter
+     * @param <AV> attribute value
+     * @return builder
+     */
+    public <AV> MicroserviceBuilder<L,R>  withRestoreAttributeMigration(Class<AV> clazz, Function<PathBuilder<AV>,AttributePathTarget<AV>> pathCreator, BiConsumer<R,AV> setter){
+        PathBuilder<AV> pathBuilder = new PathBuilder<>();
+        this.migrationManager.restoreAttribute(clazz, pathCreator.apply(pathBuilder),setter);
+        return this;
+    }
+
+    /**
+     * restore data from removed list data/attributes into the current model
+     * select data based on path
+     * @param clazz value class
+     * @param path path
+     * @param setter setter
+     * @param <AV> attribute value
+     * @return builder
+     */
+    public <AV> MicroserviceBuilder<L,R>  withRestoreListAttributeMigration(Class<AV> clazz, AttributePathTarget<List<AV>> path, BiConsumer<R, List<AV>> setter){
+        this.migrationManager.restoreListAttribute(clazz,path,setter);
         return this;
     }
 

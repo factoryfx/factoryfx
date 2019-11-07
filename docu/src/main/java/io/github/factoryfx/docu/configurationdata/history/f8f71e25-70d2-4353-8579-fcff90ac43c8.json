@@ -1,0 +1,111 @@
+{
+  "@class" : "io.github.factoryfx.jetty.builder.JettyServerRootFactory",
+  "id" : "3e087f48-cd97-fd14-5ff5-2657430b766d",
+  "connectors" : [ {
+    "@class" : "io.github.factoryfx.jetty.HttpServerConnectorFactory",
+    "id" : "8bc6f72a-a3a6-9ca5-f215-fa7fa1a935f8",
+    "host" : {
+      "v" : "localhost"
+    },
+    "port" : {
+      "v" : 8005
+    },
+    "ssl" : { }
+  } ],
+  "handler" : {
+    "v" : {
+      "@class" : "io.github.factoryfx.jetty.HandlerCollectionFactory",
+      "id" : "4a168580-a2b0-2e6d-5056-6f8de5c90a65",
+      "handlers" : [ {
+        "@class" : "io.github.factoryfx.jetty.GzipHandlerFactory",
+        "id" : "82797403-cf17-f11c-e850-bae3290c84c4",
+        "minGzipSize" : {
+          "v" : 0
+        },
+        "compressionLevel" : {
+          "v" : -1
+        },
+        "deflaterPoolCapacity" : {
+          "v" : -1
+        },
+        "dispatcherTypes" : [ "REQUEST" ],
+        "excludedAgentPatterns" : [ ],
+        "excludedMethods" : [ ],
+        "excludedMimeTypes" : [ ],
+        "excludedPaths" : [ ],
+        "includedAgentPatterns" : [ ],
+        "includedMethods" : [ ],
+        "includedMimeTypes" : [ ],
+        "includedPaths" : [ ],
+        "inflateBufferSize" : {
+          "v" : -1
+        },
+        "syncFlush" : {
+          "v" : false
+        }
+      }, {
+        "@class" : "io.github.factoryfx.jetty.ServletContextHandlerFactory",
+        "id" : "b77e064e-7c3d-f15b-9005-54ac585c5dc1",
+        "updatableRootServlet" : {
+          "v" : {
+            "@class" : "io.github.factoryfx.jetty.UpdateableServletFactory",
+            "id" : "86d967ce-a46f-2b0c-53a2-ea1c28822cdc",
+            "servletAndPaths" : [ {
+              "@class" : "io.github.factoryfx.jetty.ServletAndPathFactory",
+              "id" : "8d1e18cc-e171-36c8-e2c8-52c473570e0f",
+              "pathSpec" : {
+                "v" : "/*"
+              },
+              "servlet" : {
+                "v" : {
+                  "@class" : "io.github.factoryfx.jetty.JerseyServletFactory",
+                  "id" : "629fbd87-f2cb-d437-2d8b-ee5c1ad4a643",
+                  "objectMapper" : {
+                    "v" : {
+                      "@class" : "io.github.factoryfx.factory.AttributelessFactory",
+                      "id" : "46a23b9d-c570-45a1-c774-9ac31dcd7b05",
+                      "clazz" : "io.github.factoryfx.jetty.DefaultObjectMapper"
+                    }
+                  },
+                  "restLogging" : {
+                    "v" : {
+                      "@class" : "io.github.factoryfx.factory.AttributelessFactory",
+                      "id" : "8292c9b0-9a42-50c5-01fd-86441fa69179",
+                      "clazz" : "io.github.factoryfx.jetty.Slf4LoggingFeature"
+                    }
+                  },
+                  "additionalJaxrsComponents" : [ ],
+                  "resources" : [ {
+                    "@class" : "io.github.factoryfx.docu.configurationdata.SpecificMicroserviceResource",
+                    "id" : "19cfd546-1cef-f8e9-5a0e-621b0b97888e",
+                    "userManagement" : { }
+                  }, {
+                    "@class" : "io.github.factoryfx.docu.configurationdata.DatabaseResourceFactory",
+                    "id" : "236ee2f0-3dc2-4632-6265-b9376295a273",
+                    "url" : {
+                      "v" : "jdbc:postgresql://host/database"
+                    },
+                    "user" : {
+                      "v" : "user"
+                    },
+                    "password" : {
+                      "v" : "123"
+                    }
+                  } ],
+                  "exceptionMapper" : {
+                    "v" : {
+                      "@class" : "io.github.factoryfx.factory.AttributelessFactory",
+                      "id" : "70bdccad-70e2-ae35-d08b-6f402c617149",
+                      "clazz" : "io.github.factoryfx.jetty.AllExceptionMapper"
+                    }
+                  }
+                }
+              }
+            } ]
+          }
+        }
+      } ]
+    }
+  },
+  "threadPool" : { }
+}

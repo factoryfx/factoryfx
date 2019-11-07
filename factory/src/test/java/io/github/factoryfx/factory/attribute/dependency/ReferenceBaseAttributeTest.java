@@ -26,7 +26,6 @@ public class ReferenceBaseAttributeTest {
         FactoryAttribute<Void,GenericData<String>> test1 = new FactoryAttribute<>();
         AttributeStorageMetadata attributeStorageMetadata = test1.createAttributeStorageMetadata("bla");
         AttributeStorageMetadata attributeStorageMetadata2 = test1.createAttributeStorageMetadata("bla");
-        Assertions.assertTrue(attributeStorageMetadata.isReference());
         Assertions.assertTrue(attributeStorageMetadata.match(attributeStorageMetadata2));
     }
 

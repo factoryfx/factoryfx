@@ -1,12 +1,9 @@
 package io.github.factoryfx.factory.attribute.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 
-import java.util.HashMap;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 /**

@@ -2,18 +2,17 @@ package io.github.factoryfx.docu.rule.server;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
     public FactoryTreeBuilder<Server, ServerRootFactory> builder(){
         FactoryTreeBuilder<Server, ServerRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
-
-        factoryTreeBuilder.addFactory(GreetingsJettyServerFactory.class, Scope.SINGLETON, context ->
-                new JettyServerBuilder<ServerRootFactory>()
+        factoryTreeBuilder.addBuilder(ctx->
+                new SimpleJettyServerBuilder<Server,ServerRootFactory>()
                         .withHost("localhost").withPort(8089)
-                        .withResource(context.get(GreetingsResourceFactory.class))
-                        .buildTo(new GreetingsJettyServerFactory()));
+                        .withResource(ctx.get(GreetingsResourceFactory.class)));
 
         factoryTreeBuilder.addFactory(GreetingsResourceFactory.class, Scope.SINGLETON, context -> {
             GreetingsResourceFactory greetingsResourceFactory = new GreetingsResourceFactory();

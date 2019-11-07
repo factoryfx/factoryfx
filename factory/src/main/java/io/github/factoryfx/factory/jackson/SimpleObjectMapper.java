@@ -2,8 +2,10 @@ package io.github.factoryfx.factory.jackson;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.FactoryBase;
@@ -106,6 +108,14 @@ public class SimpleObjectMapper {
     public <T> T treeToValue(JsonNode jsonNode, Class<T> rootClass) {
         try {
             return objectMapper.treeToValue(jsonNode,rootClass);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <T> List<T> treeToValueList(JsonNode jsonNode, Class<T> rootClass) {
+        try {
+            return objectMapper.readValue(objectMapper.treeAsTokens(jsonNode),objectMapper.getTypeFactory().constructCollectionType(List.class, rootClass));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

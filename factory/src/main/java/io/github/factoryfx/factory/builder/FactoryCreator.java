@@ -1,58 +1,51 @@
 package io.github.factoryfx.factory.builder;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 
 import io.github.factoryfx.factory.FactoryBase;
 
 public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R>> {
-    private final Class<F> clazz;
+    private final FactoryTemplateId<R,F> templateId;
     private final Scope scope;
     private final Function<FactoryContext<R>, F> creator;
-    private final String name;
 
-    public FactoryCreator(Class<F> clazz,String name, Scope scope, Function<FactoryContext<R>, F> creator) {
-        this.clazz = clazz;
+
+    public FactoryCreator(FactoryTemplateId<R,F> templateId, Scope scope, Function<FactoryContext<R>, F> creator) {
+        this.templateId = templateId;
         this.scope = scope;
         this.creator = creator;
-        this.name=name;
     }
 
     @Override
     public String toString() {
-        return "FactoryCreator{" + "clazz=" + clazz + ", name='" + name + '\'' + '}';
+        return "FactoryCreator{" + "clazz=" + templateId.clazz + ", name='" + templateId.name + '\'' + '}';
     }
 
     public boolean match(Class<?> clazzMatch,String name) {
-        return clazz==clazzMatch && Objects.equals(this.name,name);
+        return templateId.match(clazzMatch, name);
     }
 
     public boolean match(Class<?> clazzMatch) {
-        return clazz==clazzMatch;
+        return templateId.match(clazzMatch);
     }
     public boolean isDuplicate(FactoryCreator factoryCreator){
-        if (name==null && factoryCreator.name==null) {
-            return clazz==factoryCreator.clazz;
-        }
-        if (name==null){
-            return false;
-        }
-        return clazz==factoryCreator.clazz && name.equals(factoryCreator.name);
+        return templateId.isDuplicate(factoryCreator.templateId);
     }
 
-    F factory;
+    private F factory;
     public F create(FactoryContext<R> context) {
+        F result = null;
         if (scope==Scope.PROTOTYPE){
-            return creator.apply(context);
+            result = creator.apply(context);
         } else {
             if (factory==null){
                 factory=creator.apply(context);
-                factory.internal().setTreeBuilderName(name);
             }
-            return factory;
+            result=factory;
         }
-
+        templateId.serializeTo(result);
+        return result;
     }
 
     public Scope getScope() {
@@ -66,13 +59,17 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
     @SuppressWarnings("unchecked")
     public void fillFromExistingFactoryTree(Map<FactoryCreatorIdentifier, FactoryBase<?,?>> classToFactory) {
         if (scope==Scope.SINGLETON) {
-            factory= (F) classToFactory.get(new FactoryCreatorIdentifier(clazz,name));
+            factory= (F) classToFactory.get(new FactoryCreatorIdentifier(templateId.clazz,templateId.name));
         }
     }
 
     public F createNew(FactoryContext<R> context) {
         factory=creator.apply(context);
-        factory.internal().setTreeBuilderName(name);
+        factory.internal().setTreeBuilderName(templateId.name);
         return factory;
+    }
+
+    public void reset() {
+        factory=null;
     }
 }

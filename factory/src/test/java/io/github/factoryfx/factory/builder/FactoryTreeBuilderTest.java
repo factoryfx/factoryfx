@@ -484,4 +484,15 @@ public class FactoryTreeBuilderTest {
         assertEquals("bla", root.referenceListAttribute.get(2).stringAttribute.get());
     }
 
+    @Test
+    public void test_warning(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceAttribute.set(new ExampleFactoryB());
+            return factory;
+        });
+        ExampleFactoryA root = factoryTreeBuilder.buildTree();
+
+    }
+
 }

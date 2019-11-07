@@ -33,7 +33,7 @@ public class DefaultCreatorTest {
     @Test
     @SuppressWarnings("unchecked")
     public void test_ParametrizedObjectCreatorAttribute(){
-        DefaultCreator<Void,ParametrizedTestFactory,ParametrizedTestFactory> defaultCreator = new DefaultCreator<>(ParametrizedTestFactory.class);
+        DefaultCreator<ParametrizedTestFactory,ParametrizedTestFactory> defaultCreator = new DefaultCreator<>(ParametrizedTestFactory.class);
 
         FactoryContext<ParametrizedTestFactory> mock = Mockito.mock(FactoryContext.class);
         DummyCreatorFactory value = new DummyCreatorFactory();
@@ -61,7 +61,7 @@ public class DefaultCreatorTest {
     @Test
     public void test_missing_factory(){
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            DefaultCreator<ExampleLiveObjectA, ExampleFactoryANotNullable, ExampleFactoryANotNullable> defaultCreator = new DefaultCreator<>(ExampleFactoryANotNullable.class);
+            DefaultCreator<ExampleFactoryANotNullable, ExampleFactoryANotNullable> defaultCreator = new DefaultCreator<>(ExampleFactoryANotNullable.class);
             defaultCreator.apply(new FactoryContext<>());
         });
     }
@@ -79,7 +79,7 @@ public class DefaultCreatorTest {
 
     @Test
     public void test_missing_factory_nullable(){
-        DefaultCreator<ExampleLiveObjectA,ExampleFactoryNullableRef,ExampleFactoryNullableRef> defaultCreator = new DefaultCreator<>(ExampleFactoryNullableRef.class);
+        DefaultCreator<ExampleFactoryNullableRef,ExampleFactoryNullableRef> defaultCreator = new DefaultCreator<>(ExampleFactoryNullableRef.class);
         defaultCreator.apply(new FactoryContext<>());
     }
 

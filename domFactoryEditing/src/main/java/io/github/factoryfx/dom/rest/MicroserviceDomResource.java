@@ -9,7 +9,6 @@ import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.EncryptedString;
-import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
 import io.github.factoryfx.microservice.rest.MicroserviceResource;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.UserManagement;

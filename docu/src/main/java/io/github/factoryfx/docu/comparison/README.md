@@ -1,4 +1,26 @@
-# Comparison to other dependency injection frameworks
+# Comparison
+FactoryFX is a replacement for:
+* **manual dependency injection**
+  * Order independence
+  * Uniform application structure
+* **framework dependency injection (guava, spring, dagger)**
+  * Programmatic java API over annotations API
+  * Java first
+  * Fast startup (no classpath scanning)
+* **JConsole MBeans (runtime data/structure changes)**
+  * Lifecycle support
+  * Metadata for an end user presentable GUI (labels, validation)
+  * Multi-user editing
+* **Property files (text,xml,json or yaml)**
+  * Change history
+  * Change metadata (comment, user, date)
+  * Complex validation
+* **master data in database**
+  * Real data encapsulation in java
+  * Immutable business objects
+
+
+## Comparison to other dependency injection frameworks
 To implement dependency injection we need 2 layers of code.
 * the business logic which declares dependencies in the constructor
 * factory code which instantiates the business logic objects and provides the dependencies
@@ -13,13 +35,15 @@ This approach has some disadvantages:
 * Classpath scanning and reflection cause confusing stack traces
 * Slow startup
 
-## FactoryFX
+### FactoryFX
 As a replacement for annotations FactoryFX use a functional java api with factories. 
 The user creates factories following a simple structure convention. The factories also provide the dependencies and lifecycle control.
 
 The programmatic API has the following advantages:
-### Advantages:
+#### Advantages:
 * no reflection magic means easy to debug and no surprises at runtime
 * validation at compile-time
 * easy lifecycle control
 * no annotation DSL must be learned
+
+

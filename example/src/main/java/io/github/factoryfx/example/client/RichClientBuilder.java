@@ -6,7 +6,6 @@ import io.github.factoryfx.example.client.view.ConfigurationViewFactory;
 import io.github.factoryfx.example.client.view.DashboardViewFactory;
 import io.github.factoryfx.example.client.view.HistoryViewFactory;
 import io.github.factoryfx.example.client.view.ProductsViewFactory;
-import io.github.factoryfx.example.server.ServerRootFactory;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
@@ -29,6 +28,7 @@ import io.github.factoryfx.javafx.view.menu.ViewMenuItemFactory;
 import io.github.factoryfx.javafx.widget.factory.tree.DataTreeWidgetFactory;
 import io.github.factoryfx.javafx.widget.factory.masterdetail.DataViewWidgetFactory;
 import io.github.factoryfx.javafx.widget.factory.diffdialog.DiffDialogBuilderFactory;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientFactory;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -42,7 +42,7 @@ import java.util.Locale;
 public class RichClientBuilder {
 
     @SuppressWarnings("unchecked")
-    public static FactoryTreeBuilder<Stage,RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<Server, ServerRootFactory> serverRootFactoryFactoryTreeBuilder, MigrationManager<ServerRootFactory> serverMigrationManager) {
+    public static FactoryTreeBuilder<Stage,RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<Server, JettyServerRootFactory> serverRootFactoryFactoryTreeBuilder, MigrationManager<JettyServerRootFactory> serverMigrationManager) {
         FactoryTreeBuilder<Stage,RichClientRoot> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
@@ -91,7 +91,7 @@ public class RichClientBuilder {
         });
 
         factoryBuilder.addFactory(MicroserviceRestClientFactory.class, Scope.SINGLETON, context -> {
-            MicroserviceRestClientFactory<RichClientRoot, ServerRootFactory> restClient = new MicroserviceRestClientFactory<>();
+            MicroserviceRestClientFactory<RichClientRoot, JettyServerRootFactory> restClient = new MicroserviceRestClientFactory<>();
             restClient.host.set("localhost");
             restClient.port.set(adminServerPort);
             restClient.path.set(null);
@@ -113,7 +113,7 @@ public class RichClientBuilder {
 
             ConfigurationViewFactory configurationViewFactory = context.get(ConfigurationViewFactory.class);
 
-            FactoryEditViewFactory<ServerRootFactory> factoryEditViewFactory = (FactoryEditViewFactory<ServerRootFactory>)context.get(FactoryEditViewFactory.class);
+            FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = (FactoryEditViewFactory<JettyServerRootFactory>)context.get(FactoryEditViewFactory.class);
             factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
             viewFactory.widget.set(factoryEditViewFactory);
 
@@ -171,7 +171,7 @@ public class RichClientBuilder {
 
             ProductsViewFactory configurationViewFactory = context.get(ProductsViewFactory.class);
 
-            FactoryEditViewFactory<ServerRootFactory> factoryEditViewFactory = (FactoryEditViewFactory<ServerRootFactory>)context.get(FactoryEditViewFactory.class);
+            FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = (FactoryEditViewFactory<JettyServerRootFactory>)context.get(FactoryEditViewFactory.class);
             factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
             viewFactory.widget.set(factoryEditViewFactory);
 
@@ -184,7 +184,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(ProductsViewFactory.class,Scope.SINGLETON);
 
         factoryBuilder.addFactory(FactoryEditViewFactory.class,Scope.PROTOTYPE, context ->{
-            FactoryEditViewFactory<ServerRootFactory> factoryEditViewFactory = new FactoryEditViewFactory<>();
+            FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = new FactoryEditViewFactory<>();
             factoryEditViewFactory.factoryEditManager.set(context.get(FactoryEditManagerFactory.class));
             factoryEditViewFactory.longRunningActionExecutor.set(context.get(LongRunningActionExecutorFactory.class));
             factoryEditViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
@@ -202,8 +202,8 @@ public class RichClientBuilder {
 
     }
 
-    private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<ServerRootFactory> {
-        private final MigrationManager<ServerRootFactory> serverMigrationManager;
+    private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<JettyServerRootFactory> {
+        private final MigrationManager<JettyServerRootFactory> serverMigrationManager;
 
         static {
             FactoryMetadataManager.getMetadata(RichClientFactorySerialisationManagerFactory.class).setNewCopyInstanceSupplier(
@@ -211,12 +211,12 @@ public class RichClientBuilder {
             );
         }
 
-        private RichClientFactorySerialisationManagerFactory(MigrationManager<ServerRootFactory> serverMigrationManager) {
+        private RichClientFactorySerialisationManagerFactory(MigrationManager<JettyServerRootFactory> serverMigrationManager) {
             this.serverMigrationManager = serverMigrationManager;
         }
 
         @Override
-        protected MigrationManager<ServerRootFactory> createImpl() {
+        protected MigrationManager<JettyServerRootFactory> createImpl() {
             return serverMigrationManager;
         }
     }

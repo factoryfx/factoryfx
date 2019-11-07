@@ -31,9 +31,9 @@ import com.google.common.io.ByteStreams;
 import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.client.ClientConfig;
@@ -59,15 +59,6 @@ public class JettyServerTest {
         }
     }
 
-    public static class JettyServerRootFactory extends SimpleFactoryBase<Server, JettyServerRootFactory>{
-        public final FactoryAttribute<Server,JettyServerFactory<JettyServerRootFactory>> server = new FactoryAttribute<>();
-
-        @Override
-        protected Server createImpl() {
-            return server.instance();
-        }
-    }
-
     @BeforeAll
     public static void setup(){
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -77,12 +68,10 @@ public class JettyServerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_change_port() {
-        FactoryTreeBuilder<Server, JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8087)
-                    .withResource(ctx.get(Resource1Factory.class)).build();
-        });
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)-> jetty.
+                withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+        );
+
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
@@ -100,7 +89,7 @@ public class JettyServerTest {
             }
 
             DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
-            update.root.server.get().connectors.get(0).port.set(8081);
+            update.root.connectors.get(0).port.set(8081);
             microservice.updateCurrentFactory(update);
 
 
@@ -129,12 +118,12 @@ public class JettyServerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_remove_connector() {
-        FactoryTreeBuilder<Server, JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8087)
-                    .withResource(ctx.get(Resource1Factory.class)).build();
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class)
+            );
         });
+
+
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
         });
@@ -152,7 +141,7 @@ public class JettyServerTest {
             }
 
             DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
-            update.root.server.get().connectors.clear();
+            update.root.connectors.clear();
             microservice.updateCurrentFactory(update);
 
 
@@ -194,15 +183,12 @@ public class JettyServerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
-
-        FactoryTreeBuilder<Server, JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8015)
-                    .withResource(new LateResponseTestResourceFactory()).build();
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8015).withResource(ctx.get(LateResponseTestResourceFactory.class)
+            );
         });
-        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
-            return new Resource1Factory();
+        builder.addFactory(LateResponseTestResourceFactory.class, Scope.SINGLETON, ctx -> {
+            return new LateResponseTestResourceFactory();
         });
         Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
 
@@ -223,7 +209,7 @@ public class JettyServerTest {
             }.start();
             Thread.sleep(200);
             DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
-            update.root.server.get().clearResource(LateResponseTestResourceFactory.class);
+            update.root.clearResource(LateResponseTestResourceFactory.class);
             microservice.updateCurrentFactory(update);
             try {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -280,7 +266,7 @@ public class JettyServerTest {
 
     }
 
-    public static final class MessageBodyReaderWriterEchoFactory extends SimpleFactoryBase<MessageBodyReaderWriterEcho,JettyServerRootFactory> {
+    public static final class MessageBodyReaderWriterEchoFactory extends SimpleFactoryBase<MessageBodyReaderWriterEcho, JettyServerRootFactory> {
         @Override
         protected MessageBodyReaderWriterEcho createImpl() {
             return new MessageBodyReaderWriterEcho();
@@ -290,14 +276,12 @@ public class JettyServerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testMessageBodyReader() {
-        FactoryTreeBuilder<Server, JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx->{
-            return new JettyServerBuilder<JettyServerRootFactory>()
-                    .withHost("localhost").withPort(8015)
-                    .withResource(ctx.get(MessageBodyReaderWriterEchoFactory.class))
-                    .withJaxrsComponent(AttributelessFactory.create(SomeMessageBodyReaderWriter.class))
-                    .build();
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8015).withResource(ctx.get(MessageBodyReaderWriterEchoFactory.class))
+                        .withJaxrsComponent(AttributelessFactory.create(SomeMessageBodyReaderWriter.class)
+                    );
         });
+
         builder.addFactory(MessageBodyReaderWriterEchoFactory.class, Scope.SINGLETON);
 
         Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
@@ -314,6 +298,18 @@ public class JettyServerTest {
             microservice.stop();
         }
     }
+
+    @Test
+    public void test_custom_jersey() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),"/new/*");
+        });
+        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
+            return new Resource1Factory();
+        });
+    }
+
+
 
 
 }

@@ -96,7 +96,7 @@ public class SoapHandler implements Servlet {
             if (values.length == 1)
                 res.setHeader(header.getName(), header.getValue());
             else {
-                StringBuffer concat = new StringBuffer();
+                StringBuilder concat = new StringBuilder();
                 int i = 0;
                 while (i < values.length) {
                     if (i != 0) {

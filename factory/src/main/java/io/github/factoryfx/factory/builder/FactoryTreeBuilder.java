@@ -1,14 +1,19 @@
 package io.github.factoryfx.factory.builder;
 
 
+import com.google.common.base.Strings;
 import io.github.factoryfx.factory.BranchSelector;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.FactoryBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -22,33 +27,50 @@ import java.util.stream.Collectors;
  * @param <R> root factory
  * */
 public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
+    private final static Logger logger = LoggerFactory.getLogger(FactoryTreeBuilder.class);
+
+
+
     private final FactoryContext<R> factoryContext = new FactoryContext<>();
-    private final Class<R> rootClass;
+    protected final FactoryTemplateId<R,R> rootTemplateId;
+
+    protected FactoryTreeBuilder(FactoryTemplateId<R,R> rootTemplateId, boolean workaround) {
+        this.rootTemplateId = rootTemplateId;
+    }
+
+    public FactoryTreeBuilder(FactoryTemplateId<R,R> rootTemplateId, Function<FactoryContext<R>, R> creator) {
+        this.rootTemplateId=rootTemplateId;
+        addFactory(rootTemplateId,Scope.SINGLETON,creator);
+    }
 
     public FactoryTreeBuilder(Class<R> rootClass) {
         this(rootClass,new DefaultCreator<>(rootClass));
     }
 
     public FactoryTreeBuilder(Class<R> rootClass, Function<FactoryContext<R>, R> creator) {
+        this(new FactoryTemplateId<>(rootClass,null),creator);
         if (rootClass==null){
             throw new IllegalArgumentException("rootClass is mandatory");
-
         }
-        this.rootClass = rootClass;
-        addFactory(rootClass,Scope.SINGLETON,creator);
     }
 
+    public <F extends FactoryBase<?,R>> void addFactory(FactoryTemplateId<R,F> templateId, Scope scope, Function<FactoryContext<R>, F> creator){
+        factoryContext.addFactoryCreator(new FactoryCreator<>(templateId,scope,creator));
+    }
 
     public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope, Function<FactoryContext<R>, F> creator){
         addFactory(clazz,null,scope,creator);
     }
 
-    public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){
-        factoryContext.addFactoryCreator(new FactoryCreator<>(clazz,name,scope,creator));
+    public <F extends FactoryBase<?,R>> void addFactory(String name, Scope scope, Function<FactoryContext<R>, F> creator){
+        addFactory(null,name,scope,creator);
     }
 
+    public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){
+        addFactory(new FactoryTemplateId<>(clazz,name),scope,creator);
+    }
 
-    public <LO,F extends FactoryBase<LO,R>> void addFactory(Class<F> clazz, Scope scope){
+    public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope){
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
 
@@ -62,10 +84,14 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         return root;
     }
 
+
     private void validate(R root) {
         List<ValidationError> validationErrors=new ArrayList<>();
-        for (FactoryBase<?,?> data : root.internal().collectChildrenDeep()) {
-            validationErrors.addAll(data.internal().validateFlat());
+        for (FactoryBase<?,?> factory : root.internal().collectChildrenDeep()) {
+            validationErrors.addAll(factory.internal().validateFlat());
+            if (!factory.internal().isCreatedWithBuilderTemplate()){
+                logger.warn("Warning: not created with template\n"+factory.internal().debugInfo());
+            }
         }
         if (!validationErrors.isEmpty()){
             throw new IllegalStateException("\n    Factory tree contains validation errors:\n        --------------------------------\n"+
@@ -73,6 +99,8 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
                     "\n        --------------------------------"
                     );
         }
+
+
     }
 
     private R rootFactory;
@@ -80,12 +108,17 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
      * @return dependency tree
      * */
     public R buildTreeUnvalidated(){
+        factoryContext.reset();
         if (rootFactory!=null) {
             return rootFactory;
         }
-        this.rootFactory = factoryContext.get(rootClass);
+        for (Function<FactoryContext<R>, NestedBuilder<L,R>> customBuildersCreator : customBuildersCreators) {
+            NestedBuilder<L,R> nestedBuilder = customBuildersCreator.apply(factoryContext);
+            nestedBuilder.internal_build(this);
+        }
+        this.rootFactory = factoryContext.get(rootTemplateId);
         if (rootFactory==null){
-            throw new IllegalStateException("FactoryCreator missing for root class "+ rootClass.getSimpleName()+"\n"+"probably missing call: factoryBuilder.addFactory("+rootClass.getSimpleName()+".class,...\n");
+            throw new IllegalStateException("FactoryCreator missing for root class "+ rootTemplateId.clazz);
         }
         rootFactory.internal().finalise();
         return rootFactory;
@@ -125,11 +158,11 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     public MicroserviceBuilder<L,R> microservice(){
-        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this, ObjectMapperBuilder.build());
+        return new MicroserviceBuilder<>((Class<R>) this.rootTemplateId.clazz,this.buildTree(),this, ObjectMapperBuilder.build());
     }
 
     public MicroserviceBuilder<L,R> microservice(SimpleObjectMapper simpleObjectMapper){
-        return new MicroserviceBuilder<>(this.rootClass,this.buildTree(),this,simpleObjectMapper);
+        return new MicroserviceBuilder<>((Class<R>) this.rootTemplateId.clazz,this.buildTree(),this,simpleObjectMapper);
     }
 
     /**
@@ -140,8 +173,35 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     public MicroserviceBuilder<L,R> microservice(Consumer<R> mocker){
         R root = this.buildTree();
         mocker.accept(root);
-        return new MicroserviceBuilder<>(this.rootClass, root,this,ObjectMapperBuilder.build());
+        return new MicroserviceBuilder<>((Class<R>) this.rootTemplateId.clazz, root,this,ObjectMapperBuilder.build());
     }
 
 
+    public R rebuildTreeUnvalidated(R root) {
+        factoryContext.reset();
+        rootFactory=null;
+        R rootRebuild = this.buildTreeUnvalidated();
+
+        Map<Class<?>,FactoryBase<?, R>> singletons = new HashMap<>();
+        for (FactoryBase<?, R> factory: root.internal().collectChildrenDeep()) {
+            if (Strings.isNullOrEmpty(factory.internal().getTreeBuilderName())){
+                singletons.put(factory.getClass(),factory);
+            }
+        }
+
+        for (FactoryBase<?, R> factory: rootRebuild.internal().collectChildrenDeep()) {
+            if (Strings.isNullOrEmpty(factory.internal().getTreeBuilderName())) {
+                factory.setId(singletons.get(factory.getClass()).getId());
+            }
+        }
+        return rootRebuild;
+    }
+
+
+
+    List<Function<FactoryContext<R>, NestedBuilder<L,R>>> customBuildersCreators= new ArrayList<>();
+
+    public void addBuilder(Function<FactoryContext<R>, NestedBuilder<L,R>> builderCreators) {
+        customBuildersCreators.add(builderCreators);
+    }
 }

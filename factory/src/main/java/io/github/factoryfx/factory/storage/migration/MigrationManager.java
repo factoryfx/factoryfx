@@ -11,6 +11,7 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.RawFactoryDataAndMetadata;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.storage.migration.datamigration.*;
 
@@ -35,8 +36,13 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
 
     List<AttributeRename> renameAttributeMigrations =new ArrayList<>();
     List<ClassRename> renameClassMigrations =new ArrayList<>();
+    List<AttributeRetype> retypeAttributeMigrations = new ArrayList<>();
+
     List<SingletonDataRestore<R,?>> singletonBasedRestorations = new ArrayList<>();
     List<PathDataRestore<R,?>> pathBasedRestorations = new ArrayList<>();
+
+
+
 
 
     public <L,F extends FactoryBase<L,R>> void renameAttribute(Class<F> dataClass, String previousAttributeName, Function<F, Attribute<?,?>> attributeNameProvider){
@@ -51,8 +57,12 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         singletonBasedRestorations.add(new SingletonDataRestore<>(singletonPreviousDataClass,previousAttributeName,valueClass,setter,objectMapper));
     }
 
-    public <V> void restoreAttribute(AttributePathTarget<V> path, BiConsumer<R,V> setter){
-        pathBasedRestorations.add(new PathDataRestore<>(path,setter,objectMapper));
+    public <V> void restoreAttribute(Class<V> clazz, AttributePathTarget<V> path, BiConsumer<R,V> setter){
+        pathBasedRestorations.add(new PathDataRestore<>(path,setter,new AttributeValueParser<>(objectMapper,clazz)));
+    }
+
+    public <V> void restoreListAttribute(Class<V> clazz, AttributePathTarget<List<V>> path, BiConsumer<R,List<V>> setter){
+        pathBasedRestorations.add(new PathDataRestore<>(path,setter,new AttributeValueListParser<>(new AttributeValueParser<>(objectMapper,clazz))));
     }
 
     public R migrate(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
@@ -74,7 +84,33 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
             }
         }
 
+        for (DataMigration migration : retypeAttributeMigrations) {
+            if (migration.canMigrate(dataStorageMetadataDictionary)) {
+                migration.migrate(dataJsonNodes);
+                migration.updateDataStorageMetadataDictionary(dataStorageMetadataDictionary);
+            }
+        }
+
         dataStorageMetadataDictionary.markRemovedAttributes();
+
+        dataStorageMetadataDictionary.markRetypedAttributes();
+        for (DataJsonNode dataJsonNode : rootDataJson.collectChildrenFromRoot()) {
+            DataStorageMetadata dataStorageMetadata = dataStorageMetadataDictionary.getDataStorageMetadata(dataJsonNode.getDataClassName());
+            for (String attribute : dataJsonNode.getAttributes()) {
+                if (dataStorageMetadata!=null && dataStorageMetadata.getAttribute(attribute).isRetyped()){
+                    dataJsonNode.setAttributeValue(attribute,null);
+                }
+            }
+        }
+
+//        for (DataMigration migration : retypeAttributeMigrations) {
+//            if (migration.canMigrate(dataStorageMetadataDictionary)) {
+//                migration.migrate(dataJsonNodes);
+//                migration.updateDataStorageMetadataDictionary(dataStorageMetadataDictionary);
+//            }
+//        }
+
+
         R root;
         try {
             root = objectMapper.treeToValue(rootNode, rootClass);

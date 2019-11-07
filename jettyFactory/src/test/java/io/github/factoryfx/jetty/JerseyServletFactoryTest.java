@@ -2,8 +2,9 @@ package io.github.factoryfx.jetty;
 
 import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +22,7 @@ import java.net.http.HttpResponse;
 
 public class JerseyServletFactoryTest {
 
-    public static class JerseyServletTestErrorResourceFactory extends SimpleFactoryBase<JerseyServletTestErrorResource, JettyTestServerFactory> {
+    public static class JerseyServletTestErrorResourceFactory extends SimpleFactoryBase<JerseyServletTestErrorResource, JettyServerRootFactory> {
         @Override
         protected JerseyServletTestErrorResource createImpl() {
             return new JerseyServletTestErrorResource();
@@ -37,10 +38,6 @@ public class JerseyServletFactoryTest {
         }
     }
 
-    public static class JettyTestServerFactory extends JettyServerFactory<JettyTestServerFactory>{
-
-    }
-
     public static class TestExceptionMapper implements ExceptionMapper<Throwable> {
         @Override
         public Response toResponse(Throwable exception) {
@@ -50,15 +47,15 @@ public class JerseyServletFactoryTest {
 
     @Test
     public void test_exception_mapper() {
-        FactoryTreeBuilder<Server, JettyTestServerFactory> builder = new FactoryTreeBuilder<>(JettyTestServerFactory.class, ctx->{
-            return new JettyServerBuilder<JettyTestServerFactory>()
-                    .withResource(ctx.get(JerseyServletTestErrorResourceFactory.class))
-                    .withHost("localhost").withPort(8087).withExceptionMapper(AttributelessFactory.create(TestExceptionMapper.class)).buildTo(new JettyTestServerFactory());
-        });
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)-> jetty.
+                    withHost("localhost").withPort(8087).withExceptionMapper(AttributelessFactory.create(TestExceptionMapper.class)).withResource(ctx.get(JerseyServletTestErrorResourceFactory.class))
+                );
+
+
         builder.addFactory(JerseyServletTestErrorResourceFactory.class, Scope.SINGLETON);
 
 
-        Microservice<Server, JettyTestServerFactory> microservice = builder.microservice().build();
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
         microservice.start();
         try {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

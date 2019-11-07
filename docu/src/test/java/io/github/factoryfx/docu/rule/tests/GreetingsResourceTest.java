@@ -1,30 +1,32 @@
 package io.github.factoryfx.docu.rule.tests;
 
 import io.github.factoryfx.docu.rule.server.*;
-import io.github.factoryfx.docu.rule.simulator.HelloJettyServerFactory;
 import io.github.factoryfx.docu.rule.simulator.SimulatorBuilder;
 import io.github.factoryfx.docu.rule.simulator.SimulatorRootFactory;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.jetty.HttpServerConnectorFactory;
+import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public class GreetingsResourceTest {
 
     private Server simulator;
     private GreetingsResource greetingsResource;
 
+    @SuppressWarnings("unchecked")
     @RegisterExtension
     @Order(1)
     public final FactoryTreeBuilderRule<Server, SimulatorRootFactory> simulatorCtx = new FactoryTreeBuilderRule<>(new SimulatorBuilder().builder(), rule -> {
 
-        rule.getFactory(HelloJettyServerFactory.class).connectors.get(0).port.set(0);
+        HttpServerConnectorFactory<SimulatorRootFactory> factoryBase = (HttpServerConnectorFactory<SimulatorRootFactory>) rule.getFactory(JettyServerFactory.class).connectors.get(0);
+        factoryBase.port.set(0);
 
-        simulator = rule.get(HelloJettyServerFactory.class);
+        simulator = (Server)rule.get(JettyServerFactory.class);
     });
 
     @RegisterExtension
@@ -39,11 +41,11 @@ public class GreetingsResourceTest {
 
     @Test
     public void testGreeting() {
-        assertThat(greetingsResource.greet(), is("hello world"));
+        Assertions.assertEquals("hello world",greetingsResource.greet());
     }
 
     @Test
     public void testGreetingOnceMore() {
-        assertThat(greetingsResource.greet(), is("hello world"));
+        Assertions.assertEquals("hello world",greetingsResource.greet());
     }
 }

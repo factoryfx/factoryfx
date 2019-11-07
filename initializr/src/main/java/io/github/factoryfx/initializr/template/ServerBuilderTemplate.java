@@ -16,7 +16,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import io.github.factoryfx.jetty.JettyServerFactory;
 
 public class ServerBuilderTemplate {

@@ -17,11 +17,11 @@ import java.util.*;
 
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
-    public final FactoryPolymorphicAttribute<ObjectMapper> objectMapper = new FactoryPolymorphicAttribute<ObjectMapper>().nullable().en("objectMapper");
+    public final FactoryPolymorphicAttribute<ObjectMapper> objectMapper = new FactoryPolymorphicAttribute<ObjectMapper>().en("objectMapper");
     public final FactoryPolymorphicAttribute<LoggingFeature> restLogging = new FactoryPolymorphicAttribute<LoggingFeature>().userReadOnly().labelText("REST logging");
     public final FactoryPolymorphicListAttribute<Object> additionalJaxrsComponents = new FactoryPolymorphicListAttribute<>().userReadOnly().labelText("additionalJaxrsComponents");
     public final FactoryPolymorphicListAttribute<Object> resources = new FactoryPolymorphicListAttribute<>().labelText("resources");
-    public final FactoryPolymorphicAttribute<ExceptionMapper<Throwable>> exceptionMapper = new FactoryPolymorphicAttribute<ExceptionMapper<Throwable>>().userReadOnly().labelText("exceptionMapper").nullable();
+    public final FactoryPolymorphicAttribute<ExceptionMapper<Throwable>> exceptionMapper = new FactoryPolymorphicAttribute<ExceptionMapper<Throwable>>().userReadOnly().labelText("exceptionMapper");
 
     @Override
     protected Servlet createImpl() {
@@ -37,7 +37,7 @@ public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFact
 
         resourceConfig.register(restLogging.instance());
 
-        resourceConfig.register(Optional.ofNullable(exceptionMapper.instance()).orElse(new AllExceptionMapper()));
+        resourceConfig.register(exceptionMapper.instance());
 
 
         additionalJaxrsComponents.instances().forEach(r -> {

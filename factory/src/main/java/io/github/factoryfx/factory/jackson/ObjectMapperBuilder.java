@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import io.github.factoryfx.factory.DataObjectIdResolver;
 
@@ -22,20 +23,24 @@ public class ObjectMapperBuilder {
         return simpleObjectMapper;
     }
 
-    public static ObjectMapper buildNewObjectMapper() {
-        return setupMapper(new JsonFactory());
+    public static ObjectMapper buildNewObjectMapper(ObjectMapper objectMapper) {
+        return setupMapper(objectMapper);
     }
+
+    public static ObjectMapper buildNewObjectMapper() {
+        return setupMapper(new ObjectMapper(new JsonFactory()));
+    }
+
 
     public static SimpleObjectMapper buildNew() {
-        return new SimpleObjectMapper(setupMapper(new JsonFactory()));
+        return new SimpleObjectMapper(setupMapper(new ObjectMapper(new JsonFactory())));
     }
 
-    public static SimpleObjectMapper buildNew(JsonFactory jsonFactory ) {
-        return new SimpleObjectMapper(setupMapper(jsonFactory));
+    public static SimpleObjectMapper buildNew(ObjectMapper objectMapper) {
+        return new SimpleObjectMapper(setupMapper(objectMapper));
     }
 
-    private static ObjectMapper setupMapper(JsonFactory jsonFactory) {
-        ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
+    private static ObjectMapper setupMapper(ObjectMapper objectMapper) {
 
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
@@ -50,6 +55,12 @@ public class ObjectMapperBuilder {
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
         objectMapper.setDefaultMergeable(true); // global default, merging
+
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(String.class, new ForceStringDeserializer());
+        objectMapper.registerModule(simpleModule);
+
+//        objectMapper.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS);
 
 
         objectMapper.setHandlerInstantiator(new HandlerInstantiator() {

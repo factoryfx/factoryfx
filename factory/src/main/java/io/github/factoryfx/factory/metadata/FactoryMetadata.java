@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase<L,R>> {
+public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> {
 
     private boolean temporaryAttributes=false;
     private Constructor constructor;
@@ -37,7 +37,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
      * Data use temporary to simulate normal data, this is an optimization hind cause some operation don't make sense with Temporary attributes
      * @return DataDictionary for fluent configuration
      */
-    public FactoryMetadata<R,L, F> setUseTemporaryAttributes(){
+    public FactoryMetadata<R, F> setUseTemporaryAttributes(){
         temporaryAttributes=true;
         return this;
     }
@@ -58,7 +58,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
 
 
     public void visitFactoryEnclosingAttributesFlat(F factory, FactoryEnclosingAttributeVisitor visitor) {
-        for (AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute> attributeFieldAccessor : factoryChildrenEnclosingAttributeFields) {
+        for (AttributeFieldAccessor<R,F,FactoryChildrenEnclosingAttribute> attributeFieldAccessor : factoryChildrenEnclosingAttributeFields) {
             visitor.accept(attributeFieldAccessor.getName(),attributeFieldAccessor.get(factory));
         }
     }
@@ -129,7 +129,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
 
     private final ArrayList<Field> attributeFields = new ArrayList<>();
     private final HashMap<String,Class<?>> fieldToReferenceClass = new HashMap<>();
-    private final ArrayList<AttributeFieldAccessor<R,L,F,FactoryChildrenEnclosingAttribute>> factoryChildrenEnclosingAttributeFields = new ArrayList<>();
+    private final ArrayList<AttributeFieldAccessor<R,F,FactoryChildrenEnclosingAttribute>> factoryChildrenEnclosingAttributeFields = new ArrayList<>();
 
     private void initAttributeFields(Class<?> clazz) {
         Class<?> parent = clazz.getSuperclass();
@@ -210,7 +210,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>, L,F extends FactoryBase
      * @param newCopyInstanceSupplier newCopyInstanceSupplier
      * @return DataDictionary for fluent configuration
      * */
-    public FactoryMetadata<R,L, F> setNewCopyInstanceSupplier(Function<F, F> newCopyInstanceSupplier){
+    public FactoryMetadata<R, F> setNewCopyInstanceSupplier(Function<F, F> newCopyInstanceSupplier){
         this.newCopyInstanceSupplier =newCopyInstanceSupplier;
         return this;
     }

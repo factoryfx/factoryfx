@@ -1,10 +1,9 @@
 package io.github.factoryfx.javafx.distribution.launcher.downloadserver;
 
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.javafx.distribution.launcher.rest.DistributionClientDownloadResourceFactory;
-import io.github.factoryfx.jetty.JettyServerBuilder;
-import org.eclipse.jetty.server.Server;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,13 +15,11 @@ public class DistributionClientDownloadServerTest {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
-        FactoryTreeBuilder<Server,DownloadTestServerFactory> builder = new FactoryTreeBuilder<>(DownloadTestServerFactory.class, ctx -> {
-            return new JettyServerBuilder<DownloadTestServerFactory>().
-                    withHost("localhost").withPort(43654).withResource(ctx.get(SpecificDistributionClientDownloadResourceFactory.class)).
-                    buildTo(new DownloadTestServerFactory());
-        });
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->
+                jetty.withHost("localhost").withPort(43654).withResource(ctx.get(SpecificDistributionClientDownloadResourceFactory.class))
+        );
         builder.addFactory(DistributionClientDownloadResourceFactory.class, Scope.SINGLETON, ctx -> {
-            DistributionClientDownloadResourceFactory<DownloadTestServerFactory> resource = new DistributionClientDownloadResourceFactory<>();
+            DistributionClientDownloadResourceFactory<JettyServerRootFactory> resource = new DistributionClientDownloadResourceFactory<>();
             resource.distributionClientZipPath.set("src/test/java/io/github/factoryfx/javafx/distribution/launcher/downloadserver/dummy.zip");
             return resource;
         });

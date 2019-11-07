@@ -3,8 +3,7 @@ package io.github.factoryfx.docu.monitoring;
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
-import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +21,12 @@ public class Main {
         root.setLevel(Level.INFO);
 
         FactoryTreeBuilder<Root,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> {
-            JettyServerFactory<RootFactory> server = new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(34576).withResource(ctx.get(SimpleResourceFactory.class)).build();
-            server.handler.get().handlers.set(0,ctx.get(InstrumentedHandlerFactory.class));
-            return server;
-        });
+        builder.addBuilder(ctx->new SimpleJettyServerBuilder<Root,RootFactory>().withHost("localhost").withPort(34576)
+                .withResource(ctx.get(SimpleResourceFactory.class))
+                .withHandlerFirst(ctx.get(InstrumentedHandlerFactory.class)));
+
+
+
         builder.addFactory(SimpleResourceFactory.class, Scope.SINGLETON);
         builder.addFactory(InstrumentedHandlerFactory.class, Scope.SINGLETON);
         builder.addFactory(MetricRegistryFactory.class, Scope.SINGLETON);

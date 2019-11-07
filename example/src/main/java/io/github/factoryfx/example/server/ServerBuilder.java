@@ -5,25 +5,24 @@ import io.github.factoryfx.example.server.shop.*;
 import io.github.factoryfx.example.server.shop.netherlands.NetherlandsCarProductFactory;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
     @SuppressWarnings("unchecked")
-    public FactoryTreeBuilder<Server, ServerRootFactory> builder(){
-        FactoryTreeBuilder<Server, ServerRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class,context -> {
-            return new JettyServerBuilder<ServerRootFactory>()
+    public FactoryTreeBuilder<Server, JettyServerRootFactory> builder(){
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
                     .withHost("localhost").withPort(8089)
-                    .withResource(context.getUnsafe(MicroserviceDomResourceFactory.class))
-                    .withResource(context.get(OrderMonitoringResourceFactory.class))
-                    .withResource(context.get(ShopResourceFactory.class)).buildTo(new ServerRootFactory());
+                    .withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
+                    .withResource(ctx.get(OrderMonitoringResourceFactory.class))
+                    .withResource(ctx.get(ShopResourceFactory.class))
+        );
 
-        });
+        builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 
-        factoryTreeBuilder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
-
-        factoryTreeBuilder.addFactory(ShopResourceFactory.class, Scope.SINGLETON, context -> {
+        builder.addFactory(ShopResourceFactory.class, Scope.SINGLETON, context -> {
             ShopResourceFactory shopResource = new ShopResourceFactory();
             shopResource.orderStorage.set(context.get(OrderStorageFactory.class));
             shopResource.products.add(context.get(ProductFactory.class,"car"));
@@ -32,7 +31,7 @@ public class ServerBuilder {
             return shopResource;
         });
 
-        factoryTreeBuilder.addFactory(ProductFactory.class, "car", Scope.PROTOTYPE, context -> {
+        builder.addFactory(ProductFactory.class, "car", Scope.PROTOTYPE, context -> {
             ProductFactory carFactory = new ProductFactory();
             carFactory.vatRate.set(context.get(VatRateFactory.class));
             carFactory.name.set("Car");
@@ -40,7 +39,7 @@ public class ServerBuilder {
             return carFactory;
         });
 
-        factoryTreeBuilder.addFactory(ProductFactory.class, "bike", Scope.PROTOTYPE, context -> {
+        builder.addFactory(ProductFactory.class, "bike", Scope.PROTOTYPE, context -> {
             ProductFactory bikeFactory = new ProductFactory();
             bikeFactory.vatRate.set(context.get(VatRateFactory.class));
             bikeFactory.name.set("Bike");
@@ -48,7 +47,7 @@ public class ServerBuilder {
             return bikeFactory;
         });
 
-        factoryTreeBuilder.addFactory(NetherlandsCarProductFactory.class, "netherland car", Scope.PROTOTYPE, context -> {
+        builder.addFactory(NetherlandsCarProductFactory.class, "netherland car", Scope.PROTOTYPE, context -> {
             NetherlandsCarProductFactory bikeFactory = new NetherlandsCarProductFactory();
             bikeFactory.vatRate.set(context.get(VatRateFactory.class));
             bikeFactory.name.set("Netherland ");
@@ -58,18 +57,18 @@ public class ServerBuilder {
         });
 
 
-        factoryTreeBuilder.addFactory(VatRateFactory.class, Scope.SINGLETON, context -> {
+        builder.addFactory(VatRateFactory.class, Scope.SINGLETON, context -> {
             VatRateFactory vatRate =new VatRateFactory();
             vatRate.rate.set(0.19);
             return vatRate;
         });
 
-        factoryTreeBuilder.addFactory(OrderStorageFactory.class, Scope.SINGLETON, ctx->{
+        builder.addFactory(OrderStorageFactory.class, Scope.SINGLETON, ctx->{
             return new OrderStorageFactory();
         });
 
-        factoryTreeBuilder.addFactory(OrderMonitoringResourceFactory.class, Scope.SINGLETON);
+        builder.addFactory(OrderMonitoringResourceFactory.class, Scope.SINGLETON);
 
-        return factoryTreeBuilder;
+        return builder;
     }
 }

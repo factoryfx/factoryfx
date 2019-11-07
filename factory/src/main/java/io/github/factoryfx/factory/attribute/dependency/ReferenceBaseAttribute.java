@@ -188,7 +188,7 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
 
     @Override
     public AttributeStorageMetadata createAttributeStorageMetadata(String variableName) {
-        return new AttributeStorageMetadata(variableName,getClass().getName(),true, clazz!=null?clazz.getName():null);
+        return new AttributeStorageMetadata(variableName,getClass().getName(), clazz!=null?clazz.getName():null);
     }
 
     @SuppressWarnings("unchecked")

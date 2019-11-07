@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -80,6 +79,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     @JsonProperty
     private String treeBuilderName;
+    @JsonProperty
+    private boolean treeBuilderClassUsed;
+
 
     public FactoryBase() {
 
@@ -95,6 +97,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id=id;
+    }
+
+
     /**
      * compares ids
      * @param factory factory
@@ -103,9 +110,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     public boolean idEquals(FactoryBase<?,?> factory){
         return getId().equals(factory.getId());
     }
-    private FactoryMetadata<R,L, FactoryBase<L, R>> metadata;
+    private FactoryMetadata<R, FactoryBase<?, R>> metadata;
     @SuppressWarnings("unchecked")
-    private FactoryMetadata<R,L,FactoryBase<L,R>> getFactoryMetadata(){
+    private FactoryMetadata<R,FactoryBase<?,R>> getFactoryMetadata(){
         if (metadata==null){
             metadata = FactoryMetadataManager.getMetadata(getClass());
         }
@@ -157,7 +164,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitAttributesForMatch(this,(FactoryBase<L,R>)data,consumer);
     }
 
-    private <V> void visitAttributesTripleFlat(FactoryBase<L,R> other1, FactoryBase<L,R> other2, TriAttributeVisitor<V> consumer) {
+    private <V> void visitAttributesTripleFlat(FactoryBase<?,R> other1, FactoryBase<?,R> other2, TriAttributeVisitor<V> consumer) {
         getFactoryMetadata().visitAttributesTripleFlat(this,other1,other2,consumer);
     }
 
@@ -216,7 +223,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, consumer, false);
     }
 
-    private FactoryBase<L,R> newCopyInstance(FactoryBase<L,R> data) {
+    private FactoryBase<?,R> newCopyInstance(FactoryBase<L,R> data) {
         return getFactoryMetadata().newCopyInstance(data);
     }
 
@@ -309,7 +316,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private void merge(FactoryBase<L,R> originalValue, FactoryBase<L,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
+    private void merge(FactoryBase<?,R> originalValue, FactoryBase<?,R> newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentMerger, originalMerger, newMerger) -> {
             //for performance to execute compare only once
             boolean newMergerMatchOriginalMerger= originalMerger.internal_mergeMatch(newMerger);
@@ -405,7 +412,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-    FactoryBase<L,R> copy;
+    FactoryBase<?,R> copy;
     @SuppressWarnings("unchecked")
     private <F extends FactoryBase<? extends L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,R> parent, R root){
         if (level>maxLevel){
@@ -611,6 +618,17 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         storeDisplayTextObservable=simpleStringProperty;
     }
 
+    @JsonIgnore
+    private boolean isCreatedWithBuilderTemplate = false;
+    private void markAsCreatedWithBuilderTemplate() {
+        isCreatedWithBuilderTemplate= true;
+    }
+
+    @JsonIgnore
+    private boolean isCreatedWithBuilderTemplate() {
+        return isCreatedWithBuilderTemplate;
+    }
+
 
     /** data configurations api. Should be used in the default constructor
      * @return the configuration api*/
@@ -774,7 +792,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.validateFlat();
         }
 
-        public <F extends FactoryBase<L,R>> void  merge(F  originalValue, F  newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
+        public <F extends FactoryBase<?,R>> void  merge(F  originalValue, F  newValue, MergeResult<R> mergeResult, Function<String,Boolean> permissionChecker) {
             factory.merge(originalValue,newValue,mergeResult,permissionChecker);
         }
         public List<FactoryBase<?,?> > getPathFromRoot() {
@@ -1001,6 +1019,17 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public void fixDuplicateFactoriesFlat(HashMap<UUID, FactoryBase<?, R>> idToFactoryMap){
             factory.visitFactoryEnclosingAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToFactoryMap));
         }
+
+        public void markAsCreatedWithBuilderTemplate() {
+            factory.markAsCreatedWithBuilderTemplate();
+        }
+        public boolean isCreatedWithBuilderTemplate() {
+            return factory.isCreatedWithBuilderTemplate();
+        }
+
+        public void setTreeBuilderClassUsed(boolean used) {
+            factory.treeBuilderClassUsed=used;
+        }
     }
 
 
@@ -1081,9 +1110,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return creator.get();
     }
 
+    @SuppressWarnings("unchecked")
     private L create(){
         if (creatorMock!=null){
-            return creatorMock.apply(this);
+            return (L) creatorMock.apply(this);
         }
         logCreate();
         return createTemplateMethod();
@@ -1253,15 +1283,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private String debugInfo(){
         try {
             StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Factory:\n  ");
+            stringBuilder.append(getClass());
+            stringBuilder.append("\n");
             stringBuilder.append("ID:\n  ");
             stringBuilder.append(getId());
             stringBuilder.append("\nAttributes:\n");
             this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                stringBuilder.append("  ").append(attribute.internal_getPreferredLabelText(Locale.ENGLISH)).append(": ").append(attribute.getDisplayText()).append("\n");
+                stringBuilder.append("  ").append(attributeVariableName).append(": ").append(attribute.getDisplayText()).append("\n");
             });
             return stringBuilder.toString().trim();
         } catch (Exception e) {
-            return "can't create debuginfo text cause:\n"+ Throwables.getStackTraceAsString(e);
+            return "can't create debug info text cause:\n"+ Throwables.getStackTraceAsString(e);
         }
     }
 
@@ -1413,7 +1446,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     Supplier<L> creator=null;
-    Function<FactoryBase<L, R>, L> creatorMock=null;
+    Function<FactoryBase<?, R>, ?> creatorMock=null;
     Consumer<L> updater=null;
     Function<L,L> reCreatorWithPreviousLiveObject=null;
     Consumer<L> starterWithNewLiveObject=null;
@@ -1438,7 +1471,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         this.destroyerWithPreviousLiveObject=destroyerWithPreviousLiveObject;
     }
 
-    private void mock(Function<FactoryBase<L, R>, L> creatorMock) {
+    private void mock(Function<FactoryBase<?, R>, L> creatorMock) {
         this.creatorMock = creatorMock;
     }
 

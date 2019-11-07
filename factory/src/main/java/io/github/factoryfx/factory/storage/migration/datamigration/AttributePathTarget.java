@@ -1,27 +1,29 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Functions;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class AttributePathTarget<V> {
     private final List<AttributePathElement> path;
-    private final Class<V> valueClass;
     private final String attribute;
     private final int index;
 
-    public AttributePathTarget(Class<V> valueClass, List<AttributePathElement> path, String attribute, int index) {
-        this.valueClass = valueClass;
+    public AttributePathTarget(List<AttributePathElement> path, String attribute, int index) {
         this.path = path;
         this.attribute = attribute;
         this.index = index;
     }
 
-    public V resolveAttributeValue(DataJsonNode root, SimpleObjectMapper simpleObjectMapper) {
+
+    public V resolveAttributeValue(DataJsonNode root, BiFunction<JsonNode,Map<String, DataJsonNode>,V> valueParser) {
         DataJsonNode current = root;
 
         for (AttributePathElement pathElement : this.path) {
@@ -31,17 +33,11 @@ public class AttributePathTarget<V> {
         if (attributeValue==null){
             return null;
         }
-        if (attributeValue.isArray()) {
+        if (attributeValue.isArray() && index>=0) {
             attributeValue = attributeValue.get(index);
         }
-        if (attributeValue.isTextual()){
-            Map<String, DataJsonNode> idToDataJsonNodeMap = root.collectChildrenMapFromRoot();
-            String id=attributeValue.asText();
-            if (idToDataJsonNodeMap.containsKey(attributeValue.textValue())){
-                return idToDataJsonNodeMap.get(id).asData(valueClass, simpleObjectMapper);
-            }
-        }
-        return simpleObjectMapper.treeToValue(attributeValue,valueClass);
+        Map<String, DataJsonNode> idToDataJsonNodeMap = root.collectChildrenMapFromRootCached();
+        return valueParser.apply(attributeValue,idToDataJsonNodeMap);
     }
 
     public boolean isPathToRemovedAttribute(DataStorageMetadataDictionary dictionary, DataJsonNode root) {
@@ -57,6 +53,27 @@ public class AttributePathTarget<V> {
             return false;
         }
         return dataStorageMetadata.getAttribute(attribute).isRemoved();
+    }
+
+    /**
+     * attribute with different type
+     * @param dictionary dictionary
+     * @param root root
+     * @return true if different type
+     */
+    public boolean isPathToRetypedAttribute(DataStorageMetadataDictionary dictionary, DataJsonNode root) {
+        DataJsonNode current = root;
+        for (AttributePathElement pathElement : this.path) {
+            current = pathElement.getNext(current);
+        }
+        DataStorageMetadata dataStorageMetadata =dictionary.getDataStorageMetadata(current.getDataClassName());
+        if (dataStorageMetadata==null) {
+            return false;
+        }
+        if (dataStorageMetadata.getAttribute(attribute)==null){
+            return false;
+        }
+        return dataStorageMetadata.getAttribute(attribute).isRetyped();
     }
 
 

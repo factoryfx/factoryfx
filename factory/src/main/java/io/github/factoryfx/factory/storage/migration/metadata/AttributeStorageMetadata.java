@@ -2,8 +2,10 @@ package io.github.factoryfx.factory.storage.migration.metadata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(value = { "isReference" })
 public class AttributeStorageMetadata {
 
     @JsonProperty
@@ -11,15 +13,12 @@ public class AttributeStorageMetadata {
     @JsonProperty
     final String attributeClassName;
     @JsonProperty
-    final boolean isReference; // attribute that can contains ref ( and id json)
-    @JsonProperty
     String referenceClass;
 
     @JsonCreator
-    public AttributeStorageMetadata(@JsonProperty("variableName") String variableName, @JsonProperty("attributeClassName") String attributeClassName, @JsonProperty("isReference")boolean isReference, @JsonProperty("referenceClass")String referenceClass) {
+    public AttributeStorageMetadata(@JsonProperty("variableName") String variableName, @JsonProperty("attributeClassName") String attributeClassName, @JsonProperty("referenceClass")String referenceClass) {
         this.variableName = variableName;
         this.attributeClassName = attributeClassName;
-        this.isReference = isReference;
         this.referenceClass = referenceClass;
     }
 
@@ -35,18 +34,24 @@ public class AttributeStorageMetadata {
         variableName=newAttributeName;
     }
 
-    @JsonIgnore
-    public boolean isReference() {
-        return isReference;
-    }
-
     private boolean removed ;
     public void markRemoved() {
         removed=true;
     }
 
+    @JsonIgnore
     public boolean isRemoved() {
         return removed;
+    }
+
+    private boolean retyped ;
+    public void markRetyped() {
+        retyped=true;
+    }
+
+    @JsonIgnore
+    public boolean isRetyped() {
+        return retyped;
     }
 
     public String getReferenceClass() {

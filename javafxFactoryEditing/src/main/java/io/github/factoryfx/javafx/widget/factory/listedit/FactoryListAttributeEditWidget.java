@@ -90,7 +90,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T ex
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            new SelectDataDialog<T>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> factoryListBaseAttribute.get().add(data));
+            new SelectDataDialog<>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> factoryListBaseAttribute.get().add(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 

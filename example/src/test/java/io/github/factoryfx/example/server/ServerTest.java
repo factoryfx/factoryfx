@@ -1,10 +1,10 @@
 package io.github.factoryfx.example.server;
 
 import io.github.factoryfx.example.server.testutils.FactoryTreeBuilderRule;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -39,11 +39,11 @@ public class ServerTest {
     public Server server;
 
     @RegisterExtension
-    public final FactoryTreeBuilderRule<Server, ServerRootFactory> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
+    public final FactoryTreeBuilderRule<Server, JettyServerRootFactory> ctx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
 
-        rule.getFactory(ServerRootFactory.class).connectors.get(0).port.set(0);
+        rule.getFactory(JettyServerRootFactory.class).connectors.get(0).port.set(0);
 
-        server = rule.get(ServerRootFactory.class);
+        server = rule.get(JettyServerRootFactory.class);
     });
 
     @Test
@@ -58,6 +58,6 @@ public class ServerTest {
         String resp = webTarget.request(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 
         // "Car" is one of the products in the shop. We *know* that, but this is for demonstration purposes only.
-        MatcherAssert.assertThat("must contain 'Car'", resp, Matchers.containsString("Car"));
+        Assertions.assertTrue(resp.contains("Car"),"must contain 'Car'");
     }
 }

@@ -19,27 +19,6 @@ Allows optimized (partial) reconfiguration at runtime.
 * [Key concepts](docu/src/main/java/io/github/factoryfx/docu/keyconcepts)  
 Why use FactoryFX?
 
-### Comparision
-FactoryFX is a replacement for:
-* **manual dependency injection**
-  * Order independence
-  * Uniform application structure
-* **framework dependency injection (guava, spring, dagger)**
-  * Programmatic java API over annotations API
-  * Java first
-  * Fast startup (no classpath scanning)
-* **JConsole MBeans (runtime data/structure changes)**
-  * Lifecycle support
-  * Metadata for an end user presentable GUI (labels, validation)
-  * Multi-user editing
-* **Property files (text,xml,json or yaml)**
-  * Change history
-  * Change metadata (comment, user, date)
-  * Complex validation
-* **master data in database**
-  * Real data encapsulation in java
-  * Immutable business objects
-
 ## Setup
 
 | Group ID            | Artifact ID | Version |
@@ -51,11 +30,11 @@ java 11+ required
 ### Dependencies
 [Gradle example dependency setups](docu/src/main/java/io/github/factoryfx/docu/dependencysetup)
 
+### New project template
+[Template](https://github.com/factoryfx/factoryfx-project-template)
+
 ## Changelog
 [CHANGELOG](CHANGELOG.md)
-
-## New project template
-[Template](https://github.com/factoryfx/factoryfx-project-template)
 
 ## Basic example "Hello World" 
 #### Factory
@@ -108,11 +87,13 @@ Explanation of live objects
 * [initializr](docu/src/main/java/io/github/factoryfx/docu/initializr)  
 Code generator for initial project setup
 
-### Advanced
-* [Comparison](docu/src/main/java/io/github/factoryfx/docu/comparison)  
-Comparison to other dependency injection frameworks
+### Common applications
 * [REST server](docu/src/main/java/io/github/factoryfx/docu/restserver)  
 Basic jetty server with a jersey REST resource
+
+### Advanced
+* [Comparison](docu/src/main/java/io/github/factoryfx/docu/comparison)  
+Comparison to other frameworks
 * [Lifecycle](docu/src/main/java/io/github/factoryfx/docu/lifecycle)  
 Lifecycle configuration (start/stop/update)
 * [Migration](docu/src/main/java/io/github/factoryfx/docu/migration)  
@@ -129,8 +110,6 @@ Passing runtime status across configuration updates (e.g request counter)
 Optimize factory update/server restart e.g. for live objects whose initialization is very time-consuming
 * [Monitoring](docu/src/main/java/io/github/factoryfx/docu/monitoring)  
 Request monitoring data 
-* [Swagger](docu/src/main/java/io/github/factoryfx/docu/swagger)  
-Swagger example 
 * [Permissions](docu/src/main/java/io/github/factoryfx/docu/permission)  
 Permissions on attribute level
 * [Custom configuration REST API](docu/src/main/java/io/github/factoryfx/docu/customconfig)  

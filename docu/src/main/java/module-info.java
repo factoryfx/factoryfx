@@ -16,10 +16,6 @@ open module io.github.factoryfx.docu {
     requires jersey.client;
     requires com.fasterxml.jackson.jaxrs.json;
 
-    requires swagger.annotations;
-    requires swagger.models;
-    requires swagger.jaxrs;
-    requires swagger.core;
     requires com.fasterxml.jackson.core;
     requires java.xml.bind;
     requires java.net.http;

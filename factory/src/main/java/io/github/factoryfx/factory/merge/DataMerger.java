@@ -17,7 +17,7 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
 
     private final HashMap<UUID,FactoryBase<?,R>> idToFactory=new HashMap<>();
     
-    List<Triple> mergeable=new ArrayList<>();
+    List<Triple<R>> mergeable=new ArrayList<>();
     private static class Triple<R extends FactoryBase<?,R>>{
         private final FactoryBase<?,R> currentFactory;
         private final FactoryBase<?,R> commonFactory;
@@ -116,16 +116,13 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
         for (FactoryBase<?, R> factory : newDataDataList) {
             idToFactory.put(factory.getId(),factory);
         }
-        for (FactoryBase<?, R> factory : currentDataList) {//order important to keep old
+        for (FactoryBase<?, R> factory : currentDataList) {//order important to prioritize keep old factories
             idToFactory.put(factory.getId(),factory);
         }
 
     }
 
-    @SuppressWarnings("unchecked")
     public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
-
-
         MergeResult<R> mergeResult = new MergeResult<>(currentData,idToFactory);
 
         for (Triple<R> entry : mergeable) {
@@ -143,26 +140,12 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
             }
 
             if (originalValue!=null && newValue!=null){
-                FactoryBase value = entry.currentFactory;
+                FactoryBase<?,R> value = entry.currentFactory;
                 value.internal().merge(originalValue, newValue, mergeResult, permissionChecker);
             }
         }
         return mergeResult;
     }
-//
-//    private FactoryBase<?,R> getNewValue(Map.Entry<UUID, FactoryBase<?,R>> currentEntry) {
-//        if (currentEntry.getValue()==currentData){//for root different id don't make sense
-//            return newData;
-//        }
-//        return newMap.get(currentEntry.getKey());
-//    }
-//
-//    private FactoryBase<?,R> getOriginalValue(Map.Entry<UUID, FactoryBase<?,R>> currentEntry) {
-//        if (currentEntry.getValue()==currentData){//for root different id don't make sense
-//            return commonData;
-//        }
-//        return commonMap.get(currentEntry.getKey());
-//    }
 
     public MergeDiffInfo<R> mergeIntoCurrent(Function<String,Boolean> permissionChecker) {
         return createMergeResult(permissionChecker).executeMerge();

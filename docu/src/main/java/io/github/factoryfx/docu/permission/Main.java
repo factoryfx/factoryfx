@@ -6,8 +6,8 @@ import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
-import io.github.factoryfx.jetty.JettyServerBuilder;
 import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
 import io.github.factoryfx.server.Microservice;
@@ -32,9 +32,11 @@ public class Main {
             factory.server.set(ctx.get(JettyServerFactory.class));
             return factory;
         });
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<PrinterFactory>()
-                .withHost("localhost").withPort(8005)
-                .withResource(ctx.get(PrinterMicroserviceResourceFactory.class)).build());
+        builder.addBuilder(ctx->
+            new SimpleJettyServerBuilder<Printer,PrinterFactory>()
+                    .withHost("localhost").withPort(8005)
+                    .withResource(ctx.get(PrinterMicroserviceResourceFactory.class))
+        );
         builder.addFactory(PrinterMicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
             PrinterMicroserviceResourceFactory resource = new PrinterMicroserviceResourceFactory();
             PersistentUserManagementFactory<PrinterFactory> userManagement = new PersistentUserManagementFactory<>();

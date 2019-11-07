@@ -9,12 +9,11 @@ class AttributeStorageMetadataTest {
 
     @Test
     public void test_json(){
-        AttributeStorageMetadata attributeStorageMetadataTest = new AttributeStorageMetadata("variableName","attributeClassName",true,"referenceClass");
+        AttributeStorageMetadata attributeStorageMetadataTest = new AttributeStorageMetadata("variableName","attributeClassName","referenceClass");
         AttributeStorageMetadata copy  = ObjectMapperBuilder.build().copy(attributeStorageMetadataTest);
 
         assertEquals("variableName",copy.variableName);
         assertEquals("attributeClassName",copy.attributeClassName);
-        assertTrue(copy.isReference);
         assertEquals("referenceClass",copy.referenceClass);
 
     }

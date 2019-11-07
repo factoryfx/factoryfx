@@ -5,11 +5,11 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import io.github.factoryfx.example.client.RichClientBuilder;
 import io.github.factoryfx.example.server.ServerBuilder;
-import io.github.factoryfx.example.server.ServerRootFactory;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.MicroserviceBuilder;
 import io.github.factoryfx.factory.exception.LoggingFactoryExceptionHandler;
 import io.github.factoryfx.factory.exception.ResettingHandler;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -36,10 +36,10 @@ public class ExampleMain extends Application {
     @Override
     public void start(Stage primaryStage){
 
-        FactoryTreeBuilder<Server, ServerRootFactory> serverBuilder = new ServerBuilder().builder();
-        MicroserviceBuilder<Server, ServerRootFactory> builder = serverBuilder.microservice().
-                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, ServerRootFactory>()));
-        Microservice<Server, ServerRootFactory> microservice = builder.build();
+        FactoryTreeBuilder<Server, JettyServerRootFactory> serverBuilder = new ServerBuilder().builder();
+        MicroserviceBuilder<Server, JettyServerRootFactory> builder = serverBuilder.microservice().
+                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, JettyServerRootFactory>()));
+        Microservice<Server, JettyServerRootFactory> microservice = builder.build();
         microservice.start();
 
         RichClientBuilder.createFactoryBuilder(8089,primaryStage, "", "", Locale.ENGLISH,serverBuilder,builder.buildMigrationManager()).

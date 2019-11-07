@@ -5,17 +5,15 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.typescript.generator.data.*;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 
-import java.awt.*;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,8 +43,8 @@ public class TsGeneratorTest {
     @Test
     public void smoketest_jettyserver(@TempDir Path targetDir)  {
         FactoryTreeBuilder<Server, TestHttpServer> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<TestHttpServer>()
-                .withHost("localhost").withPort(8005).build());
+        builder.addBuilder(ctx-> new SimpleJettyServerBuilder<Server, TestHttpServer>()
+                .withHost("localhost").withPort(8005));
 
 
         HashSet<Class<?>> factoryClasses = new HashSet<>();

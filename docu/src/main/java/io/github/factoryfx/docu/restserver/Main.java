@@ -1,11 +1,10 @@
 package io.github.factoryfx.docu.restserver;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
-import io.github.factoryfx.jetty.JettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +24,10 @@ public class Main {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        FactoryTreeBuilder< Server,SimpleHttpServer> builder = new FactoryTreeBuilder<>(SimpleHttpServer.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<SimpleHttpServer>()
-                .withHost("localhost").withPort(8005)
-                .withResource(ctx.get(WebResourceFactory.class)).build());
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder(
+                (jetty,ctx)-> jetty.withHost("localhost").withPort(8005).withResource(ctx.get(WebResourceFactory.class))
+        );
+
 
         builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{
             String time = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy HH:mm:ss.SSS").toFormatter().format(LocalDateTime.now());
@@ -37,7 +36,7 @@ public class Main {
             return webResourceFactory;
         });
 
-        Microservice<Server,SimpleHttpServer> microservice = builder.microservice().build();
+        Microservice<Server,JettyServerRootFactory> microservice = builder.microservice().build();
         microservice.start();
 
         HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();

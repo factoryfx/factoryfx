@@ -27,7 +27,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
         List<FO> newFactories =  factoryTreeBuilder.buildSubTrees(clazz);
         ArrayList<FO> result = new ArrayList<>(newFactories);
         if(result.isEmpty()){
-            FactoryMetadata<R,LO, FO> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
+            FactoryMetadata<R, FO> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
             FO instance = factoryMetadata.newInstance();
             factoryMetadata.setAttributeReferenceClasses(instance);
             result.add(instance);

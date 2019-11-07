@@ -9,6 +9,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.microservice.rest.MicroserviceResourceFactory;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
@@ -16,7 +17,7 @@ import io.github.factoryfx.server.Microservice;
 
 import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import io.github.factoryfx.server.user.persistent.UserFactory;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -51,9 +52,9 @@ public class MicroserviceRestIntegrationTest {
         root.setLevel(Level.INFO);
 
         FactoryTreeBuilder<Server, TestJettyServer> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>()
-                .withHost("localhost").withPort(34579)
-                .withResource(ctx.get(MicroserviceResourceFactory.class)).build());
+        builder.addBuilder(ctx -> new SimpleJettyServerBuilder<Server, TestJettyServer>()
+                .withHost("localhost").withPort(34579).withResource(ctx.get(MicroserviceResourceFactory.class)));
+
 
         builder.addFactory(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
             final MicroserviceResourceFactory<TestJettyServer> microserviceResource = new MicroserviceResourceFactory<>();

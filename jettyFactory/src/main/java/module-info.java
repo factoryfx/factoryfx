@@ -20,4 +20,5 @@ module io.github.factoryfx.jettyFactory {
 
     exports io.github.factoryfx.jetty;
     exports io.github.factoryfx.jetty.ssl;
+    exports io.github.factoryfx.jetty.builder;
 }

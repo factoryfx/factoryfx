@@ -1,41 +1,25 @@
 package io.github.factoryfx.dom.rest;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.jetty.JettyServerBuilder;
-import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.client.ClientConfig;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class MicroserviceDomResourceTest {
-    public static class JettyServerRootFactory extends JettyServerFactory<JettyServerRootFactory> {
-
-    }
-
 
     @Test
     @SuppressWarnings("unchecked")
@@ -45,9 +29,9 @@ class MicroserviceDomResourceTest {
 
 
 
-        FactoryTreeBuilder<Server, JettyServerRootFactory> builder = new FactoryTreeBuilder<>(JettyServerRootFactory.class, ctx->{
-            return new JettyServerBuilder<JettyServerRootFactory>().withHost("localhost").withPort(8015).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class)).buildTo(new JettyServerRootFactory());
-        });
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->
+            new SimpleJettyServerBuilder<Server,JettyServerRootFactory>().withHost("localhost").withPort(8015).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
+        );
         builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 
         Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();

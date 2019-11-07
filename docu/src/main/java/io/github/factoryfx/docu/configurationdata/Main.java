@@ -1,9 +1,9 @@
 package io.github.factoryfx.docu.configurationdata;
 
 import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClient;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClientBuilder;
 import io.github.factoryfx.server.Microservice;
@@ -14,10 +14,12 @@ import java.nio.file.Paths;
 public class Main {
 
     public static void main(String[] args) {
-        FactoryTreeBuilder< Server,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx-> new JettyServerBuilder<RootFactory>()
-                .withHost("localhost").withPort(8005)
-                .withResource(ctx.get(SpecificMicroserviceResource.class))
-                .withResource(ctx.get(DatabaseResourceFactory.class)).buildTo(new RootFactory()));
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
+                    .withHost("localhost").withPort(8005)
+                    .withResource(ctx.get(SpecificMicroserviceResource.class))
+                    .withResource(ctx.get(DatabaseResourceFactory.class))
+                );
+
         builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);
 
         builder.addFactory(DatabaseResourceFactory.class, Scope.SINGLETON, ctx->{
@@ -28,18 +30,18 @@ public class Main {
             return databaseResource;
         });
 
-        Microservice<Server,RootFactory> microservice = builder.microservice().withFilesystemStorage(Paths.get("./docu/src/main/java/io/github/factoryfx/docu/configurationdata/")).build();
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().withFilesystemStorage(Paths.get("./docu/src/main/java/io/github/factoryfx/docu/configurationdata/")).build();
         microservice.start();
 
         {
-            DataUpdate<RootFactory> update = microservice.prepareNewFactory();
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
             update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
             microservice.updateCurrentFactory(update);
         }
 
         {
-            MicroserviceRestClient<RootFactory> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost", 8005, "", "", RootFactory.class);
-            DataUpdate<RootFactory> update = microserviceRestClient.prepareNewFactory();
+            MicroserviceRestClient<JettyServerRootFactory> microserviceRestClient = MicroserviceRestClientBuilder.build("localhost", 8005, "", "", JettyServerRootFactory.class);
+            DataUpdate<JettyServerRootFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.getResource(DatabaseResourceFactory.class).url.set("jdbc:postgresql://host/databasenew");
             microservice.updateCurrentFactory(update);
         }

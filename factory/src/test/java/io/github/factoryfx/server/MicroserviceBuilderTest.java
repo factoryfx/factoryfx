@@ -1,5 +1,6 @@
 package io.github.factoryfx.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
@@ -45,7 +46,7 @@ public class MicroserviceBuilderTest {
         });
         YAMLFactory yamlFactory = new YAMLFactory();
         yamlFactory.disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID);
-        Microservice<ExampleLiveObjectA, ExampleFactoryA> microservice = builder.microservice(ObjectMapperBuilder.buildNew(yamlFactory)).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();
+        Microservice<ExampleLiveObjectA, ExampleFactoryA> microservice = builder.microservice(ObjectMapperBuilder.buildNew(new ObjectMapper(yamlFactory))).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();
         microservice.start();
 //        for (File file : folder.getRoot().listFiles()[0]) {
 //            System.out.println(file.getAbsoluteFile());

@@ -1,10 +1,12 @@
 package io.github.factoryfx.soap;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerBuilder;
-import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.ServletAndPathFactory;
+import io.github.factoryfx.jetty.builder.JettyServerBuilder;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.soap.server.SoapJettyServerFactory;
 import io.github.factoryfx.soap.example.*;
@@ -32,9 +34,15 @@ public class SoapTest {
     public void test() throws Exception {
 
         FactoryTreeBuilder<Server, SoapJettyServerFactory> builder = new FactoryTreeBuilder<>(SoapJettyServerFactory.class);
-        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>()
-                .withHost("localhost").withPort(8088).removeDefaultJerseyServlet()
-                .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
+//        builder.addFactory(JettyServerFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuilder<>()
+//                .withHost("localhost").withPort(8088).removeDefaultJerseyServlet()
+//                .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
+
+        builder.addBuilder(ctx->{
+            return new SimpleJettyServerBuilder<Server, SoapJettyServerFactory>()
+                    .withHost("localhost").withPort(8088)
+                    .withServlet(new FactoryTemplateId<>("soap",null),"/*", ctx.get(SoapHandlerFactory.class));
+        });
 
         builder.addFactory(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{
             SoapHandlerFactory<HelloWorld, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();

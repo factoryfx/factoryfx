@@ -3,9 +3,10 @@
 The FactoryFX web application provides a configuration GUI for changing the configuration attributes.
 Design goals are little boilerplate and easy setup to be helpful for beginners. 
 
-dependency:
-domFactoryEditing
+## Maven dependency
+domFactoryEditing, microserviceRestResource
 
+## Setup
 adding the resource
 ```java 
 .withResource(ctx.get(MicroserviceDomResourceFactory.class)

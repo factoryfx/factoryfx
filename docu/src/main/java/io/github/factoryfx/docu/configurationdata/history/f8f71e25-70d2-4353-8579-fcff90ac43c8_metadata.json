@@ -1,0 +1,264 @@
+{
+  "creationTime" : "2019-10-25T13:47:31.4002916",
+  "id" : "f8f71e25-70d2-4353-8579-fcff90ac43c8",
+  "user" : "System",
+  "comment" : "initial factory",
+  "baseVersionId" : "f18b99a0-a226-4bf4-89ff-4660e700415c",
+  "dataStorageMetadataDictionary" : {
+    "dataList" : [ {
+      "attributes" : [ {
+        "variableName" : "url",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "user",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "password",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringAttribute",
+        "isReference" : false,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.docu.configurationdata.DatabaseResourceFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "userManagement",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute",
+        "isReference" : true,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.docu.configurationdata.SpecificMicroserviceResource",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ ],
+      "className" : "io.github.factoryfx.factory.AttributelessFactory",
+      "count" : 3,
+      "singleton" : false
+    }, {
+      "attributes" : [ {
+        "variableName" : "minGzipSize",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.primitive.IntegerAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "compressionLevel",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.primitive.IntegerAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "deflaterPoolCapacity",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.primitive.IntegerAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "dispatcherTypes",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.EnumListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "excludedAgentPatterns",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "excludedMethods",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "excludedMimeTypes",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "excludedPaths",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "includedAgentPatterns",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "includedMethods",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "includedMimeTypes",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "includedPaths",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringListAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "inflateBufferSize",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.primitive.IntegerAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "syncFlush",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.primitive.BooleanAttribute",
+        "isReference" : false,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.GzipHandlerFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "handlers",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute",
+        "isReference" : true,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.HandlerCollectionFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "host",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "port",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.primitive.IntegerAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "ssl",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryAttribute",
+        "isReference" : true,
+        "referenceClass" : "io.github.factoryfx.jetty.ssl.SslContextFactoryFactory",
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.HttpServerConnectorFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "objectMapper",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute",
+        "isReference" : true,
+        "removed" : false
+      }, {
+        "variableName" : "restLogging",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute",
+        "isReference" : true,
+        "removed" : false
+      }, {
+        "variableName" : "additionalJaxrsComponents",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute",
+        "isReference" : true,
+        "removed" : false
+      }, {
+        "variableName" : "resources",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute",
+        "isReference" : true,
+        "removed" : false
+      }, {
+        "variableName" : "exceptionMapper",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute",
+        "isReference" : true,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.JerseyServletFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "pathSpec",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.types.StringAttribute",
+        "isReference" : false,
+        "removed" : false
+      }, {
+        "variableName" : "servlet",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute",
+        "isReference" : true,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.ServletAndPathFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "updatableRootServlet",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryAttribute",
+        "isReference" : true,
+        "referenceClass" : "io.github.factoryfx.jetty.UpdateableServletFactory",
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.ServletContextHandlerFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "servletAndPaths",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute",
+        "isReference" : true,
+        "referenceClass" : "io.github.factoryfx.jetty.ServletAndPathFactory",
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.UpdateableServletFactory",
+      "count" : 1,
+      "singleton" : true
+    }, {
+      "attributes" : [ {
+        "variableName" : "connectors",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute",
+        "isReference" : true,
+        "referenceClass" : "io.github.factoryfx.jetty.HttpServerConnectorFactory",
+        "removed" : false
+      }, {
+        "variableName" : "handler",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryAttribute",
+        "isReference" : true,
+        "referenceClass" : "io.github.factoryfx.jetty.HandlerCollectionFactory",
+        "removed" : false
+      }, {
+        "variableName" : "threadPool",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute",
+        "isReference" : true,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.builder.JettyServerRootFactory",
+      "count" : 1,
+      "singleton" : true
+    } ],
+    "rootClass" : "io.github.factoryfx.jetty.builder.JettyServerRootFactory",
+    "rootDataStorageMetadata" : {
+      "attributes" : [ {
+        "variableName" : "connectors",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute",
+        "isReference" : true,
+        "referenceClass" : "io.github.factoryfx.jetty.HttpServerConnectorFactory",
+        "removed" : false
+      }, {
+        "variableName" : "handler",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryAttribute",
+        "isReference" : true,
+        "referenceClass" : "io.github.factoryfx.jetty.HandlerCollectionFactory",
+        "removed" : false
+      }, {
+        "variableName" : "threadPool",
+        "attributeClassName" : "io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute",
+        "isReference" : true,
+        "removed" : false
+      } ],
+      "className" : "io.github.factoryfx.jetty.builder.JettyServerRootFactory",
+      "count" : 1,
+      "singleton" : true
+    }
+  }
+}

@@ -101,11 +101,6 @@
     </Match>
 
     <Match>
-        <Class name="io.github.factoryfx.docu.swagger.RestClient" />
-        <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL" />
-    </Match>
-
-    <Match>
         <Package name="io.github.factoryfx.factory.datastorage.oracle"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
@@ -144,6 +139,12 @@
         <Class name="io.github.factoryfx.dom.rest.MicroserviceDomResource" />
         <Bug pattern="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" />
     </Match>
+
+    <Match>
+        <Class name="io.github.factoryfx.factory.typescript.generator.ts.TsClassTemplateBased" />
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
+    </Match>
+
 
 
 </FindBugsFilter>

@@ -5,4 +5,8 @@ Or the existing configuration interface exposes too many unwanted settings.
 
 In this example, a REST API is created that provides a simplified configuration.
 The simplified configuration only allows changing the tcp port.
+
+## Maven dependency
+jettyFactory
+
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/customconfig)

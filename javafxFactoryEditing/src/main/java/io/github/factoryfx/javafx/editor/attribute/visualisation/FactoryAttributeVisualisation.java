@@ -136,7 +136,7 @@ public class FactoryAttributeVisualisation<T extends FactoryBase<?,?>, A extends
                 referenceSetter.accept(newData.get(0));
                 navigateToData.accept(newData.get(0));
             } else {
-                new SelectDataDialog<T>(newData,uniformDesign).show(owner, data -> {
+                new SelectDataDialog<>(newData,uniformDesign).show(owner, data -> {
                     referenceSetter.accept(data);
                     navigateToData.accept(data);
                 });
