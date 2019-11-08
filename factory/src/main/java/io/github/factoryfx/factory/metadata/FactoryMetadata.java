@@ -261,7 +261,9 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         F data = newInstance();
         setAttributeReferenceClasses(data);
         ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
-        visitAttributesFlat(data, (attributeVariableName, attribute) -> attributes.add(attribute.createAttributeStorageMetadata(attributeVariableName)));
+        visitAttributesFlat(data, (attributeVariableName, attribute) -> {
+            attributes.add(attribute.createAttributeStorageMetadata(attributeVariableName));
+        });
         return new DataStorageMetadata(attributes,clazz.getName(),count);
     }
 

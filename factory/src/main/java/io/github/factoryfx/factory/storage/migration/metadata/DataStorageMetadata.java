@@ -138,13 +138,15 @@ public class DataStorageMetadata {
 
             factory.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 AttributeStorageMetadata attributeMetadata = getAttribute(attributeVariableName);
-                if (!attributeMetadata.attributeClassName.equals(attribute.getClass().getName())){
-                    attributeMetadata.markRetyped();
-                }
-
-                if (attribute instanceof ReferenceBaseAttribute){
-                    if (!attributeMetadata.referenceClass.equals(((ReferenceBaseAttribute)attribute).internal_getReferenceClass().getName())) {
+                if (attributeMetadata!=null) { //not a  removed attribute
+                    if (!attributeMetadata.attributeClassName.equals(attribute.getClass().getName())) {
                         attributeMetadata.markRetyped();
+                    }
+
+                    if (attribute instanceof ReferenceBaseAttribute){
+                        if (!attributeMetadata.referenceClass.equals(((ReferenceBaseAttribute)attribute).internal_getReferenceClass().getName())) {
+                            attributeMetadata.markRetyped();
+                        }
                     }
                 }
             });

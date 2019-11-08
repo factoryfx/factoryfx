@@ -1,9 +1,12 @@
 package io.github.factoryfx.factory.builder;
 
+import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.server.Microservice;
@@ -100,6 +103,15 @@ public class AddFactoryViewAttributeMigrationTest {
                 return viewFactory;
             });
 
+            System.out.println(ObjectMapperBuilder.build().writeValueAsString(builder.buildTree().internal().createDataStorageMetadataDictionaryFromRoot()));
+
+
+new NestedFactory().internal().visitAttributesFlat(new AttributeVisitor() {
+    @Override
+    public void accept(String attributeVariableName, Attribute<?, ?> attribute) {
+        System.out.println(attribute);
+    }
+});
 
             Microservice<Void, ServerFactoryOld> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
