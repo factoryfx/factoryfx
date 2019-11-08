@@ -189,7 +189,7 @@ public class UpdateableServletTest {
 
                 UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
                 resource.response.set("123");
-                ServletContextHandlerFactory<JettyServerRootFactory> servletContextHandler = (ServletContextHandlerFactory<JettyServerRootFactory>) ( update.root.handler.get().handlers.get(1));
+                ServletContextHandlerFactory<JettyServerRootFactory> servletContextHandler = update.root.getDefaultServletContextHandlerFactory();
                 JerseyServletFactory<JettyServerRootFactory> jerseyServletFactory = new JerseyServletFactory<>();
                 jerseyServletFactory.restLogging.set(AttributelessFactory.create(Slf4LoggingFeature.class));
                 jerseyServletFactory.resources.add(resource);

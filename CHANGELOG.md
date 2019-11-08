@@ -1,3 +1,49 @@
+# 2.2.0
+
+* **redesigned  jetty server builder:** 
+the new builder integrates into the factory tree builder
+
+* factory JettyServerFactory.class registration
+    old 
+    ```java
+    addFactory(JettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
+                .withHostWildcard()
+                .withResource(ctx.get(ResourceFactory.class));
+                .build());
+    ```
+    new
+    ```java          
+    builder.addBuilder(ctx->new SimpleJettyServerBuilder<Root,RootFactory>()
+            .withHostWildcard()
+            .withResource(ctx.get(ResourceFactory.class))      
+    ```          
+* derived factory from JettyServerFactory.class registration
+    old 
+    ```java
+    addFactory(DerivedJettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
+                .withHostWildcard()
+                .withResource(ctx.get(ResourceFactory.class)).
+                .build());
+    ```
+    new
+    ```java          
+    builder.addBuilder(ctx->new JettyServerBuilder<Root,RootFactory>(new FactoryTemplateId<>(null, DerivedJettyServerFactory.class), DerivedJettyServerFactory::new)
+            .withHostWildcard()
+            .withResource(ctx.get(ResourceFactory.class))        
+    ```  
+* root factory is JettyServerFactory
+    new
+    ```java          
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
+                    .withHost("localhost").withPort(8005)
+                    .withResource(ctx.get(ResourceFactory.class))
+                );
+
+        builder.addFactory(ResourceFactory.class, Scope.SINGLETON);  
+    ```  
+    This is the recommended solution if the application is mainly used as jetty/REST server.
+   
+
 # 2.1.0
 
 * **configuration web application:** new configuration via web application

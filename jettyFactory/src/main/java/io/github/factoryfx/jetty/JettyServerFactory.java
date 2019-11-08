@@ -1,9 +1,12 @@
 package io.github.factoryfx.jetty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
+import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -45,6 +48,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
     public final FactoryListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
     public final FactoryAttribute<HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryAttribute<HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
     public final FactoryPolymorphicAttribute<ThreadPool> threadPool = new FactoryPolymorphicAttribute<ThreadPool>().labelText("Thread Pool").nullable();
+
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
@@ -112,7 +116,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
      */
     @SuppressWarnings("unchecked")
     public final <T extends FactoryBase> T getServlet(Class<T> clazz){
-        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(ServletContextHandlerFactory.class);
+        ServletContextHandlerFactory<R> servletContextHandler = getDefaultServletContextHandlerFactory();
         for (ServletAndPathFactory<R> servletAndPath : servletContextHandler.updatableRootServlet.get().servletAndPaths) {
             if (servletAndPath.servlet.get().getClass()==clazz){
                 return (T)servletAndPath.servlet.get();
@@ -127,9 +131,15 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
 
     @SuppressWarnings("unchecked")
     private JerseyServletFactory<R> getDefaultJerseyServlet() {
-        ServletContextHandlerFactory<R> servletContextHandler = (ServletContextHandlerFactory<R>) handler.get().handlers.get(ServletContextHandlerFactory.class);
+        ServletContextHandlerFactory<R> servletContextHandler = getDefaultServletContextHandlerFactory();
         ServletAndPathFactory<R> servletAndPathFactory = servletContextHandler.updatableRootServlet.get().servletAndPaths.get(0);
         return (JerseyServletFactory<R>) servletAndPathFactory.servlet.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    @JsonIgnore
+    public ServletContextHandlerFactory<R> getDefaultServletContextHandlerFactory() {
+        return (ServletContextHandlerFactory<R>)((handler.get().handlers.get(GzipHandlerFactory.class)).handler.get());
     }
 
     public void start(Server server) throws Error {

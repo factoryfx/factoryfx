@@ -143,7 +143,6 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
                 handlerCollection.handlers.add(firstHandler);
             }
             handlerCollection.handlers.add(ctx.get(gzipHandlerFactoryTemplateId));
-            handlerCollection.handlers.add(ctx.get(servletContextHandlerFactoryTemplateId));
             return handlerCollection;
         });
 
@@ -155,6 +154,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
             gzipHandler.dispatcherTypes.add(DispatcherType.REQUEST);
             gzipHandler.inflateBufferSize.set(-1);
             gzipHandler.syncFlush.set(false);
+            gzipHandler.handler.set(ctx.get(servletContextHandlerFactoryTemplateId));
             return gzipHandler;
         });
 

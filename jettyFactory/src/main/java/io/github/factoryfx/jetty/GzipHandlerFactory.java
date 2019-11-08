@@ -1,5 +1,6 @@
 package io.github.factoryfx.jetty;
 
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
@@ -12,7 +13,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import javax.servlet.DispatcherType;
 
 public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
-//    public final FactoryPolymorphicAttribute<R,Handler> handler = new FactoryPolymorphicAttribute<R,Handler>(Handler.class).labelText("Handler");
+    public final FactoryPolymorphicAttribute<Handler> handler = new FactoryPolymorphicAttribute<Handler>().labelText("Handler");
     public final IntegerAttribute minGzipSize = new IntegerAttribute().labelText("minGzipSize");
     public final IntegerAttribute compressionLevel = new IntegerAttribute().labelText("compressionLevel");
     public final IntegerAttribute deflaterPoolCapacity = new IntegerAttribute().labelText("deflaterPoolCapacity");
@@ -47,7 +48,9 @@ public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicF
         gzipHandler.setInflateBufferSize(inflateBufferSize.get());
         gzipHandler.setSyncFlush(syncFlush.get());
 
-//        gzipHandler.setHandler(handler.instance());
+        gzipHandler.setHandler(handler.instance());
+//        gzipHandler.setHandler(new GzipHandler());
+        gzipHandler.setHandler(handler.instance());
         return gzipHandler;
     }
 }
