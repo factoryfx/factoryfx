@@ -93,13 +93,25 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
 
     /**
      * adds a servlet
-     * @param templateId templateId
+     * @param templateId templateId for the servlet
      * @param pathSpec pathSpec
      * @param servlet servlet
      * @return builder
      */
     public JettyServerBuilder<L,R, JR> withServlet(FactoryTemplateId<ServletAndPathFactory<R>> templateId, String pathSpec, FactoryBase<? extends Servlet, R> servlet){
         additionalServletBuilders.add(new ServletBuilder<>(templateId,pathSpec,servlet));
+        return this;
+    }
+
+    /**
+     * adds a servlet
+     * @param servlet servlet
+     * @param pathSpec pathSpec
+     * @param name builder unique name, used in the builder to associate match the templates
+     * @return builder
+     */
+    public JettyServerBuilder<L,R, JR> withServlet(FactoryBase<? extends Servlet, R> servlet, String pathSpec, String name){
+        additionalServletBuilders.add(new ServletBuilder<>(new FactoryTemplateId<>(null,name),pathSpec,servlet));
         return this;
     }
 
