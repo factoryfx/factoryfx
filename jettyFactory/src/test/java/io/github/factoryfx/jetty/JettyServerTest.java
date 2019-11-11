@@ -29,6 +29,8 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
 import io.github.factoryfx.factory.AttributelessFactory;
+import io.github.factoryfx.factory.merge.DataMerger;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.builder.Scope;
@@ -308,6 +310,41 @@ public class JettyServerTest {
             return new Resource1Factory();
         });
     }
+
+    @Test
+    public void test_double_build() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),"/new/*");
+        });
+        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
+            return new Resource1Factory();
+        });
+
+        builder.buildTreeUnvalidated();
+        builder.buildTreeUnvalidated();
+    }
+
+    @Test
+    public void test_rebuild() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),"/new/*");
+        });
+        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
+            return new Resource1Factory();
+        });
+        JettyServerRootFactory root = builder.buildTreeUnvalidated();
+
+        JettyServerRootFactory rebuildRoot = builder.rebuildTreeUnvalidated(root);
+
+
+        DataMerger<JettyServerRootFactory> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
+        MergeDiffInfo<JettyServerRootFactory> exampleFactoryAMergeDiffInfo = merge.mergeIntoCurrent((p) -> true);
+        Assertions.assertEquals(0,exampleFactoryAMergeDiffInfo.mergeInfos.size());
+        Assertions.assertEquals(0,exampleFactoryAMergeDiffInfo.conflictInfos.size());
+
+    }
+
+
 
 
 

@@ -69,7 +69,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return result;
     }
 
-    public <F extends FactoryBase<?,R>> F get(FactoryTemplateId<R,F> factoryTemplateId){
+    public <F extends FactoryBase<?,R>> F get(FactoryTemplateId<F> factoryTemplateId){
         F result = get(fc -> fc.match(factoryTemplateId.clazz,factoryTemplateId.name));
         if (result==null){
             throw new IllegalStateException("builder missing, factory: "+factoryTemplateId.clazz+ " name: "+factoryTemplateId.name);

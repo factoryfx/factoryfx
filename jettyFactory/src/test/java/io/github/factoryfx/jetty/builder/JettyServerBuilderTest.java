@@ -7,6 +7,7 @@ import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.jetty.JerseyServletFactoryTest;
+import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -191,5 +192,50 @@ public class JettyServerBuilderTest {
         Assertions.assertThrows(IllegalStateException.class, builder::buildTree);
     }
 
+
+
+
+    public static class Test2ResourceFactory extends SimpleFactoryBase<TestResource, JettyServerRootFactory> {
+        @Override
+        protected TestResource createImpl() {
+            return new TestResource("1");
+        }
+    }
+
+
+    @Test
+    public void test_multiple_connectors() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty,ctx)->{
+            jetty
+            .withResource(ctx.get(Test2ResourceFactory.class))
+            .withAdditionalConnector(connector-> connector.withHost("localhost").withPort(8087),"connector1")
+            .withAdditionalConnector(connector-> connector.withHost("localhost").withPort(8088),"connector2");
+
+        });
+        builder.addFactory(Test2ResourceFactory.class,Scope.SINGLETON);
+
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        microservice.start();
+
+        try {
+            {
+                HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+                HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087")).build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assertions.assertEquals("1", response.body());
+            }
+
+            {
+                HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+                HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8088")).build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                Assertions.assertEquals("1", response.body());
+            }
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            microservice.stop();
+        }
+    }
 
 }

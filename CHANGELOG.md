@@ -1,9 +1,17 @@
 # 2.2.0
 
-* **redesigned  jetty server builder:** 
-the new builder integrates into the factory tree builder
+### Features
 
-* factory JettyServerFactory.class registration
+* **migration improvements:**  
+  * restore data with path to ListAttribute
+  * support for attribute type change
+
+### BREAKING CHANGES
+
+* **redesigned  jetty server builder:**  
+  improved builder integration  into the FactoryTreeBuilder
+
+  * factory JettyServerFactory.class registration  
     old 
     ```java
     addFactory(JettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
@@ -17,7 +25,7 @@ the new builder integrates into the factory tree builder
             .withHostWildcard()
             .withResource(ctx.get(ResourceFactory.class))      
     ```          
-* derived factory from JettyServerFactory.class registration
+  * derived factory from JettyServerFactory.class registration  
     old 
     ```java
     addFactory(DerivedJettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
@@ -31,7 +39,7 @@ the new builder integrates into the factory tree builder
             .withHostWildcard()
             .withResource(ctx.get(ResourceFactory.class))        
     ```  
-* root factory is JettyServerFactory
+  * root factory is JettyServerFactory  
     new
     ```java          
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
@@ -41,15 +49,19 @@ the new builder integrates into the factory tree builder
 
         builder.addFactory(ResourceFactory.class, Scope.SINGLETON);  
     ```  
-    This is the recommended solution if the application is mainly used as jetty/REST server.
+    This is the recommended solution if the application is primarily used as jetty/REST server.
+   
+* **gzip handler used as wrapper**   
+  GzipHandler is removed from the HandlerCollection and is now used as a wrapper.
+  This affect factory model navigation to resources.
    
 
 # 2.1.0
 
+### Features
+
 * **configuration web application:** new configuration via web application
   [Quickstart](docu/src/main/java/io/github/factoryfx/docu/configurationwebapp)  
-
-
 
 ### BREAKING CHANGES
 
@@ -82,8 +94,6 @@ the new builder integrates into the factory tree builder
 
 * **renamed subproject**  
   From microserviceRestServer to microserviceRest**Resource**
-
-### Features
 
 # 2.0.6
 

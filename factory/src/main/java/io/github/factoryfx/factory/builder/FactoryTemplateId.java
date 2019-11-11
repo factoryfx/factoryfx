@@ -7,10 +7,9 @@ import java.util.Objects;
 /**
  * describes a factory template in a {@link FactoryTreeBuilder}
  * must be unique in {@link FactoryTreeBuilder}
- * @param <R>
- * @param <F>
+ * @param <F> factory
  */
-public class FactoryTemplateId<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> {
+public class FactoryTemplateId<F extends FactoryBase<?,?>> {
     public final Class<F> clazz;
     public final String name;
 
@@ -23,6 +22,10 @@ public class FactoryTemplateId<R extends FactoryBase<?,R>,F extends FactoryBase<
     public FactoryTemplateId(String name, Class<?> clazz) {
         this.clazz = (Class<F>) clazz;
         this.name = name;
+
+        if (name==null && clazz==null){
+            throw new IllegalArgumentException("both parameter are null");
+        }
     }
 
     /**
@@ -32,6 +35,12 @@ public class FactoryTemplateId<R extends FactoryBase<?,R>,F extends FactoryBase<
     public FactoryTemplateId(Class<F> clazz, String name) {
         this.clazz = clazz;
         this.name = name;
+    }
+
+    @SuppressWarnings("unchecked")
+    public FactoryTemplateId(F factory) {
+        this.clazz = factory.internal().isTreeBuilderClassUsed()? (Class<F>) factory.getClass() :null;
+        this.name = factory.internal().getTreeBuilderName();;
     }
 
     public boolean match(Class<?> clazzMatch, String name) {
@@ -58,5 +67,18 @@ public class FactoryTemplateId<R extends FactoryBase<?,R>,F extends FactoryBase<
     public void serializeTo(F factory) {
         factory.internal().setTreeBuilderName(name);
         factory.internal().setTreeBuilderClassUsed(clazz!=null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FactoryTemplateId<?> that = (FactoryTemplateId<?>) o;
+        return Objects.equals(clazz, that.clazz) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clazz, name);
     }
 }

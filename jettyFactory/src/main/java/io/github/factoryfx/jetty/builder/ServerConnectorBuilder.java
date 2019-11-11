@@ -17,9 +17,9 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
     int port=8080;
     SslContextFactoryFactory<R> ssl;
 
-    private final FactoryTemplateId<R,HttpServerConnectorFactory<R>> connectorTemplateId;
+    private final FactoryTemplateId<HttpServerConnectorFactory<R>> connectorTemplateId;
 
-    public ServerConnectorBuilder(FactoryTemplateId<R,HttpServerConnectorFactory<R>> connectorTemplateId) {
+    public ServerConnectorBuilder(FactoryTemplateId<HttpServerConnectorFactory<R>> connectorTemplateId) {
         this.connectorTemplateId = connectorTemplateId;
     }
 
@@ -87,7 +87,7 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
 
     }
 
-    FactoryTemplateId<R,HttpServerConnectorFactory<R>> getTemplateId() {
+    FactoryTemplateId<HttpServerConnectorFactory<R>> getTemplateId() {
         return this.connectorTemplateId;
     }
 }

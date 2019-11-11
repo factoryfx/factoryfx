@@ -32,13 +32,13 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
 
     private final FactoryContext<R> factoryContext = new FactoryContext<>();
-    protected final FactoryTemplateId<R,R> rootTemplateId;
+    protected final FactoryTemplateId<R> rootTemplateId;
 
-    protected FactoryTreeBuilder(FactoryTemplateId<R,R> rootTemplateId, boolean workaround) {
+    protected FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, boolean workaround) {
         this.rootTemplateId = rootTemplateId;
     }
 
-    public FactoryTreeBuilder(FactoryTemplateId<R,R> rootTemplateId, Function<FactoryContext<R>, R> creator) {
+    public FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, Function<FactoryContext<R>, R> creator) {
         this.rootTemplateId=rootTemplateId;
         addFactory(rootTemplateId,Scope.SINGLETON,creator);
     }
@@ -54,7 +54,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         }
     }
 
-    public <F extends FactoryBase<?,R>> void addFactory(FactoryTemplateId<R,F> templateId, Scope scope, Function<FactoryContext<R>, F> creator){
+    public <F extends FactoryBase<?,R>> void addFactory(FactoryTemplateId<F> templateId, Scope scope, Function<FactoryContext<R>, F> creator){
         factoryContext.addFactoryCreator(new FactoryCreator<>(templateId,scope,creator));
     }
 
@@ -116,6 +116,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
             NestedBuilder<L,R> nestedBuilder = customBuildersCreator.apply(factoryContext);
             nestedBuilder.internal_build(this);
         }
+        customBuildersCreators.clear();//only add once
         this.rootFactory = factoryContext.get(rootTemplateId);
         if (rootFactory==null){
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootTemplateId.clazz);
@@ -182,16 +183,21 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         rootFactory=null;
         R rootRebuild = this.buildTreeUnvalidated();
 
-        Map<Class<?>,FactoryBase<?, R>> singletons = new HashMap<>();
+        Map<FactoryTemplateId,List<FactoryBase<?, R>>> existingFactories = new HashMap<>();
         for (FactoryBase<?, R> factory: root.internal().collectChildrenDeep()) {
-            if (Strings.isNullOrEmpty(factory.internal().getTreeBuilderName())){
-                singletons.put(factory.getClass(),factory);
+
+            FactoryTemplateId<? extends FactoryBase<?, R>> factoryBaseFactoryTemplateId = new FactoryTemplateId<>(factory);
+            if (!existingFactories.containsKey(factoryBaseFactoryTemplateId)){
+                existingFactories.put(factoryBaseFactoryTemplateId,new ArrayList<>());
             }
+            existingFactories.get(factoryBaseFactoryTemplateId).add(factory);
         }
 
         for (FactoryBase<?, R> factory: rootRebuild.internal().collectChildrenDeep()) {
-            if (Strings.isNullOrEmpty(factory.internal().getTreeBuilderName())) {
-                factory.setId(singletons.get(factory.getClass()).getId());
+            FactoryTemplateId<? extends FactoryBase<?, R>> templateId = new FactoryTemplateId<>(factory);
+            List<FactoryBase<?, R>> list = existingFactories.get(templateId);
+            if (list.size()==1) {
+                factory.setId(list.get(0).getId());
             }
         }
         return rootRebuild;

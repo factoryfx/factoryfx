@@ -28,13 +28,13 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
     List<FactoryBase<?,R>> resources= new ArrayList<>();
     List<FactoryBase<?,R>> jaxrsComponents= new ArrayList<>();
 
-    private FactoryTemplateId<R,ServletAndPathFactory<R>> servletAndPathFactoryTemplateId;
-    private FactoryTemplateId<R,JerseyServletFactory<R>> jerseyServletFactoryTemplateId;
-    private FactoryTemplateId<R,FactoryBase<ExceptionMapper<Throwable>,R>> exceptionMapperTemplateId;
-    private FactoryTemplateId<R,FactoryBase<ObjectMapper,R>> objectMapperTemplateId;
-    private FactoryTemplateId<R,FactoryBase<LoggingFeature,R>> loggingFeatureTemplateId;
+    private FactoryTemplateId<ServletAndPathFactory<R>> servletAndPathFactoryTemplateId;
+    private FactoryTemplateId<JerseyServletFactory<R>> jerseyServletFactoryTemplateId;
+    private FactoryTemplateId<FactoryBase<ExceptionMapper<Throwable>,R>> exceptionMapperTemplateId;
+    private FactoryTemplateId<FactoryBase<ObjectMapper,R>> objectMapperTemplateId;
+    private FactoryTemplateId<FactoryBase<LoggingFeature,R>> loggingFeatureTemplateId;
 
-    public ResourceBuilder(FactoryTemplateId<R,ServletAndPathFactory<R>> factoryTemplateId) {
+    public ResourceBuilder(FactoryTemplateId<ServletAndPathFactory<R>> factoryTemplateId) {
         this.servletAndPathFactoryTemplateId = factoryTemplateId;
 
         this.jerseyServletFactoryTemplateId = new FactoryTemplateId<>(servletAndPathFactoryTemplateId.name + "JerseyServlet", JerseyServletFactory.class);
@@ -103,7 +103,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
         return this;
     }
 
-    FactoryTemplateId<R,ServletAndPathFactory<R>> getServletAndPathFactoryTemplateId(){
+    FactoryTemplateId<ServletAndPathFactory<R>> getServletAndPathFactoryTemplateId(){
         return servletAndPathFactoryTemplateId;
     }
 

@@ -34,21 +34,22 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
     private FactoryBase<Handler, R> firstHandler;
     private int threadPoolSize=200;
 
-    private final FactoryTemplateId<R,JR> rootTemplateId;
+    private final FactoryTemplateId<JR> rootTemplateId;
     private ServerConnectorBuilder<R> defaultServerConnector;
-    private List<ResourceBuilder<R>> resourceBuilders =new ArrayList<>();
+    private List<ServerConnectorBuilder<R>> serverConnectorBuilders =new ArrayList<>();
     private ResourceBuilder<R> resourceBuilder;
+    private List<ResourceBuilder<R>> resourceBuilders =new ArrayList<>();
 
-    private final FactoryTemplateId<R,ThreadPoolFactory<R>> threadPoolFactoryTemplateId;
-    private final FactoryTemplateId<R,HandlerCollectionFactory<R>> handlerCollectionFactoryTemplateId;
-    private final FactoryTemplateId<R,GzipHandlerFactory<R>> gzipHandlerFactoryTemplateId;
-    private final FactoryTemplateId<R,ServletContextHandlerFactory<R>> servletContextHandlerFactoryTemplateId;
-    private final FactoryTemplateId<R,UpdateableServletFactory<R>> updateableServletFactoryTemplateId;
-    private final FactoryTemplateId<R,HttpServerConnectorFactory<R>> defaultServerConnectorTemplateId;
+    private final FactoryTemplateId<ThreadPoolFactory<R>> threadPoolFactoryTemplateId;
+    private final FactoryTemplateId<HandlerCollectionFactory<R>> handlerCollectionFactoryTemplateId;
+    private final FactoryTemplateId<GzipHandlerFactory<R>> gzipHandlerFactoryTemplateId;
+    private final FactoryTemplateId<ServletContextHandlerFactory<R>> servletContextHandlerFactoryTemplateId;
+    private final FactoryTemplateId<UpdateableServletFactory<R>> updateableServletFactoryTemplateId;
+    private final FactoryTemplateId<HttpServerConnectorFactory<R>> defaultServerConnectorTemplateId;
 
     private final Supplier<JR> jettyRootCreator;
 
-    public JettyServerBuilder(FactoryTemplateId<R,JR> rootTemplateId, Supplier<JR> jettyRootCreator){
+    public JettyServerBuilder(FactoryTemplateId<JR> rootTemplateId, Supplier<JR> jettyRootCreator){
         this.rootTemplateId=rootTemplateId;
         this.jettyRootCreator=jettyRootCreator;
 
@@ -61,13 +62,26 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
     }
 
     /**
+     * add a jetty connector, useful for jetty on multiple ports or support both http and ssl
      *
-     *
+     * @param connectorBuilderSetup
+     * @param name builder unique name, used in the builder to associate match the templates
+     * @return
+     */
+    public JettyServerBuilder<L,R, JR> withAdditionalConnector(Consumer<ServerConnectorBuilder<R>> connectorBuilderSetup, String name){
+        ServerConnectorBuilder<R> resourceBuilder = new ServerConnectorBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name, ServletAndPathFactory.class));
+        connectorBuilderSetup.accept(resourceBuilder);
+        serverConnectorBuilders.add(resourceBuilder);
+        return this;
+    }
+
+
+    /**
      * add a new jersey servlet with REST Resources
-     * this can be used to have different ObjectMappers/ExceptionHandler
+     * this can be used to support different ObjectMappers/ExceptionHandler
      *
      * @param resourceBuilderSetup
-     * @param name
+     * @param name builder unique name, used in the builder to associate match the templates
      * @return
      */
     public JettyServerBuilder<L,R, JR> withJersey(Consumer<ResourceBuilder<R>> resourceBuilderSetup, String name){
@@ -84,7 +98,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param servlet servlet
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withServlet(FactoryTemplateId<R,ServletAndPathFactory<R>> templateId, String pathSpec, FactoryBase<? extends Servlet, R> servlet){
+    public JettyServerBuilder<L,R, JR> withServlet(FactoryTemplateId<ServletAndPathFactory<R>> templateId, String pathSpec, FactoryBase<? extends Servlet, R> servlet){
         additionalServletBuilders.add(new ServletBuilder<>(templateId,pathSpec,servlet));
         return this;
     }
@@ -119,10 +133,10 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
             JR jettyServerFactory=jettyRootCreator.get();
             FactoryBase<ThreadPool, ?> factoryBase = ctx.get(threadPoolFactoryTemplateId);
             jettyServerFactory.threadPool.set(factoryBase);
-            if (this.defaultServerConnector!=null){
-                HttpServerConnectorFactory<R> connector = ctx.get(this.defaultServerConnector.getTemplateId());
-                jettyServerFactory.connectors.add(connector);
+            for (ServerConnectorBuilder<R> connectorBuilder : serverConnectorBuilders) {
+                jettyServerFactory.connectors.add( ctx.get(connectorBuilder.getTemplateId()));
             }
+
             jettyServerFactory.handler.set(ctx.get(handlerCollectionFactoryTemplateId));
             return jettyServerFactory;
         });
@@ -133,8 +147,8 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
             return threadPoolFactory;
         });
 
-        if (this.defaultServerConnector!=null){
-            this.defaultServerConnector.build(builder);
+        for (ServerConnectorBuilder<R> connectorBuilder : serverConnectorBuilders) {
+            connectorBuilder.build(builder);
         }
 
         builder.addFactory(handlerCollectionFactoryTemplateId, Scope.SINGLETON, (ctx)->{
@@ -197,9 +211,12 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
         resourceBuilders.add(resourceBuilder);
     }
 
+
+
     private ServerConnectorBuilder<R> getDefaultServerConnector(){
         if (this.defaultServerConnector==null){
             this.defaultServerConnector=new ServerConnectorBuilder<>(defaultServerConnectorTemplateId);
+            serverConnectorBuilders.add(defaultServerConnector);
         }
         return this.defaultServerConnector;
     }
@@ -255,7 +272,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
 
     private ResourceBuilder<R> getDefaultJersey(){
         if (this.resourceBuilder==null){
-            this.resourceBuilder=new ResourceBuilder<R>(new FactoryTemplateId<>(this.rootTemplateId.name+"DefaultResource", ServletAndPathFactory.class));
+            this.resourceBuilder=new ResourceBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+"DefaultResource", ServletAndPathFactory.class));
             addResourceBuilder(resourceBuilder);
 
         }

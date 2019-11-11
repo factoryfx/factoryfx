@@ -461,7 +461,7 @@ public class FactoryTreeBuilderTest {
     }
 
     @Test
-    public void tets_multiple_name(){
+    public void test_multiple_name(){
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA root = new ExampleFactoryA();
             root.referenceListAttribute.add(ctx.get(ExampleFactoryB.class,"1"));

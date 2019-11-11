@@ -1030,6 +1030,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public void setTreeBuilderClassUsed(boolean used) {
             factory.treeBuilderClassUsed=used;
         }
+
+        public boolean isTreeBuilderClassUsed() {
+            return factory.treeBuilderClassUsed;
+        }
+
     }
 
 

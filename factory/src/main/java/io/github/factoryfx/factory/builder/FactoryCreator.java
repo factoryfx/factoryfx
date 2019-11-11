@@ -6,12 +6,12 @@ import java.util.function.Function;
 import io.github.factoryfx.factory.FactoryBase;
 
 public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R>> {
-    private final FactoryTemplateId<R,F> templateId;
+    private final FactoryTemplateId<F> templateId;
     private final Scope scope;
     private final Function<FactoryContext<R>, F> creator;
 
 
-    public FactoryCreator(FactoryTemplateId<R,F> templateId, Scope scope, Function<FactoryContext<R>, F> creator) {
+    public FactoryCreator(FactoryTemplateId<F> templateId, Scope scope, Function<FactoryContext<R>, F> creator) {
         this.templateId = templateId;
         this.scope = scope;
         this.creator = creator;
