@@ -1,9 +1,10 @@
 package io.github.factoryfx.javafx.editor.attribute;
 
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.javafx.UniformDesignBuilder;
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.javafx.UniformDesignBuilder;
 
 public class ValueAttributeVisualisationTest extends Application {
     StringAttribute attribute = new StringAttribute();
@@ -22,6 +23,8 @@ public class ValueAttributeVisualisationTest extends Application {
 
     }
 
+    // start with
+    // --add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED --add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED
     public static void main(String[] args) {
         launch();
     }

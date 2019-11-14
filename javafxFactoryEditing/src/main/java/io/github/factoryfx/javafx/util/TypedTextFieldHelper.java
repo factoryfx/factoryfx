@@ -11,9 +11,10 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import com.google.common.base.Strings;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+
+import com.google.common.base.Strings;
 
 public class TypedTextFieldHelper {
 
@@ -95,7 +96,7 @@ public class TypedTextFieldHelper {
     static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME;
     public static void setupLocalTimeTextField(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue!=null){
+            if (newValue!=null && !"".equals(newValue)){
                 try {
                     TIME_FORMAT.parse(newValue);
                     textField.getStyleClass().removeIf("error"::equals);

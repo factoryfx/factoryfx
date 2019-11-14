@@ -1,14 +1,15 @@
 package io.github.factoryfx.factory;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.exception.ResettingHandler;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FactoryManagerExceptionResetTest {
 
@@ -198,6 +199,7 @@ public class FactoryManagerExceptionResetTest {
 
             FactoryUpdateLog<BrokenFactory> updateLog = factoryManager.update(factoryManager.getCurrentFactory().utility().copy(), update, p -> true);
             Assertions.assertTrue(updateLog.failedUpdate());
+            updateLog.dumpError(System.out::println);
         });
     }
 
@@ -216,7 +218,7 @@ public class FactoryManagerExceptionResetTest {
         update.ref.set(null);
         root.reCreateException=true;
         FactoryUpdateLog<BrokenFactory> updateLog = factoryManager.update(factoryManager.getCurrentFactory().utility().copy(), update, p -> true);
-
+        updateLog.dumpError(System.out::println);
         Assertions.assertTrue(updateLog.failedUpdate());
         Assertions.assertEquals(1,removedFactory.destroyCalls.size());//restart with previous config before update
     }
