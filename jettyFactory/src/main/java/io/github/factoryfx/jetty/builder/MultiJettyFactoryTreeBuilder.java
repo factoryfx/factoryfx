@@ -37,9 +37,9 @@ public class MultiJettyFactoryTreeBuilder extends FactoryTreeBuilder<List<Server
      * @param jetty setup
      * @return builder
      */
-    public MultiJettyFactoryTreeBuilder addJetty(String name, BiConsumer<JettyServerBuilder<List<Server>, MultiJettyServerRootFactory,JettyServerFactory<MultiJettyServerRootFactory>>, FactoryContext<MultiJettyServerRootFactory>> jetty){
+    public MultiJettyFactoryTreeBuilder addJetty(String name, BiConsumer<JettyServerBuilder<MultiJettyServerRootFactory,JettyServerFactory<MultiJettyServerRootFactory>>, FactoryContext<MultiJettyServerRootFactory>> jetty){
         this.addBuilder((ctx)->{
-            JettyServerBuilder<List<Server>, MultiJettyServerRootFactory,JettyServerFactory<MultiJettyServerRootFactory>> jettyBuilder = new JettyServerBuilder<>(new FactoryTemplateId<JettyServerFactory<MultiJettyServerRootFactory>>(name,JettyServerFactory.class), JettyServerFactory::new);
+            JettyServerBuilder<MultiJettyServerRootFactory,JettyServerFactory<MultiJettyServerRootFactory>> jettyBuilder = new JettyServerBuilder<>(new FactoryTemplateId<>(name,JettyServerFactory.class), JettyServerFactory::new);
             jetty.accept(jettyBuilder,ctx);
             return jettyBuilder;
         });

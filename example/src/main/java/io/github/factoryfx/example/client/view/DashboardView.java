@@ -73,7 +73,8 @@ public class DashboardView implements Widget {
         configuration.register(jacksonProvider);
         Client client = ClientBuilder.newClient(configuration);
 
-        List<OrderStorage.Order> orders = client.target("http://localhost:8089/orderMonitoring").request(MediaType.APPLICATION_JSON).get(new GenericType<List<OrderStorage.Order>>(){});
+        GenericType<List<OrderStorage.Order>> responseType = new GenericType<>() {};
+        List<OrderStorage.Order> orders = client.target("http://localhost:8089/orderMonitoring").request(MediaType.APPLICATION_JSON).get(responseType);
 
         XYChart.Series<Number,Number> series = new XYChart.Series<>();
         series.setName("Orders");

@@ -36,6 +36,10 @@ public class DataUpdate<R extends FactoryBase<?,?>> {
         this.baseVersionId = baseVersionId;
     }
 
+    public static <R extends FactoryBase<?,?>> DataUpdate<R> replaceRoot(DataUpdate<R> dataUpdate, R root){
+        return new DataUpdate<>(root,dataUpdate.user,dataUpdate.comment,dataUpdate.baseVersionId);
+    }
+
     public StoredDataMetadata createUpdateStoredDataMetadata(UpdateSummary changeSummary, String mergerVersionId){
         return new StoredDataMetadata(
             LocalDateTime.now(),

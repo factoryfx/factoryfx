@@ -19,10 +19,10 @@ public class JettyFactoryTreeBuilder extends FactoryTreeBuilder<Server, JettySer
      *                 );
      * @param jetty jetty builder setup function
      */
-    public JettyFactoryTreeBuilder(BiConsumer<JettyServerBuilder<Server, JettyServerRootFactory,JettyServerRootFactory>, FactoryContext<JettyServerRootFactory>> jetty) {
+    public JettyFactoryTreeBuilder(BiConsumer<JettyServerBuilder<JettyServerRootFactory,JettyServerRootFactory>, FactoryContext<JettyServerRootFactory>> jetty) {
         super(new FactoryTemplateId<>(JettyServerRootFactory.class, "DefaultJettySetup"),true);
         this.addBuilder((ctx)->{
-            JettyServerBuilder<Server, JettyServerRootFactory,JettyServerRootFactory> jettyBuilder = new JettyServerBuilder<>(this.rootTemplateId, JettyServerRootFactory::new);
+            JettyServerBuilder<JettyServerRootFactory,JettyServerRootFactory> jettyBuilder = new JettyServerBuilder<>(this.rootTemplateId, JettyServerRootFactory::new);
             jetty.accept(jettyBuilder,ctx);
             return jettyBuilder;
         });

@@ -40,7 +40,7 @@ public class MicroserviceRestIntegrationTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     @Test
     public void integration_test() {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> e.printStackTrace());
@@ -52,11 +52,11 @@ public class MicroserviceRestIntegrationTest {
         root.setLevel(Level.INFO);
 
         FactoryTreeBuilder<Server, TestJettyServer> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
-        builder.addBuilder(ctx -> new SimpleJettyServerBuilder<Server, TestJettyServer>()
-                .withHost("localhost").withPort(34579).withResource(ctx.get(MicroserviceResourceFactory.class)));
+        builder.addBuilder(ctx -> new SimpleJettyServerBuilder<TestJettyServer>()
+                .withHost("localhost").withPort(34579).withResource(ctx.getUnsafe(MicroserviceResourceFactory.class)));
 
 
-        builder.addFactory(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
+        builder.addFactoryUnsafe(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
             final MicroserviceResourceFactory<TestJettyServer> microserviceResource = new MicroserviceResourceFactory<>();
             final PersistentUserManagementFactory<TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
             final UserFactory<TestJettyServer> user = new UserFactory<>();

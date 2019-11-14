@@ -7,7 +7,7 @@ import io.github.factoryfx.jetty.*;
 /**
  * simplified constructor for JettyServerFactory as root
  */
-public class SimpleJettyServerBuilder<L,R extends FactoryBase<L,R>> extends JettyServerBuilder<L,R,JettyServerFactory<R>>{
+public class SimpleJettyServerBuilder<R extends FactoryBase<?,R>> extends JettyServerBuilder<R,JettyServerFactory<R>>{
 
     public SimpleJettyServerBuilder(){
         super(new FactoryTemplateId<>(null, JettyServerFactory.class), JettyServerFactory::new);

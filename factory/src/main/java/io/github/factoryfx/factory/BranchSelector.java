@@ -37,7 +37,7 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
     }
 
     @SuppressWarnings("unchecked")
-    public <LB,B extends FactoryBase<LB,R>> Branch<R,LB,B> select(Class<B> factoryClass, String name){
+    public <LB,B extends FactoryBase<LB,R>> Branch<LB,B> select(Class<B> factoryClass, String name){
         if (treeBuilder!=null && treeBuilder.getScope(factoryClass)!= Scope.SINGLETON){
             throw new IllegalArgumentException("can't select prototype");
         }
@@ -49,11 +49,11 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
         return null;
     }
 
-    public <LB,B extends FactoryBase<LB,R>> Branch<R,LB,B> select(Class<B> factoryClass){
+    public <LB,B extends FactoryBase<LB,R>> Branch<LB,B> select(Class<B> factoryClass){
         return select(factoryClass,null);
     }
 
-    private <LB,B extends FactoryBase<LB,R>> boolean matchFactory(FactoryBase<?, R> factory, Class<B> factoryClass, String name){
+    private <LB,B extends FactoryBase<LB,?>> boolean matchFactory(FactoryBase<?, R> factory, Class<B> factoryClass, String name){
         if (factory.getClass()!=factoryClass){
             return false;
         }
@@ -65,8 +65,8 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
     }
 
     @SuppressWarnings("unchecked")
-    public <LB,B extends FactoryBase<LB,R>> Set<Branch<R,LB,B>> selectPrototype(Class<B> factoryClass, String name){
-        HashSet<Branch<R, LB, B>> branches = new HashSet<>();
+    public <LB,B extends FactoryBase<LB,?>> Set<Branch<LB,B>> selectPrototype(Class<B> factoryClass, String name){
+        HashSet<Branch<LB, B>> branches = new HashSet<>();
         for (FactoryBase<?, R> child : this.root.internal().collectChildrenDeep()) {
             if (matchFactory(child,factoryClass,name)){
                 branches.add(new Branch<>((B)child));
@@ -75,25 +75,25 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
         return branches;
     }
 
-    public <LB,B extends FactoryBase<LB,R>> Set<Branch<R,LB,B>> selectPrototype(Class<B> factoryClass){
+    public <LB,B extends FactoryBase<LB,?>> Set<Branch<LB,B>> selectPrototype(Class<B> factoryClass){
         return selectPrototype(factoryClass,null);
     }
 
-    public static class Branch<R extends FactoryBase<?,R>, L, B extends FactoryBase<L,R>>{
+    public static class Branch< L, B extends FactoryBase<L,?>>{
         private final B branchFactory;
 
         public Branch(B branchFactory) {
             this.branchFactory = branchFactory;
         }
 
-        public Branch<R,L, B> start(){
-            List<FactoryBase<?, R>> factoriesInCreateAndStartOrder = branchFactory.internal().getFactoriesInCreateAndStartOrder();
+        public Branch<L, B> start(){
+            List<? extends FactoryBase<?, ?>> factoriesInCreateAndStartOrder = branchFactory.internal().getFactoriesInCreateAndStartOrder();
             factoriesInCreateAndStartOrder.stream().forEach(factoryBase -> factoryBase.internal().start());
             return this;
         }
 
-        public Branch<R,L, B> stop(){
-            List<FactoryBase<?, R>> factoriesInDestroyOrder = branchFactory.internal().getFactoriesInDestroyOrder();
+        public Branch<L, B> stop(){
+            List<? extends FactoryBase<?, ?>> factoriesInDestroyOrder = branchFactory.internal().getFactoriesInDestroyOrder();
             factoriesInDestroyOrder.stream().forEach(factoryBase -> factoryBase.internal().destroyRemoved());
             return this;
         }
@@ -102,12 +102,12 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
             return this.branchFactory.internal().instance();
         }
 
-        public Branch<R,L, B> mock(Function<B,L> mockCreator){
+        public Branch<L, B> mock(Function<B,L> mockCreator){
             branchFactory.utility().mock(mockCreator);
             return this;
         }
 
-        public Branch<R,L, B> mock(L mock){
+        public Branch<L, B> mock(L mock){
             branchFactory.utility().mock((f)->mock);
             return this;
         }

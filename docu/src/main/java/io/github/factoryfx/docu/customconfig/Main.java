@@ -16,7 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class Main {
-    @SuppressWarnings("unchecked")
+
     public static void main(String[] args) throws InterruptedException {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.ERROR);
@@ -26,7 +26,6 @@ public class Main {
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(CustomConfigurationResourceFactory.class))
         );
-
         builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
 
         Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();

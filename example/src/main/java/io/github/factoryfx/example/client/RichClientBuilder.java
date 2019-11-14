@@ -1,11 +1,8 @@
 package io.github.factoryfx.example.client;
 
+import io.github.factoryfx.example.client.view.*;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
-import io.github.factoryfx.example.client.view.ConfigurationViewFactory;
-import io.github.factoryfx.example.client.view.DashboardViewFactory;
-import io.github.factoryfx.example.client.view.HistoryViewFactory;
-import io.github.factoryfx.example.client.view.ProductsViewFactory;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
@@ -13,6 +10,7 @@ import io.github.factoryfx.javafx.RichClientRoot;
 import io.github.factoryfx.javafx.editor.DataEditorFactory;
 import io.github.factoryfx.javafx.editor.attribute.AttributeEditorBuilderFactory;
 import io.github.factoryfx.javafx.editor.attribute.AttributeEditorBuilderFactoryBuilder;
+import io.github.factoryfx.javafx.factoryviewmanager.FactoryAwareWidgetFactory;
 import io.github.factoryfx.javafx.stage.StageFactory;
 import io.github.factoryfx.javafx.util.LongRunningActionExecutorFactory;
 import io.github.factoryfx.javafx.util.UniformDesignFactory;
@@ -25,6 +23,7 @@ import io.github.factoryfx.javafx.factoryviewmanager.FactorySerialisationManager
 import io.github.factoryfx.javafx.view.menu.SeparatorMenuItemFactory;
 import io.github.factoryfx.javafx.view.menu.ViewMenuFactory;
 import io.github.factoryfx.javafx.view.menu.ViewMenuItemFactory;
+import io.github.factoryfx.javafx.widget.factory.WidgetFactory;
 import io.github.factoryfx.javafx.widget.factory.tree.DataTreeWidgetFactory;
 import io.github.factoryfx.javafx.widget.factory.masterdetail.DataViewWidgetFactory;
 import io.github.factoryfx.javafx.widget.factory.diffdialog.DiffDialogBuilderFactory;
@@ -41,32 +40,30 @@ import java.util.Locale;
 
 public class RichClientBuilder {
 
-    @SuppressWarnings("unchecked")
+
     public static FactoryTreeBuilder<Stage,RichClientRoot> createFactoryBuilder(int adminServerPort, Stage primaryStage, String user, String passwordHash, Locale locale, FactoryTreeBuilder<Server, JettyServerRootFactory> serverRootFactoryFactoryTreeBuilder, MigrationManager<JettyServerRootFactory> serverMigrationManager) {
         FactoryTreeBuilder<Stage,RichClientRoot> factoryBuilder = new FactoryTreeBuilder<>(RichClientRoot.class);
 
         factoryBuilder.addFactory(LongRunningActionExecutorFactory.class, Scope.SINGLETON);
-        factoryBuilder.addFactory(FactoryEditManagerFactory.class, Scope.SINGLETON);
+        factoryBuilder.addFactoryUnsafe(FactoryEditManagerFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(AttributeEditorBuilderFactory.class, Scope.SINGLETON, ctx -> new AttributeEditorBuilderFactoryBuilder().build(ctx.get(UniformDesignFactory.class)));
         factoryBuilder.addFactory(DataEditorFactory.class, Scope.PROTOTYPE);
         factoryBuilder.addFactory(ViewsDisplayWidgetFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(DiffDialogBuilderFactory.class, Scope.PROTOTYPE);
-        factoryBuilder.addFactory(DashboardViewFactory.class, Scope.SINGLETON);
         factoryBuilder.addFactory(DataTreeWidgetFactory.class, Scope.PROTOTYPE);
-        factoryBuilder.addFactory(HistoryViewFactory.class, Scope.PROTOTYPE);
 
-        factoryBuilder.addFactory(FactorySerialisationManagerFactory.class, Scope.SINGLETON, (context)->{
+        factoryBuilder.addFactoryUnsafe(FactorySerialisationManagerFactory.class, Scope.SINGLETON, (context)->{
             return new RichClientFactorySerialisationManagerFactory(serverMigrationManager);
         });
 
-        factoryBuilder.addFactory(UniformDesignFactory.class, Scope.SINGLETON, voidSimpleFactoryContext -> {
+        factoryBuilder.addSingleton(UniformDesignFactory.class, voidSimpleFactoryContext -> {
             UniformDesignFactory uniformDesignFactory = new UniformDesignFactory();
             uniformDesignFactory.locale.set(locale);
             uniformDesignFactory.askBeforeDelete.set(false);
             return uniformDesignFactory;
         });
 
-        factoryBuilder.addFactory(ViewMenuFactory.class, "file", Scope.SINGLETON, context -> {
+        factoryBuilder.addSingleton(ViewMenuFactory.class, "file", context -> {
             ViewMenuFactory fileMenu = new ViewMenuFactory();
             fileMenu.uniformDesign.set(context.get(UniformDesignFactory.class));
             fileMenu.text.en("File").de("Data");
@@ -78,7 +75,7 @@ public class RichClientBuilder {
             return fileMenu;
         });
 
-        factoryBuilder.addFactory(StageFactory.class, Scope.SINGLETON, context -> {
+        factoryBuilder.addSingleton(StageFactory.class, context -> {
             Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
             StageFactory stageFactory = new StageFactory();
             stageFactory.stage.set(primaryStage);
@@ -90,7 +87,7 @@ public class RichClientBuilder {
             return stageFactory;
         });
 
-        factoryBuilder.addFactory(MicroserviceRestClientFactory.class, Scope.SINGLETON, context -> {
+        factoryBuilder.addFactoryUnsafe(MicroserviceRestClientFactory.class, Scope.SINGLETON, context -> {
             MicroserviceRestClientFactory<RichClientRoot, JettyServerRootFactory> restClient = new MicroserviceRestClientFactory<>();
             restClient.host.set("localhost");
             restClient.port.set(adminServerPort);
@@ -101,91 +98,16 @@ public class RichClientBuilder {
             return restClient;
         });
 
-        factoryBuilder.addFactory(ViewMenuItemFactory.class, "configuration", Scope.SINGLETON, context -> {
-            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
-            viewDescriptionFactory.text.en("Configuration").de("Konfiguration");
-            viewDescriptionFactory.icon.set(FontAwesome.Glyph.COG);
-            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
+        addViewFactoryAware(factoryBuilder, ConfigurationViewFactory.class, "configuration",FontAwesome.Glyph.COG,"Configuration","Konfiguration");
+        addView(factoryBuilder, DashboardViewFactory.class, "dashboard",FontAwesome.Glyph.COG,"Dashboard","Dashboard");
+        addView(factoryBuilder, HistoryViewFactory.class, "history",FontAwesome.Glyph.COG,"Configuration","Historie");
+        addViewFactoryAware(factoryBuilder, ProductsViewFactory.class, "products",FontAwesome.Glyph.COG,"Products","Produkte");
 
-            ViewFactory viewFactory = new ViewFactory();
-            viewFactory.viewDescription.set(viewDescriptionFactory);
-            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
 
-            ConfigurationViewFactory configurationViewFactory = context.get(ConfigurationViewFactory.class);
 
-            FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = (FactoryEditViewFactory<JettyServerRootFactory>)context.get(FactoryEditViewFactory.class);
-            factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
-            viewFactory.widget.set(factoryEditViewFactory);
-
-            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
-            viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
-            viewMenuItemFactory.view.set(viewFactory);
-            return viewMenuItemFactory;
-        });
-
-        factoryBuilder.addFactory(ConfigurationViewFactory.class, Scope.SINGLETON);
-
-        factoryBuilder.addFactory(ViewMenuItemFactory.class, "dashboard", Scope.SINGLETON, context -> {
-            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
-            viewDescriptionFactory.text.en("Dashboard").de("Dashboard");
-            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
-
-            ViewFactory viewFactory = new ViewFactory();
-            viewFactory.viewDescription.set(viewDescriptionFactory);
-            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
-
-            viewFactory.widget.set(context.get(DashboardViewFactory.class));
-
-            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
-            viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
-            viewMenuItemFactory.view.set(viewFactory);
-            return viewMenuItemFactory;
-        });
-
-        factoryBuilder.addFactory(ViewMenuItemFactory.class, "history", Scope.SINGLETON, context -> {
-            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
-            viewDescriptionFactory.text.en("History").de("Historie");
-            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
-
-            ViewFactory viewFactory = new ViewFactory();
-            viewFactory.viewDescription.set(viewDescriptionFactory);
-            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
-
-            viewFactory.widget.set(context.get(HistoryViewFactory.class));
-
-            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
-            viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
-            viewMenuItemFactory.view.set(viewFactory);
-            return viewMenuItemFactory;
-        });
-
-        factoryBuilder.addFactory(ViewMenuItemFactory.class, "products", Scope.SINGLETON, context -> {
-            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
-            viewDescriptionFactory.text.en("Products").de("Produkte");
-            viewDescriptionFactory.icon.set(FontAwesome.Glyph.LIST);
-            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
-
-            ViewFactory viewFactory = new ViewFactory();
-            viewFactory.viewDescription.set(viewDescriptionFactory);
-            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
-
-            ProductsViewFactory configurationViewFactory = context.get(ProductsViewFactory.class);
-
-            FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = (FactoryEditViewFactory<JettyServerRootFactory>)context.get(FactoryEditViewFactory.class);
-            factoryEditViewFactory.contentWidgetFactory.set(configurationViewFactory);
-            viewFactory.widget.set(factoryEditViewFactory);
-
-            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
-            viewMenuItemFactory.viewDescription.set(viewDescriptionFactory);
-            viewMenuItemFactory.view.set(viewFactory);
-            return viewMenuItemFactory;
-        });
-
-        factoryBuilder.addFactory(ProductsViewFactory.class,Scope.SINGLETON);
-
-        factoryBuilder.addFactory(FactoryEditViewFactory.class,Scope.PROTOTYPE, context ->{
+        factoryBuilder.addFactoryUnsafe(FactoryEditViewFactory.class,Scope.PROTOTYPE, context ->{
             FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = new FactoryEditViewFactory<>();
-            factoryEditViewFactory.factoryEditManager.set(context.get(FactoryEditManagerFactory.class));
+            factoryEditViewFactory.factoryEditManager.set(context.getUnsafe(FactoryEditManagerFactory.class));
             factoryEditViewFactory.longRunningActionExecutor.set(context.get(LongRunningActionExecutorFactory.class));
             factoryEditViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
             DataEditorFactory dataEditorFactory = context.get(DataEditorFactory.class);
@@ -194,13 +116,73 @@ public class RichClientBuilder {
             return factoryEditViewFactory;
         });
 
-        factoryBuilder.addFactory(DataViewWidgetFactory.class,Scope.PROTOTYPE);
+        factoryBuilder.addFactoryUnsafe(DataViewWidgetFactory.class,Scope.PROTOTYPE);
         factoryBuilder.addFactory(SeparatorMenuItemFactory.class,Scope.PROTOTYPE);
 
-
+        factoryBuilder.disableTemplateValidation();
         return factoryBuilder;
 
     }
+
+    private static void addViewFactoryAware(FactoryTreeBuilder<Stage, RichClientRoot> factoryBuilder, Class<? extends FactoryAwareWidgetFactory<JettyServerRootFactory>> viewFactoryClass, String builderName, FontAwesome.Glyph icon, String textEn, String textDe) {
+        factoryBuilder.addSingleton(ViewDescriptionFactory.class, builderName+"DescriptionFactory", context -> {
+            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
+            viewDescriptionFactory.text.en(textEn).de(textDe);
+            viewDescriptionFactory.icon.set(icon);
+            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
+            return viewDescriptionFactory;
+        });
+
+        factoryBuilder.addSingleton(ViewFactory.class, builderName+"View", context -> {
+            ViewFactory viewFactory = new ViewFactory();
+            viewFactory.viewDescription.set(context.get(ViewDescriptionFactory.class,builderName+"DescriptionFactory"));
+            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
+
+            FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = context.getUnsafe(FactoryEditViewFactory.class);
+            factoryEditViewFactory.contentWidgetFactory.set(context.get(viewFactoryClass));
+            viewFactory.widget.set(factoryEditViewFactory);
+            return viewFactory;
+        });
+
+        factoryBuilder.addSingleton(ViewMenuItemFactory.class, builderName, context -> {
+            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
+            viewMenuItemFactory.viewDescription.set(context.get(ViewDescriptionFactory.class,builderName+"DescriptionFactory"));
+            viewMenuItemFactory.view.set(context.get(ViewFactory.class,builderName+"View"));
+            return viewMenuItemFactory;
+        });
+
+        factoryBuilder.addPrototype(viewFactoryClass);
+    }
+
+    private static void addView(FactoryTreeBuilder<Stage, RichClientRoot> factoryBuilder, Class<? extends WidgetFactory> viewFactoryClass, String builderName, FontAwesome.Glyph icon, String textEn, String textDe) {
+        factoryBuilder.addSingleton(ViewDescriptionFactory.class, builderName+"DescriptionFactory", context -> {
+            ViewDescriptionFactory viewDescriptionFactory = new ViewDescriptionFactory();
+            viewDescriptionFactory.text.en(textEn).de(textDe);
+            viewDescriptionFactory.icon.set(icon);
+            viewDescriptionFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
+            return viewDescriptionFactory;
+        });
+
+        factoryBuilder.addSingleton(ViewFactory.class, builderName+"View", context -> {
+            ViewFactory viewFactory = new ViewFactory();
+            viewFactory.viewDescription.set(context.get(ViewDescriptionFactory.class,builderName+"DescriptionFactory"));
+            viewFactory.viewsDisplayWidget.set(context.get(ViewsDisplayWidgetFactory.class));
+            viewFactory.widget.set(context.get(viewFactoryClass));
+            return viewFactory;
+        });
+
+        factoryBuilder.addSingleton(ViewMenuItemFactory.class, builderName, context -> {
+            ViewMenuItemFactory viewMenuItemFactory = new ViewMenuItemFactory();
+            viewMenuItemFactory.viewDescription.set(context.get(ViewDescriptionFactory.class,builderName+"DescriptionFactory"));
+            viewMenuItemFactory.view.set(context.get(ViewFactory.class,builderName+"View"));
+            return viewMenuItemFactory;
+        });
+
+        factoryBuilder.addPrototype(viewFactoryClass);
+    }
+
+
+
 
     private static class RichClientFactorySerialisationManagerFactory extends FactorySerialisationManagerFactory<JettyServerRootFactory> {
         private final MigrationManager<JettyServerRootFactory> serverMigrationManager;

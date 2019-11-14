@@ -6,7 +6,6 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class AttributeValueParser<V> implements BiFunction<JsonNode,Map<String, DataJsonNode>,V> {
 

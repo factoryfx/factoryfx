@@ -14,26 +14,25 @@ import java.io.File;
 
 public class TestServerBuilder {
 
-    @SuppressWarnings("unchecked")
     public FactoryTreeBuilder< Server, TestServerFactory> create() {
         FactoryTreeBuilder< Server, TestServerFactory> builder = new FactoryTreeBuilder<>(TestServerFactory.class,(ctx)->{
             TestServerFactory testServerFactory = new TestServerFactory();
             testServerFactory.stringAttribute.set("1233");
-            testServerFactory.server.set(ctx.get(JettyServerFactory.class));
+            testServerFactory.server.set(ctx.getUnsafe(JettyServerFactory.class));
             testServerFactory.stringListAttribute.add("1111");
             testServerFactory.stringListAttribute.add("22222");
             testServerFactory.exampleFactory.set(new ExampleFactory());
             testServerFactory.encryptedStringAttribute.set(new EncryptedString("example124", "jNNxjStGsrwgu+4G5DYc9Q=="));
             return testServerFactory;
         });
-        builder.addBuilder(ctx-> new SimpleJettyServerBuilder<Server,TestServerFactory>()
-                .withHost("localhost").withPort(8005).withResource(ctx.get(MicroserviceDomResourceFactory.class))
+        builder.addBuilder(ctx-> new SimpleJettyServerBuilder<TestServerFactory>()
+                .withHost("localhost").withPort(8005).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
         );
 
 
-        builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON, ctx->{
-            MicroserviceDomResourceFactory microserviceDomResourceFactory = new MicroserviceDomResourceFactory();
-            FilesystemStaticFileAccessFactory filesystemStaticFileAccessFactory = new FilesystemStaticFileAccessFactory();
+        builder.addFactoryUnsafe(MicroserviceDomResourceFactory.class, Scope.SINGLETON, ctx->{
+            MicroserviceDomResourceFactory<TestServerFactory> microserviceDomResourceFactory = new MicroserviceDomResourceFactory<>();
+            FilesystemStaticFileAccessFactory<TestServerFactory> filesystemStaticFileAccessFactory = new FilesystemStaticFileAccessFactory<>();
             filesystemStaticFileAccessFactory.basePath.set(new File("./src/main/resources/js/").getAbsolutePath()+"/");
             microserviceDomResourceFactory.staticFileAccess.set(filesystemStaticFileAccessFactory);
             return microserviceDomResourceFactory;

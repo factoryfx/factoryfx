@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatterBuilder;
 
 public class Main {
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
@@ -27,9 +26,7 @@ public class Main {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder(
                 (jetty,ctx)-> jetty.withHost("localhost").withPort(8005).withResource(ctx.get(WebResourceFactory.class))
         );
-
-
-        builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{
+        builder.addSingleton(WebResourceFactory.class, ctx->{
             String time = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy HH:mm:ss.SSS").toFormatter().format(LocalDateTime.now());
             WebResourceFactory webResourceFactory = new WebResourceFactory();
             webResourceFactory.responseText.set("Resource Factory was created at "+time);

@@ -154,14 +154,12 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitFactoryEnclosingAttributesFlat(this,consumer);
     }
 
-    @SuppressWarnings("unchecked")
     private <V> void visitAttributesForCopy(FactoryBase<?,R> data, BiCopyAttributeVisitor<V> consumer) {
-        getFactoryMetadata().visitAttributesForCopy(this,(FactoryBase<L,R>)data,consumer);
+        getFactoryMetadata().visitAttributesForCopy(this,data,consumer);
     }
 
-    @SuppressWarnings("unchecked")
     private <V> void visitAttributesForMatch(FactoryBase<?,R> data, AttributeMatchVisitor<V> consumer) {
-        getFactoryMetadata().visitAttributesForMatch(this,(FactoryBase<L,R>)data,consumer);
+        getFactoryMetadata().visitAttributesForMatch(this,data,consumer);
     }
 
     private <V> void visitAttributesTripleFlat(FactoryBase<?,R> other1, FactoryBase<?,R> other2, TriAttributeVisitor<V> consumer) {
@@ -375,12 +373,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return result;
     }
 
-    /**copy including one the references first level of nested references*/
     private <T extends FactoryBase<?,?>> T copyOneLevelDeep(){
         return copy(1);
     }
 
-    /**copy without nested references, only value attributes are copied*/
     private <T extends FactoryBase<?,?>> T copyZeroLevelDeep(){
         return copy(0);
     }
@@ -803,14 +799,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.copy();
         }
 
-        public <T extends FactoryBase<L,R> > T copyOneLevelDeep(){
-            return factory.copyOneLevelDeep();
-        }
-
-        public <T extends FactoryBase<?,?> > T copyZeroLevelDeep(){
-            return factory.copyZeroLevelDeep();
-        }
-
         @SuppressWarnings("unchecked")
         public <F extends FactoryBase<L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
             return factory.copyDeep(level,maxLevel,oldData,(FactoryBase<?,R>)parent,(R)root);
@@ -1033,6 +1021,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         public boolean isTreeBuilderClassUsed() {
             return factory.treeBuilderClassUsed;
+        }
+
+        public List<Attribute<?,?>> attributeList(){
+            return factory.attributeList();
         }
 
     }
@@ -1612,8 +1604,26 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @param <F> Factory
          */
         @SuppressWarnings("unchecked")
-        public <F extends FactoryBase<L,R>> void mock(Function<F,L> creatorMock){
+        public <F extends FactoryBase<L,?>> void mock(Function<F,L> creatorMock){
             factory.mock(factory -> creatorMock.apply((F)factory));
+        }
+
+        /**
+         * copy including one the references first level of nested references
+         * @param <F>  Factory
+         * @return copy
+         */
+        public <F extends FactoryBase<L,R> > F copyOneLevelDeep(){
+            return factory.copyOneLevelDeep();
+        }
+
+        /**
+         * copy without nested references, only value attributes are copied
+         * @param <F>  Factory
+         * @return copy
+         */
+        public <F extends FactoryBase<L,R> > F copyZeroLevelDeep(){
+            return factory.copyZeroLevelDeep();
         }
     }
 

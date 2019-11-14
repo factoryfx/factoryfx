@@ -17,6 +17,7 @@ import io.github.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -412,25 +413,28 @@ public class FactoryTreeBuilderTest {
             factory.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, context -> {
             io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
             factory.referenceAttributeC.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+        factoryTreeBuilder.addPrototype(ExampleFactoryC.class, context -> {
             ExampleFactoryC factory = new ExampleFactoryC();
-            factory.referenceAttribute.set(new ExampleFactoryB());
+            factory.referenceAttribute.set(context.get(ExampleFactoryB.class,"2"));
             factory.stringAttribute.set("hggj");
             return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, "2", context -> {
+            return new ExampleFactoryB();
         });
 
 
         ExampleLiveObjectA liveBranch = factoryTreeBuilder.branch().select(ExampleFactoryA.class).instance();
         assertNotNull(liveBranch);
 
-        Set<BranchSelector.Branch<ExampleFactoryA, ExampleLiveObjectB, ExampleFactoryB>> branches = factoryTreeBuilder.branch().selectPrototype(ExampleFactoryB.class);
-        assertEquals(4,branches.size());
-        for (BranchSelector.Branch<ExampleFactoryA, ExampleLiveObjectB, ExampleFactoryB> branch : branches) {
+        Set<BranchSelector.Branch<ExampleLiveObjectB, ExampleFactoryB>> branches = factoryTreeBuilder.branch().selectPrototype(ExampleFactoryB.class);
+        assertEquals(5,branches.size());
+        for (BranchSelector.Branch<ExampleLiveObjectB, ExampleFactoryB> branch : branches) {
             assertNotNull(branch.instance());
         }
     }
@@ -443,18 +447,20 @@ public class FactoryTreeBuilderTest {
             factory.referenceAttribute.set(context.get(ExampleFactoryB.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
-            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
-            factory.referenceAttributeC.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, context -> {
+            ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(ExampleFactoryC.class));
             return factory;
         });
-        factoryTreeBuilder.addFactory(ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+        factoryTreeBuilder.addPrototype(ExampleFactoryC.class, context -> {
             ExampleFactoryC factory = new ExampleFactoryC();
-            factory.referenceAttribute.set(new ExampleFactoryB());
+            factory.referenceAttribute.set(context.get(ExampleFactoryB.class,"2"));
             factory.stringAttribute.set("hggj");
             return factory;
         });
-
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, "2", context -> {
+            return new ExampleFactoryB();
+        });
 
         ExampleFactoryA liveBranch = factoryTreeBuilder.branch().select(ExampleFactoryA.class).factory();
         assertNotNull(liveBranch);
@@ -484,15 +490,90 @@ public class FactoryTreeBuilderTest {
         assertEquals("bla", root.referenceListAttribute.get(2).stringAttribute.get());
     }
 
+
     @Test
-    public void test_warning(){
-        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+    public void test_template_validation_happy_case(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA factory = new ExampleFactoryA();
-            factory.referenceAttribute.set(new ExampleFactoryB());
+            factory.referenceListAttribute.set(ctx.getList(ExampleFactoryB.class));
+            factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return factory;
         });
-        ExampleFactoryA root = factoryTreeBuilder.buildTree();
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, ctx -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(ctx.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryC.class, ctx -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.stringAttribute.set("hggj");
+            factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class,"2"));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, "2", context -> {
+            return new ExampleFactoryB();
+        });
 
+
+        factoryTreeBuilder.buildTree();//no excpetion
+    }
+
+    @Test
+    public void test_template_validation_get(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceListAttribute.set(ctx.getList(ExampleFactoryB.class));
+            factory.referenceAttribute.set(new ExampleFactoryB());//<----------
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, ctx -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(ctx.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryC.class, ctx -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.stringAttribute.set("hggj");
+            factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class,"2"));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, "2", context -> {
+            return new ExampleFactoryB();
+        });
+
+
+        Assertions.assertThrows(IllegalStateException.class,()->{
+            factoryTreeBuilder.buildTree();
+        });
+    }
+
+    @Test
+    public void test_template_validation_getList(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceListAttribute.set(List.of(new ExampleFactoryB()));//<----------
+            factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, ctx -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(ctx.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryC.class, ctx -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.stringAttribute.set("hggj");
+            factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class,"2"));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, "2", context -> {
+            return new ExampleFactoryB();
+        });
+
+
+        Assertions.assertThrows(IllegalStateException.class,()->{
+            factoryTreeBuilder.buildTree();
+        });
     }
 
 }

@@ -13,11 +13,10 @@ import org.eclipse.jetty.server.Server;
 public class ServerBuilder {
   private final FactoryTreeBuilder<Server, ServerRootFactory> builder;
 
-  @SuppressWarnings("unchecked")
   public ServerBuilder() {
     this.builder= new FactoryTreeBuilder<>(ServerRootFactory.class);
 
-    new SimpleJettyServerBuilder<Server,ServerRootFactory>()
+    new SimpleJettyServerBuilder<ServerRootFactory>()
             .withHost("localhost").withPort(8080)
             .internal_build(builder);
 

@@ -12,9 +12,9 @@ public class ExceptionResponseAction<L,R extends FactoryBase<L,R>> {
     private final FactoryManager<L,R> factoryManager;
     private final RootFactoryWrapper<R> previousFactoryRootCopy;
     private final RootFactoryWrapper<R> currentFactoryRoot;
-    private final List<FactoryBase<?,?>> removed;
+    private final List<FactoryBase<?,R>> removed;
 
-    public ExceptionResponseAction(FactoryManager<L,R> factoryManager, RootFactoryWrapper<R> previousFactoryRootCopy, RootFactoryWrapper<R> currentFactoryRoot, List<FactoryBase<?,?>> removed) {
+    public ExceptionResponseAction(FactoryManager<L,R> factoryManager, RootFactoryWrapper<R> previousFactoryRootCopy, RootFactoryWrapper<R> currentFactoryRoot, List<FactoryBase<?,R>> removed) {
         this.factoryManager = factoryManager;
         this.previousFactoryRootCopy = previousFactoryRootCopy;
         this.currentFactoryRoot = currentFactoryRoot;

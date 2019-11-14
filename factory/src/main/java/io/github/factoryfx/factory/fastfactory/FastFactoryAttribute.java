@@ -64,7 +64,6 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void internal_merge(V newValue){
         valueSetter.accept(boundFactory,newValue);
     }

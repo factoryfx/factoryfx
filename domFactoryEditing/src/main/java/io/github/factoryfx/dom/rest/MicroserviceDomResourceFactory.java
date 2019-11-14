@@ -32,9 +32,8 @@ import java.util.function.Function;
  * (the messed up generics are caused by java limitations)
  *
  * @param <R> root
- * @param <S> Summary Data form storage history
  */
-public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>,S> extends FactoryBase<MicroserviceDomResource<R>,R> {
+public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>> extends FactoryBase<MicroserviceDomResource<R>,R> {
 
     public final FactoryPolymorphicAttribute<UserManagement> userManagement = new FactoryPolymorphicAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("userManagement").nullable();
     public final FactoryPolymorphicAttribute<StaticFileAccess> staticFileAccess = new FactoryPolymorphicAttribute<StaticFileAccess>().setupUnsafe(StaticFileAccess.class, ClasspathStaticFileAccessFactory.class).labelText("staticFileAccess").nullable();

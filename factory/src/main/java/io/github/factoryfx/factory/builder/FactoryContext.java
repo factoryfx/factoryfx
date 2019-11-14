@@ -53,6 +53,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return result;
     }
 
+
     public <F extends FactoryBase<?,R>> F getUnsafe(Class<?> clazz){
         F result = get(fc -> fc.match(clazz,null));
         if (result==null){
@@ -91,6 +92,9 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     <L, F extends FactoryBase<L,R>> List<F> getList(Class<F> clazz) {
         ArrayList<F> result = new ArrayList<>();
         factoryCreators.stream().filter(fc -> fc.match(clazz)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
+        for (F factory : result) {
+            factory.internal().markAsCreatedWithBuilderTemplate();
+        }
         return result;
     }
 

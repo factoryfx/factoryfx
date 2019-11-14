@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory;
 
 import com.fasterxml.jackson.annotation.*;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import java.lang.reflect.InvocationTargetException;
 
@@ -19,7 +20,8 @@ public class AttributelessFactory<L,R extends FactoryBase<?,R>> extends SimpleFa
 
     @SuppressWarnings("unchecked")
     private static void setup(){
-        FactoryMetadataManager.getMetadataUnsafe(AttributelessFactory.class).setNewCopyInstanceSupplier(paramterlessFactory -> ((AttributelessFactory)paramterlessFactory).copy());
+        FactoryMetadata<?, AttributelessFactory<?,?>> metadata2 = FactoryMetadataManager.getMetadataUnsafe(AttributelessFactory.class);
+        metadata2.setNewCopyInstanceSupplier(AttributelessFactory::copy);
     }
 
     @Override

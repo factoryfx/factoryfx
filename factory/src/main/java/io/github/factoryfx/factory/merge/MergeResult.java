@@ -54,10 +54,7 @@ public class MergeResult<R extends FactoryBase<?,R>> {
             for (FactoryBase<?,R> factory: idToFactory.values()){
                 factory.internal().fixDuplicateFactoriesFlat(idToFactory);
             }
-
-
             currentRoot.internal().finalise();
-//            currentRoot.internal().fixDuplicateFactories();//TODO optimize performance, reuse map from DataMerger
         }
         return new MergeDiffInfo<>(mergeInfos, conflictInfos, mergePermissionViolations, previousRoot, currentRoot, (Class<R>) currentRoot.getClass());
 

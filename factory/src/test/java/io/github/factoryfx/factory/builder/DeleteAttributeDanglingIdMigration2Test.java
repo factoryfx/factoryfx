@@ -112,16 +112,8 @@ public class DeleteAttributeDanglingIdMigration2Test {
             msOld.stop();
         }
 
+        FileSystemStorageTestUtil.patchClassName(folder);
 
-        //Patch class names in json files
-        String currentFactory=Files.readString(folder.resolve("currentFactory.json"));
-        currentFactory=currentFactory.replace("Old","");
-        System.out.println(currentFactory);
-        Files.writeString(folder.resolve("currentFactory.json"),currentFactory);
-        String currentFactorymetadata=Files.readString(folder.resolve("currentFactory_metadata.json"));
-        currentFactorymetadata=currentFactorymetadata.replace("Old","");
-        System.out.println(currentFactorymetadata);
-        Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
 
         {
             FactoryTreeBuilder<Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {

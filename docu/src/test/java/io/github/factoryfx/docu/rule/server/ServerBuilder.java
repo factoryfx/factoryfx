@@ -10,7 +10,7 @@ public class ServerBuilder {
     public FactoryTreeBuilder<Server, ServerRootFactory> builder(){
         FactoryTreeBuilder<Server, ServerRootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(ServerRootFactory.class);
         factoryTreeBuilder.addBuilder(ctx->
-                new SimpleJettyServerBuilder<Server,ServerRootFactory>()
+                new SimpleJettyServerBuilder<ServerRootFactory>()
                         .withHost("localhost").withPort(8089)
                         .withResource(ctx.get(GreetingsResourceFactory.class)));
 

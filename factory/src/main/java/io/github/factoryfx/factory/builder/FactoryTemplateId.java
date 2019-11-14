@@ -40,7 +40,7 @@ public class FactoryTemplateId<F extends FactoryBase<?,?>> {
     @SuppressWarnings("unchecked")
     public FactoryTemplateId(F factory) {
         this.clazz = factory.internal().isTreeBuilderClassUsed()? (Class<F>) factory.getClass() :null;
-        this.name = factory.internal().getTreeBuilderName();;
+        this.name = factory.internal().getTreeBuilderName();
     }
 
     public boolean match(Class<?> clazzMatch, String name) {

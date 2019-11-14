@@ -22,16 +22,15 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FactoryManager.class);
 
     private RootFactoryWrapper<R> currentFactoryRoot;
-    private final FactoryExceptionHandler factoryExceptionHandler;
+    private final FactoryExceptionHandler<L,R> factoryExceptionHandler;
 
-    public FactoryManager(FactoryExceptionHandler factoryExceptionHandler) {
+    public FactoryManager(FactoryExceptionHandler<L,R> factoryExceptionHandler) {
         this.factoryExceptionHandler = factoryExceptionHandler;
         if (factoryExceptionHandler instanceof AllOrNothingFactoryExceptionHandler){
             logger.warn("only AllOrNothingFactoryExceptionHandler is set therefore no exception will be logged. Usually this setup is wrong and the handler should be wrapped with LoggingFactoryExceptionHandler");
         }
     }
 
-    @SuppressWarnings("unchecked")
     public FactoryUpdateLog<R> update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
         if (currentFactoryRoot==null) {
             throw new IllegalStateException("update on a not started manager");
@@ -84,7 +83,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
                 logger.info(log);
                 return new FactoryUpdateLog<>(log,mergeDiff.mergeDiffInfo,totalUpdateDuration,null);
             } catch(Exception e){
-                factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction(this, new RootFactoryWrapper(previousFactoryCopyRoot),currentFactoryRoot,removed));
+                factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this, new RootFactoryWrapper<>(previousFactoryCopyRoot),currentFactoryRoot,removed));
                 return new FactoryUpdateLog<>(Throwables.getStackTraceAsString(e));
             }
         } else {

@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.metadata;
 
+import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.Map;
@@ -19,7 +20,6 @@ public class FactoryMetadataManager {
         return result;
     }
 
-
     @SuppressWarnings("unchecked")
     public static FactoryMetadata getMetadataUnsafe(Class clazz){
         FactoryMetadata result=dataReferences.get(clazz);
@@ -29,4 +29,6 @@ public class FactoryMetadataManager {
         }
         return result;
     }
+
+
 }

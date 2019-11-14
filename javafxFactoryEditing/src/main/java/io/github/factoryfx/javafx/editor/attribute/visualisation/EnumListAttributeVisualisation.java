@@ -25,7 +25,7 @@ public class EnumListAttributeVisualisation<E extends Enum<E>> extends ListAttri
         super(enumListAttribute,validationDecoration);
         this.enumListAttribute = enumListAttribute;
         this.possibleEnumConstants = enumListAttribute.internal_possibleEnumValues();
-        this.stringConverter = new StringConverter<E>() {
+        this.stringConverter = new StringConverter<>() {
             @Override
             public String toString(E enumValue) {
                 if (enumValue==null){

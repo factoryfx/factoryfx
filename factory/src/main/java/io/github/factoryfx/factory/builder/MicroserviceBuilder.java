@@ -10,7 +10,6 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.exception.FactoryExceptionHandler;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import io.github.factoryfx.factory.storage.migration.datamigration.AttributeValueParser;
 import io.github.factoryfx.factory.storage.migration.datamigration.PathBuilder;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.factory.storage.migration.datamigration.AttributePathTarget;
@@ -18,7 +17,6 @@ import io.github.factoryfx.factory.storage.migration.datamigration.AttributePath
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 
@@ -34,7 +32,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
 
     private final R initialFactory;
     private DataStorageCreator<R> dataStorageCreator;
-    private FactoryExceptionHandler factoryExceptionHandler;
+    private FactoryExceptionHandler<L,R> factoryExceptionHandler;
     private MigrationManager<R> migrationManager;
     private final SimpleObjectMapper objectMapper;
     private final FactoryTreeBuilder<L,R> factoryTreeBuilder;
@@ -51,7 +49,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
             dataStorageCreator =(initialData, migrationManager, objectMapper)->new InMemoryDataStorage<>(initialData);
         }
         if (factoryExceptionHandler == null) {
-            factoryExceptionHandler = new RethrowingFactoryExceptionHandler();
+            factoryExceptionHandler = new RethrowingFactoryExceptionHandler<>();
         }
 
         return new Microservice<>(new FactoryManager<>(factoryExceptionHandler), dataStorageCreator.createDataStorage(initialFactory, migrationManager, objectMapper), factoryTreeBuilder);
@@ -93,7 +91,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
         return this;
     }
 
-    public MicroserviceBuilder<L,R> withExceptionHandler(FactoryExceptionHandler factoryExceptionHandler){
+    public MicroserviceBuilder<L,R> withExceptionHandler(FactoryExceptionHandler<L,R> factoryExceptionHandler){
         this.factoryExceptionHandler = factoryExceptionHandler;
         return this;
     }

@@ -105,7 +105,7 @@ public class NewAttributesMigrationTest {
     public Path folder;
 
     @Test
-    public void test() throws IOException {
+    public void test() {
         {
             FactoryTreeBuilder< Void, ServerFactoryOld> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
@@ -114,36 +114,30 @@ public class NewAttributesMigrationTest {
                 serverFactoryOld.serverFactoryNested.set(ctx.get(ServerFactoryNestedOld.class));
                 return serverFactoryOld;
             });
-            builder.addFactory(ClientSystemFactoryOld.class,"client1", Scope.SINGLETON, ctx-> {
+            builder.addSingleton(ClientSystemFactoryOld.class,"client1", ctx-> {
                 ClientSystemFactoryOld clientSystemFactory=new ClientSystemFactoryOld();
                 clientSystemFactory.url.set("client1.de");
                 return clientSystemFactory;
             });
-            builder.addFactory(ClientSystemFactoryOld.class,"client2", Scope.SINGLETON, ctx-> {
+            builder.addSingleton(ClientSystemFactoryOld.class,"client2", ctx-> {
                 ClientSystemFactoryOld clientSystemFactory=new ClientSystemFactoryOld();
                 clientSystemFactory.url.set("client2.de");
                 return clientSystemFactory;
             });
-            builder.addFactory(ServerFactoryNestedOld.class, Scope.SINGLETON,  ctx-> {
+            builder.addSingleton(ServerFactoryNestedOld.class,  ctx-> {
                 ServerFactoryNestedOld serverFactoryNested = new ServerFactoryNestedOld();
-                serverFactoryNested.partnerFactory1.set(new PartnerFactoryOld());
+                serverFactoryNested.partnerFactory1.set(ctx.get(PartnerFactoryOld.class));
                 return serverFactoryNested;
+            });
+            builder.addSingleton(PartnerFactoryOld.class,  ctx-> {
+                return new PartnerFactoryOld();
             });
             Microservice<Void, ServerFactoryOld> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();
         }
 
-
-        //Patch class names in json files
-        String currentFactory=Files.readString(folder.resolve("currentFactory.json"));
-        currentFactory=currentFactory.replace("Old","");
-        System.out.println(currentFactory);
-        Files.writeString(folder.resolve("currentFactory.json"),currentFactory);
-        String currentFactorymetadata=Files.readString(folder.resolve("currentFactory_metadata.json"));
-        currentFactorymetadata=currentFactorymetadata.replace("Old","");
-        System.out.println(currentFactorymetadata);
-        Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
+        FileSystemStorageTestUtil.patchClassName(folder);
 
         {
             FactoryTreeBuilder< Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx-> {
@@ -170,7 +164,7 @@ public class NewAttributesMigrationTest {
                 return serverFactoryNested;
             });
 
-            //no special migartion required just the builder used for migration
+            //no special migration required just the builder used for migration
             Microservice<Void, ServerFactory> msNew = builder.microservice().withFilesystemStorage(folder).build();
             msNew.start();
 

@@ -155,7 +155,7 @@ public class DataTest {
         Assertions.assertNotNull(exampleFactoryA.referenceAttribute.get());
         Assertions.assertNotNull(exampleFactoryA.referenceAttribute.get().referenceAttributeC.get());
 
-        ExampleDataA copy =  exampleFactoryA.internal().copyOneLevelDeep();
+        ExampleDataA copy =  exampleFactoryA.utility().copyOneLevelDeep();
 
         Assertions.assertNotEquals(copy,exampleFactoryA);
         Assertions.assertNotNull(copy.referenceAttribute.get());
@@ -171,7 +171,7 @@ public class DataTest {
         exampleFactoryA.referenceAttribute.set(exampleFactoryB);
         exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
 
-        ExampleDataA copy =  exampleFactoryA.internal().copyOneLevelDeep();
+        ExampleDataA copy =  exampleFactoryA.utility().copyOneLevelDeep();
 
         Assertions.assertEquals(copy.referenceAttribute.get(),copy.referenceListAttribute.get().get(0));
     }
@@ -218,7 +218,7 @@ public class DataTest {
         exampleFactoryA.referenceAttribute.set(new ExampleDataB());
         exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
 
-        ExampleDataA copy =  exampleFactoryA.internal().copyZeroLevelDeep();
+        ExampleDataA copy =  exampleFactoryA.utility().copyZeroLevelDeep();
 
 
         Assertions.assertEquals("dfssfdsfdsfd", copy.stringAttribute.get());

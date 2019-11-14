@@ -2,7 +2,6 @@ package io.github.factoryfx.docu.monitoring;
 
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 import org.slf4j.Logger;
@@ -15,21 +14,21 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class Main {
-    @SuppressWarnings("unchecked")
+
     public static void main(String[] args) throws Exception {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
         FactoryTreeBuilder<Root,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class);
-        builder.addBuilder(ctx->new SimpleJettyServerBuilder<Root,RootFactory>().withHost("localhost").withPort(34576)
+        builder.addBuilder(ctx->new SimpleJettyServerBuilder<RootFactory>().withHost("localhost").withPort(34576)
                 .withResource(ctx.get(SimpleResourceFactory.class))
                 .withHandlerFirst(ctx.get(InstrumentedHandlerFactory.class)));
 
 
 
-        builder.addFactory(SimpleResourceFactory.class, Scope.SINGLETON);
-        builder.addFactory(InstrumentedHandlerFactory.class, Scope.SINGLETON);
-        builder.addFactory(MetricRegistryFactory.class, Scope.SINGLETON);
+        builder.addSingleton(SimpleResourceFactory.class);
+        builder.addSingleton(InstrumentedHandlerFactory.class);
+        builder.addSingleton(MetricRegistryFactory.class);
 
         Microservice<Root,RootFactory> microservice = builder.microservice().build();
         microservice.start();

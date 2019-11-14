@@ -16,7 +16,7 @@ The data injection enables strong encapsulation which is not possible if the dat
 
 ## API design: Java API over dsl
 
-Common dependency injection framework use a Annoation dsl to configure the dependency injection.
+Common dependency injection framework use a Annotation dsl to configure the dependency injection.
 
 As a replacement for annotations FactoryFX use a functional java api with factories. 
 The user creates factories following a simple structure convention. The factories also provide the dependencies and lifecycle control.
@@ -30,7 +30,7 @@ The programmatic API has the following advantages:
 
 ### Extensibility
 in FactoryFx live object have no dependency to the framework. An the construction is controllable in the factory.
-Thats means is easy to use other libraries.
+This makes it easy to use other libraries.
 
 ## Immutability
 
@@ -104,7 +104,7 @@ As to our knowledge there is no other framework combining immutability and recon
 
 The before-mention business objects would - in most real-life systems - be hosted in a relational  or NoSQL databases. 
 Those system include various costly indirections, at least the protocol overhead to move the data from one address
-space to the other, in most cases I/O subsystem involvement. In FactoryFX, the data would direclty reside in the business
+space to the other, in most cases I/O subsystem involvement. In FactoryFX, the data would directly reside in the business
 objects needing it. The business objects themselves carry all dependencies needed to fulfill their contracts. All those
 are hosted in-memory in the same address space without any need to synchronize, which is basically the highest-performance
 solution.
@@ -189,7 +189,7 @@ Out of the box FactoryFX supports updates via:
 * java client
 * javafx richclient
 * typescript client
-* wepp application
+* wep application
 
 ## End user configuration GUI
 

@@ -58,11 +58,11 @@ public class Main {
     }
 
 
-    @SuppressWarnings("unchecked")
+
     private static FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory> buildApplication() {
         FactoryTreeBuilder< WorkflowLauncher, CopperRootFactory> builder = new FactoryTreeBuilder<>(CopperRootFactory.class);
 
-        builder.addFactory(TransientScottyEngineFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
+        builder.addFactoryUnsafe(TransientScottyEngineFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
             TransientScottyEngineFactory<CopperRootFactory> transientScottyEngineFactory = new TransientScottyEngineFactory<>() {
                 @Override
                 public List<String> getWorkflowClassPaths() {
@@ -70,10 +70,10 @@ public class Main {
                 }
             };
             transientScottyEngineFactory.threads.set(5);
-            transientScottyEngineFactory.engineIdProviderFactory.set(copperRootFactoryFactoryContext.get(EngineIdProviderFactory.class));
+            transientScottyEngineFactory.engineIdProviderFactory.set(copperRootFactoryFactoryContext.getUnsafe(EngineIdProviderFactory.class));
             return transientScottyEngineFactory;
         });
-        builder.addFactory(EngineIdProviderFactory.class, Scope.PROTOTYPE, copperRootFactoryFactoryContext -> {
+        builder.addFactoryUnsafe(EngineIdProviderFactory.class, Scope.PROTOTYPE, copperRootFactoryFactoryContext -> {
             EngineIdProviderFactory<CopperRootFactory> engineIdProviderFactory = new EngineIdProviderFactory<>();
             engineIdProviderFactory.idPrefix.set("P#");
             return engineIdProviderFactory;
@@ -83,15 +83,15 @@ public class Main {
             CopperEngineContextFactoryImpl copperEngineContextFactory = new CopperEngineContextFactoryImpl();
             copperEngineContextFactory.dep1.set("initial");
             copperEngineContextFactory.dependencyInjectorType.set("demoApp");
-            copperEngineContextFactory.transientScottyEngine.set(copperRootFactoryFactoryContext.get(TransientScottyEngineFactory.class));
+            copperEngineContextFactory.transientScottyEngine.set(copperRootFactoryFactoryContext.getUnsafe(TransientScottyEngineFactory.class));
             return copperEngineContextFactory;
         });
 
-        builder.addFactory(BackchannelFactory.class, Scope.SINGLETON);
-        builder.addFactory(WorkflowLauncherFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
+        builder.addFactoryUnsafe(BackchannelFactory.class, Scope.SINGLETON);
+        builder.addFactoryUnsafe(WorkflowLauncherFactory.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
             WorkflowLauncherFactory<CopperRootFactory> workflowLauncherFactory = new WorkflowLauncherFactory<>();
             workflowLauncherFactory.copperEngineContext.set(copperRootFactoryFactoryContext.get(CopperEngineContextFactoryImpl.class));
-            workflowLauncherFactory.backchannel.set(copperRootFactoryFactoryContext.get(BackchannelFactory.class));
+            workflowLauncherFactory.backchannel.set(copperRootFactoryFactoryContext.getUnsafe(BackchannelFactory.class));
             return workflowLauncherFactory;
         });
         return builder;

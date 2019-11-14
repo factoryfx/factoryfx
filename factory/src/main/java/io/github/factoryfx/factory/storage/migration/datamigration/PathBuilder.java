@@ -1,12 +1,8 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -68,7 +68,6 @@ public class FactoryDepTopDownTest {
             return rootFactory;
         });
 
-
         Microservice<String,RootFactory> microService = builder.microservice().build();
         microService.start();
 

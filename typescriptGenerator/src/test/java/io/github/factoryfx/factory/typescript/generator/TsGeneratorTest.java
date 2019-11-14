@@ -39,33 +39,32 @@ public class TsGeneratorTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     @Test
+    @SuppressWarnings("unchecked")
     public void smoketest_jettyserver(@TempDir Path targetDir)  {
         FactoryTreeBuilder<Server, TestHttpServer> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
-        builder.addBuilder(ctx-> new SimpleJettyServerBuilder<Server, TestHttpServer>()
+        builder.addBuilder(ctx-> new SimpleJettyServerBuilder<TestHttpServer>()
                 .withHost("localhost").withPort(8005));
 
 
-        HashSet<Class<?>> factoryClasses = new HashSet<>();
-        for (FactoryBase<?, ?> factoryBase : builder.buildTree().internal().collectChildrenDeep()) {
-            factoryClasses.add(factoryBase.getClass());
-            factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+        HashSet<Class<? extends FactoryBase<?,TestHttpServer>>> factoryClasses = new HashSet<>();
+        for (FactoryBase<?, TestHttpServer> factory : builder.buildTree().internal().collectChildrenDeep()) {
+            factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>) factory.getClass());
+            factory.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
                 if (attribute instanceof FactoryAttribute){
-                    factoryClasses.add(((FactoryAttribute<?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>) ((FactoryAttribute<?,?>)attribute).internal_getReferenceClass());
                 }
                 if (attribute instanceof FactoryListAttribute){
-                    factoryClasses.add(((FactoryListAttribute<?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>) ((FactoryListAttribute<?,?>)attribute).internal_getReferenceClass());
                 }
             });
         }
 
 
 
-        TsGenerator<ExampleData> tsClassCreator=new TsGenerator<>(targetDir, new ArrayList(factoryClasses));
+        TsGenerator<TestHttpServer> tsClassCreator=new TsGenerator<>(targetDir, new ArrayList<>(factoryClasses));
         tsClassCreator.generateJs();
-
-
     }
 }
 

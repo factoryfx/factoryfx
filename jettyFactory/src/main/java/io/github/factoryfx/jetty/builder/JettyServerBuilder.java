@@ -27,7 +27,7 @@ import java.util.zip.Deflater;
  * @see <a href="https://dzone.com/refcardz/jetty?chapter=2">https://dzone.com/refcardz/jetty?chapter=2</a>
  * @param <R> server root
  */
-public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettyServerFactory<R>> implements NestedBuilder<L,R> {
+public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServerFactory<R>> implements NestedBuilder<R> {
 
 
     private final List<ServletBuilder<R>> additionalServletBuilders = new ArrayList<>();
@@ -47,6 +47,8 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
     private final FactoryTemplateId<UpdateableServletFactory<R>> updateableServletFactoryTemplateId;
     private final FactoryTemplateId<HttpServerConnectorFactory<R>> defaultServerConnectorTemplateId;
 
+    private Consumer<GzipHandlerFactory<R>> gzipHandlerCustomizer=(gzipHandler)->{};
+
     private final Supplier<JR> jettyRootCreator;
 
     public JettyServerBuilder(FactoryTemplateId<JR> rootTemplateId, Supplier<JR> jettyRootCreator){
@@ -64,11 +66,11 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
     /**
      * add a jetty connector, useful for jetty on multiple ports or support both http and ssl
      *
-     * @param connectorBuilderSetup
+     * @param connectorBuilderSetup connectorBuilderSetup e.g.  withAdditionalConnector((connector)->connector.withPort(8080),"con1")
      * @param name builder unique name, used in the builder to associate match the templates
-     * @return
+     * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withAdditionalConnector(Consumer<ServerConnectorBuilder<R>> connectorBuilderSetup, String name){
+    public JettyServerBuilder<R, JR> withAdditionalConnector(Consumer<ServerConnectorBuilder<R>> connectorBuilderSetup, String name){
         ServerConnectorBuilder<R> resourceBuilder = new ServerConnectorBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name, ServletAndPathFactory.class));
         connectorBuilderSetup.accept(resourceBuilder);
         serverConnectorBuilders.add(resourceBuilder);
@@ -80,14 +82,26 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * add a new jersey servlet with REST Resources
      * this can be used to support different ObjectMappers/ExceptionHandler
      *
-     * @param resourceBuilderSetup
+     * @param resourceBuilderSetup resourceBuilderSetup
      * @param name builder unique name, used in the builder to associate match the templates
-     * @return
+     * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withJersey(Consumer<ResourceBuilder<R>> resourceBuilderSetup, String name){
-        ResourceBuilder<R> resourceBuilder = new ResourceBuilder<R>(new FactoryTemplateId<>(this.rootTemplateId.name+name, ServletAndPathFactory.class));
+    public JettyServerBuilder<R, JR> withJersey(Consumer<ResourceBuilder<R>> resourceBuilderSetup, String name){
+        ResourceBuilder<R> resourceBuilder = new ResourceBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name, ServletAndPathFactory.class));
         resourceBuilderSetup.accept(resourceBuilder);
         addResourceBuilder(resourceBuilder);
+        return this;
+    }
+
+    /**
+     * adds a servlet
+     * @param servlet servlet
+     * @param pathSpec pathSpec
+     * @param name builder unique name, used in the builder to associate match the templates
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withServlet(FactoryBase<? extends Servlet, R> servlet, String pathSpec, String name){
+        additionalServletBuilders.add(new ServletBuilder<>(new FactoryTemplateId<>(null,name),pathSpec,servlet));
         return this;
     }
 
@@ -98,20 +112,8 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param servlet servlet
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withServlet(FactoryTemplateId<ServletAndPathFactory<R>> templateId, String pathSpec, FactoryBase<? extends Servlet, R> servlet){
+    public JettyServerBuilder<R, JR> withServlet(FactoryTemplateId<ServletAndPathFactory<R>> templateId, String pathSpec, FactoryBase<? extends Servlet, R> servlet){
         additionalServletBuilders.add(new ServletBuilder<>(templateId,pathSpec,servlet));
-        return this;
-    }
-
-    /**
-     * adds a servlet
-     * @param servlet servlet
-     * @param pathSpec pathSpec
-     * @param name builder unique name, used in the builder to associate match the templates
-     * @return builder
-     */
-    public JettyServerBuilder<L,R, JR> withServlet(FactoryBase<? extends Servlet, R> servlet, String pathSpec, String name){
-        additionalServletBuilders.add(new ServletBuilder<>(new FactoryTemplateId<>(null,name),pathSpec,servlet));
         return this;
     }
 
@@ -120,7 +122,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param size jetty thread pool size
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withThreadPoolSize(int size){
+    public JettyServerBuilder<R, JR> withThreadPoolSize(int size){
         this.threadPoolSize=size;
         return this;
     }
@@ -130,17 +132,28 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param firstHandler creator
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withHandlerFirst(FactoryBase<Handler,R> firstHandler) {
+    public JettyServerBuilder<R, JR> withHandlerFirst(FactoryBase<Handler,R> firstHandler) {
         this.firstHandler=firstHandler;
         return this;
     }
+
+    /**
+     * customize the gzipHandler setup
+     * @param gzipHandlerCustomizer customizer consumer
+     * @return buildser
+     */
+    public JettyServerBuilder<R, JR> withGzipHandlerCustomizer(Consumer<GzipHandlerFactory<R>> gzipHandlerCustomizer) {
+        this.gzipHandlerCustomizer = gzipHandlerCustomizer;
+        return this;
+    }
+
 
     /**
      * internal method
      * @param builder tree builder to add
      */
     @Override
-    public void internal_build(FactoryTreeBuilder<L,R> builder){
+    public void internal_build(FactoryTreeBuilder<?,R> builder){
         builder.addFactory(rootTemplateId, Scope.SINGLETON, (FactoryContext<R> ctx) ->{
             JR jettyServerFactory=jettyRootCreator.get();
             FactoryBase<ThreadPool, ?> factoryBase = ctx.get(threadPoolFactoryTemplateId);
@@ -181,6 +194,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
             gzipHandler.inflateBufferSize.set(-1);
             gzipHandler.syncFlush.set(false);
             gzipHandler.handler.set(ctx.get(servletContextHandlerFactoryTemplateId));
+            gzipHandlerCustomizer.accept(gzipHandler);
             return gzipHandler;
         });
 
@@ -238,7 +252,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param port port
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withPort(int port){
+    public JettyServerBuilder<R, JR> withPort(int port){
         getDefaultServerConnector().withPort(port);
         return this;
     }
@@ -248,7 +262,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param host host
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withHost(String host){
+    public JettyServerBuilder<R, JR> withHost(String host){
         getDefaultServerConnector().withHost(host);
         return this;
     }
@@ -257,7 +271,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @see ServerConnectorBuilder#withHostWildcard()
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withHostWildcard(){
+    public JettyServerBuilder<R, JR> withHostWildcard(){
         getDefaultServerConnector().withHostWildcard();
         return this;
     }
@@ -267,7 +281,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param ssl ssl
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withSsl(SslContextFactoryFactory<R> ssl) {
+    public JettyServerBuilder<R, JR> withSsl(SslContextFactoryFactory<R> ssl) {
         getDefaultServerConnector().withSsl(ssl);
         return this;
     }
@@ -276,7 +290,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @see ServerConnectorBuilder#withRandomPort()
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withRandomPort(){
+    public JettyServerBuilder<R, JR> withRandomPort(){
         getDefaultServerConnector().withRandomPort();
         return this;
     }
@@ -296,7 +310,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param pathSpec pathSpec
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withPathSpec(String pathSpec){
+    public JettyServerBuilder<R, JR> withPathSpec(String pathSpec){
         getDefaultJersey().withPathSpec(pathSpec);
         return this;
     }
@@ -307,7 +321,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param resource resource
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withResource(FactoryBase<?,R> resource){
+    public JettyServerBuilder<R, JR> withResource(FactoryBase<?,R> resource){
         getDefaultJersey().withResource(resource);
         return this;
     }
@@ -317,7 +331,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param jaxrsComponent jaxrsComponent
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withJaxrsComponent(FactoryBase<?,R> jaxrsComponent){
+    public JettyServerBuilder<R, JR> withJaxrsComponent(FactoryBase<?,R> jaxrsComponent){
         getDefaultJersey().withJaxrsComponent(jaxrsComponent);
         return this;
     }
@@ -327,7 +341,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param loggingFeature loggingFeature
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withLoggingFeature(FactoryBase<LoggingFeature,R> loggingFeature){
+    public JettyServerBuilder<R, JR> withLoggingFeature(FactoryBase<LoggingFeature,R> loggingFeature){
         getDefaultJersey().withLoggingFeature(loggingFeature);
         return this;
     }
@@ -337,7 +351,7 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param objectMapper objectMapper
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withObjectMapper(FactoryBase<ObjectMapper,R> objectMapper){
+    public JettyServerBuilder<R, JR> withObjectMapper(FactoryBase<ObjectMapper,R> objectMapper){
         getDefaultJersey().withObjectMapper(objectMapper);
         return this;
     }
@@ -347,9 +361,11 @@ public class JettyServerBuilder<L,R extends FactoryBase<L,R>, JR extends JettySe
      * @param exceptionMapper exceptionMapper
      * @return builder
      */
-    public JettyServerBuilder<L,R, JR> withExceptionMapper(FactoryBase<ExceptionMapper<Throwable>,R> exceptionMapper) {
+    public JettyServerBuilder<R, JR> withExceptionMapper(FactoryBase<ExceptionMapper<Throwable>,R> exceptionMapper) {
         getDefaultJersey().withExceptionMapper(exceptionMapper);
         return this;
     }
+
+
 
 }

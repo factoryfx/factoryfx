@@ -3,6 +3,7 @@ package io.github.factoryfx.server;
 import java.util.Collection;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.*;
@@ -10,6 +11,8 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.RootFactoryWrapper;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * starting point for factoryfx application
@@ -17,6 +20,8 @@ import io.github.factoryfx.factory.log.FactoryUpdateLog;
  * @param <R> Root
  */
 public class Microservice<L,R extends FactoryBase<L,R>> {
+    private static final Logger logger = LoggerFactory.getLogger(Microservice.class);
+
     private final FactoryManager<L,R> factoryManager;
     private final DataStorage<R> dataStorage;
     private final FactoryTreeBuilder<L,R> factoryTreeBuilder;
@@ -114,9 +119,28 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
 
     public synchronized L start() {
         final DataAndId<R> currentFactory = dataStorage.getCurrentData();
-        currentFactory.root.internal().setMicroservice(this);//also mind ExceptionResponseAction#reset
-        currentFactory.root.internal().setFactoryTreeBuilder(factoryTreeBuilder);
-        return factoryManager.start(new RootFactoryWrapper<>(currentFactory.root));
+        R currentFactoryRoot = currentFactory.root;
+
+        R initialData = dataStorage.getInitialData();
+        if (initialData!=null){
+            R rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(initialData);
+            DataMerger<R> merge = new DataMerger<>(currentFactoryRoot,initialData,rebuildRoot);
+            MergeDiffInfo<R> mergeDiffInfo = merge.createMergeResult((p) -> true).executeMerge();
+
+            if (mergeDiffInfo.successfullyMerged()){
+                DataUpdate<R> dataUpdate = new DataUpdate<>(currentFactoryRoot,"System","FactoryTreeBuilder update",currentFactory.id);
+                dataStorage.updateCurrentData(dataUpdate,new UpdateSummary(mergeDiffInfo.mergeInfos));
+            } else {
+                logger.warn("can't apply changes from FactoryTreeBuilder");
+                for (AttributeDiffInfo conflictInfo : mergeDiffInfo.conflictInfos) {
+                    logger.warn(conflictInfo.attributeName);
+                }
+            }
+        }
+
+        currentFactoryRoot.internal().setMicroservice(this);//also mind ExceptionResponseAction#reset
+        currentFactoryRoot.internal().setFactoryTreeBuilder(factoryTreeBuilder);
+        return factoryManager.start(new RootFactoryWrapper<>(currentFactoryRoot));
     }
 
     public synchronized void stop() {

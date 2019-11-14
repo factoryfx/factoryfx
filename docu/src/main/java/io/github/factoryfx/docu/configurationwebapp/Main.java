@@ -13,14 +13,14 @@ import java.net.URISyntaxException;
 
 public class Main {
 
-    @SuppressWarnings("unchecked")
+
     public static void main(String[] args) {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
                 .withHost("localhost").withPort(8005).withResource(ctx.get(MicroserviceDomResourceFactory.class)));
-        builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
+        builder.addSingleton(MicroserviceDomResourceFactory.class);
 
         builder.microservice().build().start();
         try {

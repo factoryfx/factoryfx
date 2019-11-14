@@ -11,7 +11,6 @@ import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
-    @SuppressWarnings("unchecked")
     public FactoryTreeBuilder<Server, JettyServerRootFactory> builder(){
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
                     .withHost("localhost").withPort(8089)
@@ -20,9 +19,9 @@ public class ServerBuilder {
                     .withResource(ctx.get(ShopResourceFactory.class))
         );
 
-        builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
+        builder.addFactoryUnsafe(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 
-        builder.addFactory(ShopResourceFactory.class, Scope.SINGLETON, context -> {
+        builder.addSingleton(ShopResourceFactory.class, context -> {
             ShopResourceFactory shopResource = new ShopResourceFactory();
             shopResource.orderStorage.set(context.get(OrderStorageFactory.class));
             shopResource.products.add(context.get(ProductFactory.class,"car"));
@@ -31,7 +30,7 @@ public class ServerBuilder {
             return shopResource;
         });
 
-        builder.addFactory(ProductFactory.class, "car", Scope.PROTOTYPE, context -> {
+        builder.addPrototype(ProductFactory.class, "car", context -> {
             ProductFactory carFactory = new ProductFactory();
             carFactory.vatRate.set(context.get(VatRateFactory.class));
             carFactory.name.set("Car");
@@ -39,7 +38,7 @@ public class ServerBuilder {
             return carFactory;
         });
 
-        builder.addFactory(ProductFactory.class, "bike", Scope.PROTOTYPE, context -> {
+        builder.addPrototype(ProductFactory.class, "bike", context -> {
             ProductFactory bikeFactory = new ProductFactory();
             bikeFactory.vatRate.set(context.get(VatRateFactory.class));
             bikeFactory.name.set("Bike");
@@ -47,7 +46,7 @@ public class ServerBuilder {
             return bikeFactory;
         });
 
-        builder.addFactory(NetherlandsCarProductFactory.class, "netherland car", Scope.PROTOTYPE, context -> {
+        builder.addPrototype(NetherlandsCarProductFactory.class, "netherland car", context -> {
             NetherlandsCarProductFactory bikeFactory = new NetherlandsCarProductFactory();
             bikeFactory.vatRate.set(context.get(VatRateFactory.class));
             bikeFactory.name.set("Netherland ");
@@ -57,17 +56,15 @@ public class ServerBuilder {
         });
 
 
-        builder.addFactory(VatRateFactory.class, Scope.SINGLETON, context -> {
+        builder.addSingleton(VatRateFactory.class, context -> {
             VatRateFactory vatRate =new VatRateFactory();
             vatRate.rate.set(0.19);
             return vatRate;
         });
 
-        builder.addFactory(OrderStorageFactory.class, Scope.SINGLETON, ctx->{
-            return new OrderStorageFactory();
-        });
+        builder.addSingleton(OrderStorageFactory.class);
 
-        builder.addFactory(OrderMonitoringResourceFactory.class, Scope.SINGLETON);
+        builder.addSingleton(OrderMonitoringResourceFactory.class);
 
         return builder;
     }

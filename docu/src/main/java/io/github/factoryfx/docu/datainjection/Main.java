@@ -15,6 +15,5 @@ public class Main {
 
         Microservice<Root,RootFactory> microservice = builder.microservice().build();
         microservice.start();
-
     }
 }

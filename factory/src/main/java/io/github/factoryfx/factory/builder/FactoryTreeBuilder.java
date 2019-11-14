@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.builder;
 
 
-import com.google.common.base.Strings;
+import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.BranchSelector;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
@@ -27,9 +27,6 @@ import java.util.stream.Collectors;
  * @param <R> root factory
  * */
 public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
-    private final static Logger logger = LoggerFactory.getLogger(FactoryTreeBuilder.class);
-
-
 
     private final FactoryContext<R> factoryContext = new FactoryContext<>();
     protected final FactoryTemplateId<R> rootTemplateId;
@@ -59,11 +56,11 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope, Function<FactoryContext<R>, F> creator){
-        addFactory(clazz,null,scope,creator);
+        addFactory(new FactoryTemplateId<>(clazz,null),scope,creator);
     }
 
     public <F extends FactoryBase<?,R>> void addFactory(String name, Scope scope, Function<FactoryContext<R>, F> creator){
-        addFactory(null,name,scope,creator);
+        addFactory(new FactoryTemplateId<>(null,name),scope,creator);
     }
 
     public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){
@@ -73,6 +70,93 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope){
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
+
+
+    public <F extends FactoryBase<?,R>> void addSingleton(FactoryTemplateId<F> templateId, Function<FactoryContext<R>, F> creator){
+        factoryContext.addFactoryCreator(new FactoryCreator<>(templateId,Scope.SINGLETON,creator));
+    }
+
+    public <F extends FactoryBase<?,R>> void addSingleton(Class<F> clazz, Function<FactoryContext<R>, F> creator){
+        addSingleton(new FactoryTemplateId<>(clazz,null),creator);
+    }
+
+    public <F extends FactoryBase<?,R>> void addSingleton(String name, Function<FactoryContext<R>, F> creator){
+        addSingleton(new FactoryTemplateId<>(null,name),creator);
+    }
+
+    public <F extends FactoryBase<?,R>> void addSingleton(Class<F> clazz, String name, Function<FactoryContext<R>, F> creator){
+        addSingleton(new FactoryTemplateId<>(clazz,name),creator);
+    }
+
+    public <F extends FactoryBase<?,R>> void addSingleton(Class<F> clazz, String name){
+        addSingleton(new FactoryTemplateId<>(clazz,name),new DefaultCreator<>(clazz));
+    }
+
+    public <F extends FactoryBase<?,R>> void addSingleton(Class<F> clazz){
+        addSingleton(new FactoryTemplateId<>(clazz,null),new DefaultCreator<>(clazz));
+    }
+
+
+
+    public <F extends FactoryBase<?,R>> void addPrototype(FactoryTemplateId<F> templateId, Function<FactoryContext<R>, F> creator){
+        factoryContext.addFactoryCreator(new FactoryCreator<>(templateId,Scope.PROTOTYPE,creator));
+    }
+
+    public <F extends FactoryBase<?,R>> void addPrototype(Class<F> clazz, Function<FactoryContext<R>, F> creator){
+        addPrototype(new FactoryTemplateId<>(clazz,null),creator);
+    }
+
+    public <F extends FactoryBase<?,R>> void addPrototype(String name, Function<FactoryContext<R>, F> creator){
+        addPrototype(new FactoryTemplateId<>(null,name),creator);
+    }
+
+    public <F extends FactoryBase<?,R>> void addPrototype(Class<F> clazz, String name, Function<FactoryContext<R>, F> creator){
+        addPrototype(new FactoryTemplateId<>(clazz,name),creator);
+    }
+
+    public <F extends FactoryBase<?,R>> void addPrototype(Class<F> clazz, String name){
+        addPrototype(new FactoryTemplateId<>(clazz,name),new DefaultCreator<>(clazz));
+    }
+
+    public <F extends FactoryBase<?,R>> void addPrototype(Class<F> clazz){
+        addPrototype(new FactoryTemplateId<>(clazz,null),new DefaultCreator<>(clazz));
+    }
+
+
+    /**
+     * workaround for factories with generic Parameter e.g. FactoryX<R>
+     * @param templateId templateId
+     * @param scope scope
+     * @param creator creator
+     * @param <F> Factory
+     */
+    @SuppressWarnings("unchecked")
+    public <F extends FactoryBase<?,R>> void addFactoryUnsafe(FactoryTemplateId<?> templateId, Scope scope, Function<FactoryContext<R>, F> creator){
+        factoryContext.addFactoryCreator(new FactoryCreator(templateId,scope,creator));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <F extends FactoryBase<?,R>> void addFactoryUnsafe(Class<?> clazz, Scope scope, Function<FactoryContext<R>, F> creator){
+        addFactoryUnsafe(new FactoryTemplateId(clazz,null),scope,creator);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <F extends FactoryBase<?,R>> void addFactoryUnsafe(String name, Scope scope, Function<FactoryContext<R>, F> creator){
+        addFactoryUnsafe(new FactoryTemplateId<>(null,name),scope,creator);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <F extends FactoryBase<?,R>> void addFactoryUnsafe(Class<?> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){
+        addFactoryUnsafe(new FactoryTemplateId(clazz,name),scope,creator);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void addFactoryUnsafe(Class<?> clazz, Scope scope){
+        addFactoryUnsafe(clazz,scope,new DefaultCreator(clazz));
+    }
+
+
+
 
     /**create the complete factory tree that represent the app dependencies and validates the result<br>
      * the tree is only created once per builder, multiple buildTree calls return the same result
@@ -84,13 +168,18 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         return root;
     }
 
+    boolean templateValidation=true;
+    /** disable templateId validation, The validation ensures that all factories have a template in the builder. This is important for migration of persistent factory configurations*/
+    public void disableTemplateValidation() {
+        templateValidation=false;
+    }
 
     private void validate(R root) {
         List<ValidationError> validationErrors=new ArrayList<>();
         for (FactoryBase<?,?> factory : root.internal().collectChildrenDeep()) {
             validationErrors.addAll(factory.internal().validateFlat());
-            if (!factory.internal().isCreatedWithBuilderTemplate()){
-                logger.warn("Warning: not created with template\n"+factory.internal().debugInfo());
+            if (templateValidation && !factory.internal().isCreatedWithBuilderTemplate() && !(factory.internal().attributeList().isEmpty())){
+                throw new IllegalStateException("\nFactory not created with template\nfix: factory.refAttribute.set(ctx.get("+factory.getClass().getSimpleName()+".class)) instead of factory.refAttribute.set(new "+factory.getClass().getSimpleName()+"())\nthe validation can be disabled with FactoryTreeBuilder#disableTemplateValidation())\n\n"+factory.internal().debugInfo());
             }
         }
         if (!validationErrors.isEmpty()){
@@ -112,8 +201,8 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         if (rootFactory!=null) {
             return rootFactory;
         }
-        for (Function<FactoryContext<R>, NestedBuilder<L,R>> customBuildersCreator : customBuildersCreators) {
-            NestedBuilder<L,R> nestedBuilder = customBuildersCreator.apply(factoryContext);
+        for (Function<FactoryContext<R>, NestedBuilder<R>> customBuildersCreator : customBuildersCreators) {
+            NestedBuilder<R> nestedBuilder = customBuildersCreator.apply(factoryContext);
             nestedBuilder.internal_build(this);
         }
         customBuildersCreators.clear();//only add once
@@ -159,11 +248,11 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     public MicroserviceBuilder<L,R> microservice(){
-        return new MicroserviceBuilder<>((Class<R>) this.rootTemplateId.clazz,this.buildTree(),this, ObjectMapperBuilder.build());
+        return new MicroserviceBuilder<>(this.rootTemplateId.clazz,this.buildTree(),this, ObjectMapperBuilder.build());
     }
 
     public MicroserviceBuilder<L,R> microservice(SimpleObjectMapper simpleObjectMapper){
-        return new MicroserviceBuilder<>((Class<R>) this.rootTemplateId.clazz,this.buildTree(),this,simpleObjectMapper);
+        return new MicroserviceBuilder<>(this.rootTemplateId.clazz,this.buildTree(),this,simpleObjectMapper);
     }
 
     /**
@@ -205,9 +294,9 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
 
 
-    List<Function<FactoryContext<R>, NestedBuilder<L,R>>> customBuildersCreators= new ArrayList<>();
+    List<Function<FactoryContext<R>, NestedBuilder<R>>> customBuildersCreators= new ArrayList<>();
 
-    public void addBuilder(Function<FactoryContext<R>, NestedBuilder<L,R>> builderCreators) {
+    public void addBuilder(Function<FactoryContext<R>, NestedBuilder<R>> builderCreators) {
         customBuildersCreators.add(builderCreators);
     }
 }

@@ -1,15 +1,12 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Functions;
-import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class AttributePathTarget<V> {
     private final List<AttributePathElement> path;
@@ -43,7 +40,13 @@ public class AttributePathTarget<V> {
     public boolean isPathToRemovedAttribute(DataStorageMetadataDictionary dictionary, DataJsonNode root) {
         DataJsonNode current = root;
         for (AttributePathElement pathElement : this.path) {
+            if (current==null){//broken path
+                return false;
+            }
             current = pathElement.getNext(current);
+        }
+        if (current==null){//broken path
+            return false;
         }
         DataStorageMetadata dataStorageMetadata =dictionary.getDataStorageMetadata(current.getDataClassName());
         if (dataStorageMetadata==null) {
@@ -64,7 +67,13 @@ public class AttributePathTarget<V> {
     public boolean isPathToRetypedAttribute(DataStorageMetadataDictionary dictionary, DataJsonNode root) {
         DataJsonNode current = root;
         for (AttributePathElement pathElement : this.path) {
+            if (current==null){//broken path
+                return false;
+            }
             current = pathElement.getNext(current);
+        }
+        if (current==null){//broken path
+            return false;
         }
         DataStorageMetadata dataStorageMetadata =dictionary.getDataStorageMetadata(current.getDataClassName());
         if (dataStorageMetadata==null) {

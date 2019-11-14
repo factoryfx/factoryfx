@@ -63,7 +63,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
     public Path folder;
 
     @Test
-    public void test() throws IOException {
+    public void test() {
         {
             FactoryTreeBuilder<Void, ServerFactoryOld> builder = new FactoryTreeBuilder<>(ServerFactoryOld.class, ctx -> {
                 ServerFactoryOld serverFactoryOld = new ServerFactoryOld();
@@ -81,16 +81,7 @@ public class DeleteAttributeDanglingIdMigrationTest {
             msOld.stop();
         }
 
-
-        //Patch class names in json files
-        String currentFactory=Files.readString(folder.resolve("currentFactory.json"));
-        currentFactory=currentFactory.replace("Old","");
-        System.out.println(currentFactory);
-        Files.writeString(folder.resolve("currentFactory.json"),currentFactory);
-        String currentFactorymetadata=Files.readString(folder.resolve("currentFactory_metadata.json"));
-        currentFactorymetadata=currentFactorymetadata.replace("Old","");
-        System.out.println(currentFactorymetadata);
-        Files.writeString(folder.resolve("currentFactory_metadata.json"),currentFactorymetadata);
+        FileSystemStorageTestUtil.patchClassName(folder);
 
         {
             FactoryTreeBuilder<Void, ServerFactory> builder = new FactoryTreeBuilder<>(ServerFactory.class, ctx -> {

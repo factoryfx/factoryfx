@@ -1,5 +1,6 @@
 package io.github.factoryfx.jetty;
 
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,17 +8,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class UpdateableServletFactoryTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void test_path_validation(){
-        UpdateableServletFactory updateableServletFactory = new UpdateableServletFactory();
+        UpdateableServletFactory<JettyServerRootFactory> updateableServletFactory = new UpdateableServletFactory<>();
         {
-            ServletAndPathFactory servletAndPathFactory = new ServletAndPathFactory();
+            ServletAndPathFactory<JettyServerRootFactory> servletAndPathFactory = new ServletAndPathFactory<>();
             servletAndPathFactory.pathSpec.set("/*");
             updateableServletFactory.servletAndPaths.add(servletAndPathFactory);
         }
 
         {
-            ServletAndPathFactory servletAndPathFactory = new ServletAndPathFactory();
+            ServletAndPathFactory<JettyServerRootFactory> servletAndPathFactory = new ServletAndPathFactory<>();
             servletAndPathFactory.pathSpec.set("/*");
             updateableServletFactory.servletAndPaths.add(servletAndPathFactory);
         }

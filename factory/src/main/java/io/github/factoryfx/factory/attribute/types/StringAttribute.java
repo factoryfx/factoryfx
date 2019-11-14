@@ -73,6 +73,6 @@ public class StringAttribute extends ImmutableValueAttribute<String,StringAttrib
         if (value!=null) {
             return value;
         }
-        return super.toString();
+        return "StringAttribute value: null";
     }
 }

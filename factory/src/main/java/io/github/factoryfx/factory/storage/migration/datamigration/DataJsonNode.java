@@ -27,9 +27,6 @@ public class DataJsonNode {
     }
 
     public String getDataClassName(){
-        if (jsonNode==null){
-            System.out.println();
-        }
         return jsonNode.get("@class").textValue();
     }
 
@@ -47,7 +44,11 @@ public class DataJsonNode {
     }
 
     public DataJsonNode getChild(String attributeName) {
-        return new DataJsonNode((ObjectNode)jsonNode.get(attributeName).get("v"));
+        JsonNode attribute = jsonNode.get(attributeName);
+        if (attribute==null){
+            return null;
+        }
+        return new DataJsonNode((ObjectNode)attribute.get("v"));
     }
 
     public DataJsonNode getChild(String attributeName, int index) {

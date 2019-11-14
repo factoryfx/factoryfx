@@ -3,6 +3,7 @@ package io.github.factoryfx.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Function;
 
 public class MicroserviceBuilderTest {
 
@@ -41,9 +43,13 @@ public class MicroserviceBuilderTest {
         FactoryTreeBuilder< ExampleLiveObjectA, ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA factoryA = new ExampleFactoryA();
             factoryA.stringAttribute.set("12323");
-            factoryA.referenceAttribute.set(new ExampleFactoryB());
+            factoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
             return factoryA;
         });
+        builder.addSingleton(ExampleFactoryB.class, ctx -> new ExampleFactoryB());
+
+
+
         YAMLFactory yamlFactory = new YAMLFactory();
         yamlFactory.disable(YAMLGenerator.Feature.USE_NATIVE_TYPE_ID);
         Microservice<ExampleLiveObjectA, ExampleFactoryA> microservice = builder.microservice(ObjectMapperBuilder.buildNew(new ObjectMapper(yamlFactory))).withFilesystemStorage(Paths.get(folder.toFile().toURI())).build();

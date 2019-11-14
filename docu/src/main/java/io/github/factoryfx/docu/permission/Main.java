@@ -33,7 +33,7 @@ public class Main {
             return factory;
         });
         builder.addBuilder(ctx->
-            new SimpleJettyServerBuilder<Printer,PrinterFactory>()
+            new SimpleJettyServerBuilder<PrinterFactory>()
                     .withHost("localhost").withPort(8005)
                     .withResource(ctx.get(PrinterMicroserviceResourceFactory.class))
         );

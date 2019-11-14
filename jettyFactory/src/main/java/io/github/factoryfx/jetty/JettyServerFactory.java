@@ -1,12 +1,10 @@
 package io.github.factoryfx.jetty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
-import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -111,18 +109,23 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
     /**
      * model navigation shortcut, only works with th e default setup form the builder
      * @param clazz servlet class
-     * @param <T> servlet type
+     * @param <F> servlet factory
      * @return servlet
      */
     @SuppressWarnings("unchecked")
-    public final <T extends FactoryBase> T getServlet(Class<T> clazz){
+    public final <F extends FactoryBase> F getServlet(Class<F> clazz){
         ServletContextHandlerFactory<R> servletContextHandler = getDefaultServletContextHandlerFactory();
         for (ServletAndPathFactory<R> servletAndPath : servletContextHandler.updatableRootServlet.get().servletAndPaths) {
             if (servletAndPath.servlet.get().getClass()==clazz){
-                return (T)servletAndPath.servlet.get();
+                return (F)servletAndPath.servlet.get();
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <F extends FactoryBase> F getServletUnsafe(Class<?> clazz){
+        return getServlet((Class<F>)clazz);
     }
 
     public final <T extends FactoryBase> void clearResource(Class<T> resource){

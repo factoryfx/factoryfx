@@ -1,9 +1,11 @@
 package io.github.factoryfx.soap;
 
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.jetty.ServletAndPathFactory;
 import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
@@ -29,7 +31,7 @@ import javax.xml.ws.handler.MessageContext;
 
 public class SoapTest {
 
-    @SuppressWarnings("unchecked")
+
     @Test
     public void test() throws Exception {
 
@@ -39,12 +41,12 @@ public class SoapTest {
 //                .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
 
         builder.addBuilder(ctx->{
-            return new SimpleJettyServerBuilder<Server, SoapJettyServerFactory>()
-                    .withHost("localhost").withPort(8088)
-                    .withServlet(new FactoryTemplateId<>("soap",null),"/*", ctx.get(SoapHandlerFactory.class));
+            SimpleJettyServerBuilder<SoapJettyServerFactory> jettyServerBuilder = new SimpleJettyServerBuilder<SoapJettyServerFactory>();
+            jettyServerBuilder.withHost("localhost").withServlet(ctx.getUnsafe(SoapHandlerFactory.class), "/*", "soap");
+            return jettyServerBuilder;
         });
 
-        builder.addFactory(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{
+        builder.addFactoryUnsafe(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{
             SoapHandlerFactory<HelloWorld, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
             HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
             HelloWorld goodCase = new HelloWorld() {
@@ -93,7 +95,8 @@ public class SoapTest {
         };
 
         helloWorldFactory.service.set(badCase);
-        newFactory.root.server.get().getServlet(SoapHandlerFactory.class).serviceBean.set(helloWorldFactory);
+        SoapHandlerFactory<HelloWorld,SoapJettyServerFactory> servletUnsafe = newFactory.root.server.get().getServletUnsafe(SoapHandlerFactory.class);
+        servletUnsafe.serviceBean.set(helloWorldFactory);
         microService.updateCurrentFactory(newFactory);
         callSoapWebService("http://localhost:8088",createSOAPRequest("action"));
 
@@ -131,7 +134,6 @@ public class SoapTest {
             // Print the SOAP Response
             System.out.println("Response SOAP Message:");
             soapResponse.writeTo(System.out);
-            System.out.println();
 
             soapConnection.close();
         } catch (Exception e) {

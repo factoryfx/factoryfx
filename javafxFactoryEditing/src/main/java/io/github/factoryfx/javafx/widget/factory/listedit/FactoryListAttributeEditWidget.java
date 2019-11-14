@@ -35,9 +35,9 @@ import io.github.factoryfx.javafx.widget.select.SelectDataDialog;
 
 /**
  * Data list edit widget (add Button,delete Button,... )
- * @param <T> data
+ * @param <F> Factory
  */
-public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T extends FactoryBase<L,RS>> implements Widget {
+public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F extends FactoryBase<L,RS>> implements Widget {
 
     private LanguageText editText= new LanguageText().en("edit").de("Editieren");
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
@@ -51,18 +51,18 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T ex
 
 
     private final UniformDesign uniformDesign;
-    private final Supplier<List<? extends T>> newValueProvider;
-    private final Supplier<Collection<T>> possibleValuesProvider;
+    private final Supplier<List<? extends F>> newValueProvider;
+    private final Supplier<Collection<F>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
-    private final FactoryListBaseAttribute<L,T,?> factoryListBaseAttribute;
-    private final TableView<T> tableView;
+    private final FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute;
+    private final TableView<F> tableView;
     private final Consumer<FactoryBase<?,?>> navigateToData;
     private final BooleanBinding multipleItemsSelected;
     private final boolean isUserCreateable;
-    private final BiConsumer<T,List<T>> deleter;
+    private final BiConsumer<F,List<F>> deleter;
 
-    public FactoryListAttributeEditWidget(FactoryListBaseAttribute<L,T,?> factoryListBaseAttribute, TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends T>> newValueProvider, Supplier<Collection<T>> possibleValuesProvider, BiConsumer<T,List<T>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public FactoryListAttributeEditWidget(FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute, TableView<F> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends F>> newValueProvider, Supplier<Collection<F>> possibleValuesProvider, BiConsumer<F,List<F>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.newValueProvider = newValueProvider;
         this.possibleValuesProvider = possibleValuesProvider;
@@ -76,7 +76,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T ex
         this.deleter=deleter;
     }
 
-    public FactoryListAttributeEditWidget(TableView<T> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<L,T,?> factoryListBaseAttribute) {
+    public FactoryListAttributeEditWidget(TableView<F> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute) {
         this(factoryListBaseAttribute, tableView, navigateToData, uniformDesign,
                 factoryListBaseAttribute::internal_createNewPossibleValues, factoryListBaseAttribute::internal_possibleValues, (t, ts) -> factoryListBaseAttribute.internal_deleteFactory(t),
                 !factoryListBaseAttribute.internal_isUserReadOnly(), factoryListBaseAttribute.internal_isUserSelectable(), factoryListBaseAttribute.internal_isUserCreatable());
@@ -141,7 +141,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T ex
         uniformDesign.addIcon(copyButton,FontAwesome.Glyph.COPY);
         copyButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(multipleItemsSelected).or(new SimpleBooleanProperty(!isUserEditable)));
         copyButton.setOnAction(event -> {
-            T copy = tableView.getSelectionModel().getSelectedItem().utility().semanticCopy();
+            F copy = tableView.getSelectionModel().getSelectedItem().utility().semanticCopy();
             factoryListBaseAttribute.add(copy);
             tableView.getSelectionModel().clearSelection();
             tableView.getSelectionModel().select(copy);
@@ -196,19 +196,19 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, T ex
             }
         }
 
-        final List<T> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
+        final List<F> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
         selectedItems.forEach(t -> deleter.accept(t, factoryListBaseAttribute));
     }
 
     private void addNewReference(Window owner) {
-        List<? extends T> newDataList = newValueProvider.get();
+        List<? extends F> newDataList = newValueProvider.get();
         if (!newDataList.isEmpty()){
             if (newDataList.size()==1){
                 factoryListBaseAttribute.add(newDataList.get(0));
                 navigateToData.accept(newDataList.get(0));
             } else {
-                List<T> newDataListData = new ArrayList<>(newDataList);
-                new SelectDataDialog<T>(newDataListData,uniformDesign).show(owner, data -> {
+                List<F> newDataListData = new ArrayList<>(newDataList);
+                new SelectDataDialog<>(newDataListData,uniformDesign).show(owner, data -> {
                     factoryListBaseAttribute.add(data);
                     navigateToData.accept(data);
                 });

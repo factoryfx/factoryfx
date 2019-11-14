@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class DomTestServerMain {
 
-    @SuppressWarnings("unchecked")
+
     public static void main(String[] args) {
         Path targetDirJs = Paths.get("src/main/resources/js/factoryEditing");
         if (!targetDirJs.toFile().exists()){
