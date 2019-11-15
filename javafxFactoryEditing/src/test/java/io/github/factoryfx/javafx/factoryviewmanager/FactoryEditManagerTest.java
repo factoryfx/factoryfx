@@ -1,5 +1,6 @@
 package io.github.factoryfx.javafx.factoryviewmanager;
 
+import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
@@ -20,6 +21,7 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 
 public class FactoryEditManagerTest {
@@ -93,8 +95,11 @@ public class FactoryEditManagerTest {
         {
             FactoryTreeBuilder<ExampleLiveObjectA, ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class,ctx->{
                 ExampleFactoryA factory = new ExampleFactoryA();
-                factory.referenceAttribute.set(new ExampleFactoryB());
+                factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
                 return factory;
+            });
+            builder.addSingleton(ExampleFactoryB.class, ctx-> {
+                return new ExampleFactoryB();
             });
             Microservice<ExampleLiveObjectA, ExampleFactoryA> microservice = builder.microservice().build();
 
