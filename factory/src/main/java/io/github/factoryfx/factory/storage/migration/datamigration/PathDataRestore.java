@@ -23,11 +23,7 @@ public class PathDataRestore<R extends FactoryBase<?,?>,V>  {
     }
 
     public boolean canMigrate(DataStorageMetadataDictionary previousDataStorageMetadataDictionary, DataJsonNode root){
-        try {
-            return previousPath.isPathToRemovedAttribute(previousDataStorageMetadataDictionary, root) || previousPath.isPathToRetypedAttribute(previousDataStorageMetadataDictionary, root);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return previousPath.isPathToRemovedAttribute(previousDataStorageMetadataDictionary, root) || previousPath.isPathToRetypedAttribute(previousDataStorageMetadataDictionary, root);
     }
 
     public void migrate(DataJsonNode previousRoot, R root) {

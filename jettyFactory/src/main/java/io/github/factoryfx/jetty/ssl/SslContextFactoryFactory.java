@@ -32,41 +32,40 @@ public class SslContextFactoryFactory<R extends FactoryBase<?, R>> extends Simpl
 
     @Override
     protected SslContextFactory createImpl() {
-        SslContextFactory sslContextFactory = new SslContextFactory();
-
-        if (allowCipherSuites.size() > 0) {
-            sslContextFactory.setExcludeCipherSuites();
-            sslContextFactory.setIncludeCipherSuites(allowCipherSuites.get().toArray(new String[allowCipherSuites.size()]));
-        }
-
-        sslContextFactory.setKeyStorePassword(keyStorePassword.get());
-        if (!keyPassword.isEmpty()) {
-            sslContextFactory.setKeyManagerPassword(keyPassword.get());
-        }
-
         try {
+            SslContextFactory sslContextFactory = new SslContextFactory();
+
+            if (allowCipherSuites.size() > 0) {
+                sslContextFactory.setExcludeCipherSuites();
+                sslContextFactory.setIncludeCipherSuites(allowCipherSuites.get().toArray(new String[allowCipherSuites.size()]));
+            }
+
+            sslContextFactory.setKeyStorePassword(keyStorePassword.get());
+            if (!keyPassword.isEmpty()) {
+                sslContextFactory.setKeyManagerPassword(keyPassword.get());
+            }
+
             KeyStore keyStore = KeyStore.getInstance(keyStoreType.get().value());
             try (InputStream inputStream = new ByteArrayInputStream(this.keyStore.get())) {
                 keyStore.load(inputStream, keyStorePassword.get().toCharArray());
                 sslContextFactory.setKeyStore(keyStore);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        sslContextFactory.setNeedClientAuth(needClientAuth.get());
-        sslContextFactory.setWantClientAuth(wantClientAuth.get());
-        sslContextFactory.setKeyStorePassword(trustStorePassword.get());
-        try {
-            KeyStore keyStore = KeyStore.getInstance(trustStoreType.get().value());
-            try (InputStream inputStream = new ByteArrayInputStream(this.trustStore.get())) {
-                keyStore.load(inputStream, trustStorePassword.get().toCharArray());
-                sslContextFactory.setTrustStore(keyStore);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        sslContextFactory.setCertAlias(certAlias.get());
 
-        return sslContextFactory;
+            sslContextFactory.setNeedClientAuth(needClientAuth.get());
+            sslContextFactory.setWantClientAuth(wantClientAuth.get());
+            sslContextFactory.setKeyStorePassword(trustStorePassword.get());
+
+            KeyStore trustStore = KeyStore.getInstance(trustStoreType.get().value());
+            try (InputStream inputStream = new ByteArrayInputStream(this.trustStore.get())) {
+                trustStore.load(inputStream, trustStorePassword.get().toCharArray());
+                sslContextFactory.setTrustStore(trustStore);
+            }
+
+            sslContextFactory.setCertAlias(certAlias.get());
+
+            return sslContextFactory;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
