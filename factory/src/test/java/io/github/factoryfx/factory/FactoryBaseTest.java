@@ -3,6 +3,8 @@ package io.github.factoryfx.factory;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
@@ -734,5 +736,18 @@ public class FactoryBaseTest {
 
     }
 
+    @Test
+    public void test_templateId_copy(){
+        FactoryTemplateId<ExampleFactoryA> templateId = new FactoryTemplateId<>(ExampleFactoryA.class,"root");
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(templateId, ctx -> new ExampleFactoryA());
+
+        ExampleFactoryA exampleFactoryA = builder.buildTree();
+        FactoryTemplateId<ExampleFactoryA> templateIdAfterBuild = new FactoryTemplateId<>(exampleFactoryA);
+        Assertions.assertEquals(templateId,templateIdAfterBuild);
+
+        ExampleFactoryA copy = exampleFactoryA.internal().copy();
+        FactoryTemplateId<ExampleFactoryA> copyTemplateId = new FactoryTemplateId<>(copy);
+        Assertions.assertEquals(templateId,copyTemplateId);
+    }
 
 }

@@ -1,7 +1,11 @@
 # 2.2.0
 
 ### Features
-
+* **FactoryTreeBuilder migration improvement:**  
+  Changes in the FactoryTreeBuilder are now automatically migrated.
+  For example if you add a new jersey resource in the builder the new resource is also added to existing configuration after start.
+  This simplifies structural application changes.
+  
 * **migration improvements:**  
   * restore data with path to ListAttribute
   * support for attribute type change

@@ -16,6 +16,7 @@ public class ServerBuilder {
                     .withHost("localhost").withPort(8089)
                     .withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
                     .withResource(ctx.get(OrderMonitoringResourceFactory.class))
+                    .withResource(ctx.get(OrderMonitoringResourceFactory2.class))
                     .withResource(ctx.get(ShopResourceFactory.class))
         );
 
@@ -65,7 +66,7 @@ public class ServerBuilder {
         builder.addSingleton(OrderStorageFactory.class);
 
         builder.addSingleton(OrderMonitoringResourceFactory.class);
-
+        builder.addSingleton(OrderMonitoringResourceFactory2.class);
         return builder;
     }
 }

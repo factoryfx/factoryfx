@@ -119,7 +119,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactoryUnsafe(DataViewWidgetFactory.class,Scope.PROTOTYPE);
         factoryBuilder.addFactory(SeparatorMenuItemFactory.class,Scope.PROTOTYPE);
 
-        factoryBuilder.disableTemplateValidation();
+        factoryBuilder.markAsNonPersistentFactoryBuilder();
         return factoryBuilder;
 
     }

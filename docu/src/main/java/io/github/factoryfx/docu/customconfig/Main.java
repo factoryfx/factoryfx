@@ -26,7 +26,7 @@ public class Main {
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(CustomConfigurationResourceFactory.class))
         );
-        builder.addFactory(CustomConfigurationResourceFactory.class, Scope.SINGLETON);
+        builder.addSingleton(CustomConfigurationResourceFactory.class);
 
         Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
         microservice.start();

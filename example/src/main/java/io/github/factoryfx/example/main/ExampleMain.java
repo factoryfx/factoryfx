@@ -22,6 +22,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.Locale;
 
 public class ExampleMain extends Application {
@@ -38,7 +39,7 @@ public class ExampleMain extends Application {
 
         FactoryTreeBuilder<Server, JettyServerRootFactory> serverBuilder = new ServerBuilder().builder();
         MicroserviceBuilder<Server, JettyServerRootFactory> builder = serverBuilder.microservice().
-                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, JettyServerRootFactory>()));
+                withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, JettyServerRootFactory>())).withFilesystemStorage(Path.of("example/storage"));
         Microservice<Server, JettyServerRootFactory> microservice = builder.build();
         microservice.start();
 

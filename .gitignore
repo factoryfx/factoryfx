@@ -10,3 +10,4 @@ factoryfx.iml
 **/typescriptGenerator/**/*.map
 typescriptGenerator/src/test/ts/node_modules
 /docu/src/main/java/io/github/factoryfx/docu/migration/~$overview.pptx
+/example/storage/

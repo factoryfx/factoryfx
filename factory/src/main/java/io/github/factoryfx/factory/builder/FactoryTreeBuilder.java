@@ -31,13 +31,15 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     private final FactoryContext<R> factoryContext = new FactoryContext<>();
     protected final FactoryTemplateId<R> rootTemplateId;
 
-    protected FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, boolean workaround) {
+    protected FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, Consumer<FactoryTreeBuilder<L,R>> rootTemplateAdder) {
         this.rootTemplateId = rootTemplateId;
+        rootTemplateAdder.accept(this);
     }
 
     public FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, Function<FactoryContext<R>, R> creator) {
-        this.rootTemplateId=rootTemplateId;
-        addFactory(rootTemplateId,Scope.SINGLETON,creator);
+        this(rootTemplateId, builder -> {
+            builder.addFactory(rootTemplateId, Scope.SINGLETON, creator);
+        });
     }
 
     public FactoryTreeBuilder(Class<R> rootClass) {
@@ -140,7 +142,6 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         addFactoryUnsafe(new FactoryTemplateId(clazz,null),scope,creator);
     }
 
-    @SuppressWarnings("unchecked")
     public <F extends FactoryBase<?,R>> void addFactoryUnsafe(String name, Scope scope, Function<FactoryContext<R>, F> creator){
         addFactoryUnsafe(new FactoryTemplateId<>(null,name),scope,creator);
     }
@@ -169,17 +170,27 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     boolean templateValidation=true;
-    /** disable templateId validation, The validation ensures that all factories have a template in the builder. This is important for migration of persistent factory configurations*/
-    public void disableTemplateValidation() {
+
+    /**
+     *  disable templateId validation, The validation ensures that all factories have a template in the builder.
+     *  This is important for migration of persistent factory configurations which is no need for non persistent factories
+     *  */
+    public void markAsNonPersistentFactoryBuilder() {
         templateValidation=false;
     }
+
+    public boolean isPersistentFactoryBuilder() {
+        return templateValidation;
+    }
+
+
 
     private void validate(R root) {
         List<ValidationError> validationErrors=new ArrayList<>();
         for (FactoryBase<?,?> factory : root.internal().collectChildrenDeep()) {
             validationErrors.addAll(factory.internal().validateFlat());
             if (templateValidation && !factory.internal().isCreatedWithBuilderTemplate() && !(factory.internal().attributeList().isEmpty())){
-                throw new IllegalStateException("\nFactory not created with template\nfix: factory.refAttribute.set(ctx.get("+factory.getClass().getSimpleName()+".class)) instead of factory.refAttribute.set(new "+factory.getClass().getSimpleName()+"())\nthe validation can be disabled with FactoryTreeBuilder#disableTemplateValidation())\n\n"+factory.internal().debugInfo());
+                throw new IllegalStateException("\nFactory not created with template\nfix: factory.refAttribute.set(ctx.get("+factory.getClass().getSimpleName()+".class)) instead of factory.refAttribute.set(new "+factory.getClass().getSimpleName()+"())\nthe validation can be disabled with FactoryTreeBuilder#markAsNonPersistentFactoryBuilder())\n\n"+factory.internal().debugInfo());
             }
         }
         if (!validationErrors.isEmpty()){
@@ -285,7 +296,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         for (FactoryBase<?, R> factory: rootRebuild.internal().collectChildrenDeep()) {
             FactoryTemplateId<? extends FactoryBase<?, R>> templateId = new FactoryTemplateId<>(factory);
             List<FactoryBase<?, R>> list = existingFactories.get(templateId);
-            if (list.size()==1) {
+            if (list!=null && list.size()==1) {
                 factory.setId(list.get(0).getId());
             }
         }

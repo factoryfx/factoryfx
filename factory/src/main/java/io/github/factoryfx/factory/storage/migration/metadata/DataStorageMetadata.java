@@ -136,15 +136,15 @@ public class DataStorageMetadata {
             metadata.addBackReferencesAndReferenceClassToAttributes(factory,null);
 
 
-            factory.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            factory.internal().visitAttributesMetadataFlat((attributeVariableName, attributeClass, referenceClass) -> {
                 AttributeStorageMetadata attributeMetadata = getAttribute(attributeVariableName);
                 if (attributeMetadata!=null) { //not a  removed attribute
-                    if (!attributeMetadata.attributeClassName.equals(attribute.getClass().getName())) {
+                    if (!attributeMetadata.attributeClassName.equals(attributeClass.getName())) {
                         attributeMetadata.markRetyped();
                     }
 
-                    if (attribute instanceof ReferenceBaseAttribute){
-                        if (!attributeMetadata.referenceClass.equals(((ReferenceBaseAttribute)attribute).internal_getReferenceClass().getName())) {
+                    if (referenceClass!=null){
+                        if (!attributeMetadata.referenceClass.equals(referenceClass.getName())) {
                             attributeMetadata.markRetyped();
                         }
                     }

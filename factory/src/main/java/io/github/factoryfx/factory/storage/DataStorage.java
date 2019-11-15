@@ -34,8 +34,8 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
     DataAndId<R> getCurrentData();
 
     /**
-     * get the current data, if first start or no available an initial data is created
-     * @return current data
+     * get the initial data created from a FactoryTreeBuilder
+     * @return initial data
      * */
     default R getInitialData(){
         for (StoredDataMetadata metadata : getHistoryDataList()) {

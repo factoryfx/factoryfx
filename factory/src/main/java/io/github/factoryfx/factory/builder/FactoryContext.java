@@ -15,9 +15,6 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     @SuppressWarnings("unchecked")
     public <F extends FactoryBase<?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
         F factory = factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
-        if (factory!=null){
-            factory.internal().markAsCreatedWithBuilderTemplate();
-        }
         return factory;
     }
 
@@ -70,6 +67,14 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return result;
     }
 
+    public <F extends FactoryBase<?,R>> F getUnsafe(Class<?> clazz, String name){
+        F result = get(fc -> fc.match(clazz,name));
+        if (result==null){
+            throw new IllegalStateException("builder missing, factory: "+clazz+ " name: "+name);
+        }
+        return result;
+    }
+
     public <F extends FactoryBase<?,R>> F get(FactoryTemplateId<F> factoryTemplateId){
         F result = get(fc -> fc.match(factoryTemplateId.clazz,factoryTemplateId.name));
         if (result==null){
@@ -92,9 +97,6 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     <L, F extends FactoryBase<L,R>> List<F> getList(Class<F> clazz) {
         ArrayList<F> result = new ArrayList<>();
         factoryCreators.stream().filter(fc -> fc.match(clazz)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
-        for (F factory : result) {
-            factory.internal().markAsCreatedWithBuilderTemplate();
-        }
         return result;
     }
 

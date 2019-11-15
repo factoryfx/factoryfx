@@ -20,9 +20,9 @@ public class Main {
                     .withResource(ctx.get(DatabaseResourceFactory.class))
                 );
 
-        builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);
+        builder.addSingleton(SpecificMicroserviceResource.class);
 
-        builder.addFactory(DatabaseResourceFactory.class, Scope.SINGLETON, ctx->{
+        builder.addSingleton(DatabaseResourceFactory.class, ctx->{
             DatabaseResourceFactory databaseResource = new DatabaseResourceFactory();
             databaseResource.url.set("jdbc:postgresql://host/database");
             databaseResource.user.set("user");

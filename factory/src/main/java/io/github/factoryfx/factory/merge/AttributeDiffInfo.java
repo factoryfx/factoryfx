@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 
+import java.util.Map;
 import java.util.UUID;
 
 //represent a changed attribute
@@ -35,8 +36,13 @@ public class AttributeDiffInfo {
     }
 
     @JsonIgnore
-    public Attribute<?,?> getAttribute(FactoryBase<?,?> root){
-        FactoryBase<?,?> data = root.internal().collectChildFactoryMap().get(dataId);
+    public Attribute<?,?> getAttribute(FactoryBase<?,?> root){//TODO this is looks really slow
+        return getAttribute(root.internal().collectChildFactoryMap());
+    }
+
+    @JsonIgnore
+    public Attribute<?,?> getAttribute(Map<UUID, ? extends FactoryBase<?, ?>> uuidToFactory){
+        FactoryBase<?,?> data = uuidToFactory.get(dataId);
         if (data!=null) {
             Attribute<?,?>[] result= new Attribute<?,?>[1];
             data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
@@ -62,6 +68,11 @@ public class AttributeDiffInfo {
             return data.internal().getDisplayText();
         }
         return "";
+    }
+
+    @JsonIgnore
+    public <L,R extends FactoryBase<L,R>> String getDiffDisplayText(Map<UUID,FactoryBase<?,R>> uuidToOldFactory, Map<UUID,FactoryBase<?,R>> uuidToNewFactory){
+        return "class: "+uuidToOldFactory.get(dataId).getClass().getSimpleName()+", attribute: "+attributeName+", old value: "+getAttribute(uuidToOldFactory)+", new value: "+getAttribute(uuidToNewFactory);
     }
 
 

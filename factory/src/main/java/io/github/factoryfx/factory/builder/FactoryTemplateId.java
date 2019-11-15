@@ -81,4 +81,9 @@ public class FactoryTemplateId<F extends FactoryBase<?,?>> {
     public int hashCode() {
         return Objects.hash(clazz, name);
     }
+
+    @Override
+    public String toString() {
+        return "FactoryTemplateId{" + "clazz=" + clazz + ", name='" + name + '\'' + '}';
+    }
 }

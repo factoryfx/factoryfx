@@ -150,6 +150,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitAttributesFlat(this,consumer);
     }
 
+    private void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
+        getFactoryMetadata().visitAttributesMetadataFlat(consumer);
+    }
+
+
     private void visitFactoryEnclosingAttributesFlat(FactoryEnclosingAttributeVisitor consumer) {
         getFactoryMetadata().visitFactoryEnclosingAttributesFlat(this,consumer);
     }
@@ -431,6 +436,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
             copy.root=(R)root.copy;
             copy.creatorMock=this.creatorMock;
+            copy.treeBuilderName=this.treeBuilderName;
+            copy.treeBuilderClassUsed=this.treeBuilderClassUsed;
         }
         return (F)copy;
     }
@@ -615,14 +622,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     @JsonIgnore
-    private boolean isCreatedWithBuilderTemplate = false;
-    private void markAsCreatedWithBuilderTemplate() {
-        isCreatedWithBuilderTemplate= true;
-    }
-
-    @JsonIgnore
     private boolean isCreatedWithBuilderTemplate() {
-        return isCreatedWithBuilderTemplate;
+        return this.treeBuilderClassUsed || this.treeBuilderName!=null;
     }
 
 
@@ -735,6 +736,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.visitAttributesFlat(consumer);
         }
 
+        public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
+            factory.visitAttributesMetadataFlat(consumer);
+        }
 
         public List<AttributeGroup> attributeListGrouped(){
             return factory.attributeListGrouped();
@@ -1008,9 +1012,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.visitFactoryEnclosingAttributesFlat((attributeVariableName, attribute) -> attribute.internal_fixDuplicateObjects(idToFactoryMap));
         }
 
-        public void markAsCreatedWithBuilderTemplate() {
-            factory.markAsCreatedWithBuilderTemplate();
-        }
         public boolean isCreatedWithBuilderTemplate() {
             return factory.isCreatedWithBuilderTemplate();
         }
@@ -1028,6 +1029,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
     }
+
 
 
     FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;

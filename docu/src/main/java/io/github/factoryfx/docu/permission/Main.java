@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Locale;
 
 public class Main {
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.ERROR);
@@ -29,7 +28,7 @@ public class Main {
         FactoryTreeBuilder< Printer, PrinterFactory> builder = new FactoryTreeBuilder<>(PrinterFactory.class, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.text.set("Hello World");
-            factory.server.set(ctx.get(JettyServerFactory.class));
+            factory.server.set(ctx.getUnsafe(JettyServerFactory.class));
             return factory;
         });
         builder.addBuilder(ctx->
@@ -37,25 +36,36 @@ public class Main {
                     .withHost("localhost").withPort(8005)
                     .withResource(ctx.get(PrinterMicroserviceResourceFactory.class))
         );
-        builder.addFactory(PrinterMicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
+        builder.addSingleton(PrinterMicroserviceResourceFactory.class, ctx->{
             PrinterMicroserviceResourceFactory resource = new PrinterMicroserviceResourceFactory();
+            PersistentUserManagementFactory<PrinterFactory> userManagementFactory = ctx.getUnsafe(PersistentUserManagementFactory.class);
+            resource.userManagement.set(userManagementFactory);
+            return resource;
+        });
+        builder.addFactoryUnsafe(PersistentUserManagementFactory.class, Scope.SINGLETON,ctx->{
             PersistentUserManagementFactory<PrinterFactory> userManagement = new PersistentUserManagementFactory<>();
+            userManagement.users.add(ctx.getUnsafe(UserFactory.class,"user1"));
+            userManagement.users.add(ctx.getUnsafe(UserFactory.class,"user2"));
+            return userManagement;
+        });
+        builder.addFactoryUnsafe(UserFactory.class,"user1",Scope.SINGLETON, ctx->{
             UserFactory<PrinterFactory> user1 = new UserFactory<>();
             user1.name.set("user1");
             user1.password.setPasswordNotHashed("pw1", UserFactory.passwordKey);
             user1.permissions.add(PrinterFactory.CHANGE_TEXT_PERMISSION);
             user1.locale.set(Locale.ENGLISH);
-            userManagement.users.add(user1);
+            return user1;
+        });
+        builder.addFactoryUnsafe(UserFactory.class,"user2",Scope.SINGLETON, ctx->{
             UserFactory<PrinterFactory> user2 = new UserFactory<>();
             //no Permission for user 2
             user2.name.set("user2");
             user2.password.setPasswordNotHashed("pw2", UserFactory.passwordKey);
             user2.locale.set(Locale.ENGLISH);
-            userManagement.users.add(user2);
-            resource.userManagement.set(userManagement);
+            return user2;
+        });
 
-            return resource;
-        }) ;
+
 
         Microservice<Printer, PrinterFactory> microservice = builder.microservice().build();
         microservice.start();

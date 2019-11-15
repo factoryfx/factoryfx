@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.metadata;
 
+import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryEnclosingAttributeVisitor;
@@ -56,6 +57,17 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
+        for (Field field : attributeFields) {
+            Class<? extends FactoryBase<?, ?>> referenceClass = (Class<? extends FactoryBase<?, ?>>)fieldToReferenceClass.get(field.getName());
+            if (referenceClass!=null && !FactoryBase.class.isAssignableFrom(referenceClass)){
+                referenceClass=null; //polymorphic attribute
+            }
+            consumer.accept(field.getName(),(Class<? extends Attribute<?,?>>)field.getType(), referenceClass);
+        }
+    }
+
 
     public void visitFactoryEnclosingAttributesFlat(F factory, FactoryEnclosingAttributeVisitor visitor) {
         for (AttributeFieldAccessor<R,F,FactoryChildrenEnclosingAttribute> attributeFieldAccessor : factoryChildrenEnclosingAttributeFields) {
@@ -67,6 +79,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
     public void setFastFactoryUtility(FastFactoryUtility<R,F> fastFactoryUtility) {
         this.fastFactoryUtility=fastFactoryUtility;
     }
+
+
 
     public static class AttributeNamePair{
         public final String name;

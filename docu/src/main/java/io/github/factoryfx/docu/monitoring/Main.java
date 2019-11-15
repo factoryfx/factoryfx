@@ -24,8 +24,6 @@ public class Main {
                 .withResource(ctx.get(SimpleResourceFactory.class))
                 .withHandlerFirst(ctx.get(InstrumentedHandlerFactory.class)));
 
-
-
         builder.addSingleton(SimpleResourceFactory.class);
         builder.addSingleton(InstrumentedHandlerFactory.class);
         builder.addSingleton(MetricRegistryFactory.class);

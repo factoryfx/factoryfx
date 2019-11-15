@@ -3,7 +3,6 @@ package io.github.factoryfx.jetty.builder;
 import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;
 
@@ -15,14 +14,18 @@ import java.util.function.BiConsumer;
 public class MultiJettyFactoryTreeBuilder extends FactoryTreeBuilder<List<Server>, MultiJettyServerRootFactory> {
 
     public MultiJettyFactoryTreeBuilder() {
-        super(new FactoryTemplateId<>(MultiJettyServerRootFactory.class,null),true);
+        this(new FactoryTemplateId<>(MultiJettyServerRootFactory.class,null));
+    }
 
-        this.addFactory(this.rootTemplateId, Scope.SINGLETON, ctx->{
-            MultiJettyServerRootFactory serverRootFactory = new MultiJettyServerRootFactory();
-            for (String builderName : builderNames) {
-                serverRootFactory.servers.add(ctx.get(builderName));
-            }
-            return serverRootFactory;
+    private MultiJettyFactoryTreeBuilder(FactoryTemplateId<MultiJettyServerRootFactory> rootTemplateId) {
+        super(rootTemplateId,builder->{
+            builder.addSingleton(rootTemplateId, ctx->{
+                MultiJettyServerRootFactory serverRootFactory = new MultiJettyServerRootFactory();
+                for (String builderName : ((MultiJettyFactoryTreeBuilder)builder).builderNames) {
+                    serverRootFactory.servers.add(ctx.get(builderName));
+                }
+                return serverRootFactory;
+            });
         });
     }
 

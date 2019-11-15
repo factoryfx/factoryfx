@@ -10,9 +10,11 @@ public class Main {
     public static void main(String[] args) {
         FactoryTreeBuilder<Root,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory root = new RootFactory();
-            root.printer.set(new DefaultPrinterFactory());
+            root.printer.set(ctx.get(DefaultPrinterFactory.class));
             return root;
         });
+        builder.addSingleton(DefaultPrinterFactory.class);
+
 
         Microservice<Root,RootFactory> microservice = builder.microservice().build();
         microservice.start();
