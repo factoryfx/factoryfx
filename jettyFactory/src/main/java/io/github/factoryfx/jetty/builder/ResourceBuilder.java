@@ -45,7 +45,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
 
     /**
      * set the base pathSpec for resources default is: /*
-     *
+     * @param pathSpec servlet pathSpec
      * @return builder
      */
     public ResourceBuilder<R> withPathSpec(String pathSpec){
@@ -55,7 +55,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
 
     /**
      * add resource factory, resource is a class with jaxrs annotations
-      @param resource resource factory
+     * @param resource resource factory
      * @return builder
      */
     public ResourceBuilder<R> withResource(FactoryBase<?,R> resource){

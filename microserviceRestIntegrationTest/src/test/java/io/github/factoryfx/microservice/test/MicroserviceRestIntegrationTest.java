@@ -58,15 +58,25 @@ public class MicroserviceRestIntegrationTest {
 
         builder.addFactoryUnsafe(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{
             final MicroserviceResourceFactory<TestJettyServer> microserviceResource = new MicroserviceResourceFactory<>();
+            PersistentUserManagementFactory<TestJettyServer> unsafe = ctx.getUnsafe(PersistentUserManagementFactory.class);
+            microserviceResource.userManagement.set(unsafe);
+            return  microserviceResource;
+        });
+
+        builder.addFactoryUnsafe(PersistentUserManagementFactory.class, Scope.SINGLETON, ctx->{
             final PersistentUserManagementFactory<TestJettyServer> userManagement = new PersistentUserManagementFactory<>();
+            userManagement.users.add(ctx.getUnsafe(UserFactory.class));
+            return  userManagement;
+        });
+
+        builder.addFactoryUnsafe(UserFactory.class, Scope.SINGLETON, ctx->{
             final UserFactory<TestJettyServer> user = new UserFactory<>();
             user.name.set("user123");
             user.password.setPasswordNotHashed("pw1", key);
             user.locale.set(Locale.GERMAN);
-            userManagement.users.add(user);
-            microserviceResource.userManagement.set(userManagement);
-            return  microserviceResource;
+            return user;
         });
+
 
         ObjectMapperBuilder.build().copy(builder.buildTree());
 

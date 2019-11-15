@@ -37,6 +37,7 @@ public class MultiJettyFactoryTreeBuilder extends FactoryTreeBuilder<List<Server
      *                     .withResource(ctx.get(ResourceFactory.class))
      *                 );
      *
+     * @param name unique name
      * @param jetty setup
      * @return builder
      */
