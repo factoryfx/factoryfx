@@ -131,7 +131,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
                 DataMerger<R> merge = new DataMerger<>(currentFactoryRoot,initialData,rebuildRoot);
                 MergeDiffInfo<R> mergeDiffInfo = merge.createMergeResult((p) -> true).executeMerge();
 
-                if (mergeDiffInfo.successfullyMerged()){
+                if (mergeDiffInfo.successfullyMerged() && !mergeDiffInfo.mergeInfos.isEmpty()){
                     DataUpdate<R> dataUpdate = new DataUpdate<>(currentFactoryRoot,"System","FactoryTreeBuilder update",currentFactory.id);
                     dataStorage.updateCurrentData(dataUpdate,new UpdateSummary(mergeDiffInfo.mergeInfos));
                 } else {
