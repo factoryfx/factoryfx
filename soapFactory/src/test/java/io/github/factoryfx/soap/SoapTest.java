@@ -41,13 +41,18 @@ public class SoapTest {
 //                .withServlet("/*",ctx.get(SoapHandlerFactory.class)).build());
 
         builder.addBuilder(ctx->{
-            SimpleJettyServerBuilder<SoapJettyServerFactory> jettyServerBuilder = new SimpleJettyServerBuilder<SoapJettyServerFactory>();
-            jettyServerBuilder.withHost("localhost").withServlet(ctx.getUnsafe(SoapHandlerFactory.class), "/*", "soap");
+            SimpleJettyServerBuilder<SoapJettyServerFactory> jettyServerBuilder = new SimpleJettyServerBuilder<>();
+            jettyServerBuilder.withHost("localhost").withPort(8088).withServlet(ctx.getUnsafe(SoapHandlerFactory.class), "/*", "soap");
             return jettyServerBuilder;
         });
 
         builder.addFactoryUnsafe(SoapHandlerFactory.class, Scope.SINGLETON, ctx->{
             SoapHandlerFactory<HelloWorld, SoapJettyServerFactory> soapHandlerFactory = new SoapHandlerFactory<>();
+
+            soapHandlerFactory.serviceBean.set(ctx.get(HelloWorldFactory.class));
+            return soapHandlerFactory;
+        });
+        builder.addSingleton(HelloWorldFactory.class, ctx->{
             HelloWorldFactory helloWorldFactory = new HelloWorldFactory();
             HelloWorld goodCase = new HelloWorld() {
 
@@ -69,9 +74,9 @@ public class SoapTest {
                 }
             };
             helloWorldFactory.service.set(goodCase);
-            soapHandlerFactory.serviceBean.set(helloWorldFactory);
-            return soapHandlerFactory;
+            return helloWorldFactory;
         });
+
 
 
         Microservice<Server, SoapJettyServerFactory> microService = builder.microservice().build();
