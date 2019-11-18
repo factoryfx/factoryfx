@@ -64,7 +64,7 @@ public class Printer{
 #### Setup the dependency tree
 ```java
     new FactoryTreeBuilder<Printer,PrinterFactory,Void>(PrinterFactory.class)
-        .addFactory(PrinterFactory.class, Scope.SINGLETON, ctx-> {
+        .addSingleton(PrinterFactory.class, ctx-> {
             PrinterFactory printerFactory = new PrinterFactory();
             printerFactory.text.set("Hello World");
             return printerFactory;

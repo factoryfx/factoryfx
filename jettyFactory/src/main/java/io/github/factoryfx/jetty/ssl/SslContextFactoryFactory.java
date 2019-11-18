@@ -10,8 +10,12 @@ import io.github.factoryfx.factory.attribute.types.StringListAttribute;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 public class SslContextFactoryFactory<R extends FactoryBase<?, R>> extends SimpleFactoryBase<SslContextFactory, R> {
     public final FileContentAttribute keyStore = new FileContentAttribute().en("keyStore").de("keyStore");
@@ -64,7 +68,7 @@ public class SslContextFactoryFactory<R extends FactoryBase<?, R>> extends Simpl
             sslContextFactory.setCertAlias(certAlias.get());
 
             return sslContextFactory;
-        } catch (Exception e) {
+        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
             throw new RuntimeException(e);
         }
     }

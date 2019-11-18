@@ -22,7 +22,7 @@ import java.util.zip.Deflater;
  * The builder builds the factory structure for a jetty server not the jetty liveobject<br>
  * The factory structure matches the jetty internal architecture and the JettyServerBuilder creates a default configuration for that.
  * <br>
- * jetty builder==>jetty factories=>real jetty server<br>
+ * {@code jetty builder==>jetty factories=>real jetty server}<br>
  *
  * @see <a href="https://dzone.com/refcardz/jetty?chapter=2">https://dzone.com/refcardz/jetty?chapter=2</a>
  * @param <R> server root
@@ -66,7 +66,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     /**
      * add a jetty connector, useful for jetty on multiple ports or support both http and ssl
      *
-     * @param connectorBuilderSetup connectorBuilderSetup e.g.  withAdditionalConnector((connector)->connector.withPort(8080),"con1")
+     * @param connectorBuilderSetup connectorBuilderSetup e.g. {@code withAdditionalConnector((connector)->connector.withPort(8080),"con1")}
      * @param name builder unique name, used in the builder to associate match the templates
      * @return builder
      */

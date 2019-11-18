@@ -74,7 +74,7 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
     void build(FactoryTreeBuilder<?,R> builder) {
         builder.addFactory(connectorTemplateId, Scope.SINGLETON, (ctx)->{
             HttpServerConnectorFactory<R> serverConnectorFactory = new HttpServerConnectorFactory<>();
-            serverConnectorFactory.host.set("localhost");
+            serverConnectorFactory.host.set(host);
             serverConnectorFactory.port.set(port);
 
             if (ssl!=null) {

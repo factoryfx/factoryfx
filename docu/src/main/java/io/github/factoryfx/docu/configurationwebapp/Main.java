@@ -19,8 +19,8 @@ public class Main {
         root.setLevel(Level.INFO);
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
-                .withHost("localhost").withPort(8005).withResource(ctx.get(MicroserviceDomResourceFactory.class)));
-        builder.addSingleton(MicroserviceDomResourceFactory.class);
+                .withHost("localhost").withPort(8005).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class)));
+        builder.addFactoryUnsafe(MicroserviceDomResourceFactory.class,Scope.SINGLETON);
 
         builder.microservice().build().start();
         try {

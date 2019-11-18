@@ -47,7 +47,7 @@ public class Main {
                 .withHost("localhost").withPort(8005)
                 .withResource(ctx.get(DatabaseResourceFactory.class)).build());
 
-        builder.addFactory(DatabaseResourceFactory.class, Scope.SINGLETON, ctx->{
+        builder.addSingleton(DatabaseResourceFactory.class, ctx->{
             DatabaseResourceFactory databaseResource = new DatabaseResourceFactory();
             databaseResource.url.set("jdbc:postgresql://host/database");
             databaseResource.user.set("user");
@@ -81,7 +81,7 @@ Reading and using the properties.
 Properties property = new Properties();
 prop.load(...);
 ...
-builder.addFactory(WebResourceFactory.class, Scope.SINGLETON, ctx->{
+builder.addSingleton(WebResourceFactory.class, ctx->{
     String time = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy HH:mm:ss.SSS").toFormatter().format(LocalDateTime.now());
     WebResourceFactory webResourceFactory = new WebResourceFactory();
     webResourceFactory.url.set(property.getProperty("resource.database.url"));
@@ -140,7 +140,7 @@ builder.addFactory(RootFactory.class, Scope.SINGLETON, ctx-> new JettyServerBuil
         .withHost("localhost").withPort(8005)
         .withResource(ctx.get(SpecificMicroserviceResource.class))
         .withResource(ctx.get(DatabaseResourceFactory.class)).build());
-builder.addFactory(SpecificMicroserviceResource.class, Scope.SINGLETON);
+builder.addSingleton(SpecificMicroserviceResource.class);
 ```
 Using the REST interface with the MicroserviceRestClient.
 ```java

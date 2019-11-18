@@ -75,7 +75,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
 
     /**
      * configure the REST logging default: {@link Slf4LoggingFeature}
-     * @param loggingFeature exceptionMapper factory, shortcut <pre>withLoggingFeature(AttributelessFactory.create(Slf4LoggingFeature.class))</pre>
+     * @param loggingFeature exceptionMapper factory, shortcut {@code withLoggingFeature(AttributelessFactory.create(Slf4LoggingFeature.class))}
      * @return builder
      */
     public ResourceBuilder<R> withLoggingFeature(FactoryBase<LoggingFeature,R> loggingFeature){
@@ -85,7 +85,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
 
     /**
      * set objectMapper used for all resources default: {@link DefaultObjectMapper}
-     * @param objectMapper objectMapper factory, shortcut <pre>withObjectMapper(AttributelessFactory.create(DefaultObjectMapper.class))</pre>
+     * @param objectMapper objectMapper factory, shortcut {@code withObjectMapper(AttributelessFactory.create(DefaultObjectMapper.class))}
      * @return builder
      */
     public ResourceBuilder<R> withObjectMapper(FactoryBase<ObjectMapper,R> objectMapper){
@@ -95,7 +95,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
 
     /**
      * set the exceptionMapper for all resources. (maps exception to http response)
-     * @param exceptionMapper exceptionMapper factory, shortcut <pre>withExceptionMapper(AttributelessFactory.create(AllExceptionMapper.class))</pre>
+     * @param exceptionMapper exceptionMapper factory, shortcut {@code withExceptionMapper(AttributelessFactory.create(AllExceptionMapper.class))}
      * @return builder
      */
     public ResourceBuilder<R> withExceptionMapper(FactoryBase<ExceptionMapper<Throwable>,R> exceptionMapper) {

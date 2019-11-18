@@ -79,7 +79,7 @@ public class Main {
             return engineIdProviderFactory;
         });
 
-        builder.addFactory(CopperEngineContextFactoryImpl.class, Scope.SINGLETON, copperRootFactoryFactoryContext -> {
+        builder.addSingleton(CopperEngineContextFactoryImpl.class, copperRootFactoryFactoryContext -> {
             CopperEngineContextFactoryImpl copperEngineContextFactory = new CopperEngineContextFactoryImpl();
             copperEngineContextFactory.dep1.set("initial");
             copperEngineContextFactory.dependencyInjectorType.set("demoApp");

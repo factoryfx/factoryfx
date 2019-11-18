@@ -32,10 +32,12 @@ public class MultiJettyFactoryTreeBuilder extends FactoryTreeBuilder<List<Server
     private final Set<String> builderNames= new HashSet<>();
 
     /**
+     * {@code
      * .addJetty((jetty,ctx)->jetty
      *                     .withHost("localhost").withPort(8005).withDefaultJersey(rb->rb
      *                     .withResource(ctx.get(ResourceFactory.class))
      *                 );
+     *  }
      *
      * @param name unique name
      * @param jetty setup

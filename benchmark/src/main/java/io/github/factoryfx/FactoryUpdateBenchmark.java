@@ -31,7 +31,7 @@ public class FactoryUpdateBenchmark {
 
     {
         {
-            fastFactoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+            fastFactoryManager = new FactoryManager<ExampleLiveObjectA, FastExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
             FastExampleFactoryA root = new FastExampleFactoryA();
             for (int i = 0; i < 100000; i++) {
@@ -47,7 +47,7 @@ public class FactoryUpdateBenchmark {
         }
 
         {
-            factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+            factoryManager = new FactoryManager<ExampleLiveObjectA, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
             ExampleFactoryA root = new ExampleFactoryA();
             for (int i=0;i<100000;i++){

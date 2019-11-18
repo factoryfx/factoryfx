@@ -14,7 +14,7 @@ public class FactoryTemplateId<F extends FactoryBase<?,?>> {
     public final String name;
 
     /**
-     * workaround constructor for generic types with nested generic parameters ( e.g Class<Example<Example>>  doesn't work)
+     * workaround constructor for generic types with nested generic parameters ( e.g {@code Class<Example<Example>>}  doesn't work)
      * @param name name
      * @param clazz class
      */

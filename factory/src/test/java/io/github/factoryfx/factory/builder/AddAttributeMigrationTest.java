@@ -78,7 +78,7 @@ public class AddAttributeMigrationTest {
                 serverFactory.nestedFactory.set(ctx.get(NestedFactory.class));
                 return serverFactory;
             });
-            builder.addFactory(NestedFactory.class, Scope.SINGLETON, ctx-> {
+            builder.addSingleton(NestedFactory.class, ctx-> {
                 NestedFactory serverFactoryNested = new NestedFactory();
                 serverFactoryNested.stringAttribute.set("123");
                 return serverFactoryNested;

@@ -14,13 +14,13 @@ public class ServerBuilder {
                         .withHost("localhost").withPort(8089)
                         .withResource(ctx.get(GreetingsResourceFactory.class)));
 
-        factoryTreeBuilder.addFactory(GreetingsResourceFactory.class, Scope.SINGLETON, context -> {
+        factoryTreeBuilder.addSingleton(GreetingsResourceFactory.class, context -> {
             GreetingsResourceFactory greetingsResourceFactory = new GreetingsResourceFactory();
             greetingsResourceFactory.backendClient.set(context.get(BackendClientFactory.class));
             return greetingsResourceFactory;
         });
 
-        factoryTreeBuilder.addFactory(BackendClientFactory.class, Scope.SINGLETON, context -> {
+        factoryTreeBuilder.addSingleton(BackendClientFactory.class, context -> {
             BackendClientFactory backendClientFactory = new BackendClientFactory();
             backendClientFactory.backendPort.set(18089);
             return backendClientFactory;

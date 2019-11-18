@@ -51,8 +51,8 @@ public class HelloWorldFactory extends SimpleFactoryBase<HelloWorld,Void,HelloWo
 The scope is defined with the FactoryTreeBuilder
 ```java
     FactoryTreeBuilder<HelloWorld,HelloWorldFactory,Void> builder = new FactoryTreeBuilder<>(HelloWorldFactory.class);
-    builder.addFactory(HelloWorldFactory.class, Scope.SINGLETON);
-    builder.addFactory(DependencyFactory.class, Scope.PROTOTYPE);
+    builder.addSingleton(HelloWorldFactory.class);
+    builder.addPrototype(DependencyFactory.class);
 ```
 
 ## Immutable objects vs changes at runtime
