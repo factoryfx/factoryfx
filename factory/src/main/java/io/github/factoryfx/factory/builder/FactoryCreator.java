@@ -35,7 +35,7 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
 
     private F factory;
     public F create(FactoryContext<R> context) {
-        F result = null;
+        F result;
         if (scope==Scope.PROTOTYPE){
             result = creator.apply(context);
         } else {

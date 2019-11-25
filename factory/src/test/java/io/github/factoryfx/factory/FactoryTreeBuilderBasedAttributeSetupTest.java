@@ -5,6 +5,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.testfactories.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         Assertions.assertTrue(root.referenceAttribute.internal_isUserSelectable());
         Assertions.assertFalse(root.referenceAttribute.get().referenceAttribute.internal_isUserSelectable());
 
-        List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertEquals(1, possibleValues.size());
 
 
@@ -77,7 +78,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
 //        Assertions.assertFalse(root.referenceListAttribute.internal_isUserSelectable());
 
-        List<ExampleFactoryB> possibleValues = root.referenceListAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues = root.referenceListAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceListAttribute));
         Assertions.assertEquals(2, possibleValues.size());
 
         Assertions.assertEquals("111", possibleValues.get(0).stringAttribute.get());
@@ -105,8 +106,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
-        List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues();
-        List<ExampleFactoryB> possibleValues2 = root.referenceAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
+        List<ExampleFactoryB> possibleValues2 = root.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertEquals(possibleValues1.get(0),possibleValues2.get(0));
     }
 
@@ -129,8 +130,8 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
-        List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues();
-        List<ExampleFactoryB> possibleValues2 = root.referenceAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues1 = root.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
+        List<ExampleFactoryB> possibleValues2 = root.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertNotEquals(possibleValues1.get(0),possibleValues2.get(0));
     }
 
@@ -161,7 +162,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(clientBuilder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(jsonCopy);
 
-        List<ExampleFactoryB> possibleValues = jsonCopy.referenceAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues = jsonCopy.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertEquals(possibleValues.get(0),jsonCopy.referenceAttribute.get());
     }
 
@@ -191,7 +192,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
-        List<ExampleFactoryB> possibleValues = root.referenceListAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues = root.referenceListAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceListAttribute));
         Assertions.assertEquals(2,possibleValues.size());
         Assertions.assertNotEquals(possibleValues.get(0),possibleValues.get(1));
 
@@ -227,7 +228,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(clientBuilder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(jsonCopy);
 
-        List<ExampleFactoryB> possibleValues = jsonCopy.referenceListAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues = jsonCopy.referenceListAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceListAttribute));
         Assertions.assertTrue(possibleValues.get(0)==jsonCopy.referenceListAttribute.get(0));
         Assertions.assertTrue(possibleValues.get(1)==jsonCopy.referenceListAttribute.get(1));
     }
@@ -259,13 +260,13 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
 
-        List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertEquals(1, possibleValues.size());
         Assertions.assertEquals("123", possibleValues.get(0).stringAttribute.get());
         root.referenceAttribute.set(possibleValues.get(0));
 
 
-        List<ExampleFactoryC> possibleValuesC =possibleValues.get(0).referenceAttributeC.internal_createNewPossibleValues();
+        List<ExampleFactoryC> possibleValuesC =possibleValues.get(0).referenceAttributeC.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryB.class).getAttributeMetadata(f->f.referenceAttributeC));
         Assertions.assertEquals(1, possibleValuesC.size());
         Assertions.assertEquals("YYY", possibleValuesC.get(0).stringAttribute.get());
     }
@@ -311,7 +312,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryViewRootFactory> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
-        List<ExampleViewFactory> exampleViewFactories = root.referenceAttributeViewFactory.internal_createNewPossibleValues();
+        List<ExampleViewFactory> exampleViewFactories = root.referenceAttributeViewFactory.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryViewRootFactory.class).getAttributeMetadata(f->f.referenceAttributeViewFactory));
         //no exception, no npe(root) in view function
 
 
@@ -344,7 +345,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
         FactoryTreeBuilderBasedAttributeSetup<ExampleFactoryA> factoryTreeBuilderBasedAttributeSetup = new FactoryTreeBuilderBasedAttributeSetup<>(builder);
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(root);
 
-        List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues();
+        List<ExampleFactoryB> possibleValues = root.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleFactoryA.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertEquals(1, possibleValues.size());
     }
 

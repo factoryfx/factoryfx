@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.TsEnumConstructed;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 import io.github.factoryfx.factory.typescript.generator.ts.TsType;
@@ -17,9 +18,9 @@ public class EnumAttributeToTsMapper implements AttributeToTsMapper {
     }
 
     @Override
-    public TsType getTsType(Attribute<?,?> attribute) {
+    public TsType getTsType(AttributeMetadata metadata) {
         for (TsEnumConstructed tsEnum : tsEnums) {
-            if (tsEnum.getName().equals(((EnumAttribute<?>) attribute).internal_getEnumClass().getSimpleName())){
+            if (tsEnum.getName().equals(metadata.enumClass.getSimpleName())){
                 return new TsTypeClass(tsEnum);
             }
         }
@@ -27,14 +28,14 @@ public class EnumAttributeToTsMapper implements AttributeToTsMapper {
     }
 
     @Override
-    public String getMapFromJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        String enumName = ((EnumAttribute<?>) attribute).internal_getEnumClass().getSimpleName();
-        return "this."+attributeVariableName+"="+enumName+".fromJson(json." + attributeVariableName + ".v);\n";
+    public String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        String enumName = metadata.enumClass.getSimpleName();
+        return "this."+metadata.attributeVariableName+"="+enumName+".fromJson(json." + metadata.attributeVariableName + ".v);\n";
     }
 
     @Override
-    public String getMapToJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        String enumName = ((EnumAttribute<?>) attribute).internal_getEnumClass().getSimpleName();
-        return "result."+attributeVariableName+"=this.mapAttributeValueToJson("+enumName+".toJson(this." + attributeVariableName + "));\n";
+    public String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        String enumName = metadata.enumClass.getSimpleName();
+        return "result."+metadata.attributeVariableName+"=this.mapAttributeValueToJson("+enumName+".toJson(this." + metadata.attributeVariableName + "));\n";
     }
 }

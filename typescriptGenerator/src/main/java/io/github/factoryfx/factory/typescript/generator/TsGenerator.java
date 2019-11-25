@@ -4,8 +4,6 @@ package io.github.factoryfx.factory.typescript.generator;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.reflect.ClassPath;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.types.EnumAttribute;
-import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.*;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
@@ -96,12 +94,9 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
         for (Map.Entry<Class<? extends FactoryBase<?,R>>, TsClassConstructed> entry : dataToGeneratedTsClass.entrySet()) {
             Class<? extends FactoryBase<?,R>> dataClass = entry.getKey();
             FactoryBase<?,R> data = FactoryMetadataManager.getMetadataUnsafe(dataClass).newInstance();
-            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attribute instanceof EnumAttribute){
-                    enumClasses.add(((EnumAttribute<?>)attribute).internal_getEnumClass());
-                }
-                if (attribute instanceof EnumListAttribute){
-                    enumClasses.add(((EnumListAttribute<?>)attribute).internal_getEnumClass());
+            data.internal().visitAttributesMetadata((attributeMetadata) -> {
+                if (attributeMetadata.enumClass!=null){
+                    enumClasses.add(attributeMetadata.enumClass);
                 }
             });
         }
@@ -192,7 +187,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))){
                 StringBuilder builder = new StringBuilder();
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null) {
                     builder.append(line);
                     builder.append("\n");

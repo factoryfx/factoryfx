@@ -6,6 +6,7 @@ import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.WeakAttributeChangeListener;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -169,7 +170,7 @@ public class FactoryAttributeTest {
         exampleReferenceFactory.internal().finalise();
 
         Assertions.assertNull(exampleReferenceFactory.referenceAttribute.get());
-        List<ExampleDataA> exampleFactoryAS = exampleReferenceFactory.referenceAttribute.internal_createNewPossibleValues();
+        List<ExampleDataA> exampleFactoryAS = exampleReferenceFactory.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceFactory.class).getAttributeMetadata(f->f.referenceAttribute));
         exampleReferenceFactory.referenceAttribute.set(exampleFactoryAS.get(0));
         Assertions.assertNotNull(exampleReferenceFactory.referenceAttribute.get());
 
@@ -182,7 +183,7 @@ public class FactoryAttributeTest {
         root.referenceAttribute.set(exampleFactoryA);
         root.internal().finalise();
 
-        Collection<ExampleDataA> possibleFactories =root.referenceAttribute.internal_possibleValues();
+        Collection<ExampleDataA> possibleFactories =root.referenceAttribute.internal_possibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceFactory.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertEquals(1,possibleFactories.size());
         Assertions.assertEquals(exampleFactoryA,new ArrayList<>(possibleFactories).get(0));
 

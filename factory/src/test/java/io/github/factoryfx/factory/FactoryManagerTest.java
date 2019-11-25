@@ -15,7 +15,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test(){
-        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -36,7 +36,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_remove_destroy_called(){
-        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA,ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_updated_destroy_called(){
-        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA,ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA,ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         ArrayList<String> calls =new ArrayList<>();
 
@@ -97,7 +97,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_getRemoved_factories() {
-        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
 
         ArrayList<FactoryBase<?, ExampleFactoryA>> previousFactories = new ArrayList<>();
@@ -116,7 +116,7 @@ public class FactoryManagerTest {
 
     @Test
     public void test_getRemoved_factories_no_removed() {
-        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
 
         ArrayList<FactoryBase<?, ExampleFactoryA>> previousFactories = new ArrayList<>();

@@ -3,6 +3,7 @@ package io.github.factoryfx.javafx.editor.attribute.builder;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.ValueListAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.editor.attribute.visualisation.ExpandableAttributeVisualisation;
 import io.github.factoryfx.javafx.editor.attribute.visualisation.ValueListAttributeVisualisation;
@@ -53,14 +54,14 @@ public class ValueAttributeVisualisationBuilder<T,A extends Attribute<T,A>, AL e
 
     @Override
     @SuppressWarnings("unchecked")
-    public AttributeVisualisation createVisualisation(Attribute<?,?> attribute, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> previousData) {
+    public AttributeVisualisation createVisualisation(Attribute<?,?> attribute, AttributeMetadata attributeMetadata, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> previousData) {
         A attributeTyped = (A) attribute;
         return attributeEditorVisualisationCreator.apply(attributeTyped);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute) {
+    public AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute, AttributeMetadata attributeMetadata) {
         A detailAttribute = attributeCreator.get();
         return new ExpandableAttributeVisualisation<List<T>,AL>(
                 new ValueListAttributeVisualisation(
@@ -68,7 +69,7 @@ public class ValueAttributeVisualisationBuilder<T,A extends Attribute<T,A>, AL e
                         new ValidationDecoration(uniformDesign),
                         uniformDesign,
                         detailAttribute,
-                        createVisualisation(detailAttribute,null,null)
+                        createVisualisation(detailAttribute, attributeMetadata,null,null)
                         ),
                 uniformDesign,
                 (l) -> "Items: " + l.size(),

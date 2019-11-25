@@ -117,7 +117,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_initial_start(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
@@ -137,7 +137,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_initial_destroy(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
@@ -153,7 +153,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_initial_destroy_reused_ref(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
@@ -172,7 +172,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_initial_changed_double_used(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
@@ -203,7 +203,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_initial_changed(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
@@ -234,7 +234,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_initial_viewlist_added(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
@@ -269,7 +269,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_initial_viewlist_removed(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         LifecycleFactoryB exampleFactoryB = new LifecycleFactoryB();
@@ -302,7 +302,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_changed_list_only(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
         exampleFactoryA.refList.add(new LifecycleFactoryC());
@@ -325,7 +325,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_changed_list_only_no_changes(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA root = new LifecycleFactoryA();
         LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
@@ -352,7 +352,7 @@ public class FactoryManagerLifeCycleTest {
 
     @Test
     public void test_list_instance_only_once(){
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA root = new LifecycleFactoryA();
         root.refList.add(new LifecycleFactoryC());
@@ -374,7 +374,7 @@ public class FactoryManagerLifeCycleTest {
         ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA root = new LifecycleFactoryA();
         {
@@ -412,7 +412,7 @@ public class FactoryManagerLifeCycleTest {
         ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryC lifecycleFactoryC = new LifecycleFactoryC();
 
@@ -459,7 +459,7 @@ public class FactoryManagerLifeCycleTest {
         ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryA root = new LifecycleFactoryA();
         {
@@ -499,7 +499,7 @@ public class FactoryManagerLifeCycleTest {
         ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObejct, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
 
         LifecycleFactoryC lifecycleFactoryC = new LifecycleFactoryC();
 
@@ -573,7 +573,7 @@ public class FactoryManagerLifeCycleTest {
         ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        FactoryManager<DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<DummyLifeObejct,UpdateFactory>(new RethrowingFactoryExceptionHandler<>());
 
 
         factoryManager.start(new RootFactoryWrapper<>(new UpdateFactory()));
@@ -595,7 +595,7 @@ public class FactoryManagerLifeCycleTest {
         ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        FactoryManager<DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<DummyLifeObejct,UpdateFactory>(new RethrowingFactoryExceptionHandler<>());
 
 
         factoryManager.start(new RootFactoryWrapper<>(new UpdateFactory()));
@@ -617,7 +617,7 @@ public class FactoryManagerLifeCycleTest {
         ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
 
-        FactoryManager<DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<>(new RethrowingFactoryExceptionHandler());
+        FactoryManager<DummyLifeObejct,UpdateFactory> factoryManager = new FactoryManager<DummyLifeObejct,UpdateFactory>(new RethrowingFactoryExceptionHandler<>());
 
 
         factoryManager.start(new RootFactoryWrapper<>(new UpdateFactory()));

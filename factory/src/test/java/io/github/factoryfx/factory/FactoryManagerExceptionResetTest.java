@@ -37,6 +37,10 @@ public class FactoryManagerExceptionResetTest {
         private boolean startException;
         private boolean destroyException;
 
+        public BrokenFactory() {
+             this(false,false,false,false);
+        }
+
         public BrokenFactory(boolean createException, boolean reCreateException, boolean startException, boolean destroyException){
             this.createException=createException;
             this.reCreateException=reCreateException;

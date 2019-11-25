@@ -21,16 +21,16 @@ public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>> imp
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
         for (FactoryBase<?,R> factory : root.internal().collectChildrenDeep()) {
             boolean[] containsNewAttributes=new boolean[1];
-            factory.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (isNewAttribute(factory, oldDataStorageMetadataDictionary, attributeVariableName)) {
+            factory.internal().visitAttributesMetadata((attributeMetadata) -> {
+                if (isNewAttribute(factory, oldDataStorageMetadataDictionary, attributeMetadata.attributeVariableName)) {
                     containsNewAttributes[0]=true;
-                    oldDataStorageMetadataDictionary.containsAttribute(factory.getClass().getName(), attributeVariableName);
+                    oldDataStorageMetadataDictionary.containsAttribute(factory.getClass().getName(), attributeMetadata.attributeVariableName);
                 }
             });
             if (containsNewAttributes[0]){
                 Class aClass = factory.getClass();
                 FactoryBase<?, R> newBuild = factoryTreeBuilder.buildNewSubTree(aClass);
-                FactoryMetadataManager.getMetadata(newBuild.getClass()).addBackReferencesAndReferenceClassToAttributes(newBuild,root);
+                FactoryMetadataManager.getMetadata(newBuild.getClass()).addBackReferencesToAttributes(newBuild,root);
 
                 this.fillNewAttributes(factory,newBuild,oldDataStorageMetadataDictionary);
             }

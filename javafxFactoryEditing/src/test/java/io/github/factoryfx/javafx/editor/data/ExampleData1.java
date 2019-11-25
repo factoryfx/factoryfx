@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -65,8 +66,8 @@ public class ExampleData1 extends FactoryBase<Void,ExampleData1> {
     public final BigDecimalAttribute bigDecimalAttribute=new BigDecimalAttribute().en("BigDecimalAttribute").de("BigDecimalAttribute de").addonText("EUR");
     public final BooleanAttribute booleanAttribute=new BooleanAttribute().en("BooleanAttribute").de("BooleanAttribute de");
     public final DoubleAttribute doubleAttribute=new DoubleAttribute().en("DoubleAttribute").de("DoubleAttribute de");
-    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(ExampleEnum.class).en("EnumAttribute").de("EnumAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
-    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class).en("EnumListAttribute").de("EnumListAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
+    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<ExampleEnum>().en("EnumAttribute").de("EnumAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
+    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<ExampleEnum>().en("EnumListAttribute").de("EnumListAttribute de").enEnum(ExampleEnum.EXAMPLE_1,"Example_1").deEnum(ExampleEnum.EXAMPLE_1,"Beispiel_1");
     public final IntegerAttribute integerAttribute=new IntegerAttribute().en("IntegerAttribute").de("IntegerAttribute de");
     public final LongAttribute longAttribute=new LongAttribute().en("LongAttribute").de("LongAttribute de");
     public final StringListAttribute valueListAttribute=new StringListAttribute().en("StringListAttribute").de("StringListAttribute de");
@@ -123,15 +124,9 @@ public class ExampleData1 extends FactoryBase<Void,ExampleData1> {
         return borderPane;
     }
 
-    private List<AttributeGroup> attributeListGrouped(List<Attribute<?,?>> defaultGroup ){
-        List<Attribute<?,?>> result = new ArrayList<>(defaultGroup);
-
-        result.remove(specialAttribute);
-        ArrayList<Attribute<?,?>> group = new ArrayList<>();
-        group.add(specialAttribute);
-        AttributeGroup defaultdata  = new AttributeGroup("Data", result);
-        AttributeGroup specialxyz = new AttributeGroup("Specialxyz", group);
-        return Arrays.asList(defaultdata, specialxyz);
+    private List<AttributeGroup> attributeListGrouped(Function<Attribute<?,?>, AttributeAndMetadata> groupCreator){
+        AttributeGroup specialxyz = new AttributeGroup("Specialxyz", List.of(groupCreator.apply(specialAttribute)));
+        return Arrays.asList(new AttributeGroup("default",this.internal().attributeList()), specialxyz);
     }
 
 }

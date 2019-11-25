@@ -11,7 +11,7 @@ import org.controlsfx.glyphfont.FontAwesome;
 
 public class ViewDescriptionFactory extends SimpleFactoryBase<ViewDescription,RichClientRoot> {
     public final I18nAttribute text = new I18nAttribute().de("text").en("text");
-    public final EnumAttribute<FontAwesome.Glyph> icon = new EnumAttribute<>(FontAwesome.Glyph.class).de("icon").en("icon").nullable();
+    public final EnumAttribute<FontAwesome.Glyph> icon = new EnumAttribute<FontAwesome.Glyph>().de("icon").en("icon").nullable();
     public final FactoryAttribute<UniformDesign,UniformDesignFactory> uniformDesign = new FactoryAttribute<UniformDesign,UniformDesignFactory>().de("uniformDesign").en("uniformDesign");
 
     @Override

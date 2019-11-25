@@ -13,10 +13,12 @@ import java.util.function.BiConsumer;
 public class JettyFactoryTreeBuilder extends FactoryTreeBuilder<Server, JettyServerRootFactory> {
 
     /**
+     * {@code
      * new JettyFactoryTreeBuilder((jetty,ctx)->jetty
      *                     .withHost("localhost").withPort(8005).withDefaultJersey(rb->rb
      *                     .withResource(ctx.get(ResourceFactory.class))
      *                 );
+     * }
      * @param jetty jetty builder setup function
      */
     public JettyFactoryTreeBuilder(BiConsumer<JettyServerBuilder<JettyServerRootFactory,JettyServerRootFactory>, FactoryContext<JettyServerRootFactory>> jetty) {

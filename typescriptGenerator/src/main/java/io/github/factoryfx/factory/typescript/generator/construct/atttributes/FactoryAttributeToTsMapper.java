@@ -4,6 +4,7 @@ package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.TsClassConstructed;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 import io.github.factoryfx.factory.typescript.generator.ts.TsType;
@@ -22,8 +23,8 @@ public class FactoryAttributeToTsMapper<R extends FactoryBase<?,R>> implements A
     }
 
     @Override
-    public TsType getTsType(Attribute<?,?> attribute) {
-        Class referenceClass = ((FactoryBaseAttribute) attribute).internal_getReferenceClass();
+    public TsType getTsType(AttributeMetadata metadata) {
+        Class<?> referenceClass = metadata.referenceClass;
         if (referenceClass==null){
             return new TsTypeClass(dataType);
         }
@@ -31,15 +32,15 @@ public class FactoryAttributeToTsMapper<R extends FactoryBase<?,R>> implements A
     }
 
     @Override
-    public String getMapFromJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        TsFile dataClass = getTsClass((FactoryBaseAttribute) attribute);
+    public String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        TsFile dataClass = getTsClass(metadata);
         jsonImports.add(dataClass);
-        return "this."+attributeVariableName+"=<"+dataClass.getName()+">dataCreator.createData(json."+attributeVariableName+".v,idToDataMap,this);\n";
+        return "this."+metadata.attributeVariableName+"=<"+dataClass.getName()+">dataCreator.createData(json."+metadata.attributeVariableName+".v,idToDataMap,this);\n";
 
     }
 
-    private TsFile getTsClass(FactoryBaseAttribute attribute) {
-        Class referenceClass = attribute.internal_getReferenceClass();
+    private TsFile getTsClass(AttributeMetadata metadata) {
+        Class<?> referenceClass = metadata.referenceClass;
         if (referenceClass==null){
             return dataType;
         }
@@ -47,9 +48,9 @@ public class FactoryAttributeToTsMapper<R extends FactoryBase<?,R>> implements A
     }
 
     @Override
-    public String getMapToJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        TsFile dataClass = getTsClass((FactoryBaseAttribute) attribute);
+    public String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        TsFile dataClass = getTsClass(metadata);
         jsonImports.add(dataClass);
-        return "result."+attributeVariableName+"=this.mapAttributeDataToJson(idToDataMap,this."+attributeVariableName+");\n";
+        return "result."+metadata.attributeVariableName+"=this.mapAttributeDataToJson(idToDataMap,this."+metadata.attributeVariableName+");\n";
     }
 }

@@ -17,7 +17,7 @@ public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicF
     public final IntegerAttribute minGzipSize = new IntegerAttribute().labelText("minGzipSize");
     public final IntegerAttribute compressionLevel = new IntegerAttribute().labelText("compressionLevel");
     public final IntegerAttribute deflaterPoolCapacity = new IntegerAttribute().labelText("deflaterPoolCapacity");
-    public final EnumListAttribute<DispatcherType> dispatcherTypes = new EnumListAttribute<>(DispatcherType.class).labelText("dispatcherTypes");
+    public final EnumListAttribute<DispatcherType> dispatcherTypes = new EnumListAttribute<DispatcherType>().labelText("dispatcherTypes");
     public final StringListAttribute excludedAgentPatterns = new StringListAttribute().labelText("excludedAgentPatterns");
     public final StringListAttribute excludedMethods = new StringListAttribute().labelText("excludedMethods");
     public final StringListAttribute excludedMimeTypes = new StringListAttribute().labelText("excludedMimeTypes");

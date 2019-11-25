@@ -4,6 +4,8 @@ import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryEnclosingAttributeVisitor;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
@@ -19,59 +21,41 @@ import java.util.stream.Stream;
 
 public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> {
 
-    private boolean temporaryAttributes=false;
     private Constructor constructor;
     private final Class<? extends FactoryBase<?,?>> clazz;
 
     public FactoryMetadata(Class<F> clazz){
         this.clazz=clazz;
         initAttributeFields(clazz);
-
-        for (Field attributeField : attributeFields) {
-            if (attributeField.getName().equals("id")){
-                throw new IllegalStateException(clazz.getName()+", Factories can't have an id attribute because that conflicts with the factory id property");
-            }
-        }
-    }
-
-    /**
-     * Data use temporary to simulate normal data, this is an optimization hind cause some operation don't make sense with Temporary attributes
-     * @return DataDictionary for fluent configuration
-     */
-    public FactoryMetadata<R, F> setUseTemporaryAttributes(){
-        temporaryAttributes=true;
-        return this;
     }
 
     public void visitAttributesFlat(F data, AttributeVisitor attributeVisitor){
         if (fastFactoryUtility!=null){
             fastFactoryUtility.visitAttributesFlat(data,  attributeVisitor);
         } else {
-            for (Field field : attributeFields) {
-                try {
-                    attributeVisitor.accept(field.getName(),(Attribute<?,?>) field.get(data));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("\nto fix the error add jpms boilerplate, \noption 1: module-info.info: opens "+data.getClass().getPackage().getName()+";\noption 2: open all, open module {A} { ... } (open keyword before module)\n",e);
-                }
+            for (AttributeMetadataAndAccessor<F,Attribute<?, ?>> attributeMetadata : attributeMetadataList) {
+                attributeVisitor.accept(attributeMetadata.attributeMetadata,attributeMetadata.get(data));
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
-        for (Field field : attributeFields) {
-            Class<? extends FactoryBase<?, ?>> referenceClass = (Class<? extends FactoryBase<?, ?>>)fieldToReferenceClass.get(field.getName());
-            if (referenceClass!=null && !FactoryBase.class.isAssignableFrom(referenceClass)){
-                referenceClass=null; //polymorphic attribute
+    private List<AttributeMetadataAndAccessor<F,Attribute<?,?>>> attributeMetadataList;
+
+
+    public void visitAttributeMetadata(AttributeMetadataVisitor consumer) {
+        if (fastFactoryUtility!=null){
+            fastFactoryUtility.visitAttributesMetadataFlat(consumer);
+        } else {
+            for (AttributeMetadataAndAccessor<F,?> attributeMetadata : attributeMetadataList) {
+                consumer.accept(attributeMetadata.attributeMetadata);
             }
-            consumer.accept(field.getName(),(Class<? extends Attribute<?,?>>)field.getType(), referenceClass);
         }
     }
 
 
     public void visitFactoryEnclosingAttributesFlat(F factory, FactoryEnclosingAttributeVisitor visitor) {
-        for (AttributeFieldAccessor<R,F,FactoryChildrenEnclosingAttribute> attributeFieldAccessor : factoryChildrenEnclosingAttributeFields) {
-            visitor.accept(attributeFieldAccessor.getName(),attributeFieldAccessor.get(factory));
+        for (AttributeMetadataAndAccessor<F,Attribute<?,?>> attribute : factoryChildrenEnclosingAttributeFields) {
+            visitor.accept(attribute.attributeMetadata.attributeVariableName,(FactoryChildrenEnclosingAttribute)attribute.get(factory));
         }
     }
 
@@ -97,13 +81,9 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         if (fastFactoryUtility!=null){
             fastFactoryUtility.visitAttributesForCopy(factory, other, consumer);
         } else {
-            for (Field field : attributeFields) {
-                try {
-                    if (!consumer.accept((Attribute<V,?>) field.get(factory), (Attribute<V,?>) field.get(other))){
-                        break;
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+            for (AttributeMetadataAndAccessor<F,?> field : attributeMetadataList) {
+                if (!consumer.accept((Attribute<V,?>)field.get(factory),(Attribute<V,?>)field.get(other))){
+                    break;
                 }
             }
         }
@@ -114,13 +94,9 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         if (fastFactoryUtility!=null){
             fastFactoryUtility.visitAttributesForMatch(factory, other, consumer);
         } else {
-            for (Field field : attributeFields) {
-                try {
-                    if (!consumer.accept(field.getName(),(Attribute<V,?>) field.get(factory), (Attribute<V,?>) field.get(other))){
-                        break;
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+            for (AttributeMetadataAndAccessor<F,?> field : attributeMetadataList) {
+                if (!consumer.accept(field.attributeMetadata.attributeVariableName,(Attribute<V,?>) field.get(factory), (Attribute<V,?>) field.get(other))){
+                    break;
                 }
             }
         }
@@ -131,21 +107,20 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         if (fastFactoryUtility!=null){
             this.fastFactoryUtility.visitAttributesTripleFlat( data,  other1,  other2, consumer);
         }  else {
-            for (Field field : attributeFields) {
-                try {
-                    consumer.accept(field.getName(),(Attribute<V,?>) field.get(data), (Attribute<V,?>) field.get(other1), (Attribute<V,?>) field.get(other2));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+            for (AttributeMetadataAndAccessor<F,?> field : attributeMetadataList) {
+                consumer.accept(field.attributeMetadata.attributeVariableName,(Attribute<V,?>) field.get(data), (Attribute<V,?>) field.get(other1), (Attribute<V,?>) field.get(other2));
             }
         }
     }
 
-    private final ArrayList<Field> attributeFields = new ArrayList<>();
-    private final HashMap<String,Class<?>> fieldToReferenceClass = new HashMap<>();
-    private final ArrayList<AttributeFieldAccessor<R,F,FactoryChildrenEnclosingAttribute>> factoryChildrenEnclosingAttributeFields = new ArrayList<>();
 
+    private final ArrayList<AttributeMetadataAndAccessor<F,Attribute<?,?>>> factoryChildrenEnclosingAttributeFields = new ArrayList<>();
+
+    @SuppressWarnings("unchecked")
     private void initAttributeFields(Class<?> clazz) {
+        attributeMetadataList=new ArrayList<>();
+        ArrayList<Field> attributeFields = new ArrayList<>();
+
         Class<?> parent = clazz.getSuperclass();
         if (parent!=null){// skip Object
             initAttributeFields(parent);
@@ -158,8 +133,17 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
+        F factory=null;
+        if (!attributeFields.isEmpty()){//special case AttributelessFactory
+            factory = newInstance();
+        }
+
         //generics parameter for attributes
         for (Field field : attributeFields) {
+            if (field.getName().equals("id")){
+                throw new IllegalStateException(clazz.getName()+", Factories can't have an id attribute because that conflicts with the factory id property");
+            }
+
             try {
                 field.setAccessible(true);//should improve performance
             } catch (InaccessibleObjectException e){
@@ -170,48 +154,71 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 //                attributeType=attributeType.getSuperclass();
 //            }
 
-            if (FactoryChildrenEnclosingAttribute.class.isAssignableFrom(field.getType())) {
+
+            AttributeFieldAccessor<F,?> attributeFieldAccessor = null;
+            try {
+                attributeFieldAccessor = new AttributeFieldAccessor<>(lookup.unreflectGetter(field));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+            field.getType().getGenericSuperclass();
+            Type type = field.getGenericType();
+            Class<?> genericType=null;
+            if (type instanceof ParameterizedType) {
+                ParameterizedType ptype = (ParameterizedType) type;
+                //assume last generic parameter ist reference class. is kind of guess work but best we can do with reflection
                 try {
-                    factoryChildrenEnclosingAttributeFields.add(new AttributeFieldAccessor<>(lookup.unreflectGetter(field), field.getName()));
-                } catch (IllegalAccessException e) {
+                    Type actualTypeArgument = ptype.getActualTypeArguments()[ptype.getActualTypeArguments().length - 1];
+                    String className= actualTypeArgument.getTypeName();
+                    if (actualTypeArgument instanceof ParameterizedType) {
+                        className=((ParameterizedType)actualTypeArgument).getRawType().getTypeName();
+                    }
+
+                    genericType= Class.forName(className);
+                } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
             }
 
-            if (ReferenceBaseAttribute.class.isAssignableFrom(field.getType())){
-                field.getType().getGenericSuperclass();
-                Type type = field.getGenericType();
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType ptype = (ParameterizedType) type;
-                    //assume last generic parameter ist reference class. is kind of guess work but best we can do with reflection
-                    try {
-                        Type actualTypeArgument = ptype.getActualTypeArguments()[ptype.getActualTypeArguments().length - 1];
-                        String className= actualTypeArgument.getTypeName();
-                        if (actualTypeArgument instanceof ParameterizedType) {
-                            className=((ParameterizedType)actualTypeArgument).getRawType().getTypeName();
-                        }
 
-                        fieldToReferenceClass.put(field.getName(), Class.forName(className));
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+            Attribute<?,?> attribute= (Attribute<?, ?>) attributeFieldAccessor.get(factory);
+            Class<? extends FactoryBase<?, ?>> referenceClass = (Class<? extends FactoryBase<?, ?>>) genericType;
+            if (referenceClass != null && !FactoryBase.class.isAssignableFrom(referenceClass)) {
+                referenceClass = null; //polymorphic attribute
             }
+            Class<? extends Enum<?>> enumClass=null;
+            if (attribute instanceof EnumAttribute){
+                enumClass= (Class<? extends Enum<?>>)genericType;
+            }
+            if (attribute instanceof EnumListAttribute){
+                enumClass= (Class<? extends Enum<?>>)genericType;
+            }
+            AttributeMetadata attributeMetadata = new AttributeMetadata(field.getName(), (Class<? extends Attribute<?, ?>>)field.getType(), referenceClass, enumClass, attribute.internal_getLabelText(), attribute.internal_required());
+            AttributeMetadataAndAccessor<F, Attribute<?, ?>> attributeMetadataAndAccessor = new AttributeMetadataAndAccessor<>(attributeMetadata, (AttributeFieldAccessor<F, Attribute<?, ?>>) attributeFieldAccessor);
+            attributeMetadataList.add(attributeMetadataAndAccessor);
+
+            if (FactoryChildrenEnclosingAttribute.class.isAssignableFrom(field.getType())) {
+                factoryChildrenEnclosingAttributeFields.add(attributeMetadataAndAccessor);
+            }
+
         }
+
     }
 
-    public void addBackReferencesAndReferenceClassToAttributes(F data, R root) {
-        if (!temporaryAttributes) {//no BackReferences for FastFactories they are set manually
-            visitFactoryEnclosingAttributesFlat(data, (attributeVariableName, attribute) -> {
+    public void addBackReferencesToAttributes(F data, R root) {
+        if (fastFactoryUtility!=null){
+            this.fastFactoryUtility.addBackReferencesToAttributes( data,  root);
+        } else {
+            visitFactoryEnclosingAttributesFlat(data, (attributeMetadata, attribute) -> {
                 attribute.internal_addBackReferences(root,data);
-                attribute.internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
             });
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void addBackReferencesAndReferenceClassToAttributesUnsafe(FactoryBase<?,R> data, R root) {
-        this.addBackReferencesAndReferenceClassToAttributes((F)data,root);
+    public void addBackReferencesToAttributesUnsafe(FactoryBase<?,R> data, R root) {
+        this.addBackReferencesToAttributes((F)data,root);
     }
 
     private static Object[] defaultConstructor = new Object[0];
@@ -261,22 +268,11 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         return newCopyInstance(null);
     }
 
-    public void setAttributeReferenceClasses(F data){
-        if (!this.temporaryAttributes){
-            this.visitAttributesFlat(data, (attributeVariableName, attribute) -> {
-                if (attribute instanceof ReferenceBaseAttribute) {
-                    ((ReferenceBaseAttribute<?,?,?>)attribute).internal_setReferenceClass(fieldToReferenceClass.get(attributeVariableName));
-                }
-            });
-        }
-    }
-
     public DataStorageMetadata createDataStorageMetadata(long count) {
         F data = newInstance();
-        setAttributeReferenceClasses(data);
         ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
-        visitAttributesFlat(data, (attributeVariableName, attribute) -> {
-            attributes.add(attribute.createAttributeStorageMetadata(attributeVariableName));
+        visitAttributesFlat(data, (attributeMetadata, attribute) -> {
+            attributes.add(attribute.createAttributeStorageMetadata(attributeMetadata));
         });
         return new DataStorageMetadata(attributes,clazz.getName(),count);
     }
@@ -287,5 +283,22 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         } else {
             visitFactoryEnclosingAttributesFlat(factory, (attributeVariableName, attribute) -> attribute.internal_visitChildren(consumer, includeViews));
         }
+    }
+
+    public AttributeMetadata getAttributeMetadata(Function<F,Attribute<?,?>> attributeSupplier) {
+        F factory = newInstance();
+        Attribute<?, ?> attributeParam = attributeSupplier.apply(factory);
+        return getAttributeMetadata(factory,attributeParam);
+    }
+
+    public AttributeMetadata getAttributeMetadata(F factory, Attribute<?,?> attributeParam) {
+        ArrayList<AttributeMetadata > result=new ArrayList<>(1);
+        result.add(null);
+        this.visitAttributesFlat(factory, (attributeMetadata, attribute) -> {
+            if (attributeParam==attribute) {
+                result.set(0,attributeMetadata);
+            }
+        });
+        return result.get(0);
     }
 }

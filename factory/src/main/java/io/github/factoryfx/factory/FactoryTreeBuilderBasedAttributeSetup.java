@@ -5,6 +5,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
@@ -29,14 +30,13 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
         if(result.isEmpty()){
             FactoryMetadata<R, FO> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
             FO instance = factoryMetadata.newInstance();
-            factoryMetadata.setAttributeReferenceClasses(instance);
             result.add(instance);
         }
         return result;
     }
 
-    private void setupReferenceAttribute(FactoryAttribute<?, ?> referenceAttribute) {
-        Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
+    private void setupReferenceAttribute(AttributeMetadata attributeMetadata,FactoryAttribute<?, ?> referenceAttribute) {
+        Class<?> referenceClass = attributeMetadata.referenceClass;
         Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {
             referenceAttribute.userNotSelectable();
@@ -46,8 +46,8 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
 //        }
     }
 
-    private void setupReferenceListAttribute(FactoryListAttribute<?, ?> referenceAttribute) {
-        Class<?> referenceClass = referenceAttribute.internal_getReferenceClass();
+    private void setupReferenceListAttribute(AttributeMetadata attributeMetadata,FactoryListAttribute<?, ?> referenceAttribute) {
+        Class<?> referenceClass = attributeMetadata.referenceClass;
         Scope scope = factoryTreeBuilder.getScope(referenceClass);
         if (scope== Scope.SINGLETON) {
             referenceAttribute.userNotSelectable();
@@ -57,12 +57,12 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
 //        }
     }
 
-    private void applyToAttribute(Attribute<?, ?> attribute) {
+    private void applyToAttribute(AttributeMetadata attributeMetadata, Attribute<?, ?> attribute) {
         if (attribute instanceof FactoryAttribute){
-            setupReferenceAttribute((FactoryAttribute)attribute);
+            setupReferenceAttribute(attributeMetadata,(FactoryAttribute)attribute);
         }
         if (attribute instanceof FactoryListAttribute){
-            setupReferenceListAttribute((FactoryListAttribute)attribute);
+            setupReferenceListAttribute(attributeMetadata,(FactoryListAttribute)attribute);
         }
     }
 
@@ -71,7 +71,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
 
         root.internal().collectChildrenDeep().forEach(data -> {
-            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> applyToAttribute(attribute));
+            data.internal().visitAttributesFlat(this::applyToAttribute);
         });
     }
 }

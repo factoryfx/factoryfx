@@ -116,11 +116,11 @@ public class DataTreeWidget implements Widget {
     private TreeItem<TreeData> constructTree(FactoryBase<?,?> data){
         if (data!=null){
             TreeItem<TreeData> dataTreeItem = new TreeItem<>(new TreeData(data,null));
-            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            data.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
                 if (attribute instanceof FactoryBaseAttribute) {
                     FactoryBase<?,?> child=((FactoryBaseAttribute<?,?,?>)attribute).get();
                     if (child!=null){
-                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
+                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeMetadata.attributeVariableName)));
                         dataTreeItem.getChildren().add(refDataTreeItem);
 
                         final TreeItem<TreeData> treeItem = constructTree(child);
@@ -132,7 +132,7 @@ public class DataTreeWidget implements Widget {
                 if (attribute instanceof FactoryListBaseAttribute) {
                     FactoryListBaseAttribute<?, ?, ?> factoryListBaseAttribute = (FactoryListBaseAttribute<?, ?, ?>) attribute;
                     if (!factoryListBaseAttribute.isEmpty()){
-                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeVariableName)));
+                        TreeItem<TreeData> refDataTreeItem = new TreeItem<>(new TreeData(null,uniformDesign.getLabelText(attribute,attributeMetadata.attributeVariableName)));
                         dataTreeItem.getChildren().add(refDataTreeItem);
                         factoryListBaseAttribute.forEach(child -> {
                             final TreeItem<TreeData> treeItem = constructTree(child);

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.EncryptedString;
@@ -59,12 +60,12 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @SuppressWarnings("unchecked")
     public FactoryBase<?,R> createNewFactory(AttributeAdressingRequest request) {
         Class newFactoryClass=null;
-        Attribute<?, ?> attribute = resolveAttribute(request);
-        if (attribute instanceof FactoryBaseAttribute){
-            newFactoryClass=((FactoryBaseAttribute)attribute).internal_getReferenceClass();
+        AttributeAndMetadata attribute = resolveAttribute(request);
+        if (attribute.attribute instanceof FactoryBaseAttribute){
+            newFactoryClass=attribute.attributeMetadata.referenceClass;
         }
-        if (attribute instanceof FactoryListBaseAttribute){
-            newFactoryClass=((FactoryListBaseAttribute)attribute).internal_getReferenceClass();
+        if (attribute.attribute instanceof FactoryListBaseAttribute){
+            newFactoryClass=attribute.attributeMetadata.referenceClass;
         }
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(microservice.prepareNewFactory().root);
         return (FactoryBase<?, R>) factoryTreeBuilderBasedAttributeSetup.createNewFactory(newFactoryClass).get(0);
@@ -91,10 +92,10 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @Produces(MediaType.APPLICATION_JSON)
     @SuppressWarnings("unchecked")
     public ResolveViewResponse resolveViewRequest(AttributeAdressingRequest request) {
-        return new ResolveViewResponse(((FactoryViewAttribute<R,?,?>)resolveAttribute(request)).get().getId().toString());
+        return new ResolveViewResponse(((FactoryViewAttribute<R,?,?>)resolveAttribute(request).attribute).get().getId().toString());
     }
 
-    private Attribute<?, ?> resolveAttribute(AttributeAdressingRequest request) {
+    private AttributeAndMetadata resolveAttribute(AttributeAdressingRequest request) {
         request.root.internal().finalise();
         Map<UUID, ? extends FactoryBase<?, ?>> uuidFactoryBaseMap = request.root.internal().collectChildFactoryMap();
         return uuidFactoryBaseMap.get(UUID.fromString(request.factoryId)).internal().getAttribute(request.attributeVariableName);
@@ -106,7 +107,7 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @Produces(MediaType.APPLICATION_JSON)
     @SuppressWarnings("unchecked")
     public List<String> resolveViewList(AttributeAdressingRequest request) {
-        return ((FactoryViewListAttribute<R,?,?>)resolveAttribute(request)).get().stream().map(f->f.getId().toString()).collect(Collectors.toList());
+        return ((FactoryViewListAttribute<R,?,?>)resolveAttribute(request).attribute).get().stream().map(f->f.getId().toString()).collect(Collectors.toList());
     }
 
     @POST

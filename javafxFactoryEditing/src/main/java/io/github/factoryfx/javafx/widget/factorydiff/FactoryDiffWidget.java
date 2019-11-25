@@ -9,6 +9,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisation;
@@ -94,14 +95,14 @@ public class FactoryDiffWidget implements Widget {
 
                 Attribute<?,?> previousAttribute = diffItem.getAttribute(previousRoot);
                 if (previousAttribute!=null) {
-                    previousValueDisplay.setCenter(createEditor(previousAttribute));
-                }else {
+                    previousValueDisplay.setCenter(createEditor(previousAttribute,diffItem.getFactory(previousRoot).internal().getAttributeMetadata(previousAttribute)));
+                } else {
                     previousValueDisplay.setCenter(null);
                 }
 
                 Attribute<?,?> newAttribute = diffItem.getAttribute(newRoot);
                 if (newAttribute!=null) {
-                    newValueDisplay.setCenter(createEditor(newAttribute));
+                    newValueDisplay.setCenter(createEditor(newAttribute,diffItem.getFactory(newRoot).internal().getAttributeMetadata(newAttribute)));
                 } else {
                     newValueDisplay.setCenter(null);
                 }
@@ -120,8 +121,8 @@ public class FactoryDiffWidget implements Widget {
         return borderPane;
     }
 
-    private Node createEditor(Attribute<?,?> attribute){
-        final AttributeVisualisation previousAttributeEditor = attributeVisualisationMappingBuilder.getAttributeVisualisation(attribute, null, null);
+    private Node createEditor(Attribute<?,?> attribute, AttributeMetadata attributeMetadata){
+        final AttributeVisualisation previousAttributeEditor = attributeVisualisationMappingBuilder.getAttributeVisualisation(attribute,attributeMetadata, null, null);
         previousAttributeEditor.expand();
         return previousAttributeEditor.createReadOnlyVisualisation();
     }

@@ -9,6 +9,8 @@ import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.WeakAttributeChangeListener;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -72,7 +74,7 @@ public class ReferenceListAttributeTest {
         ExampleReferenceListFactory factory =new ExampleReferenceListFactory();
         factory.internal().finalise();
 
-        List<ExampleDataA> exampleDataAS = factory.referenceListAttribute.internal_createNewPossibleValues();
+        List<ExampleDataA> exampleDataAS = factory.referenceListAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceListFactory.class).getAttributeMetadata(f->f.referenceListAttribute));
         factory.referenceListAttribute.add(exampleDataAS.get(0));
         Assertions.assertEquals(1,factory.referenceListAttribute.size());
 
@@ -87,7 +89,7 @@ public class ReferenceListAttributeTest {
         exampleReferenceListFactory = exampleReferenceListFactory.internal().finalise();
 
 
-        Collection<ExampleDataA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.internal_possibleValues();
+        Collection<ExampleDataA> possibleFactories = exampleReferenceListFactory.referenceListAttribute.internal_possibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceListFactory.class).getAttributeMetadata(f->f.referenceListAttribute));
         Assertions.assertEquals(1,possibleFactories.size());
         Assertions.assertEquals(expectedId,new ArrayList<>(possibleFactories).get(0).getId());
 
@@ -100,11 +102,11 @@ public class ReferenceListAttributeTest {
         List<ExampleDataA> calls=new ArrayList<>();
         factory.referenceListAttribute.internal_addListener((attribute, value) -> calls.add(value.get(0)));
 
-        factory.referenceListAttribute.add(factory.referenceListAttribute.internal_createNewPossibleValues().get(0));
+        factory.referenceListAttribute.add(factory.referenceListAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceListFactory.class).getAttributeMetadata(f->f.referenceListAttribute)).get(0));
 
         Assertions.assertEquals(1,calls.size());
 
-        factory.referenceListAttribute.add(factory.referenceListAttribute.internal_createNewPossibleValues().get(0));
+        factory.referenceListAttribute.add(factory.referenceListAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceListFactory.class).getAttributeMetadata(f->f.referenceListAttribute)).get(0));
 
         Assertions.assertEquals(2,calls.size());
 //        Assertions.assertEquals(value,calls.get(0));

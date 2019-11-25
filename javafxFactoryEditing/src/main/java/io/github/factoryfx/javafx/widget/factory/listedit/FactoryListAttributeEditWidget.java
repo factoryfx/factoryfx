@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -76,9 +77,9 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
         this.deleter=deleter;
     }
 
-    public FactoryListAttributeEditWidget(TableView<F> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute) {
+    public FactoryListAttributeEditWidget(TableView<F> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute, AttributeMetadata attributeMetadata) {
         this(factoryListBaseAttribute, tableView, navigateToData, uniformDesign,
-                factoryListBaseAttribute::internal_createNewPossibleValues, factoryListBaseAttribute::internal_possibleValues, (t, ts) -> factoryListBaseAttribute.internal_deleteFactory(t),
+                ()->factoryListBaseAttribute.internal_createNewPossibleValues(attributeMetadata), ()->factoryListBaseAttribute.internal_possibleValues(attributeMetadata), (t, ts) -> factoryListBaseAttribute.internal_deleteFactory(t),
                 !factoryListBaseAttribute.internal_isUserReadOnly(), factoryListBaseAttribute.internal_isUserSelectable(), factoryListBaseAttribute.internal_isUserCreatable());
     }
 

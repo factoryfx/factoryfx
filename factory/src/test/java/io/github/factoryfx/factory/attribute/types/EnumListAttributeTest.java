@@ -13,21 +13,7 @@ public class EnumListAttributeTest {
     }
 
     public static class ExampleEnumListData{
-        public final EnumListAttribute<TestEnum> attribute = new EnumListAttribute<>(TestEnum.class);
-    }
-
-    @Test
-    public void test_json_class(){
-        ExampleEnumListData data= new ExampleEnumListData();
-        ExampleEnumListData copy= ObjectMapperBuilder.build().copy(data);
-        Assertions.assertEquals(2,copy.attribute.internal_possibleEnumValues().size());
-    }
-
-    @Test
-    public void test_json_getAttributeType(){
-        ExampleEnumListData data= new ExampleEnumListData();
-        ExampleEnumListData copy= ObjectMapperBuilder.build().copy(data);
-        Assertions.assertEquals(TestEnum.class,copy.attribute.internal_getEnumClass());
+        public final EnumListAttribute<TestEnum> attribute = new EnumListAttribute<>();
     }
 
     @Test
@@ -40,14 +26,14 @@ public class EnumListAttributeTest {
 
     @Test
     public void test_enum_i18n(){
-        EnumListAttribute<TestEnum> attribute= new EnumListAttribute<>(TestEnum.class).deEnum(TestEnum.FGDFGDFGDFGDDFG_AA,"a_de").enEnum(TestEnum.FGDFGDFGDFGDDFG_AA,"a_en");
+        EnumListAttribute<TestEnum> attribute= new EnumListAttribute<TestEnum>().deEnum(TestEnum.FGDFGDFGDFGDDFG_AA,"a_de").enEnum(TestEnum.FGDFGDFGDFGDDFG_AA,"a_en");
         Assertions.assertEquals("a_de",attribute.internal_enumDisplayText(TestEnum.FGDFGDFGDFGDDFG_AA, languageText -> languageText.internal_getPreferred(Locale.GERMAN)));
         Assertions.assertEquals("a_en",attribute.internal_enumDisplayText(TestEnum.FGDFGDFGDFGDDFG_AA, languageText -> languageText.internal_getPreferred(Locale.ENGLISH)));
     }
 
     @Test
     public void test_enum_i18n_empty(){
-        EnumListAttribute<TestEnum> attribute= new EnumListAttribute<>(TestEnum.class);
+        EnumListAttribute<TestEnum> attribute= new EnumListAttribute<TestEnum>();
         Assertions.assertEquals("FGDFGDFGDFGDDFG_AA",attribute.internal_enumDisplayText(TestEnum.FGDFGDFGDFGDDFG_AA, languageText -> languageText.internal_getPreferred(Locale.GERMAN)));
         Assertions.assertEquals("FGDFGDFGDFGDDFG_AA",attribute.internal_enumDisplayText(TestEnum.FGDFGDFGDFGDDFG_AA, languageText -> languageText.internal_getPreferred(Locale.ENGLISH)));
     }

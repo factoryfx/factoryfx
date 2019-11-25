@@ -42,7 +42,7 @@ public class TsGeneratorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void smoketest_jettyserver(@TempDir Path targetDir)  {
+    public void smoketest_jettyServer(@TempDir Path targetDir)  {
         FactoryTreeBuilder<Server, TestHttpServer> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
         builder.addBuilder(ctx-> new SimpleJettyServerBuilder<TestHttpServer>()
                 .withHost("localhost").withPort(8005));
@@ -51,12 +51,12 @@ public class TsGeneratorTest {
         HashSet<Class<? extends FactoryBase<?,TestHttpServer>>> factoryClasses = new HashSet<>();
         for (FactoryBase<?, TestHttpServer> factory : builder.buildTree().internal().collectChildrenDeep()) {
             factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>) factory.getClass());
-            factory.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
                 if (attribute instanceof FactoryAttribute){
-                    factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>) ((FactoryAttribute<?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>)attributeMetadata.referenceClass);
                 }
                 if (attribute instanceof FactoryListAttribute){
-                    factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>) ((FactoryListAttribute<?,?>)attribute).internal_getReferenceClass());
+                    factoryClasses.add((Class<? extends FactoryBase<?, TestHttpServer>>)attributeMetadata.referenceClass);
                 }
             });
         }

@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 import io.github.factoryfx.factory.typescript.generator.ts.TsType;
 
@@ -23,22 +24,22 @@ public class ValueAttributeToTsMapper implements AttributeToTsMapper {
     }
 
 
-    public TsType getTsType(Attribute<?,?> attribute){
+    public TsType getTsType(AttributeMetadata metadata){
         return tsType;
     }
 
     @Override
-    public String getMapFromJsonExpression(String attributeVariableName, Attribute<?, ?> attribute, Set<TsFile> jsonImports) {
-        String result="this."+attributeVariableName+"=";
-        result += (mapFromJsonMethodname != null ? "this." + mapFromJsonMethodname + "(" : "") + "json." + attributeVariableName + ".v" + (mapFromJsonMethodname != null ? ")" : "");
+    public String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        String result="this."+metadata.attributeVariableName+"=";
+        result += (mapFromJsonMethodname != null ? "this." + mapFromJsonMethodname + "(" : "") + "json." + metadata.attributeVariableName + ".v" + (mapFromJsonMethodname != null ? ")" : "");
         result += ";\n";
         return result;
     }
 
     @Override
-    public String getMapToJsonExpression(String attributeVariableName, Attribute<?, ?> attribute, Set<TsFile> jsonImports) {
-        String result = "result."+attributeVariableName+"=this.mapAttributeValueToJson(";
-        result += (mapToJsonMethodname!=null?"this."+mapToJsonMethodname+"(":"")+"this."+attributeVariableName+(mapToJsonMethodname!=null?")":"");
+    public String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        String result = "result."+metadata.attributeVariableName+"=this.mapAttributeValueToJson(";
+        result += (mapToJsonMethodname!=null?"this."+mapToJsonMethodname+"(":"")+"this."+metadata.attributeVariableName+(mapToJsonMethodname!=null?")":"");
         result += ");\n";
         return result;
     }

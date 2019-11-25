@@ -39,6 +39,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     private List<ServerConnectorBuilder<R>> serverConnectorBuilders =new ArrayList<>();
     private ResourceBuilder<R> resourceBuilder;
     private List<ResourceBuilder<R>> resourceBuilders =new ArrayList<>();
+    private Consumer<JR> additionalConfiguration;
 
     private final FactoryTemplateId<ThreadPoolFactory<R>> threadPoolFactoryTemplateId;
     private final FactoryTemplateId<HandlerCollectionFactory<R>> handlerCollectionFactoryTemplateId;
@@ -163,6 +164,10 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             }
 
             jettyServerFactory.handler.set(ctx.get(handlerCollectionFactoryTemplateId));
+
+            if (additionalConfiguration!=null) {
+                additionalConfiguration.accept(jettyServerFactory);
+            }
             return jettyServerFactory;
         });
 
@@ -363,6 +368,16 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      */
     public JettyServerBuilder<R, JR> withExceptionMapper(FactoryBase<ExceptionMapper<Throwable>,R> exceptionMapper) {
         getDefaultJersey().withExceptionMapper(exceptionMapper);
+        return this;
+    }
+
+    /**
+    * customize the jetty server
+    * @param config customizer consumer
+    * @return builder
+     */
+    public JettyServerBuilder<R, JR> withSpecificConfiguration(Consumer<JR> config) {
+        additionalConfiguration=config;
         return this;
     }
 

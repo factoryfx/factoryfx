@@ -9,9 +9,9 @@ import java.util.function.Function;
 
 public class DefaultPossibleValueProvider<T extends FactoryBase<?,?>> implements Function<FactoryBase<?,?>, Collection<T>> {
 
-    private final Class<T> clazz;
+    private final Class<?> clazz;
 
-    public DefaultPossibleValueProvider(Class<T> clazz) {
+    public DefaultPossibleValueProvider(Class<?> clazz) {
         this.clazz = clazz;
     }
 

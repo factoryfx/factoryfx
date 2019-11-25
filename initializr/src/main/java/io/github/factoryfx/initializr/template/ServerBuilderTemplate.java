@@ -5,6 +5,7 @@ import java.nio.file.Path;
 
 import javax.lang.model.element.Modifier;
 
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 
 import com.squareup.javapoet.AnnotationSpec;
@@ -45,21 +46,21 @@ public class ServerBuilderTemplate {
                 .addStatement("return this.builder")
                 .build();
 
-        AnnotationSpec annotationSpec = AnnotationSpec.builder(SuppressWarnings.class)
-                .addMember("value", "$S", "unchecked")
-                .build();
+//        AnnotationSpec annotationSpec = AnnotationSpec.builder(SuppressWarnings.class)
+//                .addMember("value", "$S", "unchecked")
+//                .build();
 
         MethodSpec constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("this.builder= new FactoryTreeBuilder<>($N.class)", rootFactoryTemplate.generate().name)
-                .addStatement("this.builder.addFactory($T.class,$T.SINGLETON,(ctx)->\n"
+                .addStatement("this.builder.addBuilder((ctx)->\n"
                         + "            new $T<$N>()\n" +
                         "                    .withHost(\"localhost\").withPort(8080)\n" +
-                        "                    .withResource(ctx.get($N.class)).build())"
-                    ,JettyServerFactory.class, Scope.class, JettyServerBuilder.class, rootFactoryTemplate.getName(), exampleResourceFactoryTemplate.getName())
-                .addStatement("this.builder.addFactory($N.class,$T.SINGLETON)",exampleResourceFactoryTemplate.getName(),Scope.class)
+                        "                    .withResource(ctx.get($N.class)))"
+                    , SimpleJettyServerBuilder.class, rootFactoryTemplate.getName(), exampleResourceFactoryTemplate.getName())
+                .addStatement("this.builder.addSingleton($N.class)",exampleResourceFactoryTemplate.getName())
                 .addComment("register more factories here")
-                .addAnnotation(annotationSpec)
+//                .addAnnotation(annotationSpec)
                 .build();
 
         TypeSpec serverBuilder = TypeSpec.classBuilder(projectName+"Builder")

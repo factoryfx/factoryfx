@@ -1,8 +1,11 @@
 package io.github.factoryfx.javafx.editor.attribute.visualisation;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.editor.attribute.ValueAttributeVisualisation;
 import io.github.factoryfx.javafx.util.UniformDesign;
@@ -18,9 +21,10 @@ public class EnumAttributeVisualisation<E extends Enum<E>> extends ValueAttribut
     private final UniformDesign uniformDesign;
     private final StringConverter<E> stringConverter;
 
-    public EnumAttributeVisualisation(EnumAttribute<E> attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
+    @SuppressWarnings("unchecked")
+    public EnumAttributeVisualisation(EnumAttribute<E> attribute, AttributeMetadata attributeMetadata, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
         super(attribute,validationDecoration);
-        this.possibleEnumConstants = attribute.internal_possibleEnumValues();
+        this.possibleEnumConstants = Arrays.stream(attributeMetadata.enumClass.getEnumConstants()).map(e->(E)e).collect(Collectors.toList());
         this.uniformDesign = uniformDesign;
         this.stringConverter = new StringConverter<>() {
             @Override

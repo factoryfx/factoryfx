@@ -91,9 +91,4 @@ public class FactoryPolymorphicListAttribute<L> extends FactoryListBaseAttribute
         return null;
     }
 
-    @Override
-    public void internal_setReferenceClass(Class<?> clazz) {
-        //nothing, reference class is not part of generic parameter
-    }
-
 }

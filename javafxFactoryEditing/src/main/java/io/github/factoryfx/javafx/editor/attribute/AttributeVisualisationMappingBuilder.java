@@ -19,6 +19,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.attribute.types.PasswordAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.builder.AttributeVisualisationBuilder;
 import io.github.factoryfx.javafx.editor.attribute.builder.SimpleAttributeVisualisationBuilder;
 import io.github.factoryfx.javafx.editor.attribute.builder.ValueAttributeVisualisationBuilder;
@@ -73,12 +74,12 @@ public class AttributeVisualisationMappingBuilder {
         ArrayList<Function<UniformDesign, AttributeVisualisationBuilder>> result = new ArrayList<>();
 
 
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<PasswordAttribute>((attribute)->attribute instanceof PasswordAttribute,(attribute, navigateToData, previousData)->{
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<PasswordAttribute>((attribute)->attribute instanceof PasswordAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
             return new PasswordAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign),uniformDesign);
         }));
 
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,BigDecimalAttribute.class,BigDecimal.class,(attribute)-> new BigDecimalAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), BigDecimalAttribute::new));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<FileContentAttribute>((attribute)->attribute instanceof FileContentAttribute,(attribute, navigateToData, previousData)->{
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<FileContentAttribute>((attribute)->attribute instanceof FileContentAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
             return new FileContentAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign), uniformDesign);
         }));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,BooleanAttribute.class,Boolean.class,(attribute)-> new BooleanAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), BooleanAttribute::new));
@@ -86,11 +87,11 @@ public class AttributeVisualisationMappingBuilder {
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), DoubleAttribute::new));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute, new ValidationDecoration(uniformDesign),uniformDesign), EncryptedStringAttribute::new));
 
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((attribute)->attribute instanceof EnumAttribute,(attribute, navigateToData, previousData)->{
-            return new EnumAttributeVisualisation((EnumAttribute)attribute, new ValidationDecoration(uniformDesign),uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((attribute)->attribute instanceof EnumAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
+            return new EnumAttributeVisualisation((EnumAttribute)attribute,attributeMetadata, new ValidationDecoration(uniformDesign),uniformDesign);
         }));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((attribute)->attribute instanceof EnumListAttribute,(attribute, navigateToData, previousData)->{
-            return new EnumListAttributeVisualisation((EnumListAttribute)attribute,new ValidationDecoration(uniformDesign),uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((attribute)->attribute instanceof EnumListAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
+            return new EnumListAttributeVisualisation((EnumListAttribute)attribute,attributeMetadata,new ValidationDecoration(uniformDesign),uniformDesign);
         }));
 
 
@@ -114,8 +115,8 @@ public class AttributeVisualisationMappingBuilder {
             return new StringAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign));
         }, StringAttribute::new));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,URIAttribute.class,URI.class,(attribute)-> new URIAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), URIAttribute::new));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewAttribute,(attribute, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation((FactoryViewAttribute)attribute, new ValidationDecoration(uniformDesign), navigateToData, uniformDesign)));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewListAttribute,(attribute, navigateToData, previousData)->{
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewAttribute,(attribute, attributeMetadata, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation((FactoryViewAttribute)attribute, new ValidationDecoration(uniformDesign), navigateToData, uniformDesign)));
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewListAttribute,(attribute, attributeMetadata, navigateToData, previousData)->{
             ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation((FactoryViewListAttribute)attribute,new ValidationDecoration(uniformDesign), navigateToData, uniformDesign);
             ExpandableAttributeVisualisation expandableAttributeVisualisation= new ExpandableAttributeVisualisation(visualisation,uniformDesign,(l)->"Items: "+((List<FactoryBase<?,?>>)l).size(),FontAwesome.Glyph.LIST);
             if (((FactoryViewListAttribute)attribute).get().contains(previousData)){
@@ -124,22 +125,22 @@ public class AttributeVisualisationMappingBuilder {
             return expandableAttributeVisualisation;
         }));
 
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryBaseAttribute,(attribute, navigateToData, previousData)->{
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryBaseAttribute,(attribute, attributeMetadata, navigateToData, previousData)->{
             FactoryBaseAttribute referenceAttribute =(FactoryBaseAttribute)attribute;
             if(referenceAttribute.internal_isCatalogueBased()){
-                return new CatalogAttributeVisualisation(referenceAttribute::internal_possibleValues, referenceAttribute,new ValidationDecoration(uniformDesign));
+                return new CatalogAttributeVisualisation(()->referenceAttribute.internal_possibleValues(attributeMetadata), referenceAttribute,new ValidationDecoration(uniformDesign));
             } else {
-                return new FactoryAttributeVisualisation(referenceAttribute,new ValidationDecoration(uniformDesign), uniformDesign, navigateToData);
+                return new FactoryAttributeVisualisation(referenceAttribute,attributeMetadata,new ValidationDecoration(uniformDesign), uniformDesign, navigateToData);
             }
         }));
 
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryListBaseAttribute,(attribute, navigateToData, previousData)->{
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryListBaseAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
             FactoryListBaseAttribute factoryListBaseAttribute =(FactoryListBaseAttribute)attribute;
             if(factoryListBaseAttribute.internal_isCatalogueBased()){
-                return new CatalogListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign), uniformDesign);
+                return new CatalogListAttributeVisualisation(factoryListBaseAttribute,attributeMetadata,new ValidationDecoration(uniformDesign), uniformDesign);
             } else {
                 final TableView dataTableView = new TableView();
-                final FactoryListAttributeVisualisation referenceListAttributeVisualisation = new FactoryListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign),uniformDesign, navigateToData, dataTableView, new FactoryListAttributeEditWidget(dataTableView, navigateToData, uniformDesign, factoryListBaseAttribute));
+                final FactoryListAttributeVisualisation referenceListAttributeVisualisation = new FactoryListAttributeVisualisation(factoryListBaseAttribute,new ValidationDecoration(uniformDesign),uniformDesign, navigateToData, dataTableView, new FactoryListAttributeEditWidget(dataTableView, navigateToData, uniformDesign, factoryListBaseAttribute,attributeMetadata));
                 ExpandableAttributeVisualisation expandableAttributeVisualisation = new ExpandableAttributeVisualisation(referenceListAttributeVisualisation, uniformDesign, (l) -> "Items: " + ((List<FactoryBase<?,?>>)l).size(), FontAwesome.Glyph.LIST, factoryListBaseAttribute.internal_isDefaultExpanded());
                 if (factoryListBaseAttribute.contains(previousData)) {
                     expandableAttributeVisualisation.expand();
@@ -150,24 +151,24 @@ public class AttributeVisualisationMappingBuilder {
         return result;
     }
 
-    private AttributeVisualisation getAttributeEditorInternal(Attribute<?, ?> attribute, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> oldValue) {
+    private AttributeVisualisation getAttributeEditorInternal(Attribute<?, ?> attribute, AttributeMetadata attributeMetadata, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> oldValue) {
 
         Optional<AttributeVisualisationBuilder> editorBuilderOptional = singleAttributeEditorBuilders.stream().filter(a -> a.isEditorFor(attribute)).findAny();
         if (editorBuilderOptional.isPresent()){
-            return editorBuilderOptional.get().createVisualisation(attribute, navigateToData, oldValue);
+            return editorBuilderOptional.get().createVisualisation(attribute,attributeMetadata, navigateToData, oldValue);
         }
         if (attribute instanceof ValueListAttribute<?, ?>) {
             Optional<AttributeVisualisationBuilder> detailEditorBuilderOptional = singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny();
             if (detailEditorBuilderOptional.isPresent()){
-                return detailEditorBuilderOptional.get().createValueListVisualisation(attribute);
+                return detailEditorBuilderOptional.get().createValueListVisualisation(attribute,attributeMetadata);
             }
         }
 
         return new FallbackValueAttributeVisualisation();
     }
 
-    public AttributeVisualisation getAttributeVisualisation(Attribute<?, ?> attribute, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> oldValue) {
-        AttributeVisualisation attributeVisualisation = getAttributeEditorInternal(attribute,navigateToData,oldValue);
+    public AttributeVisualisation getAttributeVisualisation(Attribute<?, ?> attribute, AttributeMetadata attributeMetadata, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> oldValue) {
+        AttributeVisualisation attributeVisualisation = getAttributeEditorInternal(attribute,attributeMetadata,navigateToData,oldValue);
         if (attribute.internal_isUserReadOnly()){
             attributeVisualisation.setReadOnly();
         }

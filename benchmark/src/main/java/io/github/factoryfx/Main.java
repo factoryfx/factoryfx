@@ -19,7 +19,7 @@ public class Main {
 //        CommandLineOptions cmdOptions = new CommandLineOptions(args);
 
         Options opt = new OptionsBuilder()
-                .include("FactoryAttributeCreatePerformance")
+                .include(IteratePerformance.class.getSimpleName())
                 .forks(1)
                 .build();
 

@@ -14,7 +14,7 @@ public class ValueAttributeVisualisationTest extends Application {
 
         AttributeVisualisationMappingBuilder attributeEditor = new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build()));
         StringAttribute attribute = new StringAttribute();
-        AttributeVisualisation attributeVisualisation = attributeEditor.getAttributeVisualisation(attribute, null, null);
+        AttributeVisualisation attributeVisualisation = attributeEditor.getAttributeVisualisation(attribute, null,null, null);
         attributeVisualisation.createVisualisation();
 
 //        System.gc();

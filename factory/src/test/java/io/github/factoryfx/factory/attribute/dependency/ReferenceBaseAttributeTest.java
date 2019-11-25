@@ -5,6 +5,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,8 +25,8 @@ public class ReferenceBaseAttributeTest {
     @Test
     public void test_AttributeStorageMetadata(){
         FactoryAttribute<Void,GenericData<String>> test1 = new FactoryAttribute<>();
-        AttributeStorageMetadata attributeStorageMetadata = test1.createAttributeStorageMetadata("bla");
-        AttributeStorageMetadata attributeStorageMetadata2 = test1.createAttributeStorageMetadata("bla");
+        AttributeStorageMetadata attributeStorageMetadata = test1.createAttributeStorageMetadata(new AttributeMetadata("bla",null,null,null,null,true));
+        AttributeStorageMetadata attributeStorageMetadata2 = test1.createAttributeStorageMetadata(new AttributeMetadata("bla",null,null,null,null,true));
         Assertions.assertTrue(attributeStorageMetadata.match(attributeStorageMetadata2));
     }
 
@@ -51,6 +52,15 @@ public class ReferenceBaseAttributeTest {
             }
         });
 
+    }
+
+    @Test
+    public void test_internal_getMetadata(){
+        ExampleDataA exampleFactoryA = new ExampleDataA();
+        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
+        exampleFactoryA.internal().finalise();
+
+        Assertions.assertEquals(exampleFactoryA.referenceListAttribute.internal_getMetadata().referenceClass,ExampleDataB.class);
     }
 
 

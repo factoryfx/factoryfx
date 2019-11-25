@@ -41,12 +41,17 @@ public class AttributeDiffInfo {
     }
 
     @JsonIgnore
+    public FactoryBase<?,?> getFactory(FactoryBase<?,?> root){
+        return root.internal().collectChildFactoryMap().get(dataId);
+    }
+
+    @JsonIgnore
     public Attribute<?,?> getAttribute(Map<UUID, ? extends FactoryBase<?, ?>> uuidToFactory){
         FactoryBase<?,?> data = uuidToFactory.get(dataId);
         if (data!=null) {
             Attribute<?,?>[] result= new Attribute<?,?>[1];
-            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attributeVariableName.equals(attributeName)){
+            data.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
+                if (attributeMetadata.attributeVariableName.equals(attributeName)){
                     result[0]=attribute;
                 }
             });

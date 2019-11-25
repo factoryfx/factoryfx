@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory;
 
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
@@ -555,7 +556,7 @@ public class FactoryBaseTest {
 //        Assertions.assertFalse(usableCopy.referenceAttribute.get().needRecreation);
     }
 
-    public class ExampleFactoryGroup extends SimpleFactoryBase<Void, io.github.factoryfx.factory.testfactories.ExampleFactoryA> {
+    public static class ExampleFactoryGroup extends SimpleFactoryBase<Void, io.github.factoryfx.factory.testfactories.ExampleFactoryA> {
         public final StringAttribute stringAttribute1= new StringAttribute().labelText("ExampleA1").nullable();
         public final StringAttribute stringAttribute2= new StringAttribute().labelText("ExampleA1").nullable();
 
@@ -565,10 +566,10 @@ public class FactoryBaseTest {
         }
 
         public ExampleFactoryGroup() {
-            this.config().setAttributeListGroupedSupplier(attributes ->
+            this.config().setAttributeListGroupedSupplier(attributeAndMetadataCreator ->
                     List.of(
-                            new AttributeGroup(new LanguageText("group1"),List.of(stringAttribute1)),
-                            new AttributeGroup(new LanguageText("group2"),List.of(stringAttribute1))
+                            new AttributeGroup(new LanguageText("group1"),List.of(attributeAndMetadataCreator.apply(stringAttribute1))),
+                            new AttributeGroup(new LanguageText("group2"),List.of(attributeAndMetadataCreator.apply(stringAttribute1)))
                     ));
 
         }
@@ -583,7 +584,7 @@ public class FactoryBaseTest {
         assertEquals(2,attributeGroups.size());
         assertEquals("group1",attributeGroups.get(0).title.internal_getPreferred(Locale.ENGLISH));
         assertEquals(1,attributeGroups.get(0).group.size());
-        assertEquals("bla",attributeGroups.get(0).group.get(0).get());
+        assertEquals("bla",attributeGroups.get(0).group.get(0).attribute.get());
     }
 
     @Test

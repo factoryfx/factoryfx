@@ -3,6 +3,7 @@ package io.github.factoryfx.javafx.editor;
 import com.google.common.base.Strings;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 
 /** to edit attributes independent af the parent factory*/
 public class AttributeGroupEditor implements Widget {
-    private final List<? extends Attribute<?,?>> attributeGroup;
+    private final List<AttributeAndMetadata> attributeGroup;
     private final FactoryBase<?,?> oldValue;
     private final AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder;
     private final Consumer<FactoryBase<?,?>> navigateToData;
@@ -32,7 +33,7 @@ public class AttributeGroupEditor implements Widget {
     /** parent data validation that includes multi attribute validation and single attribute validation */
     private final Supplier<List<ValidationError>> allValidations;
 
-    public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, FactoryBase<?,?> oldValue, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
+    public AttributeGroupEditor(List<AttributeAndMetadata> attributeGroup, FactoryBase<?,?> oldValue, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
         this.attributeGroup = attributeGroup;
         this.oldValue = oldValue;
         this.attributeVisualisationMappingBuilder = attributeVisualisationMappingBuilder;
@@ -42,7 +43,7 @@ public class AttributeGroupEditor implements Widget {
     }
 
 
-    public AttributeGroupEditor(List<? extends Attribute<?, ?>> attributeGroup, FactoryBase<?,?> oldValue, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, DataEditor dataEditor, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
+    public AttributeGroupEditor(List<AttributeAndMetadata> attributeGroup, FactoryBase<?,?> oldValue, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, DataEditor dataEditor, UniformDesign uniformDesign, Supplier<List<ValidationError>> additionalValidation) {
         this(attributeGroup,oldValue, attributeVisualisationMappingBuilder, dataEditor::navigate, uniformDesign, additionalValidation);
     }
 
@@ -51,12 +52,12 @@ public class AttributeGroupEditor implements Widget {
      * @param attributeVisualisationMappingBuilder attributeEditorBuilder
      * @param uniformDesign uniformDesign
      * */
-    public AttributeGroupEditor(List<? extends ImmutableValueAttribute<?, ?>> attributeGroup, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign) {
+    public AttributeGroupEditor(List<AttributeAndMetadata> attributeGroup, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign) {
         this(attributeGroup, null, attributeVisualisationMappingBuilder, (data) -> {
         }, uniformDesign, () -> {
             ArrayList<ValidationError> result = new ArrayList<>();
-            for (ImmutableValueAttribute<?, ?> immutableValueAttribute : attributeGroup) {
-                result.addAll(immutableValueAttribute.internal_validate(null,""));
+            for (AttributeAndMetadata immutableValueAttribute : attributeGroup) {
+                result.addAll(immutableValueAttribute.attribute.internal_validate(null,""));
             }
             return result;
         });
@@ -102,10 +103,10 @@ public class AttributeGroupEditor implements Widget {
 
             createdVisualisations.clear();
             int row = 0;
-            for (Attribute<?,?> attribute: attributeGroup){
-                Label label = addLabelContent(grid, row,attribute);
+            for (AttributeAndMetadata attributeAndMetadata: attributeGroup){
+                Label label = addLabelContent(grid, row,attributeAndMetadata.attribute);
                 addCopyMenu(label);
-                AttributeVisualisation attributeVisualisation  = attributeVisualisationMappingBuilder.getAttributeVisualisation(attribute,navigateToData,oldValue);
+                AttributeVisualisation attributeVisualisation  = attributeVisualisationMappingBuilder.getAttributeVisualisation(attributeAndMetadata.attribute,attributeAndMetadata.attributeMetadata,navigateToData,oldValue);
                 createdVisualisations.add(attributeVisualisation);
 
                 int rowFinal=row;

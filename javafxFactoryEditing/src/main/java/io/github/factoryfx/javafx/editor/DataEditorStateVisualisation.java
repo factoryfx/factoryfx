@@ -2,6 +2,7 @@ package io.github.factoryfx.javafx.editor;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
@@ -143,7 +144,7 @@ public class DataEditorStateVisualisation extends BorderPane {
     }
 
     List<AttributeGroupEditor> createdAttributeGroupEditor=new ArrayList<>();//prevent gc for weak listeners
-    private Node createAttributeGroupVisual(List<Attribute<?,?>> attributeGroup, FactoryBase<?,?> oldValue, Supplier<List<ValidationError>> additionalValidation) {
+    private Node createAttributeGroupVisual(List<AttributeAndMetadata> attributeGroup, FactoryBase<?,?> oldValue, Supplier<List<ValidationError>> additionalValidation) {
         AttributeGroupEditor attributeGroupEditor = new AttributeGroupEditor(attributeGroup, oldValue, attributeVisualisationMappingBuilder, dataEditor, uniformDesign, additionalValidation);
         createdAttributeGroupEditor.add(attributeGroupEditor);
         return attributeGroupEditor.createContent();

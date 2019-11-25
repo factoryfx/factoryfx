@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.typescript.generator.testserver;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.time.*;
@@ -20,7 +21,7 @@ public class TestServerFactory extends SimpleFactoryBase<Server, TestServerFacto
     public final ByteAttribute byteAttribute=new ByteAttribute().nullable();
     public final BooleanAttribute booleanAttribute=new BooleanAttribute().nullable();
     public final LocalDateAttribute localDateAttribute=new LocalDateAttribute().nullable();
-    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(ExampleEnum.class).nullable();
+    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(EnumAttribute::nullable);
     public final CharAttribute charAttribute=new CharAttribute().nullable();
     public final LongAttribute longAttribute=new LongAttribute().nullable();
     public final StringAttribute stringAttribute=new StringAttribute();
@@ -37,7 +38,7 @@ public class TestServerFactory extends SimpleFactoryBase<Server, TestServerFacto
     public final BigDecimalAttribute bigDecimalAttribute=new BigDecimalAttribute().nullable();
     public final FloatAttribute floatAttribute=new FloatAttribute().nullable();
     public final StringListAttribute stringListAttribute=new StringListAttribute().nullable();
-    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class).nullable();
+    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ImmutableValueAttribute::nullable);
     public final InstantAttribute instantAttribute=new InstantAttribute().nullable();
     public final BigIntegerAttribute bigIntegerAttribute=new BigIntegerAttribute().nullable();
 

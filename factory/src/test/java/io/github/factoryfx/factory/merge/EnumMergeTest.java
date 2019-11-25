@@ -14,7 +14,7 @@ public class EnumMergeTest extends MergeHelperTestBase {
     }
 
     public static class EnumMergeTestPojo extends FactoryBase<Void, EnumMergeTestPojo> {
-        public final EnumAttribute<TestEnum> attribute=new EnumAttribute<>(TestEnum.class);
+        public final EnumAttribute<TestEnum> attribute=new EnumAttribute<>();
     }
 
     @Test

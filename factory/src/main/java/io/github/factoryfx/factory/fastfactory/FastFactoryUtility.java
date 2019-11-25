@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.fastfactory;
 
+import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
@@ -17,7 +18,6 @@ import java.util.stream.Collectors;
 public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> {
 
     public static <L,R extends FactoryBase<?,R>,F extends FactoryBase<L,R>> void setup(Class<F> clazz, FastFactoryUtility<R,F> fastFactoryUtility ){
-        FactoryMetadataManager.getMetadata(clazz).setUseTemporaryAttributes();
         FactoryMetadataManager.getMetadata(clazz).setFastFactoryUtility(fastFactoryUtility);
     }
 
@@ -124,4 +124,14 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
 
+    public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
+        List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList=attributesCreator.get();
+        for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList) {
+            attributeUtility.visitAttributesMetadataFlat(consumer);
+        }
+    }
+
+    public void addBackReferencesToAttributes(F data, R root) {
+
+    }
 }

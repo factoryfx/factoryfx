@@ -6,7 +6,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.widget.select.SelectDataDialog;
 import javafx.beans.InvalidationListener;
@@ -45,13 +47,13 @@ public class FactoryAttributeVisualisation<T extends FactoryBase<?,?>, A extends
 
 
 
-    public FactoryAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData) {
+    public FactoryAttributeVisualisation(A attribute, AttributeMetadata attributeMetadata, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData) {
         super(attribute,validationDecoration);
         this.uniformDesign = uniformDesign;
         this.navigateToData = navigateToData;
 
-        this.newValueProvider=attribute::internal_createNewPossibleValues;
-        this.possibleValuesProvider=attribute::internal_possibleValues;
+        this.newValueProvider=()->attribute.internal_createNewPossibleValues(attributeMetadata);
+        this.possibleValuesProvider=()->attribute.internal_possibleValues(attributeMetadata);
         this.isUserSelectable=new SimpleBooleanProperty(attribute.internal_isUserSelectable());
         this.isUserCreateable=new SimpleBooleanProperty(attribute.internal_isUserCreatable());
         this.remover=attribute::internal_deleteFactory;

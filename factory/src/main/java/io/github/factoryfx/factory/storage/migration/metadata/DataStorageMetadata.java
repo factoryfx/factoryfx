@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.ReferenceBaseAttribute;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
@@ -113,7 +112,7 @@ public class DataStorageMetadata {
             FactoryBase<?,?> data = FactoryMetadataManager.getMetadata(aClass).newInstance();
 
             Set<String> currentAttributeVariableNames= new HashSet<>();
-            data.internal().visitAttributesFlat((attributeVariableName, attribute) -> currentAttributeVariableNames.add(attributeVariableName));
+            data.internal().visitAttributesMetadata((attributeMetadata) -> currentAttributeVariableNames.add(attributeMetadata.attributeVariableName));
 
             for (AttributeStorageMetadata attribute : attributes) {
                 if (!currentAttributeVariableNames.contains(attribute.getVariableName())){
@@ -132,19 +131,15 @@ public class DataStorageMetadata {
         try {
             Class aClass = Class.forName(className);
             FactoryMetadata metadata = FactoryMetadataManager.getMetadata(aClass);
-            FactoryBase<?,?> factory = metadata.newInstance();
-            metadata.addBackReferencesAndReferenceClassToAttributes(factory,null);
-
-
-            factory.internal().visitAttributesMetadataFlat((attributeVariableName, attributeClass, referenceClass) -> {
-                AttributeStorageMetadata attributeMetadata = getAttribute(attributeVariableName);
+            metadata.visitAttributeMetadata((currentAttributeMetadata) -> {
+                AttributeStorageMetadata attributeMetadata = getAttribute(currentAttributeMetadata.attributeVariableName);
                 if (attributeMetadata!=null) { //not a  removed attribute
-                    if (!attributeMetadata.attributeClassName.equals(attributeClass.getName())) {
+                    if (!attributeMetadata.attributeClassName.equals(currentAttributeMetadata.attributeClass.getName())) {
                         attributeMetadata.markRetyped();
                     }
 
-                    if (referenceClass!=null){
-                        if (!attributeMetadata.referenceClass.equals(referenceClass.getName())) {
+                    if (currentAttributeMetadata.referenceClass!=null){
+                        if (!attributeMetadata.referenceClass.equals(currentAttributeMetadata.referenceClass.getName())) {
                             attributeMetadata.markRetyped();
                         }
                     }

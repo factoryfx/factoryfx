@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.editor.attribute.ListAttributeVisualisation;
 import javafx.scene.Node;
@@ -23,12 +24,12 @@ public class CatalogListAttributeVisualisation<T extends FactoryBase<?,?>, A ext
     private final Supplier<Collection<T>> possibleValuesProvider;
     private final A referenceListAttribute;
 
-    public CatalogListAttributeVisualisation(A referenceListAttribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
+    public CatalogListAttributeVisualisation(A referenceListAttribute, AttributeMetadata attributeMetadata, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
         super(referenceListAttribute,validationDecoration);
         this.uniformDesign = uniformDesign;
 
 
-        this.possibleValuesProvider = referenceListAttribute::internal_possibleValues;
+        this.possibleValuesProvider = ()->referenceListAttribute.internal_possibleValues(attributeMetadata);
         this.referenceListAttribute = referenceListAttribute;
     }
 

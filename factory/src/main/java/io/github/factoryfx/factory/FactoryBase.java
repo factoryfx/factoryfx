@@ -19,7 +19,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -33,12 +35,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
-import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.AttributeChangeListener;
-import io.github.factoryfx.factory.attribute.AttributeCopy;
-import io.github.factoryfx.factory.attribute.AttributeGroup;
-import io.github.factoryfx.factory.attribute.AttributeMatch;
-import io.github.factoryfx.factory.attribute.AttributeMerger;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeResult;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
@@ -147,11 +143,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     private void visitAttributesFlat(AttributeVisitor consumer) {
-        getFactoryMetadata().visitAttributesFlat(this,consumer);
+        getFactoryMetadata().visitAttributesFlat(this, consumer);
     }
 
     private void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
-        getFactoryMetadata().visitAttributesMetadataFlat(consumer);
+        getFactoryMetadata().visitAttributeMetadata(consumer);
     }
 
 
@@ -292,10 +288,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private Map<Attribute<?,?>,List<ValidationError>> validateFlatMapped(){
         Map<Attribute<?,?>,List<ValidationError>> result= new HashMap<>();
 
-        visitAttributesFlat((attributeVariableName, attribute) -> {
+        visitAttributesFlat((attributeMetadata, attribute) -> {
             final ArrayList<ValidationError> validationErrors = new ArrayList<>();
             result.put(attribute, validationErrors);
-            validationErrors.addAll(attribute.internal_validate(this,attributeVariableName));
+            validationErrors.addAll(attribute.internal_validate (this,attributeMetadata.attributeVariableName));
         });
 
         if (dataValidations!=null){
@@ -487,7 +483,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
             factory.root=root;
             factory.root.treeChildrenCounter++;
-            factory.getFactoryMetadata().addBackReferencesAndReferenceClassToAttributesUnsafe(factory,root);
+            factory.getFactoryMetadata().addBackReferencesToAttributesUnsafe(factory,root);
 
             factory.finalizeChildren();
             for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
@@ -515,7 +511,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             FactoryBase<?,R> factory = stack.pop();
             factory.rootDeepIterationRun=rootDeepIterationRun;
             factory.root=root;
-            factory.getFactoryMetadata().addBackReferencesAndReferenceClassToAttributesUnsafe(factory,root);
+            factory.getFactoryMetadata().addBackReferencesToAttributesUnsafe(factory,root);
 
             factory.finalizeChildren();
             for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
@@ -566,25 +562,33 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return root;
     }
 
-    private Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier;
+    private Function<Function<Attribute<?,?>,AttributeAndMetadata>,List<AttributeGroup>> attributeListGroupedSupplier;
 
     /**
      * editing hint to group attributes in groups. (usually tabs)
      * @param attributeListGroupedSupplier function
      */
-    private void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
+    private void setAttributeListGroupedSupplier(Function<Function<Attribute<?,?>,AttributeAndMetadata>,List<AttributeGroup>> attributeListGroupedSupplier){
         this.attributeListGroupedSupplier=attributeListGroupedSupplier;
     }
     private List<AttributeGroup> attributeListGrouped(){
         if (attributeListGroupedSupplier==null){
             return Collections.singletonList(new AttributeGroup("Data", attributeList()));
         }
-        return attributeListGroupedSupplier.apply(attributeList());
+
+        Map<Attribute<?,?>,AttributeMetadata> attributeToMetadata = new HashMap<>();
+        this.visitAttributesFlat(new AttributeVisitor() {
+            @Override
+            public void accept(AttributeMetadata attributeMetadata, Attribute attribute) {
+                attributeToMetadata.put(attribute,attributeMetadata);
+            }
+        });
+        return attributeListGroupedSupplier.apply(attribute -> new AttributeAndMetadata(attribute, attributeToMetadata.get(attribute)));
     }
 
-    private List<Attribute<?,?>> attributeList(){
-        ArrayList<Attribute<?,?>> result = new ArrayList<>();
-        this.visitAttributesFlat((attributeVariableName, attribute) -> result.add(attribute));
+    private List<AttributeAndMetadata> attributeList(){
+        ArrayList<AttributeAndMetadata> result = new ArrayList<>();
+        this.visitAttributesFlat((attributeMetadata, attribute) -> result.add(new AttributeAndMetadata(attribute,attributeMetadata)));
         return result;
     }
 
@@ -626,6 +630,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return this.treeBuilderClassUsed || this.treeBuilderName!=null;
     }
 
+    private AttributeMetadata getAttributeMetadata(Attribute<?,?> attribute){
+        return getFactoryMetadata().getAttributeMetadata(this,attribute);
+    }
 
     /** data configurations api. Should be used in the default constructor
      * @return the configuration api*/
@@ -679,7 +686,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          *
          * @param attributeListGroupedSupplier function with parameter containing all attributes
          * */
-        public void setAttributeListGroupedSupplier(Function<List<Attribute<?,?>>,List<AttributeGroup>> attributeListGroupedSupplier){
+        public void setAttributeListGroupedSupplier(Function<Function<Attribute<?,?>,AttributeAndMetadata>,List<AttributeGroup>> attributeListGroupedSupplier){
             this.factory.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
         }
 
@@ -736,7 +743,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.visitAttributesFlat(consumer);
         }
 
-        public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
+        public <F extends FactoryBase<?,?>> void visitAttributesMetadata(AttributeMetadataVisitor consumer) {
             factory.visitAttributesMetadataFlat(consumer);
         }
 
@@ -1004,7 +1011,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.needReFinalisation();
         }
 
-        public Attribute<?,?> getAttribute(String attributeVariableName){
+        public AttributeAndMetadata getAttribute(String attributeVariableName){
             return factory.getAttribute(attributeVariableName);
         }
 
@@ -1024,8 +1031,12 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.treeBuilderClassUsed;
         }
 
-        public List<Attribute<?,?>> attributeList(){
+        public List<AttributeAndMetadata> attributeList(){
             return factory.attributeList();
+        }
+
+        public AttributeMetadata getAttributeMetadata(Attribute<?,?> attribute){
+            return factory.getAttributeMetadata(attribute);
         }
 
     }
@@ -1475,11 +1486,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-    private Attribute<?,?> getAttribute(String attributeVariableNameParam){
-        Attribute[] result = new Attribute[1];
-        visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeVariableName.equals(attributeVariableNameParam)){
-                result[0]=attribute;
+    private AttributeAndMetadata getAttribute(String attributeVariableNameParam){
+        AttributeAndMetadata[] result = new AttributeAndMetadata[1];
+        visitAttributesFlat((attributeMetadata, attribute) -> {
+            if (attributeMetadata.attributeVariableName.equals(attributeVariableNameParam)){
+                result[0]=new AttributeAndMetadata(attribute,attributeMetadata);
             }
         });
         return result[0];

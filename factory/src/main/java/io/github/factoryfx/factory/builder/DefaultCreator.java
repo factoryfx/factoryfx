@@ -22,23 +22,23 @@ public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,
     public F apply(FactoryContext<R> context) {
         FactoryMetadata<R, F> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
         F result = factoryMetadata.newInstance();
-        factoryMetadata.setAttributeReferenceClasses(result);
 
-        result.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+
+        result.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
             if (attribute instanceof FactoryAttribute || attribute instanceof ParametrizedObjectCreatorAttribute){
                 FactoryBaseAttribute factoryBaseAttribute = (FactoryBaseAttribute) attribute;
-                Class<? extends FactoryBase> clazz = factoryBaseAttribute.internal_getReferenceClass();
-                validateAttributeClass(attributeVariableName, clazz);
+                Class<? extends FactoryBase> clazz = attributeMetadata.referenceClass;
+                validateAttributeClass(attributeMetadata.attributeVariableName, clazz);
                 if (factoryBaseAttribute.internal_required()){
-                    context.check(this.clazz, attributeVariableName,clazz);
+                    context.check(this.clazz, attributeMetadata.attributeVariableName,clazz);
                 }
                 FactoryBase factoryBase = context.getUnchecked(clazz);
                 factoryBaseAttribute.set(factoryBase);
             }
             if (attribute instanceof FactoryListAttribute){
                 FactoryListAttribute factoryListAttribute = (FactoryListAttribute) attribute;
-                Class<? extends FactoryBase> clazz = factoryListAttribute.internal_getReferenceClass();
-                validateAttributeClass(attributeVariableName, clazz);
+                Class<? extends FactoryBase> clazz = attributeMetadata.referenceClass;
+                validateAttributeClass(attributeMetadata.attributeVariableName, clazz);
                 factoryListAttribute.set(context.getList(clazz));
             }
             if (attribute instanceof FactoryPolymorphicAttribute){

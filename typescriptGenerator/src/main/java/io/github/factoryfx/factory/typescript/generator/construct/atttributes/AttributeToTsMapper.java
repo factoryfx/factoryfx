@@ -1,15 +1,16 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 import io.github.factoryfx.factory.typescript.generator.ts.TsType;
 
 import java.util.Set;
 
 public interface AttributeToTsMapper {
-    TsType getTsType(Attribute<?,?> attribute);
+    TsType getTsType(AttributeMetadata metadata);
 
-    String getMapFromJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports);
+    String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports);
 
-    String getMapToJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports);
+    String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports);
 }

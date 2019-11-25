@@ -8,15 +8,10 @@ import java.util.function.Consumer;
 
 public interface FactoryChildrenEnclosingAttribute {
 
-    /**setup value selection and new value adding for user editing
-     * @param clazz class
-     * */
-    void internal_setReferenceClass(Class<?> clazz);
-
     void internal_visitChildren(Consumer<FactoryBase<?,?>> consumer, boolean includeViews);
     /*
-    see test {{@Link MergeTest#test_duplicate_ids_bug}} why this is needed
-*/
+    see test {@Link MergeTest#test_duplicate_ids_bug} why this is needed
+    */
     <RL extends FactoryBase<?,RL>> void internal_fixDuplicateObjects(Map<UUID, FactoryBase<?,RL>> idToDataMap);
 
     /*

@@ -1,5 +1,6 @@
 package io.github.factoryfx.javafx.editor.data;
 
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.javafx.UniformDesignBuilder;
@@ -32,7 +33,10 @@ public class AttributeGroupEditorTest  extends Application {
 
 
         UniformDesign uniformDesign = UniformDesignBuilder.build();
-        List<? extends ImmutableValueAttribute<?, ?>> list = Arrays.asList(exampleData1.stringLongAttribute, exampleData1.doubleAttribute);
+        List<AttributeAndMetadata> list = Arrays.asList(
+                new AttributeAndMetadata(exampleData1.stringLongAttribute,exampleData1.internal().getAttributeMetadata(exampleData1.stringLongAttribute)),
+                new AttributeAndMetadata(exampleData1.doubleAttribute,exampleData1.internal().getAttributeMetadata(exampleData1.doubleAttribute))
+                );
         AttributeGroupEditor attributeGroupEditor = new AttributeGroupEditor(list, new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(uniformDesign)),uniformDesign);
         root.setCenter(attributeGroupEditor.createContent());
 

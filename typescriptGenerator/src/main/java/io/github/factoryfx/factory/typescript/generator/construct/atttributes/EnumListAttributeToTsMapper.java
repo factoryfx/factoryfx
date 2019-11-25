@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.Set;
@@ -14,9 +15,9 @@ public class EnumListAttributeToTsMapper implements AttributeToTsMapper {
     }
 
     @Override
-    public TsType getTsType(Attribute<?,?> attribute) {
+    public TsType getTsType(AttributeMetadata metadata) {
         for (TsEnumConstructed tsEnum : tsEnums) {
-            if (tsEnum.getName().equals(((EnumListAttribute<?>) attribute).internal_getEnumClass().getSimpleName())){
+            if (tsEnum.getName().equals(metadata.enumClass.getSimpleName())){
                 return new TsTypeArray(new TsTypeClass(tsEnum));
             }
         }
@@ -24,12 +25,12 @@ public class EnumListAttributeToTsMapper implements AttributeToTsMapper {
     }
 
     @Override
-    public String getMapFromJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        return ("this."+attributeVariableName+"=json."+attributeVariableName+";\n");
+    public String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        return ("this."+metadata.attributeVariableName+"=json."+metadata.attributeVariableName+";\n");
     }
 
     @Override
-    public String getMapToJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        return "result."+attributeVariableName+"=this."+attributeVariableName+";\n";
+    public String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        return "result."+metadata.attributeVariableName+"=this."+metadata.attributeVariableName+";\n";
     }
 }

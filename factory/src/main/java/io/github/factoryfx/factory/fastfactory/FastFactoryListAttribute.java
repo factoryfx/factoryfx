@@ -1,10 +1,13 @@
 package io.github.factoryfx.factory.fastfactory;
 
+import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +27,7 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
 
     @Override
     protected FactoryListAttribute<L, V> getAttribute() {
-        FactoryListAttribute<L, V> attribute = super.getAttribute();
-        attribute.internal_setReferenceClass(referenceClass);
-        return attribute;
+        return super.getAttribute();
     }
 
     @Override
@@ -81,6 +82,13 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
             oldList=new ArrayList<>(newList);
         }
         internal_mergeFactoryList(oldList,newList);
+    }
+
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected AttributeMetadata createAttributeMetadata() {
+        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),referenceClass,null, getAttribute().internal_getLabelText(),getAttribute().internal_required());
     }
 
 }

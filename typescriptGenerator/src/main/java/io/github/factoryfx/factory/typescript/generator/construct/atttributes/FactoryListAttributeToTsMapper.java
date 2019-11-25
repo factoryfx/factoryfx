@@ -4,6 +4,7 @@ package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.Map;
@@ -19,8 +20,8 @@ public class FactoryListAttributeToTsMapper<R extends FactoryBase<?,R>> implemen
     }
 
     @Override
-    public TsType getTsType(Attribute<?,?> attribute) {
-        Class referenceClass = ((FactoryListBaseAttribute) attribute).internal_getReferenceClass();
+    public TsType getTsType(AttributeMetadata metadata) {
+        Class<?> referenceClass = metadata.referenceClass;
         if (referenceClass==null){
             return new TsTypeArray(new TsTypeClass(dataType));
         }
@@ -28,21 +29,21 @@ public class FactoryListAttributeToTsMapper<R extends FactoryBase<?,R>> implemen
     }
 
     @Override
-    public String getMapFromJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        TsFile dataClass = getTsClass((FactoryListBaseAttribute) attribute);
+    public String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        TsFile dataClass = getTsClass(metadata);
         jsonImports.add(dataClass);
-        return ("this."+attributeVariableName+"=<"+dataClass.getName()+"[]>dataCreator.createDataList(json."+attributeVariableName+",idToDataMap,this);\n");
+        return ("this."+metadata.attributeVariableName+"=<"+dataClass.getName()+"[]>dataCreator.createDataList(json."+metadata.attributeVariableName+",idToDataMap,this);\n");
     }
 
     @Override
-    public String getMapToJsonExpression(String attributeVariableName, Attribute<?,?> attribute, Set<TsFile> jsonImports) {
-        TsFile dataClass = getTsClass((FactoryListBaseAttribute) attribute);
+    public String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        TsFile dataClass = getTsClass(metadata);
         jsonImports.add(dataClass);
-        return "result."+attributeVariableName+"=this.mapAttributeDataListToJson(idToDataMap,this."+attributeVariableName+");\n";
+        return "result."+metadata.attributeVariableName+"=this.mapAttributeDataListToJson(idToDataMap,this."+metadata.attributeVariableName+");\n";
     }
 
-    private TsFile getTsClass(FactoryListBaseAttribute attribute) {
-        Class referenceClass = attribute.internal_getReferenceClass();
+    private TsFile getTsClass(AttributeMetadata metadata) {
+        Class<?> referenceClass = metadata.referenceClass;
         if (referenceClass==null){
             return dataType;
         }

@@ -1,6 +1,5 @@
 package io.github.factoryfx.factory.metadata;
 
-import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.Map;

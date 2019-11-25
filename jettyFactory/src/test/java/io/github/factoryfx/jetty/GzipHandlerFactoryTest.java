@@ -1,6 +1,5 @@
 package io.github.factoryfx.jetty;
 
-import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
@@ -10,18 +9,16 @@ import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.servlet.DispatcherType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GzipHandlerFactoryTest {
 
@@ -89,4 +86,17 @@ class GzipHandlerFactoryTest {
 
     }
 
+
+    @Test
+    public void test_visitor(){
+
+        GzipHandlerFactory gzipHandlerFactory = new GzipHandlerFactory();
+        gzipHandlerFactory.internal().visitAttributesMetadata(metadata -> {
+            if (metadata.attributeVariableName.equals("dispatcherTypes")){
+                Assertions.assertEquals(DispatcherType.class,metadata.enumClass);
+            }
+
+        });
+
+    }
 }

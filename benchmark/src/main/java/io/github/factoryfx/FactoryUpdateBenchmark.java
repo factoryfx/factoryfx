@@ -77,7 +77,7 @@ public class FactoryUpdateBenchmark {
 
     public static void main(String[] args) {
         FactoryUpdateBenchmark factoryUpdateBenchmark = new FactoryUpdateBenchmark();
-        factoryUpdateBenchmark.fast_factories();
+        factoryUpdateBenchmark.attribute_factories();
     }
 
 

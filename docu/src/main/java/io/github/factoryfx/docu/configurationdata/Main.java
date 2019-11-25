@@ -1,7 +1,6 @@
 package io.github.factoryfx.docu.configurationdata;
 
 import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.microservice.rest.client.MicroserviceRestClient;

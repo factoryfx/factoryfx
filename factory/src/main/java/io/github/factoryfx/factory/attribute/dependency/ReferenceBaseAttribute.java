@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 
@@ -46,9 +47,9 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         return (A)this;
     }
 
-    public Collection<F> internal_possibleValues(){
-        if (clazz!=null && possibleValueProviderFromRoot==null){
-            possibleValueProviderFromRoot=new DefaultPossibleValueProvider<>(clazz);
+    public Collection<F> internal_possibleValues(AttributeMetadata attributeMetadata){
+        if (attributeMetadata.referenceClass!=null && possibleValueProviderFromRoot==null){
+            possibleValueProviderFromRoot=new DefaultPossibleValueProvider<>(attributeMetadata.referenceClass);
         }
         if (possibleValueProviderFromRoot!=null){
             return possibleValueProviderFromRoot.apply(root);
@@ -153,21 +154,6 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         return (A)this;
     }
 
-    protected Class<F> clazz;
-
-    /**setup value selection and new value adding for user editing
-     * @param clazz class
-     * */
-    @SuppressWarnings("unchecked")
-    @Override
-    public void internal_setReferenceClass(Class<?> clazz){
-        this.clazz=(Class<F>)clazz;
-    }
-
-    public Class<F> internal_getReferenceClass(){
-        return clazz;
-    }
-
     /**
      * reference is a selection from a catalogue
      * @return self
@@ -186,22 +172,17 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
 
     private boolean catalogueBased =false;
 
-    @Override
-    public AttributeStorageMetadata createAttributeStorageMetadata(String variableName) {
-        return new AttributeStorageMetadata(variableName,getClass().getName(), clazz!=null?clazz.getName():null);
-    }
-
     @SuppressWarnings("unchecked")
-    public List<F> internal_createNewPossibleValues(){
+    public List<F> internal_createNewPossibleValues(AttributeMetadata attributeMetadata){
         if (newValuesProviderFromRootAndAttribute!=null) {
             return newValuesProviderFromRootAndAttribute.apply(root,(A)this);
         }
         FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
-        if (factoryTreeBuilderBasedAttributeSetup!=null && clazz !=null ){
-            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(clazz);
+        if (factoryTreeBuilderBasedAttributeSetup!=null && attributeMetadata.referenceClass !=null ){
+            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(attributeMetadata.referenceClass);
         }
-        if (clazz !=null ){
-            return List.of((F)FactoryMetadataManager.getMetadataUnsafe(clazz).newInstance());
+        if (attributeMetadata.referenceClass !=null ){
+            return List.of((F)FactoryMetadataManager.getMetadataUnsafe(attributeMetadata.referenceClass).newInstance());
         }
         return new ArrayList<>();
     }
@@ -211,6 +192,11 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         this.root=null;
         this.parent=null;
         this.internal_removeAllListener();
+    }
+
+    @SuppressWarnings("unchecked")
+    public AttributeMetadata internal_getMetadata(){
+        return FactoryMetadataManager.getMetadata(parent.getClass()).getAttributeMetadata(parent,this);
     }
 
 }

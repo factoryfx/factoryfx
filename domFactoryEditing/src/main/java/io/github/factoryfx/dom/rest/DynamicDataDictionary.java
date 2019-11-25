@@ -2,20 +2,16 @@ package io.github.factoryfx.dom.rest;
 
 import com.google.common.base.Strings;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
-import io.github.factoryfx.factory.attribute.types.EnumAttribute;
-import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DynamicDataDictionary {
@@ -26,12 +22,9 @@ public class DynamicDataDictionary {
         HashSet<Class<?>> factoryClasses = new HashSet<>();
         for (FactoryBase<?, ?> factoryBase : root.internal().collectChildrenDeep()) {
             factoryClasses.add(factoryBase.getClass());
-            factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                if (attribute instanceof FactoryAttribute){
-                    factoryClasses.add(((FactoryAttribute<?,?>)attribute).internal_getReferenceClass());
-                }
-                if (attribute instanceof FactoryListAttribute){
-                    factoryClasses.add(((FactoryListAttribute<?,?>)attribute).internal_getReferenceClass());
+            factoryBase.internal().visitAttributesMetadata((attributeMetadata) -> {
+                if (attributeMetadata.referenceClass!=null){
+                    factoryClasses.add(attributeMetadata.referenceClass);
                 }
             });
         }
@@ -40,44 +33,44 @@ public class DynamicDataDictionary {
             DynamicDataDictionaryItem item = new DynamicDataDictionaryItem();
             classNameToItem.put(factoryClass.getName(), item);
 
-            FactoryBase factoryBase = FactoryMetadataManager.getMetadataUnsafe(factoryClass).newInstance();
-            factoryBase.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-                DynamicDataDictionaryAttributeItem attributeItem = new DynamicDataDictionaryAttributeItem(getAttributeType(attribute),
-                        !attribute.internal_required(), getLabel(Locale.ENGLISH,attribute,attributeVariableName), getLabel(Locale.GERMAN,attribute,attributeVariableName),
-                        getPossibleEnumValues(attribute)
+            FactoryMetadata<?, ?> metadata = FactoryMetadataManager.getMetadataUnsafe(factoryClass);
+            metadata.visitAttributeMetadata((attributeMetadata) -> {
+                DynamicDataDictionaryAttributeItem attributeItem = new DynamicDataDictionaryAttributeItem(getAttributeType(attributeMetadata),
+                        !attributeMetadata.required, getLabel(Locale.ENGLISH,attributeMetadata), getLabel(Locale.GERMAN,attributeMetadata),
+                        getPossibleEnumValues(attributeMetadata)
                 );
-                if (!(attribute instanceof ObjectValueAttribute<?>)) {
-                    item.attributeNameToItem.put(attributeVariableName, attributeItem);
+                if (!(ObjectValueAttribute.class.isAssignableFrom(attributeMetadata.attributeClass))) {
+                    item.attributeNameToItem.put(attributeMetadata.attributeVariableName, attributeItem);
                 }
             });
         }
 
     }
 
-    private String getLabel(Locale locale, Attribute<?, ?> attribute, String attributeVariableName) {
-        String label = attribute.internal_getPreferredLabelText(locale);
+    private String getLabel(Locale locale, AttributeMetadata attributeMetadata) {
+        String label = attributeMetadata.labelText.internal_getPreferred(locale);
         if (Strings.isNullOrEmpty(label)) {
-            label=attributeVariableName;
+            label=attributeMetadata.attributeVariableName;
         }
         return label;
     }
 
-    private String getAttributeType(Attribute<?, ?> attribute) {
-        if (attribute instanceof FactoryBaseAttribute){
+    private String getAttributeType(AttributeMetadata attributeMetadata) {
+        if (FactoryBaseAttribute.class.isAssignableFrom(attributeMetadata.attributeClass)){
             return FactoryAttribute.class.getSimpleName();
         }
-        if (attribute instanceof FactoryListBaseAttribute){
+        if (FactoryListBaseAttribute.class.isAssignableFrom(attributeMetadata.attributeClass)){
             return FactoryListAttribute.class.getSimpleName();
         }
-        return attribute.getClass().getSimpleName();
+        return attributeMetadata.attributeClass.getSimpleName();
     }
 
-    private List<String> getPossibleEnumValues(Attribute<?, ?> attribute) {
-        if (attribute instanceof EnumAttribute){
-            return ((EnumAttribute<?>)attribute).internal_possibleEnumValues().stream().map(Enum::toString).collect(Collectors.toList());
-        }
-        if (attribute instanceof EnumListAttribute){
-            return ((EnumListAttribute<?>)attribute).internal_possibleEnumValues().stream().map(Enum::toString).collect(Collectors.toList());
+    private List<String> getPossibleEnumValues(AttributeMetadata attributeMetadata) {
+        System.out.println(attributeMetadata.attributeClass);
+        System.out.println(attributeMetadata.attributeVariableName);
+        if (attributeMetadata.enumClass!=null){
+            System.out.println("222");
+            return Arrays.stream(attributeMetadata.enumClass.getEnumConstants()).map(Object::toString).collect(Collectors.toList());
         }
         return List.of();
     }

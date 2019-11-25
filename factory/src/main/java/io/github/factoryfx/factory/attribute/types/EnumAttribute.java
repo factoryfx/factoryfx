@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.attribute.types;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,22 +14,19 @@ import io.github.factoryfx.factory.util.LanguageText;
  */
 public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,EnumAttribute<E>> {
 
-    private final Class<E> clazz;
 
-    public EnumAttribute(Class<E> clazz) {
-        super();  //null is fine cause internal_getAttributeType override
-        this.clazz=clazz;
+    public EnumAttribute() {
+        super();
     }
 
-    public List<E> internal_possibleEnumValues() {
-        return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
+    /**
+     * workaround for: diamond operator doesn't work chained expression inference (Section D of JSR 335)
+     * @param setup setup function
+     */
+    public EnumAttribute(Consumer<EnumAttribute<E>> setup){
+        super();
+        setup.accept(this);
     }
-
-    public Class<E> internal_getEnumClass() {
-        return clazz;
-    }
-
-
 
     @JsonIgnore
     private EnumTranslations<E> enumTranslations;

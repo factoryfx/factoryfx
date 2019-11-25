@@ -1,10 +1,13 @@
 package io.github.factoryfx.factory.fastfactory;
 
+import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -22,9 +25,7 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
 
     @Override
     protected FactoryAttribute<L, V> getAttribute() {
-        FactoryAttribute<L, V> attribute = super.getAttribute();
-        attribute.internal_setReferenceClass(referenceClass);
-        return attribute;
+        return super.getAttribute();
     }
 
     @Override
@@ -66,6 +67,12 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
     @Override
     public void internal_merge(V newValue){
         valueSetter.accept(boundFactory,newValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected AttributeMetadata createAttributeMetadata() {
+        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),referenceClass,null,getAttribute().internal_getLabelText(),getAttribute().internal_required());
     }
 }
 

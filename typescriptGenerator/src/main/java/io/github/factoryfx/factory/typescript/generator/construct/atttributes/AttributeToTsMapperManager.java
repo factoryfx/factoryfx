@@ -8,6 +8,7 @@ import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.primitive.list.*;
 import io.github.factoryfx.factory.attribute.time.*;
 import io.github.factoryfx.factory.attribute.types.*;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
 
 import java.util.*;
@@ -75,32 +76,32 @@ public class AttributeToTsMapperManager {
         this.ignoredAttributes = ignoredAttributes;
     }
 
-    public TsType getTsType(Attribute<?,?> attribute){
-        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(attribute);
+    public TsType getTsType(AttributeMetadata metadata){
+        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(metadata.attributeClass);
         if (attributeToTsMapper !=null){
-            return  attributeToTsMapper.getTsType(attribute);
+            return  attributeToTsMapper.getTsType(metadata);
         }
-        throw new IllegalStateException("unknown attribute type"+attribute);
+        throw new IllegalStateException("unknown attribute type"+metadata.attributeClass);
     }
 
     public boolean isMappable(Class<? extends Attribute> attribute){
         return !ignoredAttributes.contains(attribute);
     }
 
-    public String getMapFromJsonExpression(String attributeVariableName, Attribute attribute, Set<TsFile> jsonImports) {
-        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(attribute);
+    public String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(metadata.attributeClass);
         if (attributeToTsMapper ==null){
-            throw new IllegalStateException("unsupported attribute: "+attribute.getClass());
+            throw new IllegalStateException("unsupported attribute: "+metadata.attributeClass);
         }
-        return attributeToTsMapper.getMapFromJsonExpression(attributeVariableName,attribute,jsonImports);
+        return attributeToTsMapper.getMapFromJsonExpression(metadata,jsonImports);
     }
 
-    public String getMapToJsonExpression(String attributeVariableName, Attribute attribute, Set<TsFile> jsonImports) {
-        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(attribute);
+    public String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
+        AttributeToTsMapper attributeToTsMapper = getAttributeToTsMapper(metadata.attributeClass);
         if (attributeToTsMapper ==null){
-            throw new IllegalStateException("unsupported attribute: "+attribute.getClass());
+            throw new IllegalStateException("unsupported attribute: "+metadata.attributeClass);
         }
-        return attributeToTsMapper.getMapToJsonExpression(attributeVariableName,attribute,jsonImports);
+        return attributeToTsMapper.getMapToJsonExpression(metadata,jsonImports);
     }
 
     public Set<String> getAttributeTypeValues() {
@@ -111,18 +112,18 @@ public class AttributeToTsMapperManager {
         return result;
     }
 
-    public String getAttributeTypeValue(Attribute<?, ?> attribute) {
-        return attribute.getClass().getSimpleName();
+    public String getAttributeTypeValue(AttributeMetadata attribute) {
+        return attribute.attributeClass.getSimpleName();
     }
 
-    private AttributeToTsMapper getAttributeToTsMapper(Attribute<?, ?> attribute) {
-        if (attribute instanceof FactoryBaseAttribute){
+    private AttributeToTsMapper getAttributeToTsMapper(Class<?> attributeClass) {
+        if (FactoryBaseAttribute.class.isAssignableFrom(attributeClass)){
             return attributeClassToMapper.get(FactoryAttribute.class);
         }
-        if (attribute instanceof FactoryListBaseAttribute){
+        if (FactoryListBaseAttribute.class.isAssignableFrom(attributeClass)){
             return attributeClassToMapper.get(FactoryListAttribute.class);
         }
-        return attributeClassToMapper.get(attribute.getClass());
+        return attributeClassToMapper.get(attributeClass);
     }
 
 }

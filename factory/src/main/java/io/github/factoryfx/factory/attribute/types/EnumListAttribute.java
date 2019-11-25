@@ -5,6 +5,7 @@ import io.github.factoryfx.factory.attribute.ValueListAttribute;
 import io.github.factoryfx.factory.util.LanguageText;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -12,19 +13,17 @@ import java.util.function.Function;
  */
 public class EnumListAttribute<E extends Enum<E>> extends ValueListAttribute<E,EnumListAttribute<E>> {
 
-    private final Class<E> clazz;
-
-    public EnumListAttribute(Class<E> clazz) {
-        super(clazz);//workaround for java generic bug
-        this.clazz=clazz;
+    public EnumListAttribute() {
+        super();
     }
 
-    public List<E> internal_possibleEnumValues() {
-        return new ArrayList<>(Arrays.asList(clazz.getEnumConstants()));
-    }
-
-    public Class<E> internal_getEnumClass() {
-        return clazz;
+    /**
+     * workaround for: diamond operator doesn't work chained expression inference (Section D of JSR 335)
+     * @param setup setup function
+     */
+    public EnumListAttribute(Consumer<EnumListAttribute<E>> setup){
+        super();
+        setup.accept(this);
     }
 
     @JsonIgnore

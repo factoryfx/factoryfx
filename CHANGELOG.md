@@ -1,8 +1,22 @@
+# 2.2.1
+
+### BREAKING CHANGES
+* **EnumAttribute**  
+    simplified EnumAttribute constructor 
+    **old**
+    ```java
+    public final EnumListAttribute<TestEnum> enumAttribute= new EnumListAttribute<>(TestEnum.class);
+    ```
+    **new**
+    ```java
+    public final EnumListAttribute<TestEnum> enumAttribute= new EnumListAttribute<>();
+    ```
+        
 # 2.2.0
 
 ### Features
 * **FactoryTreeBuilder migration improvement:**  
-  Changes in the FactoryTreeBuilder are now automatically migrated.
+  Data changes in the FactoryTreeBuilder are now automatically applied.
   For example if you add a new jersey resource in the builder the new resource is also added to existing configuration after start.
   This simplifies structural application changes.
   
@@ -16,35 +30,35 @@
   improved builder integration  into the FactoryTreeBuilder
 
   * factory JettyServerFactory.class registration  
-    old 
+    **old**
     ```java
     addFactory(JettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
                 .withHostWildcard()
                 .withResource(ctx.get(ResourceFactory.class));
                 .build());
     ```
-    new
+    **new**
     ```java          
     builder.addBuilder(ctx->new SimpleJettyServerBuilder<Root,RootFactory>()
             .withHostWildcard()
             .withResource(ctx.get(ResourceFactory.class))      
     ```          
   * derived factory from JettyServerFactory.class registration  
-    old 
+    **old**
     ```java
     addFactory(DerivedJettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
                 .withHostWildcard()
                 .withResource(ctx.get(ResourceFactory.class)).
                 .build());
     ```
-    new
+    **new**
     ```java          
     builder.addBuilder(ctx->new JettyServerBuilder<Root,RootFactory>(new FactoryTemplateId<>(null, DerivedJettyServerFactory.class), DerivedJettyServerFactory::new)
             .withHostWildcard()
             .withResource(ctx.get(ResourceFactory.class))        
     ```  
   * root factory is JettyServerFactory  
-    new
+    **new**
     ```java          
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
                     .withHost("localhost").withPort(8005)

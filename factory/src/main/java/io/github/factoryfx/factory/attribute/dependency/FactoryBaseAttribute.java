@@ -121,7 +121,6 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void internal_merge(F newValue) {
         this.value=newValue;
     }

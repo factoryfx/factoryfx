@@ -2,6 +2,8 @@ package io.github.factoryfx.javafx.editor.attribute.builder;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisation;
 
 import java.util.function.Consumer;
@@ -29,18 +31,18 @@ public class SimpleAttributeVisualisationBuilder<A extends Attribute<?,A>> imple
 
     @Override
     @SuppressWarnings("unchecked")
-    public AttributeVisualisation createVisualisation(Attribute<?,?> attribute, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> previousData) {
-        return attributeEditorVisualisationCreator.create((A)attribute,navigateToData,previousData);
+    public AttributeVisualisation createVisualisation(Attribute<?,?> attribute,AttributeMetadata attributeMetadata, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> previousData) {
+        return attributeEditorVisualisationCreator.create((A)attribute,attributeMetadata,navigateToData,previousData);
     }
 
     @Override
-    public AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute) {
+    public AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute, AttributeMetadata attributeMetadata) {
           return null;
     }
 
     @FunctionalInterface
     public interface AttributeEditorVisualisationCreator<A extends Attribute<?,A>> {
-        AttributeVisualisation create(A attribute, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> previousData);
+        AttributeVisualisation create(A attribute, AttributeMetadata attributeMetadata, Consumer<FactoryBase<?,?>> navigateToData, FactoryBase<?,?> previousData);
     }
 
 }

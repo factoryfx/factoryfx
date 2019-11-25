@@ -1,5 +1,8 @@
 package io.github.factoryfx.factory;
 
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
@@ -8,6 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -183,4 +187,33 @@ public class FastFactoryUtilityTest {
         Assertions.assertEquals(1,original.referenceAttribute.internal().getParents().size());
         Assertions.assertEquals(original,original.referenceAttribute.internal().getParents().iterator().next());
     }
+
+
+    @Test
+    public void test_visitAttributesMetadataFlat(){
+        FastExampleFactoryA example = new FastExampleFactoryA();
+
+        List<String> attributeVariableNames=new ArrayList<>();
+        List<Class<?>> attributeClasses=new ArrayList<>();
+        List<Class<?>> referenceClasses=new ArrayList<>();
+        example.internal().visitAttributesMetadata((metadata) -> {
+            attributeVariableNames.add(metadata.attributeVariableName);
+            attributeClasses.add(metadata.attributeClass);
+            referenceClasses.add(metadata.referenceClass);
+        });
+
+        Assertions.assertEquals(attributeVariableNames,List.of("stringAttribute","referenceAttribute","referenceListAttribute"));
+        Assertions.assertEquals(attributeClasses,List.of(StringAttribute.class, FactoryAttribute.class, FactoryListAttribute.class));
+        Assertions.assertEquals(referenceClasses,Arrays.asList(null,FastExampleFactoryB.class,FastExampleFactoryB.class));
+    }
+
+    @Test
+    public void visit_attributes() {
+        FastExampleFactoryA example = new FastExampleFactoryA();
+
+        List<String> attributes=new ArrayList<>();
+        example.internal().visitAttributesFlat((attributeMetadata, attribute) -> attributes.add(attributeMetadata.attributeVariableName));
+        Assertions.assertEquals(List.of("stringAttribute","referenceAttribute","referenceListAttribute"),attributes);
+    }
+
 }

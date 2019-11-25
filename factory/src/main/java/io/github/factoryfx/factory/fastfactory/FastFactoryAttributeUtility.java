@@ -1,11 +1,13 @@
 package io.github.factoryfx.factory.fastfactory;
 
+import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.attribute.AttributeMerger;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -15,7 +17,7 @@ import java.util.function.Supplier;
 public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>, V, A extends Attribute<V,?>> implements AttributeCopy<V>, AttributeMatch<V>, AttributeMerger<V> {
     private A attribute;
     private final Supplier<A> attributeCreator;
-    private String attributeName;
+    protected String attributeName;
     protected final Function<F,V> valueGetter;
     protected final BiConsumer<F,V> valueSetter;
 
@@ -23,6 +25,7 @@ public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F 
         this.attributeCreator = attributeCreator;
         this.valueGetter = valueGetter;
         this.valueSetter = valueSetter;
+        this.attributeName = attributeName;
     }
 
     protected A getAttribute(){
@@ -33,9 +36,9 @@ public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F 
     }
 
     public void setAttribute(F factory) {
-        attribute.internal_reset();
-        attribute.set(valueGetter.apply(factory));
-        attribute.internal_addListener((attribute1, value) -> valueSetter.accept(factory,value));
+        getAttribute().internal_reset();
+        getAttribute().set(valueGetter.apply(factory));
+        getAttribute().internal_addListener((attribute1, value) -> valueSetter.accept(factory,value));
     }
 
     public void setAttributeName(String attributeName) {
@@ -43,7 +46,7 @@ public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F 
     }
 
     public void accept(AttributeVisitor attributeVisitor) {
-        attributeVisitor.accept(attributeName,attribute);
+        attributeVisitor.accept(createAttributeMetadata(),attribute);
     }
 
     public void accept(FastFactoryAttributeUtility<R,F,V,?> otherAttribute, FactoryBase.BiCopyAttributeVisitor<V> consumer) {
@@ -83,4 +86,14 @@ public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F 
         return true;
     }
 
+
+    public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer){
+        consumer.accept(createAttributeMetadata());
+    }
+
+    protected abstract AttributeMetadata createAttributeMetadata();
+
+    public void addBackReferencesToAttributes(F data, R root){
+        getAttribute().internal_addBackReferences(data,root);
+    }
 }

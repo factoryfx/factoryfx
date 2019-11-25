@@ -7,7 +7,9 @@ import java.util.function.Supplier;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
+import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.validation.ValidationResult;
@@ -179,6 +181,29 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
         }
 
         return "";
+    }
+
+    public LanguageText internal_getLabelText(){
+        LanguageText languageText = new LanguageText();
+        if (en!=null){
+            languageText.en(en);
+        }
+        if (de!=null){
+            languageText.de(de);
+        }
+        if (es!=null){
+            languageText.es(es);
+        }
+        if (fr!=null){
+            languageText.fr(fr);
+        }
+        if (it!=null){
+            languageText.it(it);
+        }
+        if (pt!=null){
+            languageText.pt(pt);
+        }
+        return languageText;
     }
 
     public String internal_getAddonText(){
@@ -357,8 +382,8 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
         return (A)this;
     }
 
-    public AttributeStorageMetadata createAttributeStorageMetadata(String variableName){
-        return new AttributeStorageMetadata(variableName,getClass().getName(), null);
+    public AttributeStorageMetadata createAttributeStorageMetadata(AttributeMetadata attributeMetadata){
+        return new AttributeStorageMetadata(attributeMetadata.attributeVariableName,getClass().getName(), attributeMetadata.referenceClass!=null?attributeMetadata.referenceClass.getName():null);
     }
 
 

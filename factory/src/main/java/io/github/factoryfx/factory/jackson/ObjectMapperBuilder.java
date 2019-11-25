@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import io.github.factoryfx.factory.DataObjectIdResolver;
 
@@ -56,9 +55,9 @@ public class ObjectMapperBuilder {
 
         objectMapper.setDefaultMergeable(true); // global default, merging
 
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addDeserializer(String.class, new ForceStringDeserializer());
-        objectMapper.registerModule(simpleModule);
+//        SimpleModule simpleModule = new SimpleModule();
+//        simpleModule.addDeserializer(String.class, new ForceStringDeserializer());
+//        objectMapper.registerModule(simpleModule);
 
 //        objectMapper.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS);
 

@@ -1,14 +1,11 @@
 package io.github.factoryfx.factory.builder;
 
 
-import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.BranchSelector;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.FactoryBase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,7 +123,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
 
     /**
-     * workaround for factories with generic Parameter e.g. FactoryX<R>
+     * workaround for factories with generic Parameter e.g. {@code FactoryX<R>}
      * @param templateId templateId
      * @param scope scope
      * @param creator creator
@@ -278,28 +275,46 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
 
+    private static class RebuildGroup {
+        List<FactoryBase<?, ?>> oldBuild=new ArrayList<>();
+        List<FactoryBase<?, ?>> newBuild=new ArrayList<>();
+    }
+
     public R rebuildTreeUnvalidated(R root) {
         factoryContext.reset();
         rootFactory=null;
         R rootRebuild = this.buildTreeUnvalidated();
 
-        Map<FactoryTemplateId,List<FactoryBase<?, R>>> existingFactories = new HashMap<>();
-        for (FactoryBase<?, R> factory: root.internal().collectChildrenDeep()) {
-
+        Map<FactoryTemplateId,RebuildGroup> templateToGroup = new HashMap<>();
+        for (FactoryBase<?, R> factory : root.internal().collectChildrenDeep()) {
             FactoryTemplateId<? extends FactoryBase<?, R>> factoryBaseFactoryTemplateId = new FactoryTemplateId<>(factory);
-            if (!existingFactories.containsKey(factoryBaseFactoryTemplateId)){
-                existingFactories.put(factoryBaseFactoryTemplateId,new ArrayList<>());
+            if (!templateToGroup.containsKey(factoryBaseFactoryTemplateId)){
+                templateToGroup.put(factoryBaseFactoryTemplateId,new RebuildGroup());
             }
-            existingFactories.get(factoryBaseFactoryTemplateId).add(factory);
+            templateToGroup.get(factoryBaseFactoryTemplateId).oldBuild.add(factory);
         }
 
-        for (FactoryBase<?, R> factory: rootRebuild.internal().collectChildrenDeep()) {
-            FactoryTemplateId<? extends FactoryBase<?, R>> templateId = new FactoryTemplateId<>(factory);
-            List<FactoryBase<?, R>> list = existingFactories.get(templateId);
-            if (list!=null && list.size()==1) {
-                factory.setId(list.get(0).getId());
+        for (FactoryBase<?, R> factory : rootRebuild.internal().collectChildrenDeep()) {
+            FactoryTemplateId<? extends FactoryBase<?, R>> factoryBaseFactoryTemplateId = new FactoryTemplateId<>(factory);
+            if (!templateToGroup.containsKey(factoryBaseFactoryTemplateId)){
+                templateToGroup.put(factoryBaseFactoryTemplateId,new RebuildGroup());
+            }
+            templateToGroup.get(factoryBaseFactoryTemplateId).newBuild.add(factory);
+        }
+
+        for (Map.Entry<FactoryTemplateId, RebuildGroup> entry: templateToGroup.entrySet()) {
+            RebuildGroup group = entry.getValue();
+            if (group.oldBuild.size()==1 && group.newBuild.size()==1){
+                group.newBuild.get(0).setId(group.oldBuild.get(0).getId());
+            }
+
+            if (group.oldBuild.size()>1 && group.newBuild.size()>1 && group.oldBuild.size()==group.newBuild.size()){
+                for (int i = 0; i < group.oldBuild.size(); i++) { //TODO this is order dependent
+                    group.newBuild.get(i).setId(group.oldBuild.get(i).getId());
+                }
             }
         }
+
         return rootRebuild;
     }
 

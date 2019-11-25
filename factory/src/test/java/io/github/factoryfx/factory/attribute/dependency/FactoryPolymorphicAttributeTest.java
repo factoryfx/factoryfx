@@ -42,7 +42,7 @@ public class FactoryPolymorphicAttributeTest {
         polymorphicFactoryExample.reference.set(errorPrinterFactory);
 
         polymorphicFactoryExample.internal().finalise();
-        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference))).get(0));
     }
 
     @Test
@@ -50,9 +50,9 @@ public class FactoryPolymorphicAttributeTest {
         PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
         polymorphicFactoryExample = polymorphicFactoryExample.internal().finalise();
 
-        List<FactoryBase<? extends Printer, ?>> factoryBases = polymorphicFactoryExample.reference.internal_createNewPossibleValues();
+        List<FactoryBase<? extends Printer, ?>> factoryBases = polymorphicFactoryExample.reference.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference));
         Assertions.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
-        Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues()).get(1).getClass());
+        Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference))).get(1).getClass());
     }
 
     @Test
@@ -61,9 +61,9 @@ public class FactoryPolymorphicAttributeTest {
         PolymorphicFactoryExample root = builder.buildTreeUnvalidated();
         root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
 
-        List<FactoryBase<? extends Printer, ?>> factoryBases = root.reference.internal_createNewPossibleValues();
+        List<FactoryBase<? extends Printer, ?>> factoryBases = root.reference.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference));
         Assertions.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
-        Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(root.reference.internal_createNewPossibleValues()).get(1).getClass());
+        Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(root.reference.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference))).get(1).getClass());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class FactoryPolymorphicAttributeTest {
         polymorphicFactoryExample.reference.set(errorPrinterFactory);
 
         polymorphicFactoryExample.internal().finalise();
-        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference))).get(0));
     }
 
     @Test
@@ -186,7 +186,6 @@ public class FactoryPolymorphicAttributeTest {
     @Test
     public void test_referenclass(){
         PolymorphicFactoryExample root = new PolymorphicFactoryExample();
-        FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).addBackReferencesAndReferenceClassToAttributes(root,root);
-        Assertions.assertNull(root.reference.clazz);//Reference class can' be determined from the generic parameter
+        Assertions.assertNull(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference).referenceClass);//Reference class can' be determined from the generic parameter
     }
 }

@@ -16,7 +16,7 @@ public class ExampleDataAll extends FactoryBase<Void,ExampleData> {
     public final ByteAttribute byteAttribute=new ByteAttribute();
     public final BooleanAttribute booleanAttribute=new BooleanAttribute();
     public final LocalDateAttribute localDateAttribute=new LocalDateAttribute();
-    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>(ExampleEnum.class);
+    public final EnumAttribute<ExampleEnum> enumAttribute=new EnumAttribute<>();
     public final CharAttribute charAttribute=new CharAttribute();
     public final LongAttribute longAttribute=new LongAttribute();
     public final StringAttribute stringAttribute=new StringAttribute();
@@ -33,7 +33,7 @@ public class ExampleDataAll extends FactoryBase<Void,ExampleData> {
     public final BigDecimalAttribute bigDecimalAttribute=new BigDecimalAttribute();
     public final FloatAttribute floatAttribute=new FloatAttribute();
     public final StringListAttribute stringListAttribute=new StringListAttribute();
-    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>(ExampleEnum.class);
+    public final EnumListAttribute<ExampleEnum> enumListAttribute=new EnumListAttribute<>();
     public final InstantAttribute instantAttribute=new InstantAttribute();
     public final BigIntegerAttribute bigIntegerAttribute=new BigIntegerAttribute();
     public final FactoryPolymorphicAttribute<Void> factoryPolymorphicAttribute=new FactoryPolymorphicAttribute<>();

@@ -93,7 +93,7 @@ public class DataViewWidget<RS extends FactoryBase<?,RS>,L,F extends FactoryBase
      */
     public void edit(FactoryListAttribute<L,F> attribute){
         editReadOnly(attribute);
-        listEditWidget.setCenter(new FactoryListAttributeEditWidget<>(tableView, dataEditor::navigate, uniformDesign, attribute).createContent());
+        listEditWidget.setCenter(new FactoryListAttributeEditWidget<>(tableView, dataEditor::navigate, uniformDesign, attribute, attribute.internal_getMetadata()).createContent());
     }
 
     public void editReadOnly(FactoryListAttribute<L,F> attribute){

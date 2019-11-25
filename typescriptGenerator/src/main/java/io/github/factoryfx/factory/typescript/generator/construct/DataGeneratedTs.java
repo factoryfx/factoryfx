@@ -2,11 +2,10 @@ package io.github.factoryfx.factory.typescript.generator.construct;
 
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
-import io.github.factoryfx.factory.attribute.types.EnumAttribute;
-import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.typescript.generator.construct.atttributes.AttributeToTsMapperManager;
 import io.github.factoryfx.factory.typescript.generator.ts.*;
@@ -40,37 +39,39 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
 
     public TsFile complete(TsClassConstructed tsClass){
         ArrayList<TsAttribute> attributes = new ArrayList<>();
-        F data = FactoryMetadataManager.getMetadata(clazz).newInstance();
-        FactoryMetadataManager.getMetadata(clazz).setAttributeReferenceClasses(data);
+        FactoryMetadata<R, F> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
 
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeToTsMapperManager.isMappable(attribute.getClass())){
-                attributes.add(getTsAttribute(attributeVariableName,attribute));
+
+
+        factoryMetadata.visitAttributeMetadata((metadata) -> {
+            if (attributeToTsMapperManager.isMappable(metadata.attributeClass)){
+                attributes.add(getTsAttribute(metadata));
             }
         });
 
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeToTsMapperManager.isMappable(attribute.getClass())) {
-                attributes.add(getTsAttributeMetadata(attributeVariableName, attribute));
+        factoryMetadata.visitAttributeMetadata((metadata) -> {
+            if (attributeToTsMapperManager.isMappable(metadata.attributeClass)) {
+                attributes.add(getTsAttributeMetadata(metadata));
             }
         });
+
 
 
 
 
         ArrayList<TsMethod> methods = new ArrayList<>();
 
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeToTsMapperManager.isMappable(attribute.getClass())) {
-                methods.add(getTsAttributeAccessor(attributeVariableName, attribute, tsClass));
+        factoryMetadata.visitAttributeMetadata((metadata) -> {
+            if (attributeToTsMapperManager.isMappable(metadata.attributeClass)) {
+                methods.add(getTsAttributeAccessor(metadata, tsClass));
             }
         });
 
 
-        methods.add(createMapValuesFromJson(data));
-        methods.add(createAddMapValueToJson(data));
-        methods.add(createCollectChildren(data));
-        methods.add(createListAttributeAccessor(data,tsClass));
+        methods.add(createMapValuesFromJson(factoryMetadata));
+        methods.add(createAddMapValueToJson(factoryMetadata));
+        methods.add(createCollectChildren(factoryMetadata));
+        methods.add(createListAttributeAccessor(factoryMetadata,tsClass));
         methods.add(createCreateNewChildFactory());
 
 
@@ -86,11 +87,11 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
     }
 
 
-    private TsMethod createListAttributeAccessor(FactoryBase<?,?> data, TsClassConstructed tsClass) {
+    private TsMethod createListAttributeAccessor(FactoryMetadata<R, F> factoryMetadata, TsClassConstructed tsClass) {
         StringBuilder code=new StringBuilder("let result: AttributeAccessor<any>[]=[];\n");
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeToTsMapperManager.isMappable(attribute.getClass())){
-                code.append("result.push(this.").append(attributeVariableName).append("Accessor());\n");
+        factoryMetadata.visitAttributeMetadata((metadata) -> {
+            if (attributeToTsMapperManager.isMappable(metadata.attributeClass)){
+                code.append("result.push(this.").append(metadata.attributeVariableName).append("Accessor());\n");
             }
         });
         code.append("return result;");
@@ -115,23 +116,23 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
                 new TsMethodResult(new TsTypeClass(dataTsClass)),new TsMethodCode(fromJsonCode, mapValuesFromJsonImports),"public");
     }
 
-    private TsMethod createCollectChildren(FactoryBase<?,?> data) {
+    private TsMethod createCollectChildren(FactoryMetadata<R, F> factoryMetadata) {
         StringBuilder fromJsonCode=new StringBuilder();
         fromJsonCode.append("let result: Array<Data>=[];\n");
         Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attribute instanceof FactoryBaseAttribute){
-                Class referenceClass = ((FactoryBaseAttribute) attribute).internal_getReferenceClass();
+        factoryMetadata.visitAttributeMetadata((metadata) -> {
+            if (FactoryBaseAttribute.class.isAssignableFrom(metadata.attributeClass)){
+                Class referenceClass = metadata.referenceClass;
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("if (this.").append(attributeVariableName).append(") result.push(this.").append(attributeVariableName).append(");\n");
+                fromJsonCode.append("if (this.").append(metadata.attributeVariableName).append(") result.push(this.").append(metadata.attributeVariableName).append(");\n");
                 return;
             }
-            if (attribute instanceof FactoryListBaseAttribute){
-                Class referenceClass = ((FactoryListBaseAttribute) attribute).internal_getReferenceClass();
+            if (FactoryListBaseAttribute.class.isAssignableFrom(metadata.attributeClass)){
+                Class referenceClass = metadata.referenceClass;
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
-                fromJsonCode.append("if (this.").append(attributeVariableName).append(") for (let child of this.").append(attributeVariableName).append(") {result.push(child)};\n");
+                fromJsonCode.append("if (this.").append(metadata.attributeVariableName).append(") for (let child of this.").append(metadata.attributeVariableName).append(") {result.push(child)};\n");
                 return;
             }
         });
@@ -142,12 +143,12 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
                 new TsMethodResult(new TsTypeArray(new TsTypeClass(dataTsClass))),new TsMethodCode(fromJsonCode.toString(), mapValuesFromJsonImports),"protected");
     }
 
-    private TsMethod createMapValuesFromJson(FactoryBase<?,?> data) {
+    private TsMethod createMapValuesFromJson(FactoryMetadata<R, F> factoryMetadata) {
         StringBuilder fromJsonCode=new StringBuilder();
         Set<TsFile> jsonImports = new HashSet<>();
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeToTsMapperManager.isMappable(attribute.getClass())){
-                fromJsonCode.append(attributeToTsMapperManager.getMapFromJsonExpression(attributeVariableName,attribute,jsonImports));
+        factoryMetadata.visitAttributeMetadata((metadata) -> {
+            if (attributeToTsMapperManager.isMappable(metadata.attributeClass)){
+                fromJsonCode.append(attributeToTsMapperManager.getMapFromJsonExpression(metadata,jsonImports));
             }
         });
 
@@ -156,12 +157,12 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
                 new TsMethodResultVoid(),new TsMethodCode(fromJsonCode.toString(), jsonImports),"protected");
     }
 
-    private TsMethod createAddMapValueToJson(FactoryBase<?,?> data) {
+    private TsMethod createAddMapValueToJson(FactoryMetadata<R, F> factoryMetadata) {
         StringBuilder toJsonCode=new StringBuilder();
         Set<TsFile> jsonImports = new HashSet<>();
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
-            if (attributeToTsMapperManager.isMappable(attribute.getClass())){
-                toJsonCode.append(attributeToTsMapperManager.getMapToJsonExpression(attributeVariableName,attribute,jsonImports));
+        factoryMetadata.visitAttributeMetadata((metadata) -> {
+            if (attributeToTsMapperManager.isMappable(metadata.attributeClass)){
+                toJsonCode.append(attributeToTsMapperManager.getMapToJsonExpression(metadata,jsonImports));
             }
         });
         return new TsMethod("mapValuesToJson",
@@ -169,43 +170,40 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
                 new TsMethodResultVoid(),new TsMethodCode(toJsonCode.toString(),jsonImports),"protected");
     }
 
-    private TsAttribute getTsAttribute(String attributeVariableName, Attribute<?, ?> attribute){
-        TsType tsType = getTsType(attribute);
+    private TsAttribute getTsAttribute(AttributeMetadata metadata){
+        TsType tsType = getTsType(metadata);
         if (tsType instanceof TsTypeArray) {
-            return new TsAttribute(attributeVariableName, tsType,false,true,false,List.of());
+            return new TsAttribute(metadata.attributeVariableName, tsType,false,true,false,List.of());
         }
-        return new TsAttribute(attributeVariableName, tsType);
+        return new TsAttribute(metadata.attributeVariableName, tsType);
     }
 
-    private TsMethod getTsAttributeAccessor(String attributeVariableName, Attribute<?, ?> attribute, TsClassConstructed tsClassName) {
-        TsType attributeTsType = getTsType(attribute);
-        String createCode="return new AttributeAccessor<"+ attributeTsType.construct()+">("+tsClassName.getName()+"."+attributeVariableName+"Metadata,this,\""+attributeVariableName+"\");";
-        return new TsMethod(attributeVariableName+"Accessor",
+    private TsMethod getTsAttributeAccessor(AttributeMetadata metadata, TsClassConstructed tsClassName) {
+        TsType attributeTsType = getTsType(metadata);
+        String createCode="return new AttributeAccessor<"+ attributeTsType.construct()+">("+tsClassName.getName()+"."+metadata.attributeVariableName+"Metadata,this,\""+metadata.attributeVariableName+"\");";
+        return new TsMethod(metadata.attributeVariableName+"Accessor",
                 List.of(),
                 new TsMethodResult(new TsTypeClass(attributeAccessorClass, attributeTsType)),new TsMethodCode(createCode),"public");
     }
 
-    private TsAttribute getTsAttributeMetadata(String attributeVariableName, Attribute<?, ?> attribute){
+    private TsAttribute getTsAttributeMetadata(AttributeMetadata metadata){
         ArrayList<TsValue> constructorParameters = new ArrayList<>();
-        constructorParameters.add(new TsValueString(attribute.internal_getPreferredLabelText(Locale.ENGLISH)));
-        constructorParameters.add(new TsValueString(attribute.internal_getPreferredLabelText(Locale.GERMAN)));
-        constructorParameters.add(new TsValueEnum(attributeToTsMapperManager.getAttributeTypeValue(attribute),attributeTypeEnumTsEnum));
-        constructorParameters.add(new TsValueBoolean(!attribute.internal_required()));
-        constructorParameters.add(new TsValueStringArray(getPossibleEnumValues(attribute)));
+        constructorParameters.add(new TsValueString(metadata.labelText.internal_getPreferred(Locale.ENGLISH)));
+        constructorParameters.add(new TsValueString(metadata.labelText.internal_getPreferred(Locale.GERMAN)));
+        constructorParameters.add(new TsValueEnum(attributeToTsMapperManager.getAttributeTypeValue(metadata),attributeTypeEnumTsEnum));
+        constructorParameters.add(new TsValueBoolean(!metadata.required));
+        constructorParameters.add(new TsValueStringArray(getPossibleEnumValues(metadata)));
 
-        return new TsAttribute(attributeVariableName+"Metadata", new TsTypeClass(attributeMetadataTsClass,getTsType(attribute)),true,true,true, constructorParameters);
+        return new TsAttribute(metadata.attributeVariableName+"Metadata", new TsTypeClass(attributeMetadataTsClass,getTsType(metadata)),true,true,true, constructorParameters);
     }
 
-    private TsType getTsType(Attribute<?, ?> attribute){
-        return attributeToTsMapperManager.getTsType(attribute);
+    private TsType getTsType(AttributeMetadata metadata){
+        return attributeToTsMapperManager.getTsType(metadata);
     }
 
-    private List<String> getPossibleEnumValues(Attribute<?, ?> attribute) {
-        if (attribute instanceof EnumAttribute){
-            return ((EnumAttribute<?>)attribute).internal_possibleEnumValues().stream().map(Enum::toString).collect(Collectors.toList());
-        }
-        if (attribute instanceof EnumListAttribute){
-            return ((EnumListAttribute<?>)attribute).internal_possibleEnumValues().stream().map(Enum::toString).collect(Collectors.toList());
+    private List<String> getPossibleEnumValues(AttributeMetadata metadata) {
+        if (metadata.enumClass!=null ){
+            return Arrays.stream(metadata.enumClass.getEnumConstants()).map(Object::toString).collect(Collectors.toList());
         }
         return List.of();
     }

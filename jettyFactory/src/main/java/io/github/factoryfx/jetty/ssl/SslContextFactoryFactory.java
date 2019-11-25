@@ -19,12 +19,12 @@ import java.security.cert.CertificateException;
 
 public class SslContextFactoryFactory<R extends FactoryBase<?, R>> extends SimpleFactoryBase<SslContextFactory, R> {
     public final FileContentAttribute keyStore = new FileContentAttribute().en("keyStore").de("keyStore");
-    public final EnumAttribute<KeyStoreType> keyStoreType = new EnumAttribute<>(KeyStoreType.class).en("keyStoreType").de("keyStoreType");
+    public final EnumAttribute<KeyStoreType> keyStoreType = new EnumAttribute<KeyStoreType>().en("keyStoreType").de("keyStoreType");
     public final StringAttribute keyStorePassword = new StringAttribute().en("keyStorePassword").de("keyStorePassword");
     public final StringAttribute keyPassword = new StringAttribute().en("keyPassword").de("keyPassword").nullable();
 
     public final FileContentAttribute trustStore = new FileContentAttribute().en("trustStore").de("trustStore");
-    public final EnumAttribute<KeyStoreType> trustStoreType = new EnumAttribute<>(KeyStoreType.class).en("trustStoreType").de("trustStoreType");
+    public final EnumAttribute<KeyStoreType> trustStoreType = new EnumAttribute<KeyStoreType>().en("trustStoreType").de("trustStoreType");
     public final StringAttribute trustStorePassword = new StringAttribute().en("trustStorePassword").de("trustStorePassword");
 
     public final StringAttribute certAlias = new StringAttribute().en("certAlias").de("certAlias").nullable();

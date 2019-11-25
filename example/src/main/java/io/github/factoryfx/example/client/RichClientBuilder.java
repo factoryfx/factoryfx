@@ -100,10 +100,8 @@ public class RichClientBuilder {
 
         addViewFactoryAware(factoryBuilder, ConfigurationViewFactory.class, "configuration",FontAwesome.Glyph.COG,"Configuration","Konfiguration");
         addView(factoryBuilder, DashboardViewFactory.class, "dashboard",FontAwesome.Glyph.COG,"Dashboard","Dashboard");
-        addView(factoryBuilder, HistoryViewFactory.class, "history",FontAwesome.Glyph.COG,"Configuration","Historie");
+        addView(factoryBuilder, HistoryViewFactory.class, "history",FontAwesome.Glyph.COG,"History","Historie");
         addViewFactoryAware(factoryBuilder, ProductsViewFactory.class, "products",FontAwesome.Glyph.COG,"Products","Produkte");
-
-
 
         factoryBuilder.addFactoryUnsafe(FactoryEditViewFactory.class,Scope.PROTOTYPE, context ->{
             FactoryEditViewFactory<JettyServerRootFactory> factoryEditViewFactory = new FactoryEditViewFactory<>();

@@ -11,7 +11,7 @@ public class AttributeVisualisationBuilderTest {
     public void test_canEdit(){
         AttributeVisualisationMappingBuilder attributeEditor = new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build()));
 
-        Assertions.assertNotNull(attributeEditor.getAttributeVisualisation(new StringAttribute(),null,null));
+        Assertions.assertNotNull(attributeEditor.getAttributeVisualisation(new StringAttribute(),null,null,null));
     }
 
 }

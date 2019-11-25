@@ -1,7 +1,6 @@
 package io.github.factoryfx.docu.restserver;
 
 import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;

@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
 import io.github.factoryfx.factory.typescript.generator.ts.TsType;
 import io.github.factoryfx.factory.typescript.generator.ts.TsTypeClass;
@@ -16,17 +17,17 @@ public class ViewAttributeToTsMapper implements AttributeToTsMapper {
     }
 
 
-    public TsType getTsType(Attribute<?,?> attribute){
+    public TsType getTsType(AttributeMetadata metadata){
         return dataType;
     }
 
     @Override
-    public String getMapFromJsonExpression(String attributeVariableName, Attribute<?, ?> attribute, Set<TsFile> jsonImports) {
+    public String getMapFromJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
         return "";
     }
 
     @Override
-    public String getMapToJsonExpression(String attributeVariableName, Attribute<?, ?> attribute, Set<TsFile> jsonImports) {
+    public String getMapToJsonExpression(AttributeMetadata metadata, Set<TsFile> jsonImports) {
         return "";
     }
 }

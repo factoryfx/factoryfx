@@ -106,13 +106,6 @@ public class AddFactoryViewAttributeMigrationTest {
             System.out.println(ObjectMapperBuilder.build().writeValueAsString(builder.buildTree().internal().createDataStorageMetadataDictionaryFromRoot()));
 
 
-new NestedFactory().internal().visitAttributesFlat(new AttributeVisitor() {
-    @Override
-    public void accept(String attributeVariableName, Attribute<?, ?> attribute) {
-        System.out.println(attribute);
-    }
-});
-
             Microservice<Void, ServerFactoryOld> msOld = builder.microservice().withFilesystemStorage(folder).build();
             msOld.start();
             msOld.stop();

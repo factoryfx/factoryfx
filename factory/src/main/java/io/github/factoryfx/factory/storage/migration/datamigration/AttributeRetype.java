@@ -18,9 +18,9 @@ public class AttributeRetype<R extends FactoryBase<?,R>,L, F extends FactoryBase
 
         F data = FactoryMetadataManager.getMetadata(dataClass).newInstance();
         Attribute<?, ?> newAttribute = attributeNameProvider.apply(data);
-        data.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+        data.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
             if (attribute==newAttribute){
-                attributeName = attributeVariableName;
+                attributeName = attributeMetadata.attributeVariableName;
             }
         });
         if (this.attributeName ==null){

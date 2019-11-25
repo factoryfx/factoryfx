@@ -13,6 +13,7 @@ import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.AttributeValidation;
@@ -630,7 +631,11 @@ public class DataTest {
         ExampleDataB copy = exampleDataB.utility().semanticCopy();
         data.referenceListAttribute.add(copy);
 
-        Assertions.assertEquals(2,data.referenceAttribute.internal_possibleValues().size());
+        data.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
+            if (attributeMetadata.attributeVariableName.equals("referenceAttribute")){
+                Assertions.assertEquals(2,data.referenceAttribute.internal_possibleValues(attributeMetadata).size());
+            }
+        });
     }
 
     @Test

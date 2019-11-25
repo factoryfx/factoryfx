@@ -138,7 +138,7 @@ public class MicroserviceBuilder<L,R extends FactoryBase<L,R>> {
     /** @see #withRestoreAttributeMigration(Class, AttributePathTarget, BiConsumer)
      *
      * @param clazz value class
-     * @param pathCreator workaround for generics problems e.g.: (path)->path.pathElement("x").attribute("attribute")
+     * @param pathCreator workaround for generics problems e.g.: {@code (path)->path.pathElement("x").attribute("attribute")}
      * @param setter setter
      * @param <AV> attribute value
      * @return builder

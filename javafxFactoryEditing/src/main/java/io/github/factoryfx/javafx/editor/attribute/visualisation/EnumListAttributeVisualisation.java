@@ -1,6 +1,7 @@
 package io.github.factoryfx.javafx.editor.attribute.visualisation;
 
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.editor.attribute.ListAttributeVisualisation;
 import io.github.factoryfx.javafx.util.CheckComboBoxHelper;
@@ -12,8 +13,10 @@ import javafx.util.StringConverter;
 import org.controlsfx.control.CheckComboBox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnumListAttributeVisualisation<E extends Enum<E>> extends ListAttributeVisualisation<E, EnumListAttribute<E>> {
 
@@ -21,10 +24,11 @@ public class EnumListAttributeVisualisation<E extends Enum<E>> extends ListAttri
     private final StringConverter<E> stringConverter;
     private final EnumListAttribute<E> enumListAttribute;
 
-    public EnumListAttributeVisualisation(EnumListAttribute<E> enumListAttribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
+    @SuppressWarnings("unchecked")
+    public EnumListAttributeVisualisation(EnumListAttribute<E> enumListAttribute, AttributeMetadata attributeMetadata, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
         super(enumListAttribute,validationDecoration);
         this.enumListAttribute = enumListAttribute;
-        this.possibleEnumConstants = enumListAttribute.internal_possibleEnumValues();
+        this.possibleEnumConstants = Arrays.stream(attributeMetadata.enumClass.getEnumConstants()).map(e->(E)e).collect(Collectors.toList());
         this.stringConverter = new StringConverter<>() {
             @Override
             public String toString(E enumValue) {

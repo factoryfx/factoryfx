@@ -1,10 +1,6 @@
 package io.github.factoryfx.docu.initializr;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
-
-import java.lang.SuppressWarnings;
-
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 
@@ -15,12 +11,11 @@ public class ServerBuilder {
 
   public ServerBuilder() {
     this.builder= new FactoryTreeBuilder<>(ServerRootFactory.class);
-
-    new SimpleJettyServerBuilder<ServerRootFactory>()
-            .withHost("localhost").withPort(8080)
-            .internal_build(builder);
-
-    this.builder.addFactory(ExampleResourceFactory.class,Scope.SINGLETON);
+    this.builder.addBuilder((ctx)->
+                    new SimpleJettyServerBuilder<ServerRootFactory>()
+                            .withHost("localhost").withPort(8080)
+                            .withResource(ctx.get(ExampleResourceFactory.class)));
+    this.builder.addSingleton(ExampleResourceFactory.class);
     // register more factories here
   }
 

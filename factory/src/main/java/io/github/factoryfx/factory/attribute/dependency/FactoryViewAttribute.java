@@ -68,11 +68,6 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
     }
 
     @Override
-    public void internal_setReferenceClass(Class<?> clazz) {
-        //nothing
-    }
-
-    @Override
     public void internal_copyTo(AttributeCopy<F> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
 
     }

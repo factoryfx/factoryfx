@@ -24,7 +24,7 @@ public class FactoryPolymorphicListAttributeTest {
         polymorphicFactoryExample.referenceList.add(errorPrinterFactory);
         polymorphicFactoryExample.internal().finalise();
 
-        Assertions.assertEquals(polymorphicFactoryExample.referenceList.get(0),new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+        Assertions.assertEquals(polymorphicFactoryExample.referenceList.get(0),new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference))).get(0));
     }
 
     @Test
@@ -32,9 +32,9 @@ public class FactoryPolymorphicListAttributeTest {
         PolymorphicFactoryExample polymorphicFactoryExample = new PolymorphicFactoryExample();
         polymorphicFactoryExample.internal().finalise();
 
-        List<FactoryBase<? extends Printer, ?>> factoryBases = polymorphicFactoryExample.referenceList.internal_createNewPossibleValues();
+        List<FactoryBase<? extends Printer, ?>> factoryBases = polymorphicFactoryExample.referenceList.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.referenceList));
         Assertions.assertEquals(ErrorPrinterFactory.class,new ArrayList<>(factoryBases).get(0).getClass());
-        Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues()).get(1).getClass());
+        Assertions.assertEquals(OutPrinterFactory.class,new ArrayList<>(polymorphicFactoryExample.reference.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference))).get(1).getClass());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class FactoryPolymorphicListAttributeTest {
         polymorphicFactoryExample = polymorphicFactoryExample.internal().finalise();
         FactoryPolymorphicAttributeTest.ErrorPrinterFactory2 errorPrinterFactory = new FactoryPolymorphicAttributeTest.ErrorPrinterFactory2();
         polymorphicFactoryExample.referenceList.add(errorPrinterFactory);
-        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues()).get(0));
+        Assertions.assertEquals(errorPrinterFactory,new ArrayList<>(polymorphicFactoryExample.reference.internal_possibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.reference))).get(0));
     }
 
     public static class FactoryPolymorphic extends SimpleFactoryBase<Void,FactoryPolymorphic> {
@@ -102,13 +102,11 @@ public class FactoryPolymorphicListAttributeTest {
         FactoryTreeBuilder<Object,PolymorphicFactoryExample> builder = new FactoryTreeBuilder<>(PolymorphicFactoryExample.class, ctx -> new PolymorphicFactoryExample());
         PolymorphicFactoryExample root = builder.buildTreeUnvalidated();
         root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
-        root.referenceList.internal_createNewPossibleValues();
+        root.referenceList.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.referenceList));
     }
 
     @Test
     public void test_referenclass(){
-        PolymorphicFactoryExample root = new PolymorphicFactoryExample();
-        FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).addBackReferencesAndReferenceClassToAttributes(root,root);
-        Assertions.assertNull(root.referenceList.clazz);//Reference class can' be determined from the generic parameter
+        Assertions.assertNull(FactoryMetadataManager.getMetadata(PolymorphicFactoryExample.class).getAttributeMetadata(f->f.referenceList).referenceClass);//Reference class can' be determined from the generic parameter
     }
 }

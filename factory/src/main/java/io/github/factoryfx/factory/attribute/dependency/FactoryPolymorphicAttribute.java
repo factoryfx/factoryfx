@@ -80,10 +80,4 @@ public class FactoryPolymorphicAttribute<L> extends FactoryBaseAttribute<L,Facto
         return possibleFactoriesClasses;
     }
 
-
-    @Override
-    public void internal_setReferenceClass(Class<?> clazz) {
-        //nothing, reference class is not part of generic parameter
-    }
-
 }
