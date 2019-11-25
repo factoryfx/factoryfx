@@ -34,7 +34,7 @@
     ```java
     addFactory(JettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
                 .withHostWildcard()
-                .withResource(ctx.get(ResourceFactory.class));
+                .withResource(ctx.get(ResourceFactory.class))
                 .build());
     ```
     **new**
@@ -48,7 +48,7 @@
     ```java
     addFactory(DerivedJettyServerFactory.class, Scope.SINGLETON, context -> new JettyServerBuilder<ServerFactory>()
                 .withHostWildcard()
-                .withResource(ctx.get(ResourceFactory.class)).
+                .withResource(ctx.get(ResourceFactory.class))
                 .build());
     ```
     **new**
