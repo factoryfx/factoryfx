@@ -1,22 +1,36 @@
 package io.github.factoryfx.jetty.builder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.builder.*;
-import io.github.factoryfx.jetty.*;
-import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.util.thread.ThreadPool;
-import org.glassfish.jersey.logging.LoggingFeature;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.Servlet;
-import javax.ws.rs.ext.ExceptionMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.zip.Deflater;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.Servlet;
+import javax.ws.rs.ext.ExceptionMapper;
+
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.util.thread.ThreadPool;
+import org.glassfish.jersey.logging.LoggingFeature;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.builder.FactoryContext;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.builder.NestedBuilder;
+import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.GzipHandlerFactory;
+import io.github.factoryfx.jetty.HandlerCollectionFactory;
+import io.github.factoryfx.jetty.HttpServerConnectorFactory;
+import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.ServletAndPathFactory;
+import io.github.factoryfx.jetty.ServletContextHandlerFactory;
+import io.github.factoryfx.jetty.ThreadPoolFactory;
+import io.github.factoryfx.jetty.UpdateableServletFactory;
+import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
 
 /**
  * The builder builds the factory structure for a jetty server not the jetty liveobject<br>
@@ -39,7 +53,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     private List<ServerConnectorBuilder<R>> serverConnectorBuilders =new ArrayList<>();
     private ResourceBuilder<R> resourceBuilder;
     private List<ResourceBuilder<R>> resourceBuilders =new ArrayList<>();
-    private Consumer<JR> additionalConfiguration;
+    private Consumer<JR> additionalConfiguration = jr-> {};
 
     private final FactoryTemplateId<ThreadPoolFactory<R>> threadPoolFactoryTemplateId;
     private final FactoryTemplateId<HandlerCollectionFactory<R>> handlerCollectionFactoryTemplateId;
@@ -141,10 +155,20 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     /**
      * customize the gzipHandler setup
      * @param gzipHandlerCustomizer customizer consumer
-     * @return buildser
+     * @return builder
      */
     public JettyServerBuilder<R, JR> withGzipHandlerCustomizer(Consumer<GzipHandlerFactory<R>> gzipHandlerCustomizer) {
         this.gzipHandlerCustomizer = gzipHandlerCustomizer;
+        return this;
+    }
+
+    /**
+     * customize the jetty server
+     * @param config customizer consumer
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withSpecificConfiguration(Consumer<JR> config) {
+        this.additionalConfiguration = config;
         return this;
     }
 
@@ -157,6 +181,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     public void internal_build(FactoryTreeBuilder<?,R> builder){
         builder.addFactory(rootTemplateId, Scope.SINGLETON, (FactoryContext<R> ctx) ->{
             JR jettyServerFactory=jettyRootCreator.get();
+            additionalConfiguration.accept(jettyServerFactory);
             FactoryBase<ThreadPool, ?> factoryBase = ctx.get(threadPoolFactoryTemplateId);
             jettyServerFactory.threadPool.set(factoryBase);
             for (ServerConnectorBuilder<R> connectorBuilder : serverConnectorBuilders) {
@@ -164,10 +189,6 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             }
 
             jettyServerFactory.handler.set(ctx.get(handlerCollectionFactoryTemplateId));
-
-            if (additionalConfiguration!=null) {
-                additionalConfiguration.accept(jettyServerFactory);
-            }
             return jettyServerFactory;
         });
 
@@ -370,17 +391,5 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         getDefaultJersey().withExceptionMapper(exceptionMapper);
         return this;
     }
-
-    /**
-    * customize the jetty server
-    * @param config customizer consumer
-    * @return builder
-     */
-    public JettyServerBuilder<R, JR> withSpecificConfiguration(Consumer<JR> config) {
-        additionalConfiguration=config;
-        return this;
-    }
-
-
 
 }
