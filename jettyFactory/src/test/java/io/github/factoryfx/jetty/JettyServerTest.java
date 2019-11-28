@@ -334,7 +334,7 @@ public class JettyServerTest {
         });
         JettyServerRootFactory root = builder.buildTreeUnvalidated();
 
-        JettyServerRootFactory rebuildRoot = builder.rebuildTreeUnvalidated(root);
+        JettyServerRootFactory rebuildRoot = builder.rebuildTreeUnvalidated(root.internal().collectChildrenDeep());
 
 
         DataMerger<JettyServerRootFactory> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
