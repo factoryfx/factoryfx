@@ -123,7 +123,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
 
     /**
-     * workaround for factories with generic Parameter e.g. {@code FactoryX<R>}
+     * workaround for factories with generic Parameter e.g. FactoryX{@literal <}R{@literal >},  used in combination with {@link FactoryContext#getUnsafe(Class)}
      * @param templateId templateId
      * @param scope scope
      * @param creator creator
@@ -134,20 +134,47 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         factoryContext.addFactoryCreator(new FactoryCreator(templateId,scope,creator));
     }
 
+    /**
+     * @see #addFactoryUnsafe(FactoryTemplateId, Scope, Function)
+     * @param clazz clazz
+     * @param scope scope
+     * @param creator creator
+     * @param <F> factory
+     */
     @SuppressWarnings("unchecked")
     public <F extends FactoryBase<?,R>> void addFactoryUnsafe(Class<?> clazz, Scope scope, Function<FactoryContext<R>, F> creator){
         addFactoryUnsafe(new FactoryTemplateId(clazz,null),scope,creator);
     }
 
+    /**
+     * @see #addFactoryUnsafe(FactoryTemplateId, Scope, Function)
+     * @param name
+     * @param scope
+     * @param creator
+     * @param <F> factory
+     */
     public <F extends FactoryBase<?,R>> void addFactoryUnsafe(String name, Scope scope, Function<FactoryContext<R>, F> creator){
         addFactoryUnsafe(new FactoryTemplateId<>(null,name),scope,creator);
     }
 
+    /**
+     * @see #addFactoryUnsafe(FactoryTemplateId, Scope, Function)
+     * @param clazz clazz
+     * @param name name
+     * @param scope scope
+     * @param creator creator
+     * @param <F> factory
+     */
     @SuppressWarnings("unchecked")
     public <F extends FactoryBase<?,R>> void addFactoryUnsafe(Class<?> clazz, String name, Scope scope, Function<FactoryContext<R>, F> creator){
         addFactoryUnsafe(new FactoryTemplateId(clazz,name),scope,creator);
     }
 
+    /**
+     * @see #addFactoryUnsafe(FactoryTemplateId, Scope, Function)
+     * @param clazz clazz
+     * @param scope scope
+     */
     @SuppressWarnings("unchecked")
     public void addFactoryUnsafe(Class<?> clazz, Scope scope){
         addFactoryUnsafe(clazz,scope,new DefaultCreator(clazz));
@@ -271,7 +298,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     public MicroserviceBuilder<L,R> microservice(Consumer<R> mocker){
         R root = this.buildTree();
         mocker.accept(root);
-        return new MicroserviceBuilder<>((Class<R>) this.rootTemplateId.clazz, root,this,ObjectMapperBuilder.build());
+        return new MicroserviceBuilder<>(this.rootTemplateId.clazz, root,this,ObjectMapperBuilder.build());
     }
 
 
@@ -280,13 +307,22 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         List<FactoryBase<?, ?>> newBuild=new ArrayList<>();
     }
 
-    public R rebuildTreeUnvalidated(R root) {
+    public boolean isRebuildAble(List<FactoryBase<?, R>> existingFactoryBases){
+        for (FactoryBase<?, R> factory : existingFactoryBases) {
+            if (factory.internal().getTreeBuilderName()==null &&  !factory.internal().isTreeBuilderClassUsed()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public R rebuildTreeUnvalidated(List<FactoryBase<?, R>> existingFactoryBases) {
         factoryContext.reset();
         rootFactory=null;
         R rootRebuild = this.buildTreeUnvalidated();
 
         Map<FactoryTemplateId,RebuildGroup> templateToGroup = new HashMap<>();
-        for (FactoryBase<?, R> factory : root.internal().collectChildrenDeep()) {
+        for (FactoryBase<?, R> factory : existingFactoryBases) {
             FactoryTemplateId<? extends FactoryBase<?, R>> factoryBaseFactoryTemplateId = new FactoryTemplateId<>(factory);
             if (!templateToGroup.containsKey(factoryBaseFactoryTemplateId)){
                 templateToGroup.put(factoryBaseFactoryTemplateId,new RebuildGroup());

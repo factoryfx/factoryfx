@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
-import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisation;

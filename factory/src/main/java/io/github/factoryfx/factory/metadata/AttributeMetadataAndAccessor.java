@@ -1,7 +1,6 @@
 package io.github.factoryfx.factory.metadata;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.Attribute;
 
 public class AttributeMetadataAndAccessor<F extends FactoryBase<?,?>,V> {
 

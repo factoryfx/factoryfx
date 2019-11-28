@@ -1,6 +1,5 @@
 package io.github.factoryfx.factory.attribute.types;
 
-import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

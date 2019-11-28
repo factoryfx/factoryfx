@@ -4,12 +4,6 @@ import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.metadata.AttributeFieldAccessor;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
 
 public class ExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,ExampleFactoryA> {
     public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1").nullable();

@@ -576,4 +576,52 @@ public class FactoryTreeBuilderTest {
         });
     }
 
+
+    @Test
+    public void test_isRebuildAble_happycase(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceListAttribute.set(context.getList(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class));
+            factory.referenceAttribute.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new io.github.factoryfx.factory.testfactories.ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryC factory = new io.github.factoryfx.factory.testfactories.ExampleFactoryC();
+            return factory;
+        });
+
+
+        Assertions.assertTrue(factoryTreeBuilder.isRebuildAble(factoryTreeBuilder.buildTreeUnvalidated().internal().collectChildrenDeep()));
+    }
+
+    @Test
+    public void test_isRebuildAble_bad(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceListAttribute.set(context.getList(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class));
+            factory.referenceAttribute.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(io.github.factoryfx.factory.testfactories.ExampleFactoryB.class, Scope.PROTOTYPE, context -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new io.github.factoryfx.factory.testfactories.ExampleFactoryB();
+            factory.referenceAttributeC.set(context.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addFactory(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class, Scope.PROTOTYPE, context -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryC factory = new io.github.factoryfx.factory.testfactories.ExampleFactoryC();
+            return factory;
+        });
+
+
+        ExampleFactoryA createdWithoutBuilder = new ExampleFactoryA();
+        createdWithoutBuilder.referenceAttribute.set(new ExampleFactoryB());
+        createdWithoutBuilder.internal().finalise();
+        Assertions.assertFalse(factoryTreeBuilder.isRebuildAble(createdWithoutBuilder.internal().collectChildrenDeep()));
+    }
+
 }

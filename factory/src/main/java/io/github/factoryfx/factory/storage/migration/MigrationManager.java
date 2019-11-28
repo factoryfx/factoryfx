@@ -92,24 +92,9 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         }
 
         dataStorageMetadataDictionary.markRemovedAttributes();
-
         dataStorageMetadataDictionary.markRetypedAttributes();
-        for (DataJsonNode dataJsonNode : rootDataJson.collectChildrenFromRoot()) {
-            DataStorageMetadata dataStorageMetadata = dataStorageMetadataDictionary.getDataStorageMetadata(dataJsonNode.getDataClassName());
-            for (String attribute : dataJsonNode.getAttributes()) {
-                if (dataStorageMetadata!=null && dataStorageMetadata.getAttribute(attribute).isRetyped()){
-                    dataJsonNode.setAttributeValue(attribute,null);
-                }
-            }
-        }
 
-//        for (DataMigration migration : retypeAttributeMigrations) {
-//            if (migration.canMigrate(dataStorageMetadataDictionary)) {
-//                migration.migrate(dataJsonNodes);
-//                migration.updateDataStorageMetadataDictionary(dataStorageMetadataDictionary);
-//            }
-//        }
-
+        //TODO removed classes
 
         R root;
         try {

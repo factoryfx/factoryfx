@@ -1,6 +1,7 @@
 package io.github.factoryfx.server;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -127,22 +128,25 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
             R initialData = dataStorage.getInitialData();
             if (initialData!=null){
                 initialData.internal().finalise();
-                R rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(initialData);
-                DataMerger<R> merge = new DataMerger<>(currentFactoryRoot,initialData,rebuildRoot);
-                MergeDiffInfo<R> mergeDiffInfo = merge.createMergeResult((p) -> true).executeMerge();
+                List<FactoryBase<?, R>> initialFactoryBases = initialData.internal().collectChildrenDeep();
+                if (factoryTreeBuilder.isRebuildAble(initialFactoryBases)){
+                    R rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(initialFactoryBases);
+                    DataMerger<R> merge = new DataMerger<>(currentFactoryRoot,initialData,rebuildRoot);
+                    MergeDiffInfo<R> mergeDiffInfo = merge.createMergeResult((p) -> true).executeMerge();
 
-                if (mergeDiffInfo.successfullyMerged()){
-                    if (!mergeDiffInfo.mergeInfos.isEmpty()){
-                        DataUpdate<R> dataUpdate = new DataUpdate<>(currentFactoryRoot,"System","FactoryTreeBuilder update",currentFactory.id);
-                        dataStorage.updateCurrentData(dataUpdate,new UpdateSummary(mergeDiffInfo.mergeInfos));
-                    }
-                } else {
-                    logger.warn("can't apply changes from FactoryTreeBuilder");
+                    if (mergeDiffInfo.successfullyMerged()){
+                        if (!mergeDiffInfo.mergeInfos.isEmpty()){
+                            DataUpdate<R> dataUpdate = new DataUpdate<>(currentFactoryRoot,"System","FactoryTreeBuilder update",currentFactory.id);
+                            dataStorage.updateCurrentData(dataUpdate,new UpdateSummary(mergeDiffInfo.mergeInfos));
+                        }
+                    } else {
+                        logger.warn("can't apply changes from FactoryTreeBuilder");
 
-                    Map<UUID, FactoryBase<?, R>> oldMap = currentFactoryRoot.internal().collectChildFactoryMap();
-                    Map<UUID, FactoryBase<?, R>> newMap = currentFactoryRoot.internal().collectChildFactoryMap();
-                    for (AttributeDiffInfo conflictInfo : mergeDiffInfo.conflictInfos) {
-                        logger.warn("Conflict "+ conflictInfo.getDiffDisplayText(oldMap,newMap));
+                        Map<UUID, FactoryBase<?, R>> oldMap = currentFactoryRoot.internal().collectChildFactoryMap();
+                        Map<UUID, FactoryBase<?, R>> newMap = currentFactoryRoot.internal().collectChildFactoryMap();
+                        for (AttributeDiffInfo conflictInfo : mergeDiffInfo.conflictInfos) {
+                            logger.warn("Conflict "+ conflictInfo.getDiffDisplayText(oldMap,newMap));
+                        }
                     }
                 }
             }

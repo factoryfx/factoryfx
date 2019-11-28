@@ -11,7 +11,7 @@ import org.eclipse.jetty.server.Server;
 
 public class ServerBuilder {
 
-    public FactoryTreeBuilder<Server, JettyServerRootFactory> builder(){
+    public static FactoryTreeBuilder<Server, JettyServerRootFactory> build(){
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
                     .withHost("localhost").withPort(8089)
                     .withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))

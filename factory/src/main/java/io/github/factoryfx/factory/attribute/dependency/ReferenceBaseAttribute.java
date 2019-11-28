@@ -6,7 +6,6 @@ import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
-import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 
 import java.util.*;
 import java.util.function.BiConsumer;

@@ -4,10 +4,6 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.util.LanguageText;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class AttributeMetadata {
 
     public final String attributeVariableName;

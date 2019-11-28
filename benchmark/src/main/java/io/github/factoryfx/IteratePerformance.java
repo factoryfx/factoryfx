@@ -1,12 +1,8 @@
 package io.github.factoryfx;
 
 import io.github.factoryfx.factory.AttributeVisitor;
-import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.concurrent.TimeUnit;

@@ -577,12 +577,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         Map<Attribute<?,?>,AttributeMetadata> attributeToMetadata = new HashMap<>();
-        this.visitAttributesFlat(new AttributeVisitor() {
-            @Override
-            public void accept(AttributeMetadata attributeMetadata, Attribute attribute) {
-                attributeToMetadata.put(attribute,attributeMetadata);
-            }
-        });
+        this.visitAttributesFlat((attributeMetadata, attribute) -> attributeToMetadata.put(attribute,attributeMetadata));
         return attributeListGroupedSupplier.apply(attribute -> new AttributeAndMetadata(attribute, attributeToMetadata.get(attribute)));
     }
 

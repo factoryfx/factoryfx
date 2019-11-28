@@ -229,8 +229,16 @@ public class DataJsonNode {
                 this.jsonNode.remove(attributeVariableName);
             }
         }
-
     }
+
+    public void applyRetypedAttribute(DataStorageMetadataDictionary dataStorageMetadataDictionary){
+        for (String attributeVariableName : this.getAttributes()) {
+            if (dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeVariableName)){
+                this.setAttributeValue(attributeVariableName,null);
+            }
+        }
+    }
+
 
     /**
      * fix objects in removed attributes.
@@ -243,10 +251,17 @@ public class DataJsonNode {
      */
     public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
         replaceIdRefsWidthFactoriesDeep(this.collectChildrenMapFromRoot());
+
+        //TODO fix structure confusing that this happens in this method
         //remove deleted attributes
         for (DataJsonNode dataJsonNode : this.collectChildrenFromRoot()) {
             dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
         }
+        //remove retyped attributes
+        for (DataJsonNode dataJsonNode : this.collectChildrenFromRoot()) {
+            dataJsonNode.applyRetypedAttribute(dataStorageMetadataDictionary);
+        }
+
 
         //reset the ids, (first occurrence is the object following are id references)
         this.replaceDuplicateFactoriesWidthIdDeep(new HashSet<>());

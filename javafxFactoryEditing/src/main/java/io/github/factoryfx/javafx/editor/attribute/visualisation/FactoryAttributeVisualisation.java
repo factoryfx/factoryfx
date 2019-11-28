@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;

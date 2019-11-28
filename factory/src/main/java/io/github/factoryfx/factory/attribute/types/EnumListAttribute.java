@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.factoryfx.factory.attribute.ValueListAttribute;
 import io.github.factoryfx.factory.util.LanguageText;
 
-import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

@@ -1,6 +1,5 @@
 package io.github.factoryfx.factory.fastfactory;
 
-import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeCopy;

@@ -37,7 +37,7 @@ public class ExampleMain extends Application {
     @Override
     public void start(Stage primaryStage){
 
-        FactoryTreeBuilder<Server, JettyServerRootFactory> serverBuilder = new ServerBuilder().builder();
+        FactoryTreeBuilder<Server, JettyServerRootFactory> serverBuilder = ServerBuilder.build();
         MicroserviceBuilder<Server, JettyServerRootFactory> builder = serverBuilder.microservice().
                 withExceptionHandler(new LoggingFactoryExceptionHandler<>(new ResettingHandler<Server, JettyServerRootFactory>())).withFilesystemStorage(Path.of("example/storage"));
         Microservice<Server, JettyServerRootFactory> microservice = builder.build();

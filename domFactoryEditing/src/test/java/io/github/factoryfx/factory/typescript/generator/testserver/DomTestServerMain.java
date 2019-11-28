@@ -35,14 +35,6 @@ public class DomTestServerMain {
         Microservice<Server, TestServerFactory> microservice = new TestServerBuilder().create().microservice().build();
         microservice.start();
 
-//        HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-//        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8005/Resource")).GET().build();
-//        try {
-//            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//            System.out.println("Server responded: "+response.body());
-//        } catch (IOException | InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
         Desktop desktop = Desktop.getDesktop();
         try {
             desktop.browse(new URI("http://localhost:8005/microservice/index.html"));

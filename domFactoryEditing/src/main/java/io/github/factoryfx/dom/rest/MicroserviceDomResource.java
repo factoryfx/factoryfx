@@ -5,7 +5,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.FactoryBase;

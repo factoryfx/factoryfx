@@ -35,7 +35,7 @@ public class FactoryTreeBuilderReproducibilityTest {
 
         ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
 
-        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root);
+        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root.internal().collectChildrenDeep());
 
 
         DataMerger<ExampleFactoryA> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
@@ -59,7 +59,7 @@ public class FactoryTreeBuilderReproducibilityTest {
 
         ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
 
-        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root);
+        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root.internal().collectChildrenDeep());
 
 
         DataMerger<ExampleFactoryA> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
@@ -84,7 +84,7 @@ public class FactoryTreeBuilderReproducibilityTest {
         });
 
         ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
-        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root);
+        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root.internal().collectChildrenDeep());
 
         DataMerger<ExampleFactoryA> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
         MergeDiffInfo<ExampleFactoryA> exampleFactoryAMergeDiffInfo = merge.mergeIntoCurrent((p) -> true);
@@ -106,7 +106,7 @@ public class FactoryTreeBuilderReproducibilityTest {
 
 
         ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
-        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root);
+        ExampleFactoryA rebuildRoot = factoryTreeBuilder.rebuildTreeUnvalidated(root.internal().collectChildrenDeep());
 
         DataMerger<ExampleFactoryA> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
         MergeDiffInfo<ExampleFactoryA> exampleFactoryAMergeDiffInfo = merge.mergeIntoCurrent((p) -> true);
@@ -147,7 +147,7 @@ public class FactoryTreeBuilderReproducibilityTest {
 
 
         ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
-        ExampleFactoryA rebuildRoot = factoryTreeBuilder2.rebuildTreeUnvalidated(root);
+        ExampleFactoryA rebuildRoot = factoryTreeBuilder2.rebuildTreeUnvalidated(root.internal().collectChildrenDeep());
 
         DataMerger<ExampleFactoryA> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
         MergeDiffInfo<ExampleFactoryA> exampleFactoryAMergeDiffInfo = merge.mergeIntoCurrent((p) -> true);
@@ -183,7 +183,7 @@ public class FactoryTreeBuilderReproducibilityTest {
 
 
         ExampleFactoryA root = factoryTreeBuilder.buildTreeUnvalidated();
-        ExampleFactoryA rebuildRoot = factoryTreeBuilder2.rebuildTreeUnvalidated(root);
+        ExampleFactoryA rebuildRoot = factoryTreeBuilder2.rebuildTreeUnvalidated(root.internal().collectChildrenDeep());
 
         DataMerger<ExampleFactoryA> merge = new DataMerger<>(root,root.internal().copy(),rebuildRoot);
         MergeDiffInfo<ExampleFactoryA> exampleFactoryAMergeDiffInfo = merge.mergeIntoCurrent((p) -> true);

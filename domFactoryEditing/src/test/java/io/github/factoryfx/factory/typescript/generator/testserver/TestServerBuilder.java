@@ -21,21 +21,26 @@ public class TestServerBuilder {
             testServerFactory.server.set(ctx.getUnsafe(JettyServerFactory.class));
             testServerFactory.stringListAttribute.add("1111");
             testServerFactory.stringListAttribute.add("22222");
-            testServerFactory.exampleFactory.set(new ExampleFactory());
+            testServerFactory.exampleFactory.set(ctx.get(ExampleFactory.class));
             testServerFactory.encryptedStringAttribute.set(new EncryptedString("example124", "jNNxjStGsrwgu+4G5DYc9Q=="));
             return testServerFactory;
         });
         builder.addBuilder(ctx-> new SimpleJettyServerBuilder<TestServerFactory>()
                 .withHost("localhost").withPort(8005).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
         );
-
+        builder.addSingleton(ExampleFactory.class, ctx-> new ExampleFactory());
 
         builder.addFactoryUnsafe(MicroserviceDomResourceFactory.class, Scope.SINGLETON, ctx->{
             MicroserviceDomResourceFactory<TestServerFactory> microserviceDomResourceFactory = new MicroserviceDomResourceFactory<>();
+            FilesystemStaticFileAccessFactory<TestServerFactory> unsafe = ctx.getUnsafe(FilesystemStaticFileAccessFactory.class);
+            microserviceDomResourceFactory.staticFileAccess.set(unsafe);
+            return microserviceDomResourceFactory;
+        });
+
+        builder.addFactoryUnsafe(FilesystemStaticFileAccessFactory.class, Scope.SINGLETON, ctx-> {
             FilesystemStaticFileAccessFactory<TestServerFactory> filesystemStaticFileAccessFactory = new FilesystemStaticFileAccessFactory<>();
             filesystemStaticFileAccessFactory.basePath.set(new File("./src/main/resources/js/").getAbsolutePath()+"/");
-            microserviceDomResourceFactory.staticFileAccess.set(filesystemStaticFileAccessFactory);
-            return microserviceDomResourceFactory;
+            return filesystemStaticFileAccessFactory;
         });
 
         return builder;
