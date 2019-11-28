@@ -161,7 +161,7 @@ class DataJsonNodeTest {
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
-        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+        dataJsonNode.fixIdsDeepFromRoot(dataJsonNode.collectChildrenMapFromRoot());
     }
 
     @Test
@@ -175,7 +175,7 @@ class DataJsonNodeTest {
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
-        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+        dataJsonNode.fixIdsDeepFromRoot(dataJsonNode.collectChildrenMapFromRoot());
 
     }
 
@@ -214,7 +214,7 @@ class DataJsonNodeTest {
 
         JsonNode jsonNode = ObjectMapperBuilder.build().readTree(json);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
-        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+        dataJsonNode.fixIdsDeepFromRoot(dataJsonNode.collectChildrenMapFromRoot());
 
 //        System.out.println(ObjectMapperBuilder.build().writeTree(jsonNode));
 
@@ -246,7 +246,7 @@ class DataJsonNodeTest {
 
         JsonNode jsonNode = ObjectMapperBuilder.build().readTree(json);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
-        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+        dataJsonNode.fixIdsDeepFromRoot(dataJsonNode.collectChildrenMapFromRoot());
 
         ObjectMapperBuilder.build().treeToValue(jsonNode,ExampleDataA.class);
     }
@@ -334,7 +334,7 @@ class DataJsonNodeTest {
 
         JsonNode jsonNode = ObjectMapperBuilder.build().readTree(json);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
-        dataJsonNode.fixIdsDeepFromRoot(root.internal().createDataStorageMetadataDictionaryFromRoot());
+        dataJsonNode.fixIdsDeepFromRoot(dataJsonNode.collectChildrenMapFromRoot());
 
 
 

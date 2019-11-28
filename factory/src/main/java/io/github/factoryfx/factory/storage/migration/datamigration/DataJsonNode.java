@@ -233,7 +233,7 @@ public class DataJsonNode {
 
     public void applyRetypedAttribute(DataStorageMetadataDictionary dataStorageMetadataDictionary){
         for (String attributeVariableName : this.getAttributes()) {
-            if (dataStorageMetadataDictionary.isRemovedAttribute(getDataClassName(),attributeVariableName)){
+            if (dataStorageMetadataDictionary.isRetypedAttribute(getDataClassName(),attributeVariableName)){
                 this.setAttributeValue(attributeVariableName,null);
             }
         }
@@ -247,21 +247,10 @@ public class DataJsonNode {
      * That means first occurrence is the object and following are just the ids
      * If the first occurrence is a removed attribute Jackson can't read the reference.
      *
-     * @param dataStorageMetadataDictionary dataStorageMetadataDictionary
+     * @param idToChild idToChild
      */
-    public void fixIdsDeepFromRoot(DataStorageMetadataDictionary dataStorageMetadataDictionary){
-        replaceIdRefsWidthFactoriesDeep(this.collectChildrenMapFromRoot());
-
-        //TODO fix structure confusing that this happens in this method
-        //remove deleted attributes
-        for (DataJsonNode dataJsonNode : this.collectChildrenFromRoot()) {
-            dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
-        }
-        //remove retyped attributes
-        for (DataJsonNode dataJsonNode : this.collectChildrenFromRoot()) {
-            dataJsonNode.applyRetypedAttribute(dataStorageMetadataDictionary);
-        }
-
+    public void fixIdsDeepFromRoot(Map<String, DataJsonNode> idToChild){
+        replaceIdRefsWidthFactoriesDeep(idToChild);
 
         //reset the ids, (first occurrence is the object following are id references)
         this.replaceDuplicateFactoriesWidthIdDeep(new HashSet<>());

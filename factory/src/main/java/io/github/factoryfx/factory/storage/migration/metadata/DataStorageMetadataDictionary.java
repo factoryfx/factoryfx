@@ -74,6 +74,14 @@ public class DataStorageMetadataDictionary {
         return false;
     }
 
+    public boolean isRetypedAttribute(String dataClass, String previousAttributeName) {
+        DataStorageMetadata dataStorageMetadata = getDataStorageMetadata(dataClass);
+        if (dataStorageMetadata!=null){
+            return dataStorageMetadata.isRetypedAttribute(previousAttributeName);
+        }
+        return false;
+    }
+
     public void markRemovedAttributes(){
         dataList.forEach(DataStorageMetadata::markRemovedAttributes);
     }

@@ -148,9 +148,9 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
     /**
      * @see #addFactoryUnsafe(FactoryTemplateId, Scope, Function)
-     * @param name
-     * @param scope
-     * @param creator
+     * @param name name
+     * @param scope scope
+     * @param creator creator
      * @param <F> factory
      */
     public <F extends FactoryBase<?,R>> void addFactoryUnsafe(String name, Scope scope, Function<FactoryContext<R>, F> creator){

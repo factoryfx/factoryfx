@@ -17,6 +17,7 @@ import io.github.factoryfx.factory.storage.migration.datamigration.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -94,14 +95,24 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         dataStorageMetadataDictionary.markRemovedAttributes();
         dataStorageMetadataDictionary.markRetypedAttributes();
 
-        //TODO removed classes
+        Map<String, DataJsonNode> idToChild = rootDataJson.collectChildrenMapFromRoot();
+        //remove deleted attributes
+        for (DataJsonNode dataJsonNode: idToChild.values()) {
+            dataJsonNode.applyRemovedAttribute(dataStorageMetadataDictionary);
+        }
+        //remove retyped attributes
+        for (DataJsonNode dataJsonNode: idToChild.values()) {
+            dataJsonNode.applyRetypedAttribute(dataStorageMetadataDictionary);
+        }
+
+        //TODO removed deleted classes
 
         R root;
         try {
             root = objectMapper.treeToValue(rootNode, rootClass);
         } catch (RuntimeException e) {
             if (Throwables.getRootCause(e) instanceof DataObjectIdResolver.UnresolvableJsonIDException){
-                rootDataJson.fixIdsDeepFromRoot(dataStorageMetadataDictionary);
+                rootDataJson.fixIdsDeepFromRoot(idToChild);
                 root = objectMapper.treeToValue(rootNode, rootClass);
             } else {
                 throw e;
@@ -117,7 +128,7 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         }
 
         for (PathDataRestore<R,?> restoration : pathBasedRestorations) {
-            if (restoration.canMigrate(dataStorageMetadataDictionary,rootDataJson)) {
+            if (restoration.canMigrate(dataStorageMetadataDictionary,previousRootDataJson)) {
                 restoration.migrate(previousRootDataJson,root);
             }
         }

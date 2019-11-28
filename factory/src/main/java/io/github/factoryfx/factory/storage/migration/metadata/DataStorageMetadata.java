@@ -154,4 +154,12 @@ public class DataStorageMetadata {
     public DataStorageMetadata getChild(String attribute, DataStorageMetadataDictionary dictionary) {
         return dictionary.getDataStorageMetadata(getAttribute(attribute).getReferenceClass());
     }
+
+    public boolean isRetypedAttribute(String attributeName) {
+        AttributeStorageMetadata attribute = getAttribute(attributeName);
+        if (attribute!=null) {
+            return attribute.isRetyped();
+        }
+        return false;
+    }
 }
