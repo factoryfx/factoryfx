@@ -20,7 +20,7 @@ public class NotNullAttributeValidation implements FactoryStyleValidation {
         try {
             FactoryBase<?, ?> factoryBase = this.factoryBaseSupplier.get();
             if(attributeField.get(factoryBase)==null) {
-                return Optional.of("should be not null: "+ factoryBase.getClass().getName()+"#"+attributeField.getName());
+                return Optional.of("Must not be null: "+ factoryBase.getClass().getName()+"#"+attributeField.getName());
             }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

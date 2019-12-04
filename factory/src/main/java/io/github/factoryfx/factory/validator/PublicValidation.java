@@ -18,7 +18,7 @@ public class PublicValidation implements  FactoryStyleValidation {
     @Override
     public Optional<String> validateFactory() {
         if((attributeField.getModifiers() & Modifier.PUBLIC) != java.lang.reflect.Modifier.PUBLIC) {
-            return Optional.of("should be public: "+ factoryClass.getName()+"#"+attributeField.getName());
+            return Optional.of("Must be public: "+ factoryClass.getName()+"#"+attributeField.getName());
         }
         return Optional.empty();
     }

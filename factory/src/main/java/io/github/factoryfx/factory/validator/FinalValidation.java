@@ -19,7 +19,7 @@ public class FinalValidation implements  FactoryStyleValidation {
     @Override
     public Optional<String> validateFactory() {
         if((attributeField.getModifiers() & Modifier.FINAL) != java.lang.reflect.Modifier.FINAL) {
-            return Optional.of("should be final: "+ factoryClass.getName()+"#"+attributeField.getName());
+            return Optional.of("Should be final: "+ factoryClass.getName()+"#"+attributeField.getName());
         }
         return Optional.empty();
     }

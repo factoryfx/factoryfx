@@ -1,9 +1,9 @@
 package io.github.factoryfx.factory.validator;
 
-import io.github.factoryfx.factory.FactoryBase;
-
 import java.lang.reflect.Modifier;
 import java.util.Optional;
+
+import io.github.factoryfx.factory.FactoryBase;
 
 public class NotInnerClassValidation implements FactoryStyleValidation {
     private final Class<? extends FactoryBase<?,?>> clazz;
@@ -15,7 +15,7 @@ public class NotInnerClassValidation implements FactoryStyleValidation {
     public Optional<String> validateFactory() {
         boolean invalid = clazz.isMemberClass() && !Modifier.isStatic(clazz.getModifiers());
         if (invalid) {
-            return Optional.of(clazz+"is an inner classes can't be Factory classes (Non-static nested classes are called inner classes)");
+            return Optional.of(clazz+" is an inner class, which must not be a Factory class (Non-static nested classes are called inner classes)");
         } else {
             return Optional.empty();
         }
