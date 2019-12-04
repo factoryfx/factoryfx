@@ -1,17 +1,24 @@
 package io.github.factoryfx.jetty.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.ext.ExceptionMapper;
+
+import org.glassfish.jersey.logging.LoggingFeature;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.*;
-import org.glassfish.jersey.logging.LoggingFeature;
-
-import javax.ws.rs.ext.ExceptionMapper;
-import java.util.ArrayList;
-import java.util.List;
+import io.github.factoryfx.jetty.AllExceptionMapper;
+import io.github.factoryfx.jetty.DefaultObjectMapper;
+import io.github.factoryfx.jetty.JerseyServletFactory;
+import io.github.factoryfx.jetty.ServletAndPathFactory;
+import io.github.factoryfx.jetty.Slf4LoggingFeature;
 
 /**
  * Builder for a jersey REST resource
@@ -132,16 +139,10 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
             return jerseyServlet;
         });
 
-        builder.addFactory(exceptionMapperTemplateId, Scope.PROTOTYPE, (ctx) -> {
-            return exceptionMapper;
-        });
+        builder.addFactory(exceptionMapperTemplateId, Scope.PROTOTYPE, (ctx) -> exceptionMapper);
 
-        builder.addFactory(objectMapperTemplateId, Scope.PROTOTYPE, (ctx) -> {
-            return objectMapper;
-        });
+        builder.addFactory(objectMapperTemplateId, Scope.PROTOTYPE, (ctx) -> objectMapper);
 
-        builder.addFactory(loggingFeatureTemplateId, Scope.PROTOTYPE, (ctx) -> {
-            return loggingFeature;
-        });
+        builder.addFactory(loggingFeatureTemplateId, Scope.PROTOTYPE, (ctx) -> loggingFeature);
     }
 }
