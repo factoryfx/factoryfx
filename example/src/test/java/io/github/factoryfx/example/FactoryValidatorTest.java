@@ -4,6 +4,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.github.factoryfx.example.server.OrderMonitoringResourceFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -17,7 +18,7 @@ public class FactoryValidatorTest {
 
     @TestFactory
     List<DynamicTest> createDynamicTests() {
-        Class<?> rootClazz = JettyServerRootFactory.class;
+        Class<?> rootClazz = OrderMonitoringResourceFactory.class;
 
         final FactoryStyleValidatorBuilder factoryStyleValidatorBuilder = new FactoryStyleValidatorBuilder();
         return new ClasspathBasedFactoryProvider().get(rootClazz.getPackage().getName())
