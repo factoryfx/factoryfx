@@ -5,8 +5,7 @@ import io.github.factoryfx.example.server.shop.OrderStorageFactory;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class OrderMonitoringResourceFactory extends ServerBaseFactory<OrderMonitoringResource> {
-    public final FactoryAttribute<OrderStorage, OrderStorageFactory> orderStorage =
-            new FactoryAttribute<>();
+    public final FactoryAttribute<OrderStorage, OrderStorageFactory> orderStorage = new FactoryAttribute<>();
 
     @Override
     protected OrderMonitoringResource createImpl() {

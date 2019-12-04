@@ -46,7 +46,7 @@ public class FactoryStyleValidatorBuilder {
         this((factoryValidatorUtility) -> {
             final ArrayList<FactoryStyleValidation> factoryStyleValidations = new ArrayList<>();
             factoryStyleValidations.add(new OnlyAttribute(factoryValidatorUtility.getFactoryClass(), factoryValidatorUtility.getField()));
-            factoryStyleValidations.add(new NotNullAttributeValidation(factoryValidatorUtility::create));
+            factoryStyleValidations.add(new NotNullAttributeValidation(factoryValidatorUtility.getFactoryClass()));
             factoryStyleValidations.add(new PublicValidation(factoryValidatorUtility.getFactoryClass(), factoryValidatorUtility.getField()));
             factoryStyleValidations.add(new FinalValidation(factoryValidatorUtility.getFactoryClass(), factoryValidatorUtility.getField()));
             factoryStyleValidations.add(new NoIdAsAttributeName(factoryValidatorUtility.getField()));
