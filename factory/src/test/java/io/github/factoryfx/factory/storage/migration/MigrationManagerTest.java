@@ -342,4 +342,139 @@ public class MigrationManagerTest {
         Assertions.assertEquals("test123",result.referenceAttribute.get().stringAttribute.get());
     }
 
+    @Test
+    public void read_removed_class_no_exception() {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.internal().finalise();
+
+        String oldDictionary =   "{\n" +
+                "  \"dataList\" : [ {\n" +
+                "    \"attributes\" : [ {\n" +
+                "      \"variableName\" : \"stringAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"removedAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceListAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\"\n" +
+                "    } ],\n" +
+                "    \"className\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                "    \"count\" : 1\n" +
+                "  }, {\n" +
+                "    \"attributes\" : [ {\n" +
+                "      \"variableName\" : \"stringAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttributeC\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataC\"\n" +
+                "    } ],\n" +
+                "    \"className\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataBremoved\",\n" +//<==removed type
+                "    \"count\" : 1\n" +
+                "  } ],\n" +
+                "  \"rootClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\"\n" +
+                "}";
+
+        String input =  "{\n" +
+                "  \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                "  \"id\" : \"b663aa09-1106-7da5-f696-90831cb670ca\",\n" +
+                "  \"treeBuilderClassUsed\" : false,\n" +
+                "  \"stringAttribute\" : { },\n" +
+                "  \"referenceAttribute\" : {\n" +
+                "    \"v\" : {\n" +
+                "      \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataBremoved\",\n" + //<==removed type
+                "      \"id\" : \"02a4f1cb-1b1d-5830-cbaf-10363863a385\",\n" +
+                "      \"treeBuilderClassUsed\" : false,\n" +
+                "      \"stringAttribute\" : { \"v\": \"test123\"},\n" +
+                "      \"referenceAttribute\" : { },\n" +
+                "      \"referenceListAttribute\" : [ ]\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"referenceListAttribute\" : [ ]\n" +
+                "}";
+
+        MigrationManager<ExampleDataA> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        manager.read(input,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
+    }
+
+
+    @Test
+    public void read_removed_restore() {
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.internal().finalise();
+
+        String oldDictionary =   "{\n" +
+                "  \"dataList\" : [ {\n" +
+                "    \"attributes\" : [ {\n" +
+                "      \"variableName\" : \"stringAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"removedAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceListAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\"\n" +
+                "    } ],\n" +
+                "    \"className\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                "    \"count\" : 1\n" +
+                "  }, {\n" +
+                "    \"attributes\" : [ {\n" +
+                "      \"variableName\" : \"stringAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttributeC\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataC\"\n" +
+                "    } ],\n" +
+                "    \"className\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataBremoved\",\n" +//<==removed type
+                "    \"count\" : 1\n" +
+                "  } ],\n" +
+                "  \"rootClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\"\n" +
+                "}";
+
+        String input =  "{\n" +
+                "  \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                "  \"id\" : \"b663aa09-1106-7da5-f696-90831cb670ca\",\n" +
+                "  \"treeBuilderClassUsed\" : false,\n" +
+                "  \"stringAttribute\" : { },\n" +
+                "  \"referenceAttribute\" : {\n" +
+                "    \"v\" : {\n" +
+                "      \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataBremoved\",\n" + //<==removed type
+                "      \"id\" : \"02a4f1cb-1b1d-5830-cbaf-10363863a385\",\n" +
+                "      \"treeBuilderClassUsed\" : false,\n" +
+                "      \"stringAttribute\" : { \"v\": \"test123\"},\n" +
+                "      \"referenceAttribute\" : { },\n" +
+                "      \"referenceListAttribute\" : [ ]\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"referenceListAttribute\" : [ ]\n" +
+                "}";
+
+        MigrationManager<ExampleDataA> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        manager.restoreAttribute(String.class,PathBuilder.of("referenceAttribute.stringAttribute"),(root, value) -> {
+            root.stringAttribute.set(value);
+        });
+        ExampleDataA read = manager.read(input, ObjectMapperBuilder.build().readValue(oldDictionary, DataStorageMetadataDictionary.class));
+        Assertions.assertEquals("test123",read.stringAttribute.get());
+    }
+
 }

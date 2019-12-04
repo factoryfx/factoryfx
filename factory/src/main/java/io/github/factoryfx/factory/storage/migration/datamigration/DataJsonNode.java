@@ -134,7 +134,6 @@ public class DataJsonNode {
         }
     }
 
-
     /**
      *  get children including himself
      * @return children
@@ -239,6 +238,16 @@ public class DataJsonNode {
         }
     }
 
+    public void applyRemovedClasses(DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        this.visitAttributes((jsonNode, jsonNodeConsumer) -> {
+            if (isData(jsonNode)) {
+                if (dataStorageMetadataDictionary.getDataStorageMetadata(new DataJsonNode((ObjectNode) jsonNode).getDataClassName()).isRemovedClass()){
+                    jsonNodeConsumer.accept(null);
+                }
+            }
+        });
+    }
+
 
     /**
      * fix objects in removed attributes.
@@ -261,11 +270,20 @@ public class DataJsonNode {
             JsonNode attributeValue = this.getAttributeValue(attributeVariableName);
             if (attributeValue != null) {
                 if (attributeValue.isArray()) {
-                    int index = 0;
-                    for (JsonNode arrayElement : attributeValue) {
-                        final int setIndex=index;
-                        attributeConsumer.accept(arrayElement, (value) -> ((ArrayNode)attributeValue).set(setIndex,value));
-                        index++;
+
+                    List<Integer> removed = new ArrayList<>();
+                    for (int i=0;i<(attributeValue).size();i++) {
+                        final int setIndex=i;
+                        attributeConsumer.accept(attributeValue.get(i), (value) -> {
+                            if (value==null) {
+                                removed.add(setIndex);
+                            } else {
+                                ((ArrayNode) attributeValue).set(setIndex, value);
+                            }
+                        });
+                        for (Integer removedIndex : removed) {
+                            ((ArrayNode) attributeValue).remove(removedIndex);
+                        }
                     }
                 } else {
                     attributeConsumer.accept(attributeValue, (value) -> this.setAttributeValue(attributeVariableName, value));

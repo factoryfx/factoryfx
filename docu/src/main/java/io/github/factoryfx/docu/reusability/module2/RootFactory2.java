@@ -6,6 +6,6 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 
 public class RootFactory2 extends FactoryBase<Void, RootFactory2> {
-    FactoryAttribute<Printer, PrinterFactory<RootFactory2>> printer = new FactoryAttribute<>();
+    public final FactoryAttribute<Printer, PrinterFactory<RootFactory2>> printer = new FactoryAttribute<>();
     // other dependencies for the rootfactory of module 2
 }

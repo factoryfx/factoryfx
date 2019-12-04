@@ -120,6 +120,8 @@ How to handle configuration data
 graphical user interface
 * [Configuration via web application](docu/src/main/java/io/github/factoryfx/docu/configurationwebapp)  
 Configuration via web application
+* [Reuse Factories in mutiple projects](docu/src/main/java/io/github/factoryfx/docu/reusability)  
+Factory with generic RootFactory
 
 ## Example
 

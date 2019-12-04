@@ -94,4 +94,8 @@ public class DataStorageMetadataDictionary {
     public DataStorageMetadata getRootDataStorageMetadata(){
         return getDataStorageMetadata(rootClass);
     }
+
+    public void markRemovedClasses() {
+        dataList.forEach(DataStorageMetadata::markRemovedClasses);
+    }
 }

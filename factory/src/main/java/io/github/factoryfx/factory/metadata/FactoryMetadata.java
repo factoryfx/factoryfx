@@ -194,7 +194,16 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
             if (attribute instanceof EnumListAttribute){
                 enumClass= (Class<? extends Enum<?>>)genericType;
             }
-            AttributeMetadata attributeMetadata = new AttributeMetadata(field.getName(), (Class<? extends Attribute<?, ?>>)field.getType(), referenceClass, enumClass, attribute.internal_getLabelText(), attribute.internal_required());
+            if (attribute==null){
+                throw new IllegalStateException("attribute is null: "+clazz.getName()+"#"+field.getName());
+            }
+            AttributeMetadata attributeMetadata = new AttributeMetadata(
+                    field.getName(),
+                    (Class<? extends Attribute<?, ?>>)field.getType(),
+                    referenceClass,
+                    enumClass,
+                    attribute.internal_getLabelText(),
+                    attribute.internal_required());
             AttributeMetadataAndAccessor<F, Attribute<?, ?>> attributeMetadataAndAccessor = new AttributeMetadataAndAccessor<>(attributeMetadata, (AttributeFieldAccessor<F, Attribute<?, ?>>) attributeFieldAccessor);
             attributeMetadataList.add(attributeMetadataAndAccessor);
 

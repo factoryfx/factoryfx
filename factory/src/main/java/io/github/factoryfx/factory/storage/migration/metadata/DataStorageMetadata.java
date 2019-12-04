@@ -162,4 +162,17 @@ public class DataStorageMetadata {
         }
         return false;
     }
+
+    public void markRemovedClasses() {
+        try {
+            Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            removedClass=true;
+        }
+    }
+
+    boolean removedClass=false;
+    public boolean isRemovedClass(){
+        return removedClass;
+    }
 }

@@ -94,6 +94,7 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
 
         dataStorageMetadataDictionary.markRemovedAttributes();
         dataStorageMetadataDictionary.markRetypedAttributes();
+        dataStorageMetadataDictionary.markRemovedClasses();
 
         Map<String, DataJsonNode> idToChild = rootDataJson.collectChildrenMapFromRoot();
         //remove deleted attributes
@@ -104,8 +105,10 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         for (DataJsonNode dataJsonNode: idToChild.values()) {
             dataJsonNode.applyRetypedAttribute(dataStorageMetadataDictionary);
         }
-
-        //TODO removed deleted classes
+        //remove deleted classes
+        for (DataJsonNode dataJsonNode: idToChild.values()) {
+            dataJsonNode.applyRemovedClasses(dataStorageMetadataDictionary);
+        }
 
         R root;
         try {

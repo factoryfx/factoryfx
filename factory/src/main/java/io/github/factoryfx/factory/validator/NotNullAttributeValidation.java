@@ -8,22 +8,17 @@ import io.github.factoryfx.factory.FactoryBase;
 
 public class NotNullAttributeValidation implements FactoryStyleValidation {
     private final Supplier<? extends FactoryBase<?,?>> factoryBaseSupplier;
-    private final Field attributeField;
 
-    public NotNullAttributeValidation(Supplier<? extends FactoryBase<?, ?>> factoryBaseSupplier, Field attributeField) {
+    public NotNullAttributeValidation(Supplier<? extends FactoryBase<?, ?>> factoryBaseSupplier) {
         this.factoryBaseSupplier = factoryBaseSupplier;
-        this.attributeField = attributeField;
     }
 
     @Override
     public Optional<String> validateFactory() {
         try {
             FactoryBase<?, ?> factoryBase = this.factoryBaseSupplier.get();
-            if(attributeField.get(factoryBase)==null) {
-                return Optional.of("should be not null: "+ factoryBase.getClass().getName()+"#"+attributeField.getName());
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+        } catch (IllegalStateException e) {
+            return Optional.of(e.getMessage());
         }
         return Optional.empty();
     }

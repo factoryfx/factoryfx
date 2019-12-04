@@ -4,6 +4,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.factoryfx.example.server.OrderMonitoringResourceFactory;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import io.github.factoryfx.factory.validator.FactoryStyleValidation;
@@ -19,7 +20,7 @@ public class FactoryValidatorTest {
     List<DynamicTest> createDynamicTests() {
         List<DynamicTest> result = new ArrayList<>();
         final FactoryStyleValidatorBuilder factoryStyleValidatorBuilder = new FactoryStyleValidatorBuilder();
-        for (Class<? extends FactoryBase<?,?>> clazz: new ClasspathBasedFactoryProvider().get(JettyServerRootFactory.class)){
+        for (Class<? extends FactoryBase<?,?>> clazz: new ClasspathBasedFactoryProvider().get(OrderMonitoringResourceFactory.class)){
             if (!Modifier.isAbstract( clazz.getModifiers() )){
                 final List<FactoryStyleValidation> factoryValidations = factoryStyleValidatorBuilder.createFactoryValidations(clazz);
                 for (FactoryStyleValidation factoryStyleValidation: factoryValidations){

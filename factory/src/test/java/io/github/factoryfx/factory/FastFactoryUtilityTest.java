@@ -131,7 +131,6 @@ public class FastFactoryUtilityTest {
         original.referenceListAttribute =List.of(new FastExampleFactoryB(),new FastExampleFactoryB());
         original.internal().finalise();
 
-
         FastExampleFactoryA update= original.utility().copy();
         FastExampleFactoryC referenceAttributeC1 = new FastExampleFactoryC();
         update.referenceListAttribute.get(0).referenceAttributeC= referenceAttributeC1;
@@ -146,8 +145,6 @@ public class FastFactoryUtilityTest {
         Assertions.assertEquals(5,original.internal().collectChildrenDeep().size());
         Assertions.assertEquals(referenceAttributeC1,original.referenceListAttribute.get(0).referenceAttributeC);
         Assertions.assertEquals(referenceAttributeC2,original.referenceListAttribute.get(1).referenceAttributeC);
-
-        //FIAls randomly
     }
 
     @Test
