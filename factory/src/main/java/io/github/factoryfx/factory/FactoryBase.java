@@ -573,7 +573,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
     private List<AttributeGroup> attributeListGrouped(){
         if (attributeListGroupedSupplier==null){
-            return Collections.singletonList(new AttributeGroup("Data", attributeList()));
+            return Collections.singletonList(new AttributeGroup("Data", attributeList((a)->true)));
         }
 
         Map<Attribute<?,?>,AttributeMetadata> attributeToMetadata = new HashMap<>();
@@ -581,9 +581,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return attributeListGroupedSupplier.apply(attribute -> new AttributeAndMetadata(attribute, attributeToMetadata.get(attribute)));
     }
 
-    private List<AttributeAndMetadata> attributeList(){
+    private List<AttributeAndMetadata> attributeList(Function<Attribute<?,?>,Boolean> filter){
         ArrayList<AttributeAndMetadata> result = new ArrayList<>();
-        this.visitAttributesFlat((attributeMetadata, attribute) -> result.add(new AttributeAndMetadata(attribute,attributeMetadata)));
+        this.visitAttributesFlat((attributeMetadata, attribute) -> {
+            if (filter.apply(attribute)){
+                result.add(new AttributeAndMetadata(attribute, attributeMetadata));
+            }
+        });
         return result;
     }
 
@@ -679,7 +683,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         /**
          *  grouped iteration over attributes e.g. used in gui editor where each group is a new Tab
          *
-         * @param attributeListGroupedSupplier function with parameter containing all attributes
+         * @param attributeListGroupedSupplier  attributeAndMetadataCreator creates a pair of attribute and metadata, <code>List.of(attributeAndMetadataCreator.apply(stringAttribute1)))</code>
          * */
         public void setAttributeListGroupedSupplier(Function<Function<Attribute<?,?>,AttributeAndMetadata>,List<AttributeGroup>> attributeListGroupedSupplier){
             this.factory.setAttributeListGroupedSupplier(attributeListGroupedSupplier);
@@ -1027,7 +1031,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         public List<AttributeAndMetadata> attributeList(){
-            return factory.attributeList();
+            return factory.attributeList((a)->true);
         }
 
         public AttributeMetadata getAttributeMetadata(Attribute<?,?> attribute){
@@ -1294,7 +1298,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             stringBuilder.append("ID:\n  ");
             stringBuilder.append(getId());
             stringBuilder.append("\nAttributes:\n");
-            this.internal().visitAttributesFlat((attributeVariableName, attribute) -> {
+            this.visitAttributesFlat((attributeVariableName, attribute) -> {
                 stringBuilder.append("  ").append(attributeVariableName).append(": ").append(attribute.getDisplayText()).append("\n");
             });
             return stringBuilder.toString().trim();
@@ -1632,6 +1636,16 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          */
         public <F extends FactoryBase<L,R> > F copyZeroLevelDeep(){
             return factory.copyZeroLevelDeep();
+        }
+
+
+        /**
+         * indented to be used in setAttributeListGroupedSupplier
+         * @param filter filter attributes
+         * @return AttributeAndMetadata list
+         */
+        public List<AttributeAndMetadata> attributeList(Function<Attribute<?,?>,Boolean> filter){
+            return factory.attributeList(filter);
         }
     }
 

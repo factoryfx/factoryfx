@@ -83,7 +83,7 @@ Injection data into a live object
 * [Factory](docu/src/main/java/io/github/factoryfx/docu/factorylayer)  
 Explanation of factories
 * [Liveobject](docu/src/main/java/io/github/factoryfx/docu/liveobjects)  
-Explanation of live objects
+Explanation of live objects 
 * [initializr](docu/src/main/java/io/github/factoryfx/docu/initializr)  
 Code generator for initial project setup
 
@@ -117,7 +117,7 @@ Permissions on attribute level
 * [Configuration data](docu/src/main/java/io/github/factoryfx/docu/configurationdata)  
 How to handle configuration data
 * [Runtime configuration change](docu/src/main/java/io/github/factoryfx/docu/configurationapi)  
-graphical user interface
+Different ways to change the configuration at runtime
 * [Configuration via web application](docu/src/main/java/io/github/factoryfx/docu/configurationwebapp)  
 Configuration via web application
 * [Reuse Factories in mutiple projects](docu/src/main/java/io/github/factoryfx/docu/reusability)  

@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory;
 
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.attribute.dependency.*;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -749,6 +751,21 @@ public class FactoryBaseTest {
         ExampleFactoryA copy = exampleFactoryA.internal().copy();
         FactoryTemplateId<ExampleFactoryA> copyTemplateId = new FactoryTemplateId<>(copy);
         Assertions.assertEquals(templateId,copyTemplateId);
+    }
+
+    @Test
+    public void test_attributeList(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        List<AttributeAndMetadata> list = root.utility().attributeList(a -> a == root.stringAttribute);
+        Assertions.assertEquals(1,list.size());
+        Assertions.assertEquals(root.stringAttribute,list.get(0).attribute);
+    }
+
+    @Test
+    public void test_attributeList_all(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        List<AttributeAndMetadata> list = root.internal().attributeList();
+        Assertions.assertEquals(3,list.size());
     }
 
 }

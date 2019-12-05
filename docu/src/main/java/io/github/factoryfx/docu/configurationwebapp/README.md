@@ -4,7 +4,9 @@ The FactoryFX web application provides a configuration GUI for changing the conf
 Design goals are little boilerplate and easy setup to be helpful for beginners. 
 
 ## Maven dependency
-domFactoryEditing, microserviceRestResource
+
+[domFactoryEditing](https://mvnrepository.com/artifact/io.github.factoryfx/domFactoryEditing)  
+[microserviceRestResource](https://mvnrepository.com/artifact/io.github.factoryfx/microserviceRestResource)
 
 ## Setup
 adding the resource
@@ -13,8 +15,8 @@ adding the resource
 ...
 builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 ```
- 
-url:
+
+## Url
 http://{host}:{port}/microservice/index.html
 
 

@@ -80,6 +80,6 @@ public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>> extends 
 
 
 
-        config().setDisplayTextProvider(()->"Microservice DOM Resource");
+        config().setDisplayTextProvider(()->"Configuration gui is available at: http://{host}:{port}/microservice/index.html");
     }
 }
