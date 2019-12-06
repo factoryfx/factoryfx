@@ -343,6 +343,70 @@ public class MigrationManagerTest {
     }
 
     @Test
+    public void read_retype_normal_to_ref() {
+
+        String oldDictionary =   "{\n" +
+                "  \"dataList\" : [ {\n" +
+                "    \"attributes\" : [ {\n" +
+                "      \"variableName\" : \"stringAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.BooleanAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\"\n" +//<---
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceListAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\"\n" +
+                "    } ],\n" +
+                "    \"className\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                "    \"count\" : 1\n" +
+                "  }, {\n" +
+                "    \"attributes\" : [ {\n" +
+                "      \"variableName\" : \"stringAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttribute\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.types.StringAttribute\"\n" +
+                "    }, {\n" +
+                "      \"variableName\" : \"referenceAttributeC\",\n" +
+                "      \"attributeClassName\" : \"io.github.factoryfx.factory.attribute.dependency.FactoryAttribute\",\n" +
+                "      \"referenceClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataC\"\n" +
+                "    } ],\n" +
+                "    \"className\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\",\n" +
+                "    \"count\" : 1\n" +
+                "  } ],\n" +
+                "  \"rootClass\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\"\n" +
+                "}";
+
+        String input =  "{\n" +
+                "  \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
+                "  \"id\" : \"b663aa09-1106-7da5-f696-90831cb670ca\",\n" +
+                "  \"treeBuilderClassUsed\" : false,\n" +
+                "  \"stringAttribute\" : { },\n" +
+                "  \"referenceAttribute\" : {\n" +
+                "    \"v\" : \"bla\"" +//<== wrong type
+                "    }\n" +
+                "  },\n" +
+                "  \"referenceListAttribute\" : [ ]\n" +
+                "}";
+
+        ExampleDataA exampleDataA = new ExampleDataA();
+        exampleDataA.referenceAttribute.set(new ExampleDataB());
+        exampleDataA.internal().finalise();
+//        System.out.println(ObjectMapperBuilder.build().writeValueAsString(exampleDataA));
+
+        MigrationManager<ExampleDataA> manager = new MigrationManager<>(ExampleDataA.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { });
+        manager.restoreAttribute(String.class, new PathBuilder<String>().attribute("referenceAttribute"),(r,v)->{
+            ExampleDataB factory = new ExampleDataB();
+            factory.stringAttribute.set(v);
+            r.referenceAttribute.set(factory);
+        });
+        ExampleDataA result = manager.read(input,ObjectMapperBuilder.build().readValue(oldDictionary,DataStorageMetadataDictionary.class));
+        Assertions.assertEquals("bla",result.referenceAttribute.get().stringAttribute.get());
+    }
+
+    @Test
     public void read_removed_class_no_exception() {
         ExampleDataA exampleDataA = new ExampleDataA();
         exampleDataA.internal().finalise();

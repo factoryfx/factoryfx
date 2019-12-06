@@ -133,14 +133,14 @@ public class DataStorageMetadata {
             FactoryMetadata metadata = FactoryMetadataManager.getMetadata(aClass);
             metadata.visitAttributeMetadata((currentAttributeMetadata) -> {
                 AttributeStorageMetadata attributeMetadata = getAttribute(currentAttributeMetadata.attributeVariableName);
-                if (attributeMetadata!=null) { //not a  removed attribute
+                if (attributeMetadata!=null) { //not a removed attribute
                     if (!attributeMetadata.attributeClassName.equals(currentAttributeMetadata.attributeClass.getName())) {
                         attributeMetadata.markRetyped();
-                    }
-
-                    if (currentAttributeMetadata.referenceClass!=null){
-                        if (!attributeMetadata.referenceClass.equals(currentAttributeMetadata.referenceClass.getName())) {
-                            attributeMetadata.markRetyped();
+                    } else {
+                        if (currentAttributeMetadata.referenceClass!=null && attributeMetadata.referenceClass!=null){
+                            if (!attributeMetadata.referenceClass.equals(currentAttributeMetadata.referenceClass.getName())) {
+                                attributeMetadata.markRetyped();
+                            }
                         }
                     }
                 }
