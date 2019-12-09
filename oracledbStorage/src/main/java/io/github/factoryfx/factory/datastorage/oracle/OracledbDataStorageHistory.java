@@ -116,11 +116,10 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
                         }
                     }
                 }
+                connection.commit();
             } finally {
                 connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
             }
-
-            connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
