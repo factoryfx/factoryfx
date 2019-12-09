@@ -7,17 +7,12 @@ import java.util.HashSet;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
 import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
-import io.github.factoryfx.jetty.AllExceptionMapper;
-import io.github.factoryfx.jetty.DefaultObjectMapper;
-import io.github.factoryfx.jetty.JerseyServletFactory;
-import io.github.factoryfx.jetty.Slf4LoggingFeature;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
