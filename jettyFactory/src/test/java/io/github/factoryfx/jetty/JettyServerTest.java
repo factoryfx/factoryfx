@@ -27,6 +27,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.google.common.io.ByteStreams;
 import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
@@ -357,6 +359,12 @@ public class JettyServerTest {
     @Test
     public void test_log_level() {
 
+        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Slf4LoggingFeatureLogger.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+
+
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
             jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
@@ -383,6 +391,10 @@ public class JettyServerTest {
         } finally {
             microservice.stop();
         }
+
+        Assertions.assertEquals(Level.ERROR, listAppender.list.get(0).getLevel());
+        listAppender.stop();
+        logger.detachAppender(listAppender);
     }
 
 
