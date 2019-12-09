@@ -61,5 +61,16 @@ In some cases it can be convenient to execute a one time migration. For that cas
 
 The major difference of a one-time migration is that the data is updated in the storage after the migration. 
 
+```java
+ factoryStorage.patchAll((root, metadata, objectMapper) -> {
+            DataJsonNode rootNode = new DataJsonNode(root);
+            for (DataJsonNode dataJsonNode : rootNode.collectChildrenFromRoot()) {
+                if (dataJsonNode.getDataClassName().equals(ExampleFactory.class.getName())) {
+                    dataJsonNode.setAttributeValue("stringAttribute",new TextNode("123"));
+                }
+            }
+        });
+```
+
 ## Example
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/migration)

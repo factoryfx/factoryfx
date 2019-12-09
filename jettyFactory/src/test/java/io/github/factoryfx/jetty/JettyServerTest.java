@@ -29,6 +29,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import ch.qos.logback.classic.Level;
 import com.google.common.io.ByteStreams;
 import io.github.factoryfx.factory.AttributelessFactory;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
@@ -342,6 +343,46 @@ public class JettyServerTest {
         Assertions.assertEquals(0,exampleFactoryAMergeDiffInfo.mergeInfos.size());
         Assertions.assertEquals(0,exampleFactoryAMergeDiffInfo.conflictInfos.size());
 
+    }
+
+    public static class Slf4LoggingFeatureTestFactory extends SimpleFactoryBase<Slf4LoggingFeature, JettyServerRootFactory>{
+        public final EnumAttribute<Slf4LoggingFeatureLogger.JerseyLogLevel> logLevel = new EnumAttribute<>();
+
+        @Override
+        protected Slf4LoggingFeature createImpl() {
+            return new Slf4LoggingFeature(logLevel.get());
+        }
+    }
+
+    @Test
+    public void test_log_level() {
+
+
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+                    .withLoggingFeature(ctx.getUnsafe(Slf4LoggingFeatureTestFactory.class));
+        });
+        builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
+            return new Resource1Factory();
+        });
+        builder.addSingleton(Slf4LoggingFeatureTestFactory.class, ctx->{
+            Slf4LoggingFeatureTestFactory slf4LoggingFeatureTestFactory = new Slf4LoggingFeatureTestFactory();
+            slf4LoggingFeatureTestFactory.logLevel.set(Slf4LoggingFeatureLogger.JerseyLogLevel.ERROR);
+            return slf4LoggingFeatureTestFactory;
+        });
+
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        try{
+            microservice.start();
+
+            ClientConfig cc = new ClientConfig();
+            Client client = ClientBuilder.newBuilder().withConfig(cc).build();
+            Response response = client.target("http://localhost:8087/Resource1").request().buildGet().invoke();
+            Assertions.assertEquals(200, response.getStatus());
+
+        } finally {
+            microservice.stop();
+        }
     }
 
 
