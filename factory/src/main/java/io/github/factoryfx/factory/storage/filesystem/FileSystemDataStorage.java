@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.*;
@@ -108,7 +109,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
     public void patchCurrentData(DataStoragePatcher consumer) {
         JsonNode data = objectMapper.readTree(currentFactoryPath);
         JsonNode metadata = objectMapper.readTree(currentFactoryPathMetadata);
-        consumer.patch(data,metadata);
+        consumer.patch((ObjectNode)data,metadata,objectMapper);
         writeFile(currentFactoryPath, objectMapper.writeTree(data));
         writeFile(currentFactoryPathMetadata, objectMapper.writeTree(metadata));
     }

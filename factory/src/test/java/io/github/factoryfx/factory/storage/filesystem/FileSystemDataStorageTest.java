@@ -6,11 +6,18 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
+import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
+import io.github.factoryfx.jetty.AllExceptionMapper;
+import io.github.factoryfx.jetty.DefaultObjectMapper;
+import io.github.factoryfx.jetty.JerseyServletFactory;
+import io.github.factoryfx.jetty.Slf4LoggingFeature;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -82,8 +89,8 @@ public class FileSystemDataStorageTest {
         initialExampleDataA.stringAttribute.set("123");
         FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
         fileSystemFactoryStorage.getCurrentData();//init
-        fileSystemFactoryStorage.patchCurrentData((data, metadata) -> {
-            ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
+        fileSystemFactoryStorage.patchCurrentData((root, metadata, objectMapper) -> {
+            ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",fileSystemFactoryStorage.getCurrentData().root.stringAttribute.get());
     }
@@ -96,11 +103,32 @@ public class FileSystemDataStorageTest {
         String id=fileSystemFactoryStorage.getCurrentData().id;
         fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
 
-        fileSystemFactoryStorage.patchAll((data, metadata) -> {
+        fileSystemFactoryStorage.patchAll((data, metadata,objectMapper) -> {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",fileSystemFactoryStorage.getHistoryData(id).stringAttribute.get());
     }
+
+    @Test
+    public void test_patchAll2()  {
+        ExampleDataA initialExampleDataA = createInitialExampleDataA();
+        initialExampleDataA.stringAttribute.set("123");
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
+        String id=fileSystemFactoryStorage.getCurrentData().id;
+        fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
+
+        fileSystemFactoryStorage.patchAll((root, metadata, objectMapper) -> {
+            DataJsonNode rootNode = new DataJsonNode(root);
+            for (DataJsonNode dataJsonNode : rootNode.collectChildrenFromRoot()) {
+                if (dataJsonNode.getDataClassName().equals(ExampleDataA.class.getName())) {
+                    dataJsonNode.setAttributeValue("stringAttribute",new TextNode("qqq"));
+                }
+            }
+        });
+
+        Assertions.assertEquals("qqq",fileSystemFactoryStorage.getHistoryData(id).stringAttribute.get());
+    }
+
 
     @Test
     public void test_getInitialFactory()  {

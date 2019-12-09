@@ -152,7 +152,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
 
                 JsonNode data = objectMapper.readTree(dataString);
                 JsonNode metadata = objectMapper.readTree(metadataString);
-                consumer.patch(data,metadata);
+                consumer.patch(data,metadata,objectMapper);
 
                 try (PreparedStatement pstmt =
                              connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {

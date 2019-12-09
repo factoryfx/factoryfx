@@ -9,6 +9,8 @@ import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import org.eclipse.jetty.server.Server;
 
+import java.time.Duration;
+
 public class ServerBuilder {
 
     public static FactoryTreeBuilder<Server, JettyServerRootFactory> build(){
@@ -64,7 +66,13 @@ public class ServerBuilder {
 
         builder.addSingleton(OrderStorageFactory.class);
 
-        builder.addSingleton(OrderMonitoringResourceFactory.class);
+        builder.addSingleton(OrderMonitoringResourceFactory.class,ctx->{
+            OrderMonitoringResourceFactory factory = new OrderMonitoringResourceFactory();
+            factory.attribute.set(Duration.ofDays(1));
+            factory.orderStorage.set(ctx.get(OrderStorageFactory.class));
+            return factory;
+
+        });
         return builder;
     }
 }

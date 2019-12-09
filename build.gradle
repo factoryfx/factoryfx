@@ -34,11 +34,12 @@ wrapper {
 }
 
 apply plugin: 'io.codearte.nexus-staging'
-nexusStaging {
+nexusStaging {//https://github.com/Codearte/gradle-nexus-staging-plugin
     username = ossrhUsername
     password = ossrhPassword
     packageGroup = 'io.github.factoryfx'
     stagingProfileId = '78e9b0494c64ba'
+//    stagingRepositoryId = ??? requires external mechanism
     numberOfRetries = 30
 }
 
@@ -86,7 +87,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.2.5'
+    version = '2.2.6'
 
     publishing {
 

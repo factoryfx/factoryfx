@@ -122,8 +122,6 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
             }
         }
 
-        root.internal().finalise();
-
         for (SingletonDataRestore<R,?> restoration : singletonBasedRestorations) {
             if (restoration.canMigrate(dataStorageMetadataDictionary)) {
                 restoration.migrate(dataJsonNodes,root);
@@ -136,6 +134,7 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
             }
         }
 
+        root.internal().finalise();
         attributeFiller.fillNewAttributes(root,dataStorageMetadataDictionary);
         root.internal().fixDuplicateFactories();
         root.internal().finalise();

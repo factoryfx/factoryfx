@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
@@ -112,7 +113,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>> {
                 JsonNode data = simpleObjectMapper.readTree(path);
                 Path metadataPath = path.resolveSibling(path.getParent().resolve(path.getFileName().toString().replace(".json", "_metadata.json")));
                 JsonNode metadata = simpleObjectMapper.readTree(metadataPath);
-                consumer.patch(data,metadata);
+                consumer.patch((ObjectNode) data,metadata,simpleObjectMapper);
                 writeFile(path,simpleObjectMapper.writeTree(data));
                 writeFile(metadataPath,simpleObjectMapper.writeTree(metadata));
             }

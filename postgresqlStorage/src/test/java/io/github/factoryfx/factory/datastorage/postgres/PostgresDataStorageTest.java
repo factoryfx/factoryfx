@@ -268,7 +268,7 @@ public class PostgresDataStorageTest {
         initialExampleDataA.stringAttribute.set("123");
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
         postgresFactoryStorage.getCurrentData();//init
-        postgresFactoryStorage.patchCurrentData((data, metadata) -> {
+        postgresFactoryStorage.patchCurrentData((data, metadata, objectMapper) -> {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",postgresFactoryStorage.getCurrentData().root.stringAttribute.get());
