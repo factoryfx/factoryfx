@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
@@ -121,7 +122,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>> implements DataStor
 
         JsonNode data = objectMapper.readTree(dataString);
         JsonNode metadata = objectMapper.readTree(metadataString);
-        consumer.patch(data,metadata);
+        consumer.patch((ObjectNode) data,metadata,objectMapper);
 
         String metadataId=metadata.get("id").asText();
 

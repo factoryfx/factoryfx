@@ -17,6 +17,7 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.CharStreams;
 
 import io.github.factoryfx.factory.FactoryBase;
@@ -152,7 +153,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
 
                 JsonNode data = objectMapper.readTree(dataString);
                 JsonNode metadata = objectMapper.readTree(metadataString);
-                consumer.patch(data,metadata,objectMapper);
+                consumer.patch((ObjectNode) data,metadata,objectMapper);
 
                 try (PreparedStatement pstmt =
                              connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {

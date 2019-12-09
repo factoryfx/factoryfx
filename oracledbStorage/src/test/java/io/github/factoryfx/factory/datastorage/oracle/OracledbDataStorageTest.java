@@ -64,8 +64,8 @@ public class OracledbDataStorageTest extends DatabaseTest{
         initialExampleDataA.stringAttribute.set("123");
         OracledbDataStorage<ExampleFactoryA> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         oracleStorage.getCurrentData();//init
-        oracleStorage.patchCurrentData((data, metadata) -> {
-            ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
+        oracleStorage.patchCurrentData((root, metadata, objectMapper) -> {
+            ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",oracleStorage.getCurrentData().root.stringAttribute.get());
     }
@@ -78,8 +78,8 @@ public class OracledbDataStorageTest extends DatabaseTest{
         OracledbDataStorage<ExampleFactoryA> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());String id=oracleStorage.getCurrentData().id;
         oracleStorage.updateCurrentData(createUpdate(),null);
 
-        oracleStorage.patchAll((data, metadata) -> {
-            ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
+        oracleStorage.patchAll((root, metadata, objectMapper) -> {
+            ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",oracleStorage.getHistoryData(id).stringAttribute.get());
     }

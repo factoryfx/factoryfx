@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
@@ -102,7 +103,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
 
                         JsonNode data = objectMapper.readTree(dataString);
                         JsonNode metadata = objectMapper.readTree(metadataString);
-                        consumer.patch(data,metadata);
+                        consumer.patch((ObjectNode) data,metadata,objectMapper);
                         String metadataId=metadata.get("id").asText();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
