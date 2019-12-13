@@ -19,7 +19,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     }
 
     /*check if factory is available, used to and create improved error message*/
-    void check(Class<? extends FactoryBase> fromClazz, String attributeVariableName, Class<? extends FactoryBase> refClazz) {
+    void check(Class<? extends FactoryBase<?,?>> fromClazz, String attributeVariableName, Class<? extends FactoryBase<?,?>> refClazz) {
         Object result = get(fc -> fc.match(refClazz));
         if (result==null){
             throw new IllegalStateException(
@@ -30,7 +30,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         }
     }
 
-    <F extends FactoryBase<?,R>> F getUnchecked(Class<F> clazz){
+    <F extends FactoryBase<?,R>> F getUnchecked(Class<?> clazz){
         return get(fc -> fc.match(clazz,null));
     }
 

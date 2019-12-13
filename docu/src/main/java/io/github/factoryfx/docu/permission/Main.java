@@ -76,7 +76,7 @@ public class Main {
 
             DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub1");
-            FactoryUpdateLog updateLog = microserviceRestClient.updateCurrentFactory(update, "comment");
+            FactoryUpdateLog<PrinterFactory> updateLog = microserviceRestClient.updateCurrentFactory(update, "comment");
 
             System.out.println("PermissionViolations: "+updateLog.mergeDiffInfo.permissionViolations.size());
             microservice.getRootLiveObject().print();//"bla blub1" executed update
@@ -88,7 +88,7 @@ public class Main {
 
             DataUpdate<PrinterFactory> update = microserviceRestClient.prepareNewFactory();
             update.root.text.set("bla blub2");
-            FactoryUpdateLog updateLog =  microserviceRestClient.updateCurrentFactory(update, "comment");
+            FactoryUpdateLog<PrinterFactory> updateLog =  microserviceRestClient.updateCurrentFactory(update, "comment");
 
             System.out.println("PermissionViolations: "+updateLog.mergeDiffInfo.permissionViolations.size());
             microservice.getRootLiveObject().print();//"bla blub1" no update

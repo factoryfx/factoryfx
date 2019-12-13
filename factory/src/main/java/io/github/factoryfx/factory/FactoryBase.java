@@ -611,17 +611,12 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
     @SuppressWarnings("unchecked")
-    private void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
+    private void addDisplayTextListeners(AttributeChangeListener changeListener){
         if (displayTextDependencies!=null){
             for (Attribute<?,?> attribute: this.displayTextDependencies){
-                attribute.internal_addListener(attributeChangeListener);
+                attribute.internal_addListener(changeListener);
             }
         }
-    }
-
-    private Object storeDisplayTextObservable;
-    private void storeDisplayTextObservable(Object simpleStringProperty) {
-        storeDisplayTextObservable=simpleStringProperty;
     }
 
     @JsonIgnore
@@ -785,15 +780,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.getDisplayText();
         }
 
-        //TODO cleanup the hack (goal is to remove javafx dependency )
-        public void storeDisplayTextObservable(Object simpleStringProperty){
-            this.factory.storeDisplayTextObservable(simpleStringProperty);
-        }
-
-        public Object getDisplayTextObservable(){
-            return this.factory.storeDisplayTextObservable;
-        }
-
         public List<ValidationError> validateFlat(){
             return factory.validateFlat();
         }
@@ -855,8 +841,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.getParents();
         }
 
-        public void addDisplayTextListeners(AttributeChangeListener attributeChangeListener){
-            factory.addDisplayTextListeners(attributeChangeListener);
+        public void addDisplayTextListeners(AttributeChangeListener changeListener){
+            factory.addDisplayTextListeners(changeListener);
         }
 
         public void assertRoot(){
@@ -872,7 +858,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.getRoot();
         }
 
-        public FactoryTreeBuilderBasedAttributeSetup getFactoryTreeBuilderBasedAttributeSetup() {
+        public FactoryTreeBuilderBasedAttributeSetup<R> getFactoryTreeBuilderBasedAttributeSetup() {
             return factory.factoryTreeBuilderBasedAttributeSetup;
         }
 
@@ -1064,7 +1050,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         List<DataStorageMetadata> dataStorageMetadataList= new ArrayList<>();
         ArrayList<Class<? extends FactoryBase<?,R>>> sortedClasses = new ArrayList<>(dataClassesToCount.keySet());
         sortedClasses.sort(Comparator.comparing(Class::getName));
-        for (Class clazz : sortedClasses) {
+        for (Class<? extends FactoryBase<?,R>> clazz : sortedClasses) {
             if (!Modifier.isAbstract(clazz.getModifiers())){
                 dataStorageMetadataList.add(FactoryMetadataManager.getMetadata(clazz).createDataStorageMetadata(dataClassesToCount.get(clazz)));
             }

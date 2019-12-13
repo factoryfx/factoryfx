@@ -122,14 +122,14 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         Set<TsFile> mapValuesFromJsonImports = new HashSet<>();
         factoryMetadata.visitAttributeMetadata((metadata) -> {
             if (FactoryBaseAttribute.class.isAssignableFrom(metadata.attributeClass)){
-                Class referenceClass = metadata.referenceClass;
+                Class<? extends FactoryBase<?,?>> referenceClass = metadata.referenceClass;
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("if (this.").append(metadata.attributeVariableName).append(") result.push(this.").append(metadata.attributeVariableName).append(");\n");
                 return;
             }
             if (FactoryListBaseAttribute.class.isAssignableFrom(metadata.attributeClass)){
-                Class referenceClass = metadata.referenceClass;
+                Class<? extends FactoryBase<?,?>> referenceClass = metadata.referenceClass;
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("if (this.").append(metadata.attributeVariableName).append(") for (let child of this.").append(metadata.attributeVariableName).append(") {result.push(child)};\n");

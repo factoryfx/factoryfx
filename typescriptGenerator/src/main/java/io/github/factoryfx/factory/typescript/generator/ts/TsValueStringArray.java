@@ -10,19 +10,14 @@ import java.util.stream.Collectors;
 public class TsValueStringArray implements TsValue {
     private final List<String> values;
 
-    public TsValueStringArray(List<String> values){
-        this.values=values;
+    public TsValueStringArray(List<String> values) {
+        this.values = values;
     }
 
-    private static final Escaper TS_ESCAPER =
-            Escapers.builder()
-                    .addEscape('\\', "\\\\")
-                    .addEscape('"', "\\\"")
-                    .addEscape('\'', "\\\'")
-                    .build();
+    private static final Escaper TS_ESCAPER = Escapers.builder().addEscape('\\', "\\\\").addEscape('"', "\\\"").addEscape('\'', "\\'").build();
 
-    private String escapeTsString(String text){
-        return "'"+TS_ESCAPER.escape(text)+"'";
+    private String escapeTsString(String text) {
+        return "'" + TS_ESCAPER.escape(text) + "'";
     }
 
     @Override
@@ -32,6 +27,7 @@ public class TsValueStringArray implements TsValue {
 
     @Override
     public String construct() {
-        return "["+values.stream().map(this::escapeTsString).collect(Collectors.joining(","))+"]";
+        return "[" + values.stream().map(this::escapeTsString).collect(Collectors.joining(",")) + "]";
     }
+
 }

@@ -2,7 +2,6 @@ import {WidgetModel} from "../../base/WidgetModel";
 import {Navbar} from "./Navbar";
 import {StringValue} from "../../base/StringValue";
 import {FactoryEditorModel} from "../factoryeditor/FactoryEditorModel";
-import {SaveWidgetModel} from "../save/SaveWidgetModel";
 import {NavitemModel} from "../navitem/NavitemModel";
 import {ViewModel} from "../view/ViewModel";
 

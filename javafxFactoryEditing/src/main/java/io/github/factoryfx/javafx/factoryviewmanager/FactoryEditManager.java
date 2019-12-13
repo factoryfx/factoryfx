@@ -34,7 +34,7 @@ public class FactoryEditManager<R extends FactoryBase<?,R>> {
         listeners.add(listener);
     }
 
-    public void removeListener(FactoryRootChangeListener listener){
+    public void removeListener(FactoryRootChangeListener<R> listener){
         listeners.remove(listener);
     }
 
@@ -69,8 +69,8 @@ public class FactoryEditManager<R extends FactoryBase<?,R>> {
         load();
     }
 
-    public FactoryUpdateLog save(String comment) {
-        final FactoryUpdateLog factoryLog = client.updateCurrentFactory(loadedRoot,comment);
+    public FactoryUpdateLog<R> save(String comment) {
+        final FactoryUpdateLog<R> factoryLog = client.updateCurrentFactory(loadedRoot,comment);
         if (factoryLog.successfullyMerged()) {
             load();//to edit the newly merged data
         }

@@ -10,7 +10,7 @@ Javafx data editing components.
 ##### Advantage
 Best integration between server and client because both are implemented in java
 ### Webapp
-[Configuration via web application](docu/src/main/java/io/github/factoryfx/docu/configurationwebapp)  
+[Configuration via web application](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/configurationwebapp)  
 ##### Advantage
 Easy to integrate into the project
 ##### Disadvantage

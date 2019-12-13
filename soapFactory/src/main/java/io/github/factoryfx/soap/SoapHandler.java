@@ -88,9 +88,9 @@ public class SoapHandler implements Servlet {
 
     private void putHeaders(MimeHeaders headers, HttpServletResponse res) {
 
-        Iterator it = headers.getAllHeaders();
+        Iterator<MimeHeader> it = headers.getAllHeaders();
         while (it.hasNext()) {
-            MimeHeader header = (MimeHeader)it.next();
+            MimeHeader header = it.next();
 
             String[] values = headers.getHeader(header.getName());
             if (values.length == 1)

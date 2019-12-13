@@ -26,7 +26,7 @@ public class EnumTranslations<E extends Enum<E>> {
         languageText.en(text);
     }
 
-    public String getDisplayText(Enum<?> enumValue,Function<LanguageText,String> uniformDesign){
+    public String getDisplayText(E enumValue,Function<LanguageText,String> uniformDesign){
         if (enumValue==null){
             return "-";
         }

@@ -28,7 +28,7 @@ export class WaitAnimation extends Widget{
         modal.onclick = (e: Event)=> {
             e.preventDefault();
         };
-        modal.append(BootstrapUtility.createProgressBar())
+        modal.append(BootstrapUtility.createProgressBar());
         return modal;
     }
 }

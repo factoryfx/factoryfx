@@ -24,11 +24,12 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
         this.factoryTreeBuilder = factoryTreeBuilder;
     }
 
-    public <LO, FO extends FactoryBase<LO, R>> List<FO> createNewFactory(Class<FO> clazz) {
-        List<FO> newFactories =  factoryTreeBuilder.buildSubTrees(clazz);
+    @SuppressWarnings("unchecked")
+    public <LO, FO extends FactoryBase<LO, R>> List<FO> createNewFactory(Class<? extends FactoryBase<?,?>> clazz) {
+        List<FO> newFactories =  factoryTreeBuilder.buildSubTrees((Class)clazz);
         ArrayList<FO> result = new ArrayList<>(newFactories);
         if(result.isEmpty()){
-            FactoryMetadata<R, FO> factoryMetadata = FactoryMetadataManager.getMetadata(clazz);
+            FactoryMetadata<R, FO> factoryMetadata = FactoryMetadataManager.getMetadataUnsafe(clazz);
             FO instance = factoryMetadata.newInstance();
             result.add(instance);
         }

@@ -77,6 +77,8 @@ public class OracledbDataStorageTest extends DatabaseTest{
         initialExampleDataA.stringAttribute.set("123");
         OracledbDataStorage<ExampleFactoryA> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());String id=oracleStorage.getCurrentData().id;
         oracleStorage.updateCurrentData(createUpdate(),null);
+        oracleStorage.updateCurrentData(createUpdate(),null);
+        oracleStorage.updateCurrentData(createUpdate(),null);
 
         oracleStorage.patchAll((root, metadata, objectMapper) -> {
             ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");

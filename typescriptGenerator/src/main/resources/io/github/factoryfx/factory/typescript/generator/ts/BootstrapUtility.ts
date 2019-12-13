@@ -1,5 +1,3 @@
-import {AttributeMetadata} from "./AttributeMetadata";
-
 export class BootstrapUtility {
 
     static createInputGroup(input: HTMLInputElement, button: HTMLButtonElement): HTMLElement  {

@@ -1,5 +1,3 @@
-import {WidgetModel} from "./WidgetModel";
-
 export abstract class Widget {
     protected abstract render(): HTMLElement;
     public bindModel(): any{

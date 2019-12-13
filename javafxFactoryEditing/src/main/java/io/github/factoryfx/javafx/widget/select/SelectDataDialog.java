@@ -2,7 +2,7 @@ package io.github.factoryfx.javafx.widget.select;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.javafx.css.CssUtil;
-import io.github.factoryfx.javafx.util.DataObservableDisplayText;
+import io.github.factoryfx.javafx.util.ObservableFactoryDisplayText;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
@@ -37,7 +37,7 @@ public class SelectDataDialog<T extends FactoryBase<?,?>> {
         table.getItems().setAll(dataList);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<T, String> column = new TableColumn<>();
-        column.setCellValueFactory(param -> new DataObservableDisplayText(param.getValue()).get());
+        column.setCellValueFactory(param -> new ObservableFactoryDisplayText(param.getValue()));
         table.getColumns().add(column);
         pane.setCenter(table);
 

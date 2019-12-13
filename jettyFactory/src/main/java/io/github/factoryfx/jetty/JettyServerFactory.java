@@ -72,6 +72,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
         return server;
     }
 
+    @SuppressWarnings("unchecked")
     private void update(Server server){
         for (Connector connector : server.getConnectors()) {
             server.removeConnector(connector);
@@ -80,7 +81,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
             connector.addToServer(server);
         }
         if (server.getThreadPool() instanceof QueuedThreadPool && threadPool.get() instanceof ThreadPoolFactory){
-            ((QueuedThreadPool) server.getThreadPool()).setMaxThreads(((ThreadPoolFactory)threadPool.get()).poolSize.get());
+            ((QueuedThreadPool) server.getThreadPool()).setMaxThreads(((ThreadPoolFactory<R>)threadPool.get()).poolSize.get());
         }
 
     }
@@ -88,19 +89,18 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
     /**
      * model navigation shortcut, only works with th e default setup form the builder
      * @param clazz resource clazz
-     * @param <T>  resource type
+     * @param <RF>  resource factory
      * @return resource
      */
-    public final <T extends FactoryBase> T getResource(Class<T> clazz){
+    public final <RF extends FactoryBase<?,R>> RF getResource(Class<RF> clazz){
         return getDefaultJerseyServlet().resources.get(clazz);
     }
 
     /**
      * model navigation shortcut, only works with th e default setup form the builder
      * @param resource resource
-     * @param <T> resource type
      */
-    public final <T extends FactoryBase<?,?>> void setResource(FactoryBase<?,?> resource){
+    public final void setResource(FactoryBase<?,R> resource){
         JerseyServletFactory<R> jerseyServletFactory = getDefaultJerseyServlet();
         jerseyServletFactory.resources.removeIf(factoryBase -> factoryBase.getClass()==resource.getClass());
         jerseyServletFactory.resources.add(resource);
@@ -113,7 +113,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
      * @return servlet
      */
     @SuppressWarnings("unchecked")
-    public final <F extends FactoryBase> F getServlet(Class<F> clazz){
+    public final <F extends FactoryBase<?,R>> F getServlet(Class<F> clazz){
         ServletContextHandlerFactory<R> servletContextHandler = getDefaultServletContextHandlerFactory();
         for (ServletAndPathFactory<R> servletAndPath : servletContextHandler.updatableRootServlet.get().servletAndPaths) {
             if (servletAndPath.servlet.get().getClass()==clazz){
@@ -124,11 +124,11 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
     }
 
     @SuppressWarnings("unchecked")
-    public final <F extends FactoryBase> F getServletUnsafe(Class<?> clazz){
+    public final <F extends FactoryBase<?,R>> F getServletUnsafe(Class<?> clazz){
         return getServlet((Class<F>)clazz);
     }
 
-    public final <T extends FactoryBase> void clearResource(Class<T> resource){
+    public final <T extends FactoryBase<?,R>> void clearResource(Class<T> resource){
         getDefaultJerseyServlet().resources.removeIf(factoryBase -> factoryBase.getClass()==resource);
     }
 

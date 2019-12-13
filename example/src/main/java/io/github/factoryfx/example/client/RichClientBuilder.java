@@ -49,7 +49,7 @@ public class RichClientBuilder {
         factoryBuilder.addFactory(AttributeEditorBuilderFactory.class, Scope.SINGLETON, ctx -> new AttributeEditorBuilderFactoryBuilder().build(ctx.get(UniformDesignFactory.class)));
         factoryBuilder.addFactory(DataEditorFactory.class, Scope.PROTOTYPE);
         factoryBuilder.addFactory(ViewsDisplayWidgetFactory.class, Scope.SINGLETON);
-        factoryBuilder.addFactory(DiffDialogBuilderFactory.class, Scope.PROTOTYPE);
+        factoryBuilder.addFactoryUnsafe(DiffDialogBuilderFactory.class, Scope.PROTOTYPE);
         factoryBuilder.addFactory(DataTreeWidgetFactory.class, Scope.PROTOTYPE);
 
         factoryBuilder.addFactoryUnsafe(FactorySerialisationManagerFactory.class, Scope.SINGLETON, (context)->{
@@ -110,7 +110,7 @@ public class RichClientBuilder {
             factoryEditViewFactory.uniformDesign.set(context.get(UniformDesignFactory.class));
             DataEditorFactory dataEditorFactory = context.get(DataEditorFactory.class);
             factoryEditViewFactory.dataEditorFactory.set(dataEditorFactory);
-            factoryEditViewFactory.diffDialogBuilder.set(context.get(DiffDialogBuilderFactory.class));
+            factoryEditViewFactory.diffDialogBuilder.set(context.getUnsafe(DiffDialogBuilderFactory.class));
             return factoryEditViewFactory;
         });
 

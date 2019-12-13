@@ -19,7 +19,7 @@ export class Main {
 
 
     main(target: HTMLElement){
-        target.append(BootstrapUtility.createProgressBar())
+        target.append(BootstrapUtility.createProgressBar());
 
         let httpClientStatusReporter: HttpClientStatusReporter = new HttpClientStatusReporter();
         let httpClient:  HttpClient= new HttpClient(httpClientStatusReporter);

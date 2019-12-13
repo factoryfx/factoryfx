@@ -31,7 +31,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class FactoryDiffWidget implements Widget {
+public class FactoryDiffWidget<R extends FactoryBase<?, R>> implements Widget {
     private final UniformDesign uniformDesign;
     private final LanguageText columnFactory=new LanguageText().en("data").de("Objekt");
     private final LanguageText columnField=new LanguageText().en("field").de("Feld");
@@ -196,7 +196,7 @@ public class FactoryDiffWidget implements Widget {
         vBox.getChildren().add(node);
         return vBox;
     }
-    public void updateMergeDiff(MergeDiffInfo<?> mergeDiff) {
+    public void updateMergeDiff(MergeDiffInfo<R> mergeDiff) {
         FactoryBase<?,?> previousRoot=mergeDiff.getPreviousRootData();
         FactoryBase<?,?> newRoot=mergeDiff.getNewRootData();
         diff = new ArrayList<>();

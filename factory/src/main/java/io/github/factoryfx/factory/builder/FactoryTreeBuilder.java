@@ -131,7 +131,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
      */
     @SuppressWarnings("unchecked")
     public <F extends FactoryBase<?,R>> void addFactoryUnsafe(FactoryTemplateId<?> templateId, Scope scope, Function<FactoryContext<R>, F> creator){
-        factoryContext.addFactoryCreator(new FactoryCreator(templateId,scope,creator));
+        factoryContext.addFactoryCreator(new FactoryCreator<>((FactoryTemplateId<F>) templateId,scope,creator));
     }
 
     /**

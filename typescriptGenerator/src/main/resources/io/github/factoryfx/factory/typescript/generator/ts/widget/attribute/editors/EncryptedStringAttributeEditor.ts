@@ -1,4 +1,3 @@
-import {AttributeAccessor} from "../../../AttributeAccessor";
 import {AttributeEditorWidget} from "../AttributeEditorWidget";
 import {FactoryEditorModel} from "../../factoryeditor/FactoryEditorModel";
 import {HttpClient} from "../../../HttpClient";

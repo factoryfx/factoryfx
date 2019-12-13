@@ -1,5 +1,6 @@
 package io.github.factoryfx.javafx.widget.factory.diffdialog;
 
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
@@ -17,7 +18,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 
-public class DiffDialogBuilder {
+public class DiffDialogBuilder<RS extends FactoryBase<?,RS>> {
 
     private LanguageText conflictText= new LanguageText().en("Changes").de("Konflikte");
     private LanguageText changesText= new LanguageText().en("Changes").de("Änderungen");
@@ -58,8 +59,8 @@ public class DiffDialogBuilder {
 //    }
 
 
-    public void createDiffDialog(MergeDiffInfo<?> mergeDiff, String title, Window owner) {
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign, attributeVisualisationMappingBuilder);
+    public void createDiffDialog(MergeDiffInfo<RS> mergeDiff, String title, Window owner) {
+        final FactoryDiffWidget<RS> factoryDiffWidget = new FactoryDiffWidget<>(uniformDesign, attributeVisualisationMappingBuilder);
         factoryDiffWidget.updateMergeDiff(mergeDiff);
 
 
@@ -91,11 +92,11 @@ public class DiffDialogBuilder {
         dialog.showAndWait();
     }
 
-    public void createDiffDialog(FactoryUpdateLog factoryLog, String title, Window owner){
-        final FactoryDiffWidget factoryDiffWidget = new FactoryDiffWidget(uniformDesign, attributeVisualisationMappingBuilder);
+    public void createDiffDialog(FactoryUpdateLog<RS> factoryLog, String title, Window owner){
+        final FactoryDiffWidget<RS> factoryDiffWidget = new FactoryDiffWidget<>(uniformDesign, attributeVisualisationMappingBuilder);
         factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
 
-        final FactoryUpdateLogWidget factoryLogWidget = new FactoryUpdateLogWidget();
+        final FactoryUpdateLogWidget<RS> factoryLogWidget = new FactoryUpdateLogWidget<>();
         factoryLogWidget.updateLog(factoryLog);
 
         Dialog<Void> dialog = new Dialog<>();

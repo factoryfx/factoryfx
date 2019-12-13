@@ -56,9 +56,8 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @Path("/createNewFactory")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @SuppressWarnings("unchecked")
     public FactoryBase<?,R> createNewFactory(AttributeAdressingRequest request) {
-        Class newFactoryClass=null;
+        Class<? extends FactoryBase<?,?>> newFactoryClass=null;
         AttributeAndMetadata attribute = resolveAttribute(request);
         if (attribute.attribute instanceof FactoryBaseAttribute){
             newFactoryClass=attribute.attributeMetadata.referenceClass;
@@ -67,7 +66,7 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
             newFactoryClass=attribute.attributeMetadata.referenceClass;
         }
         factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(microservice.prepareNewFactory().root);
-        return (FactoryBase<?, R>) factoryTreeBuilderBasedAttributeSetup.createNewFactory(newFactoryClass).get(0);
+        return factoryTreeBuilderBasedAttributeSetup.createNewFactory(newFactoryClass).get(0);
     }
     
     public static class AttributeAdressingRequest {

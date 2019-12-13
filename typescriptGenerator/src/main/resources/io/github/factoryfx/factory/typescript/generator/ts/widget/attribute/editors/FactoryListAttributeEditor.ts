@@ -1,4 +1,3 @@
-import {DomUtility} from "../../../DomUtility";
 import {Data} from "../../../Data";
 import {AttributeAccessor} from "../../../AttributeAccessor";
 import {AttributeEditorWidget} from "../AttributeEditorWidget";
@@ -30,7 +29,7 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget{
             ul.appendChild(li);
         }
         ul.style.marginBottom="16px";
-        ul.hidden = values.length===0
+        ul.hidden = values.length===0;
 
         let newButton: HTMLButtonElement = BootstrapUtility.createButtonPrimary();
         newButton.textContent="add";

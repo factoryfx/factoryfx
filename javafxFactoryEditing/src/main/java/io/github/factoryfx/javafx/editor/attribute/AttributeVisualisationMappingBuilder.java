@@ -87,11 +87,11 @@ public class AttributeVisualisationMappingBuilder {
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,DoubleAttribute.class,Double.class,(attribute)-> new DoubleAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), DoubleAttribute::new));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,EncryptedStringAttribute.class,EncryptedString.class,(attribute)-> new EncryptedStringAttributeVisualisation(attribute, new ValidationDecoration(uniformDesign),uniformDesign), EncryptedStringAttribute::new));
 
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((attribute)->attribute instanceof EnumAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
-            return new EnumAttributeVisualisation((EnumAttribute)attribute,attributeMetadata, new ValidationDecoration(uniformDesign),uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<>((attribute)->attribute instanceof EnumAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
+            return new EnumAttributeVisualisation<>((EnumAttribute<?>)attribute,attributeMetadata, new ValidationDecoration(uniformDesign),uniformDesign);
         }));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((attribute)->attribute instanceof EnumListAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
-            return new EnumListAttributeVisualisation((EnumListAttribute)attribute,attributeMetadata,new ValidationDecoration(uniformDesign),uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<>((attribute)->attribute instanceof EnumListAttribute,(attribute,attributeMetadata, navigateToData, previousData)->{
+            return new EnumListAttributeVisualisation<>((EnumListAttribute<?>)attribute,attributeMetadata,new ValidationDecoration(uniformDesign),uniformDesign);
         }));
 
 
@@ -115,9 +115,9 @@ public class AttributeVisualisationMappingBuilder {
             return new StringAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign));
         }, StringAttribute::new));
         result.add(uniformDesign->new ValueAttributeVisualisationBuilder<>(uniformDesign,URIAttribute.class,URI.class,(attribute)-> new URIAttributeVisualisation(attribute,new ValidationDecoration(uniformDesign)), URIAttribute::new));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewAttribute,(attribute, attributeMetadata, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation((FactoryViewAttribute)attribute, new ValidationDecoration(uniformDesign), navigateToData, uniformDesign)));
-        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder((a)->a instanceof FactoryViewListAttribute,(attribute, attributeMetadata, navigateToData, previousData)->{
-            ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation((FactoryViewListAttribute)attribute,new ValidationDecoration(uniformDesign), navigateToData, uniformDesign);
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<>((a)->a instanceof FactoryViewAttribute,(attribute, attributeMetadata, navigateToData, previousData)-> new ViewReferenceAttributeVisualisation<>((FactoryViewAttribute<?,?,?>)attribute, new ValidationDecoration(uniformDesign), navigateToData, uniformDesign)));
+        result.add(uniformDesign->new SimpleAttributeVisualisationBuilder<>((a)->a instanceof FactoryViewListAttribute,(attribute, attributeMetadata, navigateToData, previousData)->{
+            ViewListReferenceAttributeVisualisation visualisation = new ViewListReferenceAttributeVisualisation<>((FactoryViewListAttribute<?,?,?>)attribute,new ValidationDecoration(uniformDesign), navigateToData, uniformDesign);
             ExpandableAttributeVisualisation expandableAttributeVisualisation= new ExpandableAttributeVisualisation(visualisation,uniformDesign,(l)->"Items: "+((List<FactoryBase<?,?>>)l).size(),FontAwesome.Glyph.LIST);
             if (((FactoryViewListAttribute)attribute).get().contains(previousData)){
                 expandableAttributeVisualisation.expand();

@@ -25,7 +25,7 @@ public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends
         users.validation(value -> {
             HashSet<String> set = new HashSet<>();
             LanguageText en = new LanguageText().en("user name is not unique");
-            for (UserFactory user : users) {
+            for (UserFactory<R> user : users) {
                 if (!set.add(user.name.get())) {
                     return new ValidationResult(true, en);
                 }

@@ -1,4 +1,3 @@
-import {WidgetModel} from "../../../base/WidgetModel";
 import {EncryptedStringAttributeEditor} from "./EncryptedStringAttributeEditor";
 import {AttributeAccessorValue} from "../../../base/AttributeAccessorValue";
 import {StringValue} from "../../../base/StringValue";

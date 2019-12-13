@@ -21,8 +21,8 @@ import java.util.stream.Stream;
 
 public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> {
 
-    private Constructor constructor;
-    private final Class<? extends FactoryBase<?,?>> clazz;
+    private Constructor<F> constructor;
+    private final Class<F> clazz;
 
     public FactoryMetadata(Class<F> clazz){
         this.clazz=clazz;
@@ -155,7 +155,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 //            }
 
 
-            AttributeFieldAccessor<F,?> attributeFieldAccessor = null;
+            AttributeFieldAccessor<F,?> attributeFieldAccessor;
             try {
                 attributeFieldAccessor = new AttributeFieldAccessor<>(lookup.unreflectGetter(field));
             } catch (IllegalAccessException e) {
@@ -245,7 +245,6 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public F newCopyInstance(F data) {
         F result;
         if (newCopyInstanceSupplier !=null && data!=null){
@@ -265,7 +264,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
             }
 
             try {
-                result = (F) constructor.newInstance(defaultConstructor);
+                result = constructor.newInstance(defaultConstructor);
             } catch (InstantiationException | InvocationTargetException | IllegalAccessException e ) {
                 throw new RuntimeException(clazz.getName(),e);
             }

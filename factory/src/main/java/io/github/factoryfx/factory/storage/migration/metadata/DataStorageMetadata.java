@@ -105,11 +105,10 @@ public class DataStorageMetadata {
     }
 
 
-    @SuppressWarnings("unchecked")
     public void markRemovedAttributes(){
         try {
-            Class aClass = Class.forName(className);
-            FactoryBase<?,?> data = FactoryMetadataManager.getMetadata(aClass).newInstance();
+            Class<?> aClass = Class.forName(className);
+            FactoryBase<?,?> data = FactoryMetadataManager.getMetadataUnsafe(aClass).newInstance();
 
             Set<String> currentAttributeVariableNames= new HashSet<>();
             data.internal().visitAttributesMetadata((attributeMetadata) -> currentAttributeVariableNames.add(attributeMetadata.attributeVariableName));
@@ -125,12 +124,11 @@ public class DataStorageMetadata {
             }
         }
     }
-
-    @SuppressWarnings("unchecked")
+    
     public void markRetypedAttributes(){
         try {
-            Class aClass = Class.forName(className);
-            FactoryMetadata metadata = FactoryMetadataManager.getMetadata(aClass);
+            Class<?> aClass = Class.forName(className);
+            FactoryMetadata<?,?> metadata = FactoryMetadataManager.getMetadataUnsafe(aClass);
             metadata.visitAttributeMetadata((currentAttributeMetadata) -> {
                 AttributeStorageMetadata attributeMetadata = getAttribute(currentAttributeMetadata.attributeVariableName);
                 if (attributeMetadata!=null) { //not a removed attribute

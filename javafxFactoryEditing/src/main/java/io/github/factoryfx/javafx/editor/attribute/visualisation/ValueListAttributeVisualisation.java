@@ -28,13 +28,13 @@ import io.github.factoryfx.javafx.util.UniformDesign;
 
 import java.util.List;
 
-public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>> extends ListAttributeVisualisation<T,A> {
+public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>, AD extends Attribute<T,AD>> extends ListAttributeVisualisation<T,A> {
     private final UniformDesign uniformDesign;
-    private final Attribute<T,?> detailAttribute;
+    private final AD detailAttribute;
     private final AttributeVisualisation detailAttributeVisualisation;
     private final A valueListAttribute;
 
-    public ValueListAttributeVisualisation(A valueListAttribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Attribute<T,?> detailAttribute, AttributeVisualisation detailAttributeVisualisation) {
+    public ValueListAttributeVisualisation(A valueListAttribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, AD detailAttribute, AttributeVisualisation detailAttributeVisualisation) {
         super(valueListAttribute,validationDecoration);
         this.uniformDesign = uniformDesign;
         this.detailAttribute = detailAttribute;
@@ -43,7 +43,6 @@ public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>> 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Node createValueListVisualisation() {
         TextField textField = new TextField();
         TypedTextFieldHelper.setupLongTextField(textField);
@@ -85,7 +84,7 @@ public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>,A>> 
         tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
             detailAttribute.set(tableView.getSelectionModel().getSelectedItem());
         });
-        AttributeChangeListener detailAttributeChangeListener = (attribute1, value) -> {
+        AttributeChangeListener<T,AD> detailAttributeChangeListener = (attribute1, value) -> {
             Platform.runLater(() -> {
                 if (value instanceof String){
                     addButton.setDisable("".equals(value));

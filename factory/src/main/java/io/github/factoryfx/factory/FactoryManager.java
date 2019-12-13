@@ -119,7 +119,6 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         return currentFactoryRoot.getRoot();
     }
 
-    @SuppressWarnings("unchecked")
     public L start(RootFactoryWrapper<R> newFactory){
         FactoryBase<?,?> factoryBaseInFocus=null;//for better exception reporting
         try {
@@ -138,12 +137,11 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
             logger.info(currentFactoryRoot.logStartDisplayTextDeep());
             return currentFactoryRoot.getRoot().internal().getLiveObject();
         } catch (Exception e){
-            factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction(this,null,currentFactoryRoot,new ArrayList<>()));
+            factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this,null,currentFactoryRoot,new ArrayList<>()));
             return null;
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void stop(){
         if (!isStarted()){
             throw new IllegalStateException("server is not started");
@@ -156,7 +154,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
                 factory.internal().destroyRemoved();
             }
         } catch(Exception e){
-            factoryExceptionHandler.destroyException(e,factoryBaseInFocus,new ExceptionResponseAction(this, null,null,new ArrayList<>()));
+            factoryExceptionHandler.destroyException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this, null,null,new ArrayList<>()));
         }
         currentFactoryRoot=null;
 

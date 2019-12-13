@@ -1,3 +1,4 @@
+//generated code don't edit manually
 export class BootstrapUtility {
     static createInputGroup(input, button) {
         let inputGroup = document.createElement("div");

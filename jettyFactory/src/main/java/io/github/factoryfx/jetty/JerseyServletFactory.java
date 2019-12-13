@@ -42,7 +42,7 @@ public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFact
 
         additionalJaxrsComponents.instances().forEach(r -> {
             if (r instanceof Class) {
-                resourceConfig.register((Class) r);
+                resourceConfig.register((Class<?>) r);
             } else {
                 resourceConfig.register(r);
             }

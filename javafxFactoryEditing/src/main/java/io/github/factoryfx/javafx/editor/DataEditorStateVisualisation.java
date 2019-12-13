@@ -5,7 +5,7 @@ import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
-import io.github.factoryfx.javafx.util.DataObservableDisplayText;
+import io.github.factoryfx.javafx.util.ObservableFactoryDisplayText;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -93,7 +93,7 @@ public class DataEditorStateVisualisation extends BorderPane {
             breadCrumbButton.setStyle("-fx-background-radius: 0");
 
             if (param.getValue()!=null){
-                breadCrumbButton.textProperty().bind(new DataObservableDisplayText(param.getValue()).get());
+                breadCrumbButton.textProperty().bind(new ObservableFactoryDisplayText(param.getValue()));
             }
             if (currentData==param.getValue()){
                 breadCrumbButton.setStyle("-fx-background-radius: 0; -fx-font-weight: bold;");

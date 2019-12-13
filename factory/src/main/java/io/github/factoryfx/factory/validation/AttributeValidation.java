@@ -11,7 +11,7 @@ import io.github.factoryfx.factory.attribute.Attribute;
 
 public class AttributeValidation<T> {
     private final Validation<T> validation;
-    private final Attribute[] dependencies;
+    private final Attribute<?,?>[] dependencies;
 
     public AttributeValidation(Validation<T> validation, Attribute<?,?>... dependencies) {
         this.validation = validation;

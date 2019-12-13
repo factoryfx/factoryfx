@@ -71,4 +71,4 @@ This saves mapping effort between multiple files. (template <=> java data class 
 For each object a corresponding factory has to be created. This boilerplate code is probably still better than a new DSL.
 HelloWorldFactory is essentially a structure convention which can be misused unintentionally. 
 To validate the structure you can use the FactoryStyleValidator in a unit test. 
-[Test example](./../../../../../../../../../example/src/test/java/io/github/factoryfx/example/FactoryTest.java)
+[Test example](./../../../../../../../../../example/src/test/java/io/github/factoryfx/example/FactoryValidatorTest.java)

@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DataEnumTs {
-    private final Class<? extends Enum> enumClass;
+    private final Class<? extends Enum<?>> enumClass;
     private final Path targetPath;
 
     public DataEnumTs(Class<? extends Enum<?>> enumClass, Path targetPath) {

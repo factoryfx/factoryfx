@@ -11,7 +11,7 @@ export class DynamicDataDictionary{
         let result: AttributeMetadataAndAttributeName[] = [];
 
         let attributeNameToItem = this.data.classNameToItem[javaClazz].attributeNameToItem;
-        for (var attributeName in attributeNameToItem) {
+        for (let attributeName in attributeNameToItem) {
             let dynamicDataDictionaryAttributeItem = attributeNameToItem[attributeName];
             if (attributeNameToItem.hasOwnProperty(attributeName)) {
                 result.push(new AttributeMetadataAndAttributeName(

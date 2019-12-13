@@ -54,7 +54,7 @@ public class FactoryTemplateId<F extends FactoryBase<?,?>> {
         return clazz==clazzMatch;
     }
 
-    public boolean isDuplicate(FactoryTemplateId templateId) {
+    public boolean isDuplicate(FactoryTemplateId<?> templateId) {
         if (name==null && templateId.name==null) {
             return clazz==templateId.clazz;
         }

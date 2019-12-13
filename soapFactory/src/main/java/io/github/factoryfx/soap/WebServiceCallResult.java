@@ -22,7 +22,7 @@ public class WebServiceCallResult {
     }
 
     @SuppressWarnings("unchecked")
-    public JAXBElement createFaultDetail() {
+    public JAXBElement<?> createFaultDetail() {
         try {
             WebFault faultAnnotation = fault.getClass().getAnnotation(WebFault.class);
             if (faultAnnotation == null) {

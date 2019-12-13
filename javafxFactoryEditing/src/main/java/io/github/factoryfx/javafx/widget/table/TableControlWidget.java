@@ -92,11 +92,8 @@ public class TableControlWidget<T> implements Widget {
                 count.setText("" + filteredData.size());
                 tableView.getItems().addListener((ListChangeListener<T>) c -> {
                     if (c != null) {
-                        StringBuilder format = new StringBuilder();
-                        for (int i = 0; i < String.valueOf(filteredData.getSource().size()).length(); i++) {
-                            format.append("0");
-                        }
-                        DecimalFormat decimalFormat = new DecimalFormat(format.toString());
+                        String format = "0".repeat(String.valueOf(filteredData.getSource().size()).length());
+                        DecimalFormat decimalFormat = new DecimalFormat(format);
                         count.setText(decimalFormat.format(filteredData.size()));
                     }
                 });

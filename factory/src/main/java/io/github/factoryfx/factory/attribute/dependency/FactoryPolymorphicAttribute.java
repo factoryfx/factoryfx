@@ -62,7 +62,7 @@ public class FactoryPolymorphicAttribute<L> extends FactoryBaseAttribute<L,Facto
      * @return self
      */
     @SafeVarargs
-    public final FactoryPolymorphicAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public final FactoryPolymorphicAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<L>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         new FactoryPolymorphicUtil<L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
         return this;

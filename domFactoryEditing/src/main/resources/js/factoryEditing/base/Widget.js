@@ -1,3 +1,4 @@
+//generated code don't edit manually
 export class Widget {
     bindModel() {
         this.reRender(this.render());

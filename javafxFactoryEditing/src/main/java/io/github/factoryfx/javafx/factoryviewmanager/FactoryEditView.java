@@ -56,9 +56,9 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
     private final UniformDesign uniformDesign;
     private final DataEditor dataEditor;
     private BorderPane borderPane;
-    private final DiffDialogBuilder diffDialogBuilder;
+    private final DiffDialogBuilder<R> diffDialogBuilder;
 
-    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<R> factoryEditManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder diffDialogBuilder) {
+    public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<R> factoryEditManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder<R> diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
         this.factoryEditManager = factoryEditManager;
         this.content = content;
@@ -81,7 +81,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
 
                 result.ifPresent(comment -> {
                     LongRunningActionExecutor.execute(() -> {
-                        final FactoryUpdateLog factoryLog = factoryEditManager.save(comment);
+                        final FactoryUpdateLog<R> factoryLog = factoryEditManager.save(comment);
                         if (factoryLog.failedUpdate()){
                             Platform.runLater(()->{
                                 Alert alter = new Alert(Alert.AlertType.ERROR);

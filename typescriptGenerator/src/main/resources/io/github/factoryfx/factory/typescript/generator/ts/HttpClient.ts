@@ -1,6 +1,4 @@
 import {Data} from "./Data";
-import {WaitAnimationModel} from "./widget/waitannimation/WaitAnimationModel";
-import {RootModel} from "./widget/root/RootModel";
 import {HttpClientStatusReporter} from "./HttpClientStatusReporter";
 import {StoredDataMetadata} from "./StoredDataMetadata";
 
@@ -113,7 +111,7 @@ export class HttpClient {
         request.open("POST",url);
         request.setRequestHeader("Content-type","application/json");
 
-        request.onload=(e)=>{
+        request.onload=(e: ProgressEvent)=>{
             if (request.status >= 200 && request.status < 300) {
                 responseCallback(JSON.parse(request.responseText));
                 this.statusReporter.hideWaitAnimation();
@@ -130,7 +128,7 @@ export class HttpClient {
         request.open("GET",url);
         request.setRequestHeader("Content-type","application/json");
 
-        request.onload=(e)=>{
+        request.onload=(e: ProgressEvent)=>{
             if (request.status >= 200 && request.status < 300) {
                 responseCallback(JSON.parse(request.responseText));
                 this.statusReporter.hideWaitAnimation();

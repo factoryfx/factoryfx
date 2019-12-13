@@ -5,7 +5,7 @@ import {DomUtility} from "../../../DomUtility";
 export class StringListAttributeEditor extends AttributeEditorWidget{
     private  ul: HTMLUListElement;
     constructor(protected attributeAccessor: AttributeAccessor<any>, protected inputId: string) {
-        super(attributeAccessor,inputId)
+        super(attributeAccessor,inputId);
         this.ul = document.createElement("ul");
         this.ul.style.paddingLeft="0px";
     }

@@ -1,7 +1,5 @@
 import {WidgetModel} from "../../base/WidgetModel";
 import {SaveWidget} from "./SaveWidget";
-import {StringValue} from "../../base/StringValue";
-import {FactoryValue} from "../../base/FactoryValue";
 import {BooleanValue} from "../../base/BooleanValue";
 import {Data} from "../../Data";
 import {HttpClient} from "../../HttpClient";

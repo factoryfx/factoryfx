@@ -29,7 +29,7 @@ public class FactoryPolymorphicListAttribute<L> extends FactoryListBaseAttribute
     }
 
     @SafeVarargs
-    public FactoryPolymorphicListAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses) {
+    public FactoryPolymorphicListAttribute(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<L>>... possibleFactoriesClasses) {
         super();
         setup(liveObjectClass,possibleFactoriesClasses);
     }
@@ -62,7 +62,7 @@ public class FactoryPolymorphicListAttribute<L> extends FactoryListBaseAttribute
      * @return self
      */
     @SafeVarargs
-    public final FactoryPolymorphicListAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public final FactoryPolymorphicListAttribute<L> setup(Class<L> liveObjectClass, Class<? extends PolymorphicFactory<L>>... possibleFactoriesClasses){
         this.possibleFactoriesClasses=Arrays.asList(possibleFactoriesClasses);
         new FactoryPolymorphicUtil<L>().setup(this,liveObjectClass,()->this.root,possibleFactoriesClasses);
         return this;

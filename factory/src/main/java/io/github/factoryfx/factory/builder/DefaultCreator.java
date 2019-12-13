@@ -27,12 +27,12 @@ public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,
         result.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
             if (attribute instanceof FactoryAttribute || attribute instanceof ParametrizedObjectCreatorAttribute){
                 FactoryBaseAttribute factoryBaseAttribute = (FactoryBaseAttribute) attribute;
-                Class<? extends FactoryBase> clazz = attributeMetadata.referenceClass;
+                Class<? extends FactoryBase<?,?>> clazz = attributeMetadata.referenceClass;
                 validateAttributeClass(attributeMetadata.attributeVariableName, clazz);
                 if (factoryBaseAttribute.internal_required()){
                     context.check(this.clazz, attributeMetadata.attributeVariableName,clazz);
                 }
-                FactoryBase factoryBase = context.getUnchecked(clazz);
+                FactoryBase<?,?> factoryBase = context.getUnchecked(clazz);
                 factoryBaseAttribute.set(factoryBase);
             }
             if (attribute instanceof FactoryListAttribute){

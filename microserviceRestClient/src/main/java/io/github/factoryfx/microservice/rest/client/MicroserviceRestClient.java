@@ -103,7 +103,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
         return response.locale;
     }
 
-    public FactoryUpdateLog revert(StoredDataMetadata historyFactory) {
+    public FactoryUpdateLog<R> revert(StoredDataMetadata historyFactory) {
         return executeWithServerExceptionReporting(()-> microserviceResourceApi.revert(new UserAwareRequest<>(user,passwordHash,historyFactory)));
     }
 

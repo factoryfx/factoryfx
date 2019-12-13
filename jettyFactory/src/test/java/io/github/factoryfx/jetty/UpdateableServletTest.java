@@ -170,7 +170,6 @@ public class UpdateableServletTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test_add_jerseyServlet() throws IOException, InterruptedException {
 

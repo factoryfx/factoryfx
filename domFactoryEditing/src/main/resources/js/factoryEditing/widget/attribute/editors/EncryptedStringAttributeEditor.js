@@ -1,3 +1,4 @@
+//generated code don't edit manually
 import { AttributeEditorWidget } from "../AttributeEditorWidget";
 import { BootstrapUtility } from "../../../BootstrapUtility";
 export class EncryptedStringAttributeEditor extends AttributeEditorWidget {

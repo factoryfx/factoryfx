@@ -33,6 +33,6 @@ public class HistoryViewFactory extends WidgetFactory {
         return new HistoryWidget<>(uniformDesign.instance(),
                                    longRunningActionExecutor.instance(),
                                    restClient.instance(),
-                                   new DiffDialogBuilder(uniformDesign.instance(), attributeEditorBuilder.instance()));
+                                   new DiffDialogBuilder<>(uniformDesign.instance(), attributeEditorBuilder.instance()));
     }
 }

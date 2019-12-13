@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.primitive.list.*;
@@ -17,7 +16,7 @@ public class AttributeToTsMapperManager {
 
     public static class AttributeToTsMapperManagerCreator<R extends FactoryBase<?,R>>{
         public AttributeToTsMapperManager create(Map<Class<? extends FactoryBase<?,R>>, TsClassConstructed> dataToOverrideTs, Set<TsEnumConstructed> tsEnums, TsFile dataType){
-            HashMap<Class<? extends Attribute>, AttributeToTsMapper> classToInfo = new HashMap<>();
+            HashMap<Class<?>, AttributeToTsMapper> classToInfo = new HashMap<>();
             classToInfo.put(FactoryAttribute.class, new FactoryAttributeToTsMapper<>(dataToOverrideTs,dataType));
             classToInfo.put(FactoryListAttribute.class, new FactoryListAttributeToTsMapper<>(dataToOverrideTs,dataType));
 
@@ -60,7 +59,7 @@ public class AttributeToTsMapperManager {
             classToInfo.put(ShortListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.NUMBER));
             classToInfo.put(URIListAttribute.class, new ValueListAttributeToTsMapper(TsTypePrimitive.STRING));
 
-            Set<Class<? extends Attribute>> ignoredAttributes = new HashSet<>();
+            Set<Class<?>> ignoredAttributes = new HashSet<>();
             ignoredAttributes.add(ObjectValueAttribute.class);
 
             return new AttributeToTsMapperManager(classToInfo,ignoredAttributes);
@@ -68,10 +67,10 @@ public class AttributeToTsMapperManager {
         }
     }
 
-    private final Map<Class<? extends Attribute>, AttributeToTsMapper> attributeClassToMapper;
-    private final Set<Class<? extends Attribute>> ignoredAttributes;
+    private final Map<Class<?>, AttributeToTsMapper> attributeClassToMapper;
+    private final Set<Class<?>> ignoredAttributes;
 
-    public AttributeToTsMapperManager(Map<Class<? extends Attribute>, AttributeToTsMapper> attributeClassToMapper, Set<Class<? extends Attribute>> ignoredAttributes) {
+    public AttributeToTsMapperManager(Map<Class<?>, AttributeToTsMapper> attributeClassToMapper, Set<Class<?>> ignoredAttributes) {
         this.attributeClassToMapper = attributeClassToMapper;
         this.ignoredAttributes = ignoredAttributes;
     }
@@ -84,7 +83,7 @@ public class AttributeToTsMapperManager {
         throw new IllegalStateException("unknown attribute type"+metadata.attributeClass);
     }
 
-    public boolean isMappable(Class<? extends Attribute> attribute){
+    public boolean isMappable(Class<?> attribute){
         return !ignoredAttributes.contains(attribute);
     }
 
@@ -106,7 +105,7 @@ public class AttributeToTsMapperManager {
 
     public Set<String> getAttributeTypeValues() {
         Set<String> result = new HashSet<>();
-        for (Class<? extends Attribute> clazz : this.attributeClassToMapper.keySet()) {
+        for (Class<?> clazz : this.attributeClassToMapper.keySet()) {
             result.add(clazz.getSimpleName());
         }
         return result;

@@ -199,7 +199,7 @@ export class FactoryEditor extends Widget {
         ol.style.borderRadius = "0";
         ol.style.padding="0px";
         ol.style.backgroundColor="transparent";
-        ol.style.margin="0px"
+        ol.style.margin="0px";
 
         let counter: number = 0;
         let path = data.getPath();

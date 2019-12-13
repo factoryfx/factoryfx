@@ -11,7 +11,6 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.RawFactoryDataAndMetadata;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
-import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.storage.migration.datamigration.*;
 
@@ -35,9 +34,9 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         this.attributeFiller = attributeFiller;
     }
 
-    List<AttributeRename> renameAttributeMigrations =new ArrayList<>();
+    List<AttributeRename<R,?,?>> renameAttributeMigrations =new ArrayList<>();
     List<ClassRename> renameClassMigrations =new ArrayList<>();
-    List<AttributeRetype> retypeAttributeMigrations = new ArrayList<>();
+    List<AttributeRetype<R,?,?>> retypeAttributeMigrations = new ArrayList<>();
 
     List<SingletonDataRestore<R,?>> singletonBasedRestorations = new ArrayList<>();
     List<PathDataRestore<R,?>> pathBasedRestorations = new ArrayList<>();

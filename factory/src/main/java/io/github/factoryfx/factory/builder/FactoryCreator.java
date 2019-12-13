@@ -29,7 +29,7 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
     public boolean match(Class<?> clazzMatch) {
         return templateId.match(clazzMatch);
     }
-    public boolean isDuplicate(FactoryCreator factoryCreator){
+    public boolean isDuplicate(FactoryCreator<?,R> factoryCreator){
         return templateId.isDuplicate(factoryCreator.templateId);
     }
 

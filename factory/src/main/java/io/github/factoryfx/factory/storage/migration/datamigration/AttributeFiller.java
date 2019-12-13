@@ -6,7 +6,7 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 
 /** fill new Attributes with structure from FactoryTreeBuilder s**/
 @FunctionalInterface
-public interface AttributeFiller<R extends FactoryBase>  {
+public interface AttributeFiller<R extends FactoryBase<?,R>>  {
 
 
     void fillNewAttributes(R root, DataStorageMetadataDictionary oldDataStorageMetadataDictionary);

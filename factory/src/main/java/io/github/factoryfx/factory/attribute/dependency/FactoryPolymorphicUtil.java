@@ -14,12 +14,12 @@ import java.util.function.Supplier;
 public class FactoryPolymorphicUtil<L> {
 
     @SuppressWarnings("unchecked")
-    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<FactoryBase<?,?>> root, Class<? extends PolymorphicFactory<?>>... possibleFactoriesClasses){
+    public void setup(ReferenceBaseAttribute<FactoryBase<? extends L,?>,?,?> attribute, Class<L> liveObjectClass, Supplier<FactoryBase<?,?>> root, Class<? extends PolymorphicFactory<L>>... possibleFactoriesClasses){
         attribute.possibleValueProvider(data -> {
             Set<FactoryBase<? extends L, ?>> result = new HashSet<>();
             for (FactoryBase<?,?> factory: root.get().internal().collectChildrenDeep()){
                 if (factory instanceof PolymorphicFactory){
-                    if (liveObjectClass.isAssignableFrom(((PolymorphicFactory)factory).getLiveObjectClass())){
+                    if (liveObjectClass.isAssignableFrom(((PolymorphicFactory<L>)factory).getLiveObjectClass())){
                         result.add((FactoryBase<L, ?>) factory);
                     }
                 }
@@ -29,14 +29,14 @@ public class FactoryPolymorphicUtil<L> {
         });
 
         //compile time validation doesn't work java generic limitation
-        for (Class<? extends PolymorphicFactory<?>> clazz: possibleFactoriesClasses){
+        for (Class<? extends PolymorphicFactory<L>> clazz: possibleFactoriesClasses){
 
             try {
-                Constructor constructor = clazz.getDeclaredConstructor();
+                Constructor<? extends PolymorphicFactory<L>> constructor = clazz.getDeclaredConstructor();
                 constructor.setAccessible(true);
-                PolymorphicFactory<?> newInstance = (PolymorphicFactory<?>) constructor.newInstance(new Object[0]);
+                PolymorphicFactory<L> newInstance = constructor.newInstance();
 
-                if (!liveObjectClass.isAssignableFrom(((PolymorphicFactory)newInstance).getLiveObjectClass())){
+                if (!liveObjectClass.isAssignableFrom(newInstance.getLiveObjectClass())){
                     throw new IllegalArgumentException("class has wrong liveobject: "+clazz);
                 }
 

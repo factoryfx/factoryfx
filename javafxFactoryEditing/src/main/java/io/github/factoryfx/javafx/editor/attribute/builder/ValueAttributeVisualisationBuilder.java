@@ -63,9 +63,8 @@ public class ValueAttributeVisualisationBuilder<T,A extends Attribute<T,A>, AL e
     @SuppressWarnings("unchecked")
     public AttributeVisualisation createValueListVisualisation(Attribute<?,?> attribute, AttributeMetadata attributeMetadata) {
         A detailAttribute = attributeCreator.get();
-        return new ExpandableAttributeVisualisation<List<T>,AL>(
-                new ValueListAttributeVisualisation(
-                        attribute,
+        return new ExpandableAttributeVisualisation<>(
+                new ValueListAttributeVisualisation<>((AL) attribute,
                         new ValidationDecoration(uniformDesign),
                         uniformDesign,
                         detailAttribute,

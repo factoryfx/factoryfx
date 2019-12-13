@@ -39,7 +39,7 @@ import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 import org.controlsfx.glyphfont.FontAwesome;
 
-public class HistoryWidget<R extends FactoryBase<?,R>,S> implements Widget {
+public class HistoryWidget<RS extends FactoryBase<?,RS>> implements Widget {
 
     private LanguageText changesText= new LanguageText().en("Changes").de("Änderungen");
     private LanguageText revertText= new LanguageText().en("Revert to").de("Zurücksetzen zu");
@@ -53,12 +53,12 @@ public class HistoryWidget<R extends FactoryBase<?,R>,S> implements Widget {
 
     private final UniformDesign uniformDesign;
     private final LongRunningActionExecutor longRunningActionExecutor;
-    private final MicroserviceRestClient<R> restClient;
+    private final MicroserviceRestClient<RS> restClient;
     private Consumer<List<StoredDataMetadata>> tableUpdater;
-    private final DiffDialogBuilder diffDialogBuilder;
+    private final DiffDialogBuilder<RS> diffDialogBuilder;
     private BooleanBinding firstVersionSelected;
 
-    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<R> restClient, DiffDialogBuilder diffDialogBuilder) {
+    public HistoryWidget(UniformDesign uniformDesign, LongRunningActionExecutor longRunningActionExecutor, MicroserviceRestClient<RS> restClient, DiffDialogBuilder<RS> diffDialogBuilder) {
         this.uniformDesign=uniformDesign;
         this.longRunningActionExecutor = longRunningActionExecutor;
         this.restClient= restClient;
@@ -147,13 +147,13 @@ public class HistoryWidget<R extends FactoryBase<?,R>,S> implements Widget {
 
     private void showDiff(TableView<StoredDataMetadata> tableView) {
         if (!isFirstVersion(tableView)){
-            final MergeDiffInfo<R> diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
+            final MergeDiffInfo<RS> diff = restClient.getDiff(tableView.getSelectionModel().getSelectedItem());
             Platform.runLater(() -> diffDialogBuilder.createDiffDialog(diff,uniformDesign.getText(changesText),tableView.getScene().getWindow()));
         }
     }
 
     private void revert(TableView<StoredDataMetadata> tableView) {
-        final FactoryUpdateLog factoryUpdateLog = restClient.revert(tableView.getSelectionModel().getSelectedItem());
+        final FactoryUpdateLog<RS> factoryUpdateLog = restClient.revert(tableView.getSelectionModel().getSelectedItem());
         Platform.runLater(() -> diffDialogBuilder.createDiffDialog(factoryUpdateLog,uniformDesign.getText(changesText),tableView.getScene().getWindow()));
         update();
     }

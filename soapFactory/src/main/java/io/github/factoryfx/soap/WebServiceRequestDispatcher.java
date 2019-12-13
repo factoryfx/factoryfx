@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class WebServiceRequestDispatcher {
 
     private final Object webService;
-    private final HashMap<Class,Invoker> dispatchMap = new HashMap<>();
+    private final HashMap<Class<?>,Invoker> dispatchMap = new HashMap<>();
 
     static final class RequestContext {
         final HttpServletRequest request;

@@ -3,7 +3,7 @@ package io.github.factoryfx.javafx.widget.factory.masterdetail;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.javafx.editor.DataEditor;
-import io.github.factoryfx.javafx.util.DataObservableDisplayText;
+import io.github.factoryfx.javafx.util.ObservableFactoryDisplayText;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import io.github.factoryfx.javafx.widget.Widget;
 import io.github.factoryfx.javafx.widget.factory.listedit.FactoryListAttributeEditWidget;
@@ -35,6 +35,11 @@ public class DataViewWidget<RS extends FactoryBase<?,RS>,L,F extends FactoryBase
         this.dataEditor = dataEditor;
         this.uniformDesign = uniformDesign;
         this.tableView = tableView;
+
+        column = new TableColumn<>("Data");
+        column.setCellValueFactory(param -> new ObservableFactoryDisplayText(param.getValue()));
+
+        listEditWidget = new BorderPane();
     }
 
     public DataViewWidget(DataEditor dataEditor, UniformDesign uniformDesign) {
@@ -47,8 +52,6 @@ public class DataViewWidget<RS extends FactoryBase<?,RS>,L,F extends FactoryBase
         splitPane.setOrientation(orientation);
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        column = new TableColumn<>("Data");
-        column.setCellValueFactory(param -> new DataObservableDisplayText(param.getValue()).get());
         tableView.getColumns().add(column);
 
         BorderPane borderPaneWrapper = new BorderPane();
@@ -65,11 +68,7 @@ public class DataViewWidget<RS extends FactoryBase<?,RS>,L,F extends FactoryBase
             dataEditor.edit(newValue);
         });
 
-
-        listEditWidget = new BorderPane();
-
-
-        TableControlWidget tableControlWidget= new TableControlWidget<>(tableView, uniformDesign);
+        TableControlWidget<F> tableControlWidget= new TableControlWidget<>(tableView, uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();
         HBox hBox = new HBox();
         hBox.getChildren().addAll(listEditWidget, tableControlWidgetContent);
@@ -114,12 +113,12 @@ public class DataViewWidget<RS extends FactoryBase<?,RS>,L,F extends FactoryBase
         tableView.getStyleClass().add("hidden-tableview-headers");
     }
 
-    public DataViewWidget setDividerPositions(double dividerPosition) {
+    public DataViewWidget<RS,L,F> setDividerPositions(double dividerPosition) {
         this.dividerPosition = dividerPosition;
         return this;
     }
 
-    public DataViewWidget setOrientation(Orientation orientation) {
+    public DataViewWidget<RS,L,F> setOrientation(Orientation orientation) {
         this.orientation = orientation;
         return this;
     }

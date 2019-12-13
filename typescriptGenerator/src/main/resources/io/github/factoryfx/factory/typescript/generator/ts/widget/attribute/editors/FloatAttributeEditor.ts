@@ -1,4 +1,3 @@
-import {AttributeEditorWidget} from "../AttributeEditorWidget";
 import {AttributeAccessor} from "../../../AttributeAccessor";
 import {NumberBaseAttributeEditor} from "./NumberBaseAttributeEditor";
 

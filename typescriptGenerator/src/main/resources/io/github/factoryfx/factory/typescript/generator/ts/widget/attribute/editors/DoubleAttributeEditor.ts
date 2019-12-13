@@ -1,5 +1,4 @@
 import {AttributeAccessor} from "../../../AttributeAccessor";
-import {AttributeEditorWidget} from "../AttributeEditorWidget";
 import {NumberBaseAttributeEditor} from "./NumberBaseAttributeEditor";
 
 export class DoubleAttributeEditor extends NumberBaseAttributeEditor{

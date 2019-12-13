@@ -1,3 +1,4 @@
+//generated code don't edit manually
 import { EncryptedStringAttributeEditor } from "./EncryptedStringAttributeEditor";
 import { AttributeAccessorValue } from "../../../base/AttributeAccessorValue";
 import { StringValue } from "../../../base/StringValue";

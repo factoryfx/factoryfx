@@ -44,7 +44,7 @@ public class EnumListAttribute<E extends Enum<E>> extends ValueListAttribute<E,E
         return this;
     }
 
-    public String internal_enumDisplayText(Enum<?> enumValue,Function<LanguageText,String> uniformDesign){
+    public String internal_enumDisplayText(E enumValue,Function<LanguageText,String> uniformDesign){
         if (enumValue==null){
             return "-";
         }

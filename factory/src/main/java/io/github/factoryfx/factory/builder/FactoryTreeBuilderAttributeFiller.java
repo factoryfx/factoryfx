@@ -28,7 +28,7 @@ public class FactoryTreeBuilderAttributeFiller<L,R extends FactoryBase<L,R>> imp
                 }
             });
             if (containsNewAttributes[0]){
-                Class aClass = factory.getClass();
+                Class<? extends FactoryBase> aClass = factory.getClass();
                 FactoryBase<?, R> newBuild = factoryTreeBuilder.buildNewSubTree(aClass);
                 FactoryMetadataManager.getMetadata(newBuild.getClass()).addBackReferencesToAttributes(newBuild,root);
 

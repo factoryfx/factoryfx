@@ -24,7 +24,7 @@ public class FactoryEditViewFactory<RS extends FactoryBase<?,RS>> extends Widget
     public final FactoryAttribute<UniformDesign, UniformDesignFactory> uniformDesign = new FactoryAttribute<>();
     public final FactoryAttribute<DataEditor, DataEditorFactory> dataEditorFactory = new FactoryAttribute<>();
     public final FactoryAttribute<FactoryAwareWidget<RS>,FactoryAwareWidgetFactory<RS>> contentWidgetFactory = new FactoryAttribute<>();
-    public final FactoryAttribute<DiffDialogBuilder, DiffDialogBuilderFactory> diffDialogBuilder = new FactoryAttribute<>();
+    public final FactoryAttribute<DiffDialogBuilder<RS>, DiffDialogBuilderFactory<RS>> diffDialogBuilder = new FactoryAttribute<>();
 
     @Override
     protected Widget createWidget() {
