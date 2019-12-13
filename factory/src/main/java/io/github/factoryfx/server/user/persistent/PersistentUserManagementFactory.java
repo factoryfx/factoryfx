@@ -1,16 +1,16 @@
 package io.github.factoryfx.server.user.persistent;
 
+import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.server.user.User;
 import io.github.factoryfx.server.user.UserManagement;
 
 import java.util.HashSet;
 
-public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<UserManagement,R> {
+public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<UserManagement,R> {
 
     public final FactoryListAttribute<User, UserFactory<R>> users = new FactoryListAttribute<User, UserFactory<R>>().en("users").de("Benutzer").userNotSelectable();
 
@@ -32,10 +32,5 @@ public class PersistentUserManagementFactory<R extends FactoryBase<?,R>> extends
             }
             return new ValidationResult(false, en);
         });
-    }
-
-    @Override
-    public Class<UserManagement> getLiveObjectClass() {
-        return UserManagement.class;
     }
 }

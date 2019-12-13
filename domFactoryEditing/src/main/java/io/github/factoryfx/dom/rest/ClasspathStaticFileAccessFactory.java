@@ -1,15 +1,9 @@
 package io.github.factoryfx.dom.rest;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
+import io.github.factoryfx.factory.SimpleFactoryBase;
 
-public class ClasspathStaticFileAccessFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<StaticFileAccess,R> {
-
-
-    @Override
-    public Class<StaticFileAccess> getLiveObjectClass() {
-        return StaticFileAccess.class;
-    }
+public class ClasspathStaticFileAccessFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<StaticFileAccess,R> {
 
     @Override
     protected ClasspathStaticFileAccess createImpl() {

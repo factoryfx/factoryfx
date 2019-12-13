@@ -29,6 +29,11 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
     public boolean match(Class<?> clazzMatch) {
         return templateId.match(clazzMatch);
     }
+
+    public boolean matchLiveObjectCLass(Class<?> liveObjectCLass) {
+        return templateId.matchLiveObjectCLass(liveObjectCLass);
+    }
+
     public boolean isDuplicate(FactoryCreator<?,R> factoryCreator){
         return templateId.isDuplicate(factoryCreator.templateId);
     }

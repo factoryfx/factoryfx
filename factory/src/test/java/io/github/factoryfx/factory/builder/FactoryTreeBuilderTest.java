@@ -5,7 +5,6 @@ import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
@@ -145,7 +144,7 @@ public class FactoryTreeBuilderTest {
 
     }
 
-    private static class ErrorPrinterFactory2 extends PolymorphicFactoryBase<Printer,ExamplePolymorphic> {
+    private static class ErrorPrinterFactory2 extends SimpleFactoryBase<Printer,ExamplePolymorphic> {
         @Override
         protected Printer createImpl() {
             return new ErrorPrinter();
@@ -154,7 +153,7 @@ public class FactoryTreeBuilderTest {
     }
 
     public static class ExamplePolymorphic extends FactoryBase<Void,ExamplePolymorphic> {
-        public final FactoryPolymorphicAttribute<Printer> attribute = new FactoryPolymorphicAttribute<>(Printer.class, ErrorPrinterFactory2.class, OutPrinterFactory.class);
+        public final FactoryPolymorphicAttribute<Printer> attribute = new FactoryPolymorphicAttribute<>();
     }
 
 
@@ -622,6 +621,35 @@ public class FactoryTreeBuilderTest {
         createdWithoutBuilder.referenceAttribute.set(new ExampleFactoryB());
         createdWithoutBuilder.internal().finalise();
         Assertions.assertFalse(factoryTreeBuilder.isRebuildAble(createdWithoutBuilder.internal().collectChildrenDeep()));
+    }
+
+    @Test
+    public void test_buildSubTreesForLiveObject(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.referenceListAttribute.set(ctx.getList(ExampleFactoryB.class));
+            factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, ctx -> {
+            io.github.factoryfx.factory.testfactories.ExampleFactoryB factory = new ExampleFactoryB();
+            factory.referenceAttributeC.set(ctx.get(io.github.factoryfx.factory.testfactories.ExampleFactoryC.class));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryC.class, ctx -> {
+            ExampleFactoryC factory = new ExampleFactoryC();
+            factory.stringAttribute.set("hggj");
+            factory.referenceAttribute.set(ctx.get(ExampleFactoryB.class,"2"));
+            return factory;
+        });
+        factoryTreeBuilder.addPrototype(ExampleFactoryB.class, "2", context -> {
+            return new ExampleFactoryB();
+        });
+
+        List<ExampleFactoryB> list = factoryTreeBuilder.buildSubTreesForLiveObject(ExampleLiveObjectB.class);
+        Assertions.assertEquals(2, list.size());
+        Assertions.assertEquals(ExampleFactoryB.class, list.get(0).getClass());
+        Assertions.assertEquals(ExampleFactoryB.class, list.get(1).getClass());
     }
 
 }

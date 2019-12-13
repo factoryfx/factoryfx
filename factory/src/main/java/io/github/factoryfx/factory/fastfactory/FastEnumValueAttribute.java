@@ -20,6 +20,6 @@ public class FastEnumValueAttribute<R extends FactoryBase<?,R>,F extends Factory
     @Override
     @SuppressWarnings("unchecked")
     protected AttributeMetadata createAttributeMetadata() {
-        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),null,this.enumClass,getAttribute().internal_getLabelText(),getAttribute().internal_required());
+        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),null,null,this.enumClass,getAttribute().internal_getLabelText(),getAttribute().internal_required());
     }
 }

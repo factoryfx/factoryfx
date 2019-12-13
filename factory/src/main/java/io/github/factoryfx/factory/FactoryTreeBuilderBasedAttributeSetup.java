@@ -25,13 +25,13 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
     }
 
     @SuppressWarnings("unchecked")
-    public <LO, FO extends FactoryBase<LO, R>> List<FO> createNewFactory(Class<? extends FactoryBase<?,?>> clazz) {
-        List<FO> newFactories =  factoryTreeBuilder.buildSubTrees((Class)clazz);
+    public <LO, FO extends FactoryBase<LO, R>> List<FO> createNewFactory(Class<LO> liveObjectClass) {
+        List<FO> newFactories =  factoryTreeBuilder.buildSubTreesForLiveObject(liveObjectClass);
         ArrayList<FO> result = new ArrayList<>(newFactories);
         if(result.isEmpty()){
-            FactoryMetadata<R, FO> factoryMetadata = FactoryMetadataManager.getMetadataUnsafe(clazz);
-            FO instance = factoryMetadata.newInstance();
-            result.add(instance);
+//            FactoryMetadata<R, FO> factoryMetadata = FactoryMetadataManager.getMetadataUnsafe(clazz);
+//            FO instance = factoryMetadata.newInstance();
+//            result.add(instance);
         }
         return result;
     }

@@ -35,8 +35,8 @@ import java.util.function.Function;
  */
 public class MicroserviceDomResourceFactory<R extends FactoryBase<?,R>> extends FactoryBase<MicroserviceDomResource<R>,R> {
 
-    public final FactoryPolymorphicAttribute<UserManagement> userManagement = new FactoryPolymorphicAttribute<UserManagement>().setupUnsafe(UserManagement.class, NoUserManagementFactory.class, PersistentUserManagementFactory.class).labelText("userManagement").nullable();
-    public final FactoryPolymorphicAttribute<StaticFileAccess> staticFileAccess = new FactoryPolymorphicAttribute<StaticFileAccess>().setupUnsafe(StaticFileAccess.class, ClasspathStaticFileAccessFactory.class).labelText("staticFileAccess").nullable();
+    public final FactoryPolymorphicAttribute<UserManagement> userManagement = new FactoryPolymorphicAttribute<UserManagement>().labelText("userManagement").nullable();
+    public final FactoryPolymorphicAttribute<StaticFileAccess> staticFileAccess = new FactoryPolymorphicAttribute<StaticFileAccess>().labelText("staticFileAccess").nullable();
     public final FactoryPolymorphicAttribute<Function<R, List<GuiNavbarItem>>> guiNavbarItemCreator = new FactoryPolymorphicAttribute<>(FactoryPolymorphicAttribute::nullable);
     public final StringAttribute projectName = new StringAttribute().nullable();
 

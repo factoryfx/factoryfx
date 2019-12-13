@@ -22,7 +22,7 @@ public class FastExampleFactoryC extends SimpleFactoryBase<ExampleLiveObjectC,Fa
     static {
         FastFactoryUtility.setup(FastExampleFactoryC.class, new FastFactoryUtility<>(() -> List.of(
                 new FastValueAttribute<>(()->new StringAttribute().labelText("ExampleA1"), (factory) -> factory.stringAttribute, (factory, value) -> factory.stringAttribute = value,"stringAttribute"),
-                new FastFactoryAttribute<>(()->new FactoryAttribute<ExampleLiveObjectB, FastExampleFactoryB>().labelText("ExampleA2"), (factory) -> factory.referenceAttribute, (factory, value) -> factory.referenceAttribute = value, FastExampleFactoryB.class,"referenceAttribute")
+                new FastFactoryAttribute<>(()->new FactoryAttribute<ExampleLiveObjectB, FastExampleFactoryB>().labelText("ExampleA2"), (factory) -> factory.referenceAttribute, (factory, value) -> factory.referenceAttribute = value, FastExampleFactoryB.class, ExampleLiveObjectB.class,"referenceAttribute")
 
         )));
     }

@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.typescript.generator.data;
 
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactory;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.primitive.*;
 import io.github.factoryfx.factory.attribute.time.*;

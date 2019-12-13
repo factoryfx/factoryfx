@@ -57,22 +57,25 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public FactoryBase<?,R> createNewFactory(AttributeAdressingRequest request) {
-        Class<? extends FactoryBase<?,?>> newFactoryClass=null;
+
         AttributeAndMetadata attribute = resolveAttribute(request);
-        if (attribute.attribute instanceof FactoryBaseAttribute){
-            newFactoryClass=attribute.attributeMetadata.referenceClass;
+        if (attribute.attributeMetadata.liveObjectClass!=null) {
+            factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(microservice.prepareNewFactory().root);
+            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(attribute.attributeMetadata.liveObjectClass).get(0);
         }
-        if (attribute.attribute instanceof FactoryListBaseAttribute){
-            newFactoryClass=attribute.attributeMetadata.referenceClass;
-        }
-        factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(microservice.prepareNewFactory().root);
-        return factoryTreeBuilderBasedAttributeSetup.createNewFactory(newFactoryClass).get(0);
+        //TODO select dialog if multiple in gui
+        throw new IllegalArgumentException("no liveObjectClass found for: "+request);
     }
     
     public static class AttributeAdressingRequest {
         public String factoryId;
         public String attributeVariableName;
         public FactoryBase<?,?> root;
+
+        @Override
+        public String toString() {
+            return "AttributeAdressingRequest{" + "factoryId='" + factoryId + '\'' + ", attributeVariableName='" + attributeVariableName + '\'' + ", root=" + root + '}';
+        }
     }
 
     public static class ResolveViewResponse{

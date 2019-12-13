@@ -43,18 +43,19 @@ public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,
             }
             if (attribute instanceof FactoryPolymorphicAttribute){
                 FactoryPolymorphicAttribute factoryPolymorphicAttribute = (FactoryPolymorphicAttribute) attribute;
-                for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryPolymorphicAttribute.internal_possibleFactoriesClasses()){
-                    if (context.anyMatch(possibleClazz)){
-                        factoryPolymorphicAttribute.set(context.get(possibleClazz));
+                if (attributeMetadata.liveObjectClass!=null){
+                    for (FactoryBase<?, R> factory : context.getListFromLiveObjectCLass(attributeMetadata.liveObjectClass)) {
+                        factoryPolymorphicAttribute.set(factory);
                         break;
                     }
                 }
+                //TODO multiple factories seems wrong, throw exception to enforce for uniqueness?
             }
             if (attribute instanceof FactoryPolymorphicListAttribute){
                 FactoryPolymorphicListAttribute factoryPolymorphicListAttribute = (FactoryPolymorphicListAttribute) attribute;
-                for (Class<? extends FactoryBase> possibleClazz: (List<Class>)factoryPolymorphicListAttribute.internal_possibleFactoriesClasses()){
-                    if (context.anyMatch(possibleClazz)){
-                        factoryPolymorphicListAttribute.add(context.get(possibleClazz));
+                if (attributeMetadata.liveObjectClass!=null){
+                    for (FactoryBase<?, R> factory : context.getListFromLiveObjectCLass(attributeMetadata.liveObjectClass)) {
+                        factoryPolymorphicListAttribute.add(factory);
                         break;
                     }
                 }

@@ -8,6 +8,7 @@ import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.testfactories.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -318,6 +319,7 @@ public class FactoryTreeBuilderBasedAttributeSetupTest {
 
     }
 
+    @Disabled  //TODO what do if factory not in builder, nothing might be ok and the text can be deleted
     @Test
     public void test_incomplete_builder() {
 

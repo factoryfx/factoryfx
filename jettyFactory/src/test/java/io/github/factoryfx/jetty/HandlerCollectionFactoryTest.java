@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -63,7 +62,7 @@ public class HandlerCollectionFactoryTest {
         }
     }
 
-    public static class CustomHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
+    public static class CustomHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
         @Override
         protected Handler createImpl() {
             return new AbstractHandler() {

@@ -1,18 +1,18 @@
 package io.github.factoryfx.jetty;
 
+import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringListAttribute;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 
 import javax.servlet.DispatcherType;
 
-public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends PolymorphicFactoryBase<Handler,R> {
+public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
     public final FactoryPolymorphicAttribute<Handler> handler = new FactoryPolymorphicAttribute<Handler>().labelText("Handler");
     public final IntegerAttribute minGzipSize = new IntegerAttribute().labelText("minGzipSize");
     public final IntegerAttribute compressionLevel = new IntegerAttribute().labelText("compressionLevel");

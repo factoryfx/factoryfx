@@ -1,14 +1,12 @@
 package io.github.factoryfx.factory.metadata;
 
-import io.github.factoryfx.factory.AttributeMetadataVisitor;
-import io.github.factoryfx.factory.AttributeVisitor;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.FactoryEnclosingAttributeVisitor;
+import io.github.factoryfx.factory.*;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 
@@ -23,6 +21,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 
     private Constructor<F> constructor;
     private final Class<F> clazz;
+    private Class<?> liveObjectClass;
 
     public FactoryMetadata(Class<F> clazz){
         this.clazz=clazz;
@@ -64,6 +63,9 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         this.fastFactoryUtility=fastFactoryUtility;
     }
 
+    public Class<?> getLiveObjectClass() {
+        return this.liveObjectClass;
+    }
 
 
     public static class AttributeNamePair{
@@ -138,6 +140,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
             factory = newInstance();
         }
 
+        liveObjectClass= initLiveObjectClass();
+
         //generics parameter for attributes
         for (Field field : attributeFields) {
             if (field.getName().equals("id")){
@@ -164,35 +168,44 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 
             field.getType().getGenericSuperclass();
             Type type = field.getGenericType();
-            Class<?> genericType=null;
+            Class<?> genericType1=null;
+            Class<?> genericType2=null;
+            Class<?> genericType3=null;
+            Class<?> genericType4=null;
             if (type instanceof ParameterizedType) {
                 ParameterizedType ptype = (ParameterizedType) type;
                 //assume last generic parameter ist reference class. is kind of guess work but best we can do with reflection
-                try {
-                    Type actualTypeArgument = ptype.getActualTypeArguments()[ptype.getActualTypeArguments().length - 1];
-                    String className= actualTypeArgument.getTypeName();
-                    if (actualTypeArgument instanceof ParameterizedType) {
-                        className=((ParameterizedType)actualTypeArgument).getRawType().getTypeName();
-                    }
 
-                    genericType= Class.forName(className);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+                genericType1 = getFieldGenericType(ptype,0);
+                genericType2 = getFieldGenericType(ptype,1);
+                genericType3 = getFieldGenericType(ptype,0);
+                genericType4 = getFieldGenericType(ptype,1);
             }
 
 
             Attribute<?,?> attribute= (Attribute<?, ?>) attributeFieldAccessor.get(factory);
-            Class<? extends FactoryBase<?, ?>> referenceClass = (Class<? extends FactoryBase<?, ?>>) genericType;
-            if (referenceClass != null && !FactoryBase.class.isAssignableFrom(referenceClass)) {
-                referenceClass = null; //polymorphic attribute
+            Class<? extends FactoryBase<?, ?>> referenceClass = null;
+            if (genericType2!=null && FactoryBase.class.isAssignableFrom(genericType2)) {
+                referenceClass = (Class<? extends FactoryBase<?, ?>>)genericType2;
             }
+
+            Class<?> liveobjectClass=null;
+            if (genericType1!=null && attribute instanceof ReferenceBaseAttribute){
+                liveobjectClass=genericType1;
+            }
+            if (attribute instanceof ParametrizedObjectCreatorAttribute){
+                liveobjectClass=genericType3;
+                referenceClass=(Class<? extends FactoryBase<?, ?>>)genericType4;
+            }
+
+
+
             Class<? extends Enum<?>> enumClass=null;
             if (attribute instanceof EnumAttribute){
-                enumClass= (Class<? extends Enum<?>>)genericType;
+                enumClass= (Class<? extends Enum<?>>)genericType1;
             }
             if (attribute instanceof EnumListAttribute){
-                enumClass= (Class<? extends Enum<?>>)genericType;
+                enumClass= (Class<? extends Enum<?>>)genericType1;
             }
             if (attribute==null){
                 throw new IllegalStateException("attribute is null: "+clazz.getName()+"#"+field.getName());
@@ -201,6 +214,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
                     field.getName(),
                     (Class<? extends Attribute<?, ?>>)field.getType(),
                     referenceClass,
+                    liveobjectClass,
                     enumClass,
                     attribute.internal_getLabelText(),
                     attribute.internal_required());
@@ -213,6 +227,38 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 
         }
 
+    }
+
+    private Class<?> initLiveObjectClass() {
+        Class<?> parameterizedClass=clazz;
+        while(parameterizedClass!=null){
+            Type genericSuperclass = parameterizedClass.getGenericSuperclass();
+            if (genericSuperclass instanceof ParameterizedType){
+                Type actualTypeArgument = ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
+                if (actualTypeArgument instanceof Class){
+                    return (Class<?>) actualTypeArgument;
+                }
+            }
+            parameterizedClass=parameterizedClass.getSuperclass();
+        }
+        return null;
+    }
+
+
+    private Class<?> getFieldGenericType(ParameterizedType ptype, int index) {
+        if (index >= ptype.getActualTypeArguments().length){
+            return null;
+        }
+        Type actualTypeArgument = ptype.getActualTypeArguments()[index];
+        String className= actualTypeArgument.getTypeName();
+        if (actualTypeArgument instanceof ParameterizedType) {
+            className=((ParameterizedType)actualTypeArgument).getRawType().getTypeName();
+        }
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addBackReferencesToAttributes(F data, R root) {

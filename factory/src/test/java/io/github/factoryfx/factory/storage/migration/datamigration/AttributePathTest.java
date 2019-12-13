@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.storage.migration.datamigration;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
@@ -163,7 +162,7 @@ public class AttributePathTest {
     }
 
     public static class PolymorphicFactoryExample extends SimpleFactoryBase<Object,PolymorphicFactoryExample> {
-        public final FactoryPolymorphicAttribute<Printer> polyreference = new FactoryPolymorphicAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class);
+        public final FactoryPolymorphicAttribute<Printer> polyreference = new FactoryPolymorphicAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -171,7 +170,7 @@ public class AttributePathTest {
         }
     }
 
-    private static class AttributePrinterFactory extends PolymorphicFactoryBase<Printer,ExampleFactoryA> {
+    private static class AttributePrinterFactory extends SimpleFactoryBase<Printer,ExampleFactoryA> {
         public final StringAttribute attribute = new StringAttribute();
         @Override
         protected Printer createImpl() {

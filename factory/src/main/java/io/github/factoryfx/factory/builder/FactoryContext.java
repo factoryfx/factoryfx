@@ -100,6 +100,13 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
+    <L, F extends FactoryBase<L,R>> List<F> getListFromLiveObjectCLass(Class<L> liveObjectCLass) {
+        ArrayList<F> result = new ArrayList<>();
+        factoryCreators.stream().filter(fc -> fc.matchLiveObjectCLass(liveObjectCLass)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
+        return result;
+    }
+
     public <L, F extends FactoryBase<L,R>> boolean anyMatch(Class<F> clazz){
         return factoryCreators.stream().anyMatch(fc -> fc.match(clazz));
     }

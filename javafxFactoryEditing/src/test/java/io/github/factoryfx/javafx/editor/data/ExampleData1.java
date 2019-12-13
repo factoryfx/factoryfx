@@ -49,7 +49,7 @@ import io.github.factoryfx.javafx.editor.attribute.ColorAttribute;
 
 
 public class ExampleData1 extends FactoryBase<Void,ExampleData1> {
-    public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class).labelText("poly");
+    public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<Printer>().labelText("poly");
     public final PasswordAttribute passwordAttribute = new PasswordAttribute().en("PasswordAttribute").de("PasswordAttribute de");
     public final DurationAttribute durationAttribute = new DurationAttribute().en("durationAttribute").de("durationAttribute de");
 
@@ -92,7 +92,7 @@ public class ExampleData1 extends FactoryBase<Void,ExampleData1> {
     public final LocaleAttribute localeAttribute =new LocaleAttribute().en("colorAttribute").de("colorAttribute de");
 
     public final FactoryAttribute<Void,ExampleData2> referenceAttributeReadonly = new FactoryAttribute<Void,ExampleData2>().userReadOnly().en("referenceAttributereadonly").de("referenceAttribute readonly de");
-    public final FactoryPolymorphicListAttribute<Printer> polymorphicReferenceList = new FactoryPolymorphicListAttribute<Printer>().setup(Printer.class, ErrorPrinterFactory.class, OutPrinterFactory.class).en("polymorphicreferenceList").de("polymorphicreferenceList");
+    public final FactoryPolymorphicListAttribute<Printer> polymorphicReferenceList = new FactoryPolymorphicListAttribute<Printer>().en("polymorphicreferenceList").de("polymorphicreferenceList");
 
     public final FactoryViewAttribute<ExampleData1,Void,ExampleData2> factoryView = new FactoryViewAttribute<>((Function<ExampleData1, ExampleData2>) exampleData1 -> exampleData1.referenceAttribute.get()).en("factory view");
 

@@ -1,8 +1,8 @@
 package io.github.factoryfx.docu.polymorphism;
 
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
+import io.github.factoryfx.factory.SimpleFactoryBase;
 
-public class ErrorPrinterFactory extends PolymorphicFactoryBase<Printer,RootFactory> {
+public class ErrorPrinterFactory extends SimpleFactoryBase<Printer,RootFactory> {
 
     @Override
     protected Printer createImpl() {

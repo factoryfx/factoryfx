@@ -48,7 +48,7 @@ public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase
     @Override
     @SuppressWarnings("unchecked")
     protected AttributeMetadata createAttributeMetadata() {
-        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),null,null,getAttribute().internal_getLabelText(),getAttribute().internal_required());
+        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),null,null,null,getAttribute().internal_getLabelText(),getAttribute().internal_required());
     }
 
     @Override

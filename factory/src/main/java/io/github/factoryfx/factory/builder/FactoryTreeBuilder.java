@@ -265,6 +265,10 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         return factoryContext.getList(factoryClazz);
     }
 
+    public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTreesForLiveObject(Class<LO> liveObjectClass){
+        return factoryContext.getListFromLiveObjectCLass(liveObjectClass);
+    }
+
     /**
      * indented use is for testing to create branches and set mocks
      * @return BranchSelector

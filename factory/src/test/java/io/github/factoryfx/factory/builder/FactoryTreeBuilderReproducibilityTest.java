@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.BranchSelector;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;

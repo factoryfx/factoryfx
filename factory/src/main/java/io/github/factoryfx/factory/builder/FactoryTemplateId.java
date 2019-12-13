@@ -1,6 +1,8 @@
 package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.metadata.FactoryMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
 import java.util.Objects;
 
@@ -85,5 +87,12 @@ public class FactoryTemplateId<F extends FactoryBase<?,?>> {
     @Override
     public String toString() {
         return "FactoryTemplateId{" + "clazz=" + clazz + ", name='" + name + '\'' + '}';
+    }
+
+    public boolean matchLiveObjectCLass(Class<?> liveObjectClass) {
+        if (clazz!=null) {
+            return liveObjectClass == FactoryMetadataManager.getMetadataUnsafe(clazz).getLiveObjectClass();
+        }
+        return false;
     }
 }

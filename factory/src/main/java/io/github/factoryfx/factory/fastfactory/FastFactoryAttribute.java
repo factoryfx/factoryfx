@@ -17,9 +17,11 @@ import java.util.function.Supplier;
 public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryBase<?,R>,L,V extends FactoryBase<L,R>> extends FastFactoryAttributeUtility<R,F,V,FactoryAttribute<L,V>>{
 
     private final Class<V> referenceClass;
-    public FastFactoryAttribute(Supplier<FactoryAttribute<L, V>> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter, Class<V> referenceClass, String attributeName) {
+    private final Class<L> liveObjectClass;
+    public FastFactoryAttribute(Supplier<FactoryAttribute<L, V>> attributeCreator, Function<F,V> valueGetter, BiConsumer<F,V> valueSetter, Class<V> referenceClass, Class<L> liveObjectClass, String attributeName) {
         super(attributeCreator,valueGetter,valueSetter,attributeName);
         this.referenceClass=referenceClass;
+        this.liveObjectClass=liveObjectClass;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
     @SuppressWarnings("unchecked")
     @Override
     protected AttributeMetadata createAttributeMetadata() {
-        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),referenceClass,null,getAttribute().internal_getLabelText(),getAttribute().internal_required());
+        return new AttributeMetadata(this.attributeName, (Class<? extends Attribute<?, ?>>) getAttribute().getClass(),referenceClass,liveObjectClass,null,getAttribute().internal_getLabelText(),getAttribute().internal_required());
     }
 }
 

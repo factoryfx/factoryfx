@@ -39,6 +39,7 @@ public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Fa
                                     (factory) -> factory.referenceAttribute,
                                     (factory, value) -> factory.referenceAttribute = value,
                                     FastExampleFactoryB.class,
+                                    ExampleLiveObjectB.class,
                                     "referenceAttribute"
                             )
                             ,
@@ -49,6 +50,7 @@ public class FastExampleFactoryA extends SimpleFactoryBase<ExampleLiveObjectA,Fa
                                         factory.referenceListAttribute = value;
                                     },
                                     FastExampleFactoryB.class,
+                                    ExampleLiveObjectB.class,
                                     "referenceListAttribute"
                             )
                     )

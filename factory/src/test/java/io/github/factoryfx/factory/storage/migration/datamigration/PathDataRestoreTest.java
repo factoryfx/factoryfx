@@ -3,7 +3,6 @@ package io.github.factoryfx.factory.storage.migration.datamigration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.PolymorphicFactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.*;
