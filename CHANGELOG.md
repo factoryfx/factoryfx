@@ -1,3 +1,17 @@
+# 2.2.8
+
+### BREAKING CHANGES
+* **EnumAttribute**  
+    simplified FactoryPolymorphicAttribute constructor  
+    **old**
+    ```java
+    public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
+    ```
+    **new**
+    ```java
+    public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<>();
+    ```
+
 # 2.2.1
 
 ### BREAKING CHANGES
