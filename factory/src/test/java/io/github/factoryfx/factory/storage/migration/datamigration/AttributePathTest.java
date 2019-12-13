@@ -14,7 +14,6 @@ import io.github.factoryfx.factory.storage.migration.metadata.ExampleDataAPrevio
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.poly.ErrorPrinter;
 import io.github.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
-import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import io.github.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

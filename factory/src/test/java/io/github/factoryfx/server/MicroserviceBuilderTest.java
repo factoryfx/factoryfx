@@ -3,11 +3,9 @@ package io.github.factoryfx.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
@@ -17,12 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.function.Function;
 
 public class MicroserviceBuilderTest {
 

@@ -1,9 +1,6 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
-import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import io.github.factoryfx.factory.testfactories.poly.Printer;
 
 public class PolymorphicFactoryExample extends SimpleFactoryBase<Object, PolymorphicFactoryExample> {

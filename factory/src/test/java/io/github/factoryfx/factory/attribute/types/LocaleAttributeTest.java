@@ -2,7 +2,6 @@ package io.github.factoryfx.factory.attribute.types;
 
 import java.util.Locale;
 
-import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

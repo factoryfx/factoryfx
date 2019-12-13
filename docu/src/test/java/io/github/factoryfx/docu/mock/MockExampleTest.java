@@ -1,17 +1,9 @@
 package io.github.factoryfx.docu.mock;
 
-import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class MockExampleTest {
 

@@ -7,7 +7,6 @@ import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.jetty.JerseyServletFactoryTest;
-import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -26,7 +25,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class JettyServerBuilderTest {
 

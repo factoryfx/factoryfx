@@ -1,13 +1,9 @@
 package io.github.factoryfx.jetty.ssl;
 
-import com.google.common.io.ByteStreams;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.*;
-import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +20,6 @@ import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.function.Consumer;
 
 public class SslContextFactoryFactoryTest {
 

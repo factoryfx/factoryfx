@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class FinalValidationTest {
     private static class NotFinalFactory extends FactoryBase<Void, NotFinalFactory> {
         public StringAttribute stringAttribute = new StringAttribute();

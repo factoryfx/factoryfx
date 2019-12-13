@@ -1,8 +1,5 @@
 package io.github.factoryfx.factory.storage.migration;
 
-import io.github.factoryfx.factory.attribute.ValueMapAttributeTest;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;

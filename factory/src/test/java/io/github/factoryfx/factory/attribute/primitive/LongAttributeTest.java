@@ -1,8 +1,6 @@
 package io.github.factoryfx.factory.attribute.primitive;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

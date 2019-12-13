@@ -2,18 +2,11 @@ package io.github.factoryfx.factory.merge;
 
 
 import io.github.factoryfx.factory.*;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
-import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

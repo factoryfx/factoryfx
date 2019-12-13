@@ -1,6 +1,5 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

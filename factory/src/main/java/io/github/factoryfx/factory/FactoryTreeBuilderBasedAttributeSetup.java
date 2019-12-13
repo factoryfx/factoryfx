@@ -6,8 +6,6 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
-import io.github.factoryfx.factory.metadata.FactoryMetadata;
-import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
 import java.util.ArrayList;
 import java.util.List;

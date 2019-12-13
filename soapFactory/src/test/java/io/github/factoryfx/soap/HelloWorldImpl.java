@@ -1,7 +1,6 @@
 package io.github.factoryfx.soap;
 
 import io.github.factoryfx.soap.example.*;
-import org.junit.jupiter.api.Assertions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

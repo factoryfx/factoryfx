@@ -13,7 +13,6 @@ import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.AttributeValidation;

@@ -3,7 +3,6 @@ package io.github.factoryfx.factory;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
 import io.github.factoryfx.factory.testfactories.*;

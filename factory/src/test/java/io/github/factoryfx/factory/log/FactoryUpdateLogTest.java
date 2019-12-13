@@ -5,9 +5,6 @@ import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 public class FactoryUpdateLogTest {
 
     @Test

@@ -1,7 +1,6 @@
 package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
 import java.util.Objects;

@@ -1,13 +1,8 @@
 package io.github.factoryfx.soap;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.JettyServerFactory;
-import io.github.factoryfx.jetty.ServletAndPathFactory;
-import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.soap.server.SoapJettyServerFactory;

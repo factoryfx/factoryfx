@@ -1,13 +1,10 @@
 package io.github.factoryfx.javafx.widget.factory.factorylog;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.javafx.css.CssUtil;
-import io.github.factoryfx.javafx.util.UniformDesignFactory;
 import io.github.factoryfx.factory.log.FactoryLogEntry;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import javafx.application.Application;

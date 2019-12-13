@@ -1,6 +1,5 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.attribute.dependency.*;
@@ -19,7 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 

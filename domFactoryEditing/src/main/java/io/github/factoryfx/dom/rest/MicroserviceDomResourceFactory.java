@@ -8,8 +8,6 @@ import io.github.factoryfx.jetty.JerseyServletFactory;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.nop.NoUserManagement;
 import io.github.factoryfx.server.user.UserManagement;
-import io.github.factoryfx.server.user.nop.NoUserManagementFactory;
-import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 
 import java.util.ArrayList;
 import java.util.List;

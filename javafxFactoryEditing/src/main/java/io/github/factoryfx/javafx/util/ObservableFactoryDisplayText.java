@@ -1,15 +1,12 @@
 package io.github.factoryfx.javafx.util;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
 import io.github.factoryfx.factory.attribute.WeakAttributeChangeListener;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-
-import java.lang.ref.WeakReference;
 
 public class ObservableFactoryDisplayText implements ObservableValue<String> {
 

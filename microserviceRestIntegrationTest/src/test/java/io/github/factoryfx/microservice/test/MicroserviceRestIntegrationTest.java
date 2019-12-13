@@ -17,7 +17,6 @@ import io.github.factoryfx.server.Microservice;
 
 import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 import io.github.factoryfx.server.user.persistent.UserFactory;
-import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

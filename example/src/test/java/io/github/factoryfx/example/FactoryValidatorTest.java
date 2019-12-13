@@ -12,7 +12,6 @@ import org.junit.jupiter.api.TestFactory;
 import io.github.factoryfx.factory.util.ClasspathBasedFactoryProvider;
 import io.github.factoryfx.factory.validator.FactoryStyleValidation;
 import io.github.factoryfx.factory.validator.FactoryStyleValidatorBuilder;
-import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 
 public class FactoryValidatorTest {
 

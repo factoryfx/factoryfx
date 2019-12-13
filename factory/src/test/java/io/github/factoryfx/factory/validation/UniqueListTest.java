@@ -1,10 +1,6 @@
 package io.github.factoryfx.factory.validation;
 
-import io.github.factoryfx.factory.FactoryReferenceListTest;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttributeTest;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.attribute.types.StringListAttribute;
-import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.jupiter.api.Test;

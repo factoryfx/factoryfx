@@ -1,6 +1,5 @@
 package io.github.factoryfx.javafx.editor.data;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -42,8 +41,6 @@ import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.RegexValidation;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationResult;
-import io.github.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
-import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import io.github.factoryfx.factory.testfactories.poly.Printer;
 import io.github.factoryfx.javafx.editor.attribute.ColorAttribute;
 

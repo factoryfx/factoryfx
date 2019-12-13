@@ -1,14 +1,11 @@
 package io.github.factoryfx.factory.validator;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class OnlyAttributeTest {
     private static class OnlyAttributeFactory extends FactoryBase<Void, OnlyAttributeFactory> {

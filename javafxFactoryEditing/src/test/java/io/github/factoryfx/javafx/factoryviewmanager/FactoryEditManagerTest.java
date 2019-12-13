@@ -1,6 +1,5 @@
 package io.github.factoryfx.javafx.factoryviewmanager;
 
-import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
@@ -21,7 +20,6 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Function;
 
 
 public class FactoryEditManagerTest {

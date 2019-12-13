@@ -1,7 +1,7 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
 import io.github.factoryfx.factory.FactoryBase;
-import java.util.*;
+
 import java.util.function.Consumer;
 
 /**

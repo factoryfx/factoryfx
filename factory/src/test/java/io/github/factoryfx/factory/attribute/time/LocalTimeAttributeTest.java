@@ -1,13 +1,10 @@
 package io.github.factoryfx.factory.attribute.time;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.types.BigDecimalAttribute;
-import io.github.factoryfx.factory.attribute.types.BigDecimalAttributeTest;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.LocalTime;
 
 public class LocalTimeAttributeTest {

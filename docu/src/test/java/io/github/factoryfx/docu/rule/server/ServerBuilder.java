@@ -1,8 +1,6 @@
 package io.github.factoryfx.docu.rule.server;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
 

@@ -1,6 +1,5 @@
 package io.github.factoryfx.factory.builder;
 
-import java.util.List;
 import java.util.function.Function;
 
 import io.github.factoryfx.factory.metadata.FactoryMetadata;

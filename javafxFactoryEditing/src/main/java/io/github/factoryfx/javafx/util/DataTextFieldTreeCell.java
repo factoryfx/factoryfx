@@ -4,11 +4,7 @@ import java.util.function.Function;
 
 import io.github.factoryfx.factory.FactoryBase;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WeakChangeListener;
 import javafx.scene.control.cell.TextFieldTreeCell;
 
 /** treeview cell for data with auto updatable displaytext*/

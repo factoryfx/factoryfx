@@ -5,8 +5,6 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttrib
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.nop.NoUserManagement;
 import io.github.factoryfx.server.user.UserManagement;
-import io.github.factoryfx.server.user.nop.NoUserManagementFactory;
-import io.github.factoryfx.server.user.persistent.PersistentUserManagementFactory;
 
 /**
  * usage example: (in a FactoryTreeBuilder)<br>

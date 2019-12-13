@@ -2,7 +2,6 @@ package io.github.factoryfx.soap;
 
 import io.github.factoryfx.soap.example.HelloWorld;
 import io.github.factoryfx.soap.example.SoapDummyRequest;
-import io.github.factoryfx.soap.example.SoapDummyRequestException1;
 import io.github.factoryfx.soap.example.SoapDummyRequestExceptionFault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

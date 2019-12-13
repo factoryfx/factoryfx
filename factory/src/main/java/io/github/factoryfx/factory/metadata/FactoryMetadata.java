@@ -250,15 +250,13 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
             return null;
         }
         Type actualTypeArgument = ptype.getActualTypeArguments()[index];
-        String className= actualTypeArgument.getTypeName();
         if (actualTypeArgument instanceof ParameterizedType) {
-            className=((ParameterizedType)actualTypeArgument).getRawType().getTypeName();
+            return (Class<?> ) ((ParameterizedType)actualTypeArgument).getRawType();
         }
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        if (actualTypeArgument instanceof Class){
+            return (Class<?> )actualTypeArgument;
         }
+        return null;
     }
 
     public void addBackReferencesToAttributes(F data, R root) {

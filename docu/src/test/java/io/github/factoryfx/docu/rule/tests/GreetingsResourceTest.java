@@ -3,7 +3,6 @@ package io.github.factoryfx.docu.rule.tests;
 import io.github.factoryfx.docu.rule.server.*;
 import io.github.factoryfx.docu.rule.simulator.SimulatorBuilder;
 import io.github.factoryfx.docu.rule.simulator.SimulatorRootFactory;
-import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.jetty.HttpServerConnectorFactory;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import org.eclipse.jetty.server.Server;

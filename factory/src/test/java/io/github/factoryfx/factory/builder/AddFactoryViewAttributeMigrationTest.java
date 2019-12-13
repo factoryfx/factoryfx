@@ -1,16 +1,12 @@
 package io.github.factoryfx.factory.builder;
 
-import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.server.Microservice;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

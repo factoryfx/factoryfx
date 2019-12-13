@@ -1,22 +1,17 @@
 package io.github.factoryfx.factory.storage.filesystem;
 
-import io.github.factoryfx.factory.FactoryDepTopDownTest;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.UUID;
 
 public class FileSystemFactoryStorageHistoryTest {

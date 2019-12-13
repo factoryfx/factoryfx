@@ -15,16 +15,12 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.testfactories.*;
-import io.github.factoryfx.factory.testfactories.poly.ErrorPrinterFactory;
-import io.github.factoryfx.factory.testfactories.poly.OutPrinterFactory;
 import io.github.factoryfx.factory.testfactories.poly.Printer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class FactoryMetadataTest {
 
@@ -153,7 +149,6 @@ public class FactoryMetadataTest {
 
     private static class PolymorphicAttributeExample extends FactoryBase<Void,PolymorphicAttributeExample> {
         public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<>();
-
     }
 
     @Test
@@ -166,6 +161,25 @@ public class FactoryMetadataTest {
         });
         Assertions.assertEquals(1, liveobjectClasses.size());
         Assertions.assertEquals(Printer.class,liveobjectClasses.get(0));
+    }
+
+    private static class TestLiveObject<T>  {
+    }
+
+    private static class PolymorphicAttributeGenericExample<T> extends FactoryBase<Void,PolymorphicAttributeGenericExample<T>> {
+        public final FactoryPolymorphicAttribute<TestLiveObject<T>> reference = new FactoryPolymorphicAttribute<>();
+    }
+
+    @Test
+    public void test_polymorphicAttribute_liveObjectClasses_generic_parameter(){
+        List<Class<?>> liveobjectClasses = new ArrayList<>();
+        FactoryMetadataManager.getMetadata(PolymorphicAttributeGenericExample.class).visitAttributeMetadata(metadata -> {
+            if (metadata.liveObjectClass!=null){
+                liveobjectClasses.add(metadata.liveObjectClass);
+            }
+        });
+        Assertions.assertEquals(1, liveobjectClasses.size());
+        Assertions.assertEquals(TestLiveObject.class,liveobjectClasses.get(0));
     }
 
 }

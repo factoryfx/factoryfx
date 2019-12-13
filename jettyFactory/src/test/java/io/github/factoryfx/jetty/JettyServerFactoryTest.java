@@ -3,8 +3,6 @@ package io.github.factoryfx.jetty;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class JettyServerFactoryTest {
 
     @Test

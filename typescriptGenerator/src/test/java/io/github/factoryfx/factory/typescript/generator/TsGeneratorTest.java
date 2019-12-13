@@ -6,7 +6,6 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.typescript.generator.data.*;
-import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;

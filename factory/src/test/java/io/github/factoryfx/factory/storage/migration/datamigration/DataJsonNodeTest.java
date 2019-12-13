@@ -1,7 +1,6 @@
 package io.github.factoryfx.factory.storage.migration.datamigration;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -12,17 +11,11 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AssertionsKt$sam$i$org_junit_jupiter_api_function_Executable$0;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class DataJsonNodeTest {

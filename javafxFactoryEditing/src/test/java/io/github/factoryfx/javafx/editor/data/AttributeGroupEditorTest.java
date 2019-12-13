@@ -1,7 +1,6 @@
 package io.github.factoryfx.javafx.editor.data;
 
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
-import io.github.factoryfx.factory.attribute.ImmutableValueAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.javafx.UniformDesignBuilder;
 import io.github.factoryfx.javafx.css.CssUtil;
