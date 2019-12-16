@@ -1,7 +1,7 @@
 # 2.2.8
 
 ### BREAKING CHANGES
-* **EnumAttribute**  
+* **FactoryAttribute**  
     simplified FactoryPolymorphicAttribute constructor  
     **old**
     ```java
