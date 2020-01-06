@@ -1,16 +1,19 @@
 # 2.2.8
 
 ### BREAKING CHANGES
-* **FactoryAttribute**  
+* **PolymorphicFactoryAttribute**  
     simplified FactoryPolymorphicAttribute constructor  
     **old**
     ```java
     public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<Printer>().setup(Printer.class,ErrorPrinterFactory.class,OutPrinterFactory.class);
     ```
     **new**
+    the possible factories are now determined via the FactoryTreeBuilder and therefore need no longer be specified
     ```java
     public final FactoryPolymorphicAttribute<Printer> reference = new FactoryPolymorphicAttribute<>();
     ```
+* **PolymorphicFactoryBase**  
+    The class is removed and can be replaced with FactoryBase/SimpleFactoryBase 
 
 # 2.2.1
 
