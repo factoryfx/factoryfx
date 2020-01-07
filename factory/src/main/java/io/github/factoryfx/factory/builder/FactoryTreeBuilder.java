@@ -266,7 +266,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTreesForLiveObject(Class<LO> liveObjectClass){
-        return factoryContext.getListFromLiveObjectCLass(liveObjectClass);
+        return factoryContext.getListFromLiveObjectClass(liveObjectClass,null);
     }
 
     /**

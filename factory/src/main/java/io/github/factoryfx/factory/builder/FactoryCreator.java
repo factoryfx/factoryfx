@@ -30,7 +30,7 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
         return templateId.match(clazzMatch);
     }
 
-    public boolean matchLiveObjectCLass(Class<?> liveObjectCLass) {
+    public boolean matchLiveObjectClass(Class<?> liveObjectCLass) {
         return templateId.matchLiveObjectCLass(liveObjectCLass);
     }
 

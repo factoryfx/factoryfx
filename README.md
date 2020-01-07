@@ -98,8 +98,6 @@ Comparison to other frameworks
 Lifecycle configuration (start/stop/update)
 * [Migration](docu/src/main/java/io/github/factoryfx/docu/migration)  
 Configuration data migration
-* [Parametrized](docu/src/main/java/io/github/factoryfx/docu/parametrized)  
-Combining runtime data with factory data
 * [Persistent storage](docu/src/main/java/io/github/factoryfx/docu/persistentstorage)  
 Persistent configuration data storage using a database
 * [Polymorphism](docu/src/main/java/io/github/factoryfx/docu/polymorphism)  

@@ -18,18 +18,6 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return factory;
     }
 
-    /*check if factory is available, used to and create improved error message*/
-    void check(Class<? extends FactoryBase<?,?>> fromClazz, String attributeVariableName, Class<? extends FactoryBase<?,?>> refClazz) {
-        Object result = get(fc -> fc.match(refClazz));
-        if (result==null){
-            throw new IllegalStateException(
-                    "\nbuilder missing Factory: "+refClazz.getName()+"\n"+
-                    "required in: "+fromClazz+"\n"+
-                    "from attribute: "+attributeVariableName
-            );
-        }
-    }
-
     <F extends FactoryBase<?,R>> F getUnchecked(Class<?> clazz){
         return get(fc -> fc.match(clazz,null));
     }
@@ -101,9 +89,13 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
     }
 
     @SuppressWarnings("unchecked")
-    <L, F extends FactoryBase<L,R>> List<F> getListFromLiveObjectCLass(Class<L> liveObjectCLass) {
+    <L, F extends FactoryBase<L,R>> List<F> getListFromLiveObjectClass(Class<L> liveObjectCLass, Class<?> fromClass) {
         ArrayList<F> result = new ArrayList<>();
-        factoryCreators.stream().filter(fc -> fc.matchLiveObjectCLass(liveObjectCLass)).forEach(vFactoryCreator -> result.add((F) vFactoryCreator.create(FactoryContext.this)));
+        for (FactoryCreator<?, R> fc : factoryCreators) {
+            if (fc.matchLiveObjectClass(liveObjectCLass) && (fromClass==null || !fc.match(fromClass))) {
+                result.add((F) fc.create(FactoryContext.this));
+            }
+        }
         return result;
     }
 

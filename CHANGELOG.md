@@ -1,3 +1,9 @@
+# 2.2.9
+
+### BREAKING CHANGES
+* **ParametrizedObjectCreatorAttribute**
+    removed ParametrizedObjectCreatorAttribute because it was not thread safe.
+
 # 2.2.8
 
 ### BREAKING CHANGES

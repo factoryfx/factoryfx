@@ -18,7 +18,6 @@ module io.github.factoryfx.factory {
     exports io.github.factoryfx.server.user.nop;
     exports io.github.factoryfx.server.user.persistent;
     exports io.github.factoryfx.factory.util;
-    exports io.github.factoryfx.factory.parametrized;
     exports io.github.factoryfx.factory.builder;
 
 
@@ -47,7 +46,6 @@ module io.github.factoryfx.factory {
     opens io.github.factoryfx.factory.storage.migration.metadata;
     opens io.github.factoryfx.factory.attribute.dependency;
     opens io.github.factoryfx.factory;//jackson
-    opens io.github.factoryfx.factory.parametrized;
     opens io.github.factoryfx.factory.log;
     exports io.github.factoryfx.factory.metadata;
     exports io.github.factoryfx.factory.fastfactory;

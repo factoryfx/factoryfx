@@ -27,7 +27,7 @@ public class FactoryPolymorphicListAttribute<L> extends FactoryListBaseAttribute
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends FactoryBase> T get(Class<T> clazz) {
+    public <T extends FactoryBase<?,?>> T get(Class<T> clazz) {
         for (FactoryBase<? extends L, ?> item : this.get()) {
             if (item.getClass()==clazz){
                 return (T)item;

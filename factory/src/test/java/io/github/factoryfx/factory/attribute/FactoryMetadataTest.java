@@ -173,7 +173,7 @@ public class FactoryMetadataTest {
     @Test
     public void test_polymorphicAttribute_liveObjectClasses_generic_parameter(){
         List<Class<?>> liveobjectClasses = new ArrayList<>();
-        FactoryMetadataManager.getMetadata(PolymorphicAttributeGenericExample.class).visitAttributeMetadata(metadata -> {
+        FactoryMetadataManager.getMetadataUnsafe(PolymorphicAttributeGenericExample.class).visitAttributeMetadata(metadata -> {
             if (metadata.liveObjectClass!=null){
                 liveobjectClasses.add(metadata.liveObjectClass);
             }

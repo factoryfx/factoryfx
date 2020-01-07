@@ -6,7 +6,6 @@ import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 
@@ -178,8 +177,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 
                 genericType1 = getFieldGenericType(ptype,0);
                 genericType2 = getFieldGenericType(ptype,1);
-                genericType3 = getFieldGenericType(ptype,0);
-                genericType4 = getFieldGenericType(ptype,1);
+                genericType3 = getFieldGenericType(ptype,2);
+                genericType4 = getFieldGenericType(ptype,3);
             }
 
 
@@ -193,7 +192,9 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
             if (genericType1!=null && attribute instanceof ReferenceBaseAttribute){
                 liveobjectClass=genericType1;
             }
-            if (attribute instanceof ParametrizedObjectCreatorAttribute){
+
+            //TODO hack for old ParametrizedObjectCreatorAttribute to support copy in old project
+            if (genericType4!=null &&FactoryBase.class.isAssignableFrom(genericType4)){
                 liveobjectClass=genericType3;
                 referenceClass=(Class<? extends FactoryBase<?, ?>>)genericType4;
             }

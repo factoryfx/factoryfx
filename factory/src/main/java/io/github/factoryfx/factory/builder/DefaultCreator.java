@@ -6,7 +6,6 @@ import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
-import io.github.factoryfx.factory.parametrized.ParametrizedObjectCreatorAttribute;
 
 public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,R>> implements Function<FactoryContext<R>, F> {
     private final Class<F> clazz;
@@ -24,40 +23,50 @@ public class DefaultCreator<F extends FactoryBase<?,R>, R extends FactoryBase<?,
 
 
         result.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
-            if (attribute instanceof FactoryAttribute || attribute instanceof ParametrizedObjectCreatorAttribute){
+            if (attribute instanceof FactoryPolymorphicAttribute){
+                FactoryPolymorphicAttribute factoryPolymorphicAttribute = (FactoryPolymorphicAttribute) attribute;
+                if (attributeMetadata.liveObjectClass!=null){
+                    for (FactoryBase<?, R> factory : context.getListFromLiveObjectClass(attributeMetadata.liveObjectClass,clazz)) {
+                        factoryPolymorphicAttribute.set(factory);
+                        break;
+                    }
+                }
+                //TODO multiple factories seems wrong, throw exception to enforce for uniqueness?
+                return;
+            }
+            if (attribute instanceof FactoryPolymorphicListAttribute){
+                FactoryPolymorphicListAttribute factoryPolymorphicListAttribute = (FactoryPolymorphicListAttribute) attribute;
+                if (attributeMetadata.liveObjectClass!=null){
+                    for (FactoryBase<?, R> factory : context.getListFromLiveObjectClass(attributeMetadata.liveObjectClass,clazz)) {
+                        factoryPolymorphicListAttribute.add(factory);
+                        break;
+                    }
+                }
+                return;
+            }
+
+            if (attribute instanceof FactoryBaseAttribute ){
                 FactoryBaseAttribute factoryBaseAttribute = (FactoryBaseAttribute) attribute;
                 Class<? extends FactoryBase<?,?>> clazz = attributeMetadata.referenceClass;
                 validateAttributeClass(attributeMetadata.attributeVariableName, clazz);
-                if (factoryBaseAttribute.internal_required()){
-                    context.check(this.clazz, attributeMetadata.attributeVariableName,clazz);
-                }
                 FactoryBase<?,?> factoryBase = context.getUnchecked(clazz);
                 factoryBaseAttribute.set(factoryBase);
+                if (factoryBaseAttribute.internal_required()){
+                    if (factoryBaseAttribute.get()==null){
+                        throw new IllegalStateException(
+                                "\nbuilder missing Factory: "+attributeMetadata.liveObjectClass+"\n"+
+                                        "required in: "+clazz+"\n"+
+                                        "from attribute: "+attributeMetadata.attributeVariableName
+                        );
+                    }
+                }
+                return;
             }
             if (attribute instanceof FactoryListAttribute){
                 FactoryListAttribute factoryListAttribute = (FactoryListAttribute) attribute;
                 Class<? extends FactoryBase> clazz = attributeMetadata.referenceClass;
                 validateAttributeClass(attributeMetadata.attributeVariableName, clazz);
                 factoryListAttribute.set(context.getList(clazz));
-            }
-            if (attribute instanceof FactoryPolymorphicAttribute){
-                FactoryPolymorphicAttribute factoryPolymorphicAttribute = (FactoryPolymorphicAttribute) attribute;
-                if (attributeMetadata.liveObjectClass!=null){
-                    for (FactoryBase<?, R> factory : context.getListFromLiveObjectCLass(attributeMetadata.liveObjectClass)) {
-                        factoryPolymorphicAttribute.set(factory);
-                        break;
-                    }
-                }
-                //TODO multiple factories seems wrong, throw exception to enforce for uniqueness?
-            }
-            if (attribute instanceof FactoryPolymorphicListAttribute){
-                FactoryPolymorphicListAttribute factoryPolymorphicListAttribute = (FactoryPolymorphicListAttribute) attribute;
-                if (attributeMetadata.liveObjectClass!=null){
-                    for (FactoryBase<?, R> factory : context.getListFromLiveObjectCLass(attributeMetadata.liveObjectClass)) {
-                        factoryPolymorphicListAttribute.add(factory);
-                        break;
-                    }
-                }
             }
         });
         return result;
