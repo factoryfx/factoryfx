@@ -1,6 +1,8 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
@@ -60,5 +62,24 @@ class FactoryBaseAttributeTest {
         assertEquals(2,factoryB.internal().getParents().size());
 
 
+    }
+
+
+    @Test
+    public void test_createNew()  {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+            ExampleFactoryA root = new ExampleFactoryA();
+            root.referenceAttribute.add(ctx.get(ExampleFactoryB.class));
+            return root;
+        });
+        builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, ctx -> {
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.stringAttribute.set("bla");
+            return exampleFactoryB;
+        });
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
+        root.referenceAttribute.set(null);
+
+        root.referenceAttribute.internal_createNewPossibleValues();
     }
 }

@@ -3,11 +3,10 @@ package io.github.factoryfx.factory.attribute;
 import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.List;
+import java.util.function.Function;
 
 public interface AttributeCopy<V> {
-    void internal_copyTo(AttributeCopy<V> copyAttribute, final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root);
-
-    void internal_semanticCopyTo(AttributeCopy<V> copyAttribute);
+    void internal_copyTo(AttributeCopy<V> copyAttribute, Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider,  final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root);
 
     /**
      *

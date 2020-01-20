@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.attribute.dependency;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -78,35 +79,18 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @SuppressWarnings("unchecked")
     @Override
-    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         if (!isEmpty()) {
             List<F> copy = new ArrayList<>(size());
             for (F item: get()){
                 if (item!=null) {
-                    F itemCopy = (F)item.internal().copyDeep(level, maxLevel, oldData, parent, root);
+                    F itemCopy = (F)item.internal().copyDeep(newCopyInstanceProvider,level, maxLevel, oldData, parent, root);
                     if (itemCopy!=null){
                         copy.add(itemCopy);
                     }
                 }
             }
             copyAttribute.set(copy);
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void internal_semanticCopyTo(AttributeCopy<List<F>> copyAttribute) {
-        if (internal_getCopySemantic()== CopySemantic.SELF){
-            copyAttribute.set(get());
-        } else {
-            List<F> result = new ArrayList<>();
-            for (F item: get()){
-                final F itemCopy = (F)item.utility().semanticCopy();
-                if (itemCopy!=null){
-                    result.add(itemCopy);
-                }
-            }
-            copyAttribute.set(result);
         }
     }
 

@@ -135,23 +135,7 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         return userCreatable;
     }
 
-    private CopySemantic copySemantic;
 
-    @JsonIgnore
-    public CopySemantic internal_getCopySemantic(){
-        return Objects.requireNonNullElse(copySemantic, CopySemantic.COPY);
-    }
-
-    /**
-     * @see FactoryBase.UtilityFactory#semanticCopy()
-     *
-     * @param copySemantic copySemantic
-     * @return self*/
-    @SuppressWarnings("unchecked")
-    public A setCopySemantic(CopySemantic copySemantic){
-        this.copySemantic=copySemantic;
-        return (A)this;
-    }
 
     /**
      * reference is a selection from a catalogue
@@ -160,7 +144,6 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
     @SuppressWarnings("unchecked")
     public A catalogueBased(){
         catalogueBased=true;
-        setCopySemantic(CopySemantic.SELF);
         return (A)this;
     }
 

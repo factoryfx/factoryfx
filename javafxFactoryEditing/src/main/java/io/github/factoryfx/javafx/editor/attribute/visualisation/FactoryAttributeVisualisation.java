@@ -9,14 +9,12 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
-import io.github.factoryfx.javafx.widget.select.SelectDataDialog;
+import io.github.factoryfx.javafx.widget.select.SelectFactoryDialog;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -28,21 +26,26 @@ import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.editor.attribute.ValueAttributeVisualisation;
 import io.github.factoryfx.javafx.util.UniformDesign;
 
-public class FactoryAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryBaseAttribute<?,T,A>> extends ValueAttributeVisualisation<T,A> {
+public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends FactoryBaseAttribute<?, F,A>> extends ValueAttributeVisualisation<F,A> {
 
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
     private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
-    private LanguageText editText= new LanguageText().en("edit").de("Editieren");
+    private LanguageText editText= new LanguageText("edit").de("Editieren");
+
+
+    private LanguageText selectFactoryText= new LanguageText("select factory").de("Factory auswählen");
+    private LanguageText selectFactoryCopyText = new LanguageText("select factory copy").de("Factory-Kopie auswählen");
+    private LanguageText addNewFactoryText = new LanguageText("add new factory").de("neue Factory hinzufügen");
 
     private final UniformDesign uniformDesign;
     private final Consumer<FactoryBase<?,?>> navigateToData;
-    private final Supplier<List<T>> newValueProvider;
-    private final Supplier<Collection<T>> possibleValuesProvider;
+    private final Supplier<List<F>> newValueProvider;
+    private final Supplier<Collection<F>> possibleValuesProvider;
     private final SimpleBooleanProperty isUserSelectable;
     private final SimpleBooleanProperty isUserCreateable;
     private final Runnable remover;
-    private final Consumer<T> referenceSetter;
+    private final Consumer<F> referenceSetter;
 
 
 
@@ -60,25 +63,43 @@ public class FactoryAttributeVisualisation<T extends FactoryBase<?,?>, A extends
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Node createValueVisualisation() {
         Button showButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.PENCIL));
         showButton.setOnAction(event -> navigateToData.accept(observableAttributeValue.get()));
         showButton.disableProperty().bind(observableAttributeValue.isNull());
 
 
-        Button selectButton = new Button();
-        selectButton.disableProperty().bind(readOnly.or(isUserSelectable.not()));
-        uniformDesign.addIcon(selectButton,FontAwesome.Glyph.SEARCH_PLUS);
-        selectButton.setOnAction(event -> {
-            Collection<T> collection = possibleValuesProvider.get();
-            new SelectDataDialog<>(collection, uniformDesign).show(selectButton.getScene().getWindow(), observableAttributeValue::set);
-        });
-
-        Button newButton = new Button();
+        MenuButton newButton = new MenuButton();
 //        newButton.disableProperty().bind(readOnly.or(isUserCreateable.not()));
         newButton.disableProperty().bind(readOnly);
         uniformDesign.addIcon(newButton,FontAwesome.Glyph.PLUS);
-        newButton.setOnAction(event -> addNewReference(newButton.getScene().getWindow()));
+
+
+        {
+            MenuItem selectFactoryMenuItem = new MenuItem(uniformDesign.getText(selectFactoryText));
+            uniformDesign.addIcon(selectFactoryMenuItem, FontAwesome.Glyph.SEARCH_PLUS);
+            selectFactoryMenuItem.setOnAction(event -> {
+                Collection<F> collection = possibleValuesProvider.get();
+                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), t -> observableAttributeValue.set((F) t.utility().semanticCopy()));
+            });
+            newButton.getItems().add(selectFactoryMenuItem);
+        }
+        {
+            MenuItem selectFactoryCopyMenuItem = new MenuItem(uniformDesign.getText(selectFactoryCopyText));
+            uniformDesign.addIcon(selectFactoryCopyMenuItem, FontAwesome.Glyph.COPY);
+            selectFactoryCopyMenuItem.setOnAction(event -> {
+                Collection<F> collection = possibleValuesProvider.get();
+                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), t -> observableAttributeValue.set((F) t.utility().semanticCopy()));
+            });
+            newButton.getItems().add(selectFactoryCopyMenuItem);
+        }
+        {
+            MenuItem addNewFactory = new MenuItem(uniformDesign.getText(addNewFactoryText));
+            uniformDesign.addIcon(addNewFactory, FontAwesome.Glyph.PLUS);
+            addNewFactory.setOnAction(event -> addNewReference(newButton.getScene().getWindow()));
+            newButton.getItems().add(addNewFactory);
+        }
 
         Button deleteButton = new Button();
         deleteButton.disableProperty().bind(readOnly.or(observableAttributeValue.isNull()));
@@ -116,12 +137,10 @@ public class FactoryAttributeVisualisation<T extends FactoryBase<?,?>, A extends
         hBox.getChildren().add(textField);
 
         hBox.getChildren().add(showButton);
-        hBox.getChildren().add(selectButton);
         hBox.getChildren().add(newButton);
         hBox.getChildren().add(deleteButton);
 
         showButton.setTooltip(new Tooltip(uniformDesign.getText(editText)));
-        selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
         newButton.setTooltip(new Tooltip(uniformDesign.getText(addText)));
         deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
 
@@ -131,13 +150,13 @@ public class FactoryAttributeVisualisation<T extends FactoryBase<?,?>, A extends
     }
 
     private void addNewReference(Window owner) {
-        List<T> newData = newValueProvider.get();
+        List<F> newData = newValueProvider.get();
         if (!newData.isEmpty()){
             if (newData.size()==1){
                 referenceSetter.accept(newData.get(0));
                 navigateToData.accept(newData.get(0));
             } else {
-                new SelectDataDialog<>(newData,uniformDesign).show(owner, data -> {
+                new SelectFactoryDialog<>(newData,uniformDesign).show(owner, data -> {
                     referenceSetter.accept(data);
                     navigateToData.accept(data);
                 });

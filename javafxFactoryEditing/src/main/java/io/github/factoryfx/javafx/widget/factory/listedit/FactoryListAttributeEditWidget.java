@@ -32,7 +32,7 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import io.github.factoryfx.javafx.widget.Widget;
-import io.github.factoryfx.javafx.widget.select.SelectDataDialog;
+import io.github.factoryfx.javafx.widget.select.SelectFactoryDialog;
 
 /**
  * Data list edit widget (add Button,delete Button,... )
@@ -91,7 +91,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            new SelectDataDialog<>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> factoryListBaseAttribute.get().add(data));
+            new SelectFactoryDialog<>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> factoryListBaseAttribute.get().add(data));
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
@@ -209,9 +209,9 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
                 navigateToData.accept(newDataList.get(0));
             } else {
                 List<F> newDataListData = new ArrayList<>(newDataList);
-                new SelectDataDialog<>(newDataListData,uniformDesign).show(owner, data -> {
-                    factoryListBaseAttribute.add(data);
-                    navigateToData.accept(data);
+                new SelectFactoryDialog<>(newDataListData,uniformDesign).show(owner, factory -> {
+                    factoryListBaseAttribute.add(factory);
+                    navigateToData.accept(factory);
                 });
             }
         }

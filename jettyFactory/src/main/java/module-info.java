@@ -3,12 +3,10 @@ module io.github.factoryfx.jettyFactory {
     requires java.ws.rs;
     requires javax.servlet.api;
     requires com.google.common;
-    requires com.fasterxml.jackson.databind;
     requires jersey.common;
     requires com.fasterxml.jackson.jaxrs.json;
     requires jersey.server;
     requires jersey.container.servlet.core;
-    requires jackson.annotations;
     requires jersey.media.jaxb;
     requires org.eclipse.jetty.server;
     requires org.eclipse.jetty.util;

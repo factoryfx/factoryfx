@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.attribute;
 
 import java.util.*;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,12 +43,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     }
 
     @Override
-    public void internal_copyTo(AttributeCopy<T> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
-        copyAttribute.set(get());
-    }
-
-    @Override
-    public void internal_semanticCopyTo(AttributeCopy<T> copyAttribute) {
+    public void internal_copyTo(AttributeCopy<T> copyAttribute, Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         copyAttribute.set(get());
     }
 

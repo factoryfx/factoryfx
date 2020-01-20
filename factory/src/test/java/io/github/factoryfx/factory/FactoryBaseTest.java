@@ -2,6 +2,7 @@ package io.github.factoryfx.factory;
 
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
+import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
@@ -765,5 +766,97 @@ public class FactoryBaseTest {
         List<AttributeAndMetadata> list = root.internal().attributeList();
         Assertions.assertEquals(3,list.size());
     }
+
+    @Test
+    public void test_semanticCopy_singleton(){
+        FactoryTemplateId<ExampleFactoryA> templateId = new FactoryTemplateId<>(ExampleFactoryA.class,"root");
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(templateId, ctx -> {
+            ExampleFactoryA factoryA = new ExampleFactoryA();
+            factoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
+            factoryA.referenceListAttribute.add(ctx.get(ExampleFactoryB.class));
+            return factoryA;
+        });
+        builder.addSingleton(ExampleFactoryB.class,ctx->{
+            return new ExampleFactoryB();
+        });
+
+        ExampleFactoryA root = builder.buildTree();
+        Assertions.assertEquals(root.referenceAttribute.get(), root.referenceListAttribute.get(0));
+        ExampleFactoryA copy = root.utility().semanticCopy();
+        Assertions.assertEquals(copy.referenceAttribute.get(), copy.referenceListAttribute.get(0));
+
+    }
+
+    @Test
+    public void test_semanticCopy_singleton_nested(){
+        FactoryTemplateId<ExampleFactoryA> templateId = new FactoryTemplateId<>(ExampleFactoryA.class,"root");
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(templateId, ctx -> {
+            ExampleFactoryA factoryA = new ExampleFactoryA();
+            factoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
+            return factoryA;
+        });
+        builder.addSingleton(ExampleFactoryB.class,ctx->{
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.referenceAttributeC.set(ctx.get(ExampleFactoryC.class));
+            return exampleFactoryB;
+        });
+        builder.addPrototype(ExampleFactoryC.class,ctx->{
+            return new ExampleFactoryC();
+        });
+
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
+        ExampleFactoryB copy = root.referenceAttribute.get().utility().semanticCopy();
+        Assertions.assertNotEquals(root.referenceAttribute.get(), copy);
+        Assertions.assertNotEquals(root.referenceAttribute.get().referenceAttributeC.get(), copy.referenceAttributeC.get());
+    }
+
+    @Test
+    public void test_semanticCopy_singleton_stop_copy(){
+        FactoryTemplateId<ExampleFactoryA> templateId = new FactoryTemplateId<>(ExampleFactoryA.class,"root");
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(templateId, ctx -> {
+            ExampleFactoryA factoryA = new ExampleFactoryA();
+            factoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
+            return factoryA;
+        });
+        builder.addSingleton(ExampleFactoryB.class,ctx->{
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.referenceAttributeC.set(ctx.get(ExampleFactoryC.class));
+            return exampleFactoryB;
+        });
+        builder.addPrototype(ExampleFactoryC.class,ctx->{
+            return new ExampleFactoryC();
+        });
+
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
+        ExampleFactoryC expected = root.referenceAttribute.get().referenceAttributeC.get();
+        ExampleFactoryA copy = root.utility().semanticCopy();
+        Assertions.assertNotEquals(root, copy);
+        Assertions.assertEquals(root.referenceAttribute.get(), copy.referenceAttribute.get());
+        Assertions.assertEquals(expected, copy.referenceAttribute.get().referenceAttributeC.get());
+    }
+
+
+    @Test
+    public void test_copy_semantic_copy_json_serialisation(){
+        FactoryTemplateId<ExampleFactoryA> templateId = new FactoryTemplateId<>(ExampleFactoryA.class,"root");
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(templateId, ctx -> {
+            ExampleFactoryA factoryA = new ExampleFactoryA();
+            factoryA.referenceAttribute.set(ctx.get(ExampleFactoryB.class));
+            return factoryA;
+        });
+        builder.addSingleton(ExampleFactoryB.class,ctx->{
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.referenceAttributeC.set(ctx.get(ExampleFactoryC.class));
+            return exampleFactoryB;
+        });
+        builder.addPrototype(ExampleFactoryC.class,ctx->{
+            return new ExampleFactoryC();
+        });
+
+        ExampleFactoryA root = builder.buildTreeUnvalidated();
+        ExampleFactoryB copy = root.referenceAttribute.get().utility().semanticCopy();
+        ObjectMapperBuilder.build().copy(copy);
+    }
+
 
 }

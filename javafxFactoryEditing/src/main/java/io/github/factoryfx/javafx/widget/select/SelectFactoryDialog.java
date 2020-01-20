@@ -14,11 +14,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class SelectDataDialog<T extends FactoryBase<?,?>> {
+public class SelectFactoryDialog<T extends FactoryBase<?,?>> {
     public final Collection<T> dataList;
     private final UniformDesign uniformDesign;
 
-    public SelectDataDialog(Collection<T> dataList, UniformDesign uniformDesign) {
+    public SelectFactoryDialog(Collection<T> dataList, UniformDesign uniformDesign) {
         this.dataList = dataList;
         this.uniformDesign = uniformDesign;
     }

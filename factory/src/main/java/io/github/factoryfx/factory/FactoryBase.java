@@ -1,42 +1,16 @@
 package io.github.factoryfx.factory;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-
+import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeResult;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
@@ -45,6 +19,13 @@ import io.github.factoryfx.factory.validation.AttributeValidation;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.server.Microservice;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  *
@@ -222,8 +203,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, consumer, false);
     }
 
-    private FactoryBase<?,R> newCopyInstance(FactoryBase<L,R> data) {
-        return getFactoryMetadata().newCopyInstance(data);
+    @SuppressWarnings("unchecked")
+    private FactoryBase<?,R> newCopyInstance(FactoryBase<?,?> factory) {
+        return getFactoryMetadata().newCopyInstance((FactoryBase<?, R>) factory);
     }
 
     private void fixDuplicateObjects() {
@@ -365,14 +347,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
 
     @SuppressWarnings("unchecked")
-    private <F extends FactoryBase<L,R>> F semanticCopy() {
-        F result = (F)newCopyInstance(this);
-        this.visitAttributesForCopy(result, (original, copy) -> {
-            original.internal_semanticCopyTo(copy);
-            return true;
-        });
-        return result;
-    }
+//    private <F extends FactoryBase<L,R>> F semanticCopy() {
+//        F result = (F)newCopyInstance(this);
+//        this.visitAttributesForCopy(result, (original, copy) -> {
+//            original.internal_semanticCopyTo(copy);
+//            return true;
+//        });
+//        return result;
+//    }
 
     private <T extends FactoryBase<?,?>> T copyOneLevelDeep(){
         return copy(1);
@@ -386,10 +368,20 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return copy(Integer.MAX_VALUE);
     }
 
+    private <T extends FactoryBase<?, ?>> T copy(int level) {
+        return copy((f) -> {
+            FactoryBase<?, ?> newCopyInstance = f.newCopyInstance(f);
+            if (f.id == null) {
+                f.getId();
+            }
+            newCopyInstance.id = f.id;
+            return newCopyInstance;
+        }, level);
+    }
 
     //TODO check synchronized performance impact (synchronized is required cause copy stored in factory)
     @SuppressWarnings("unchecked")
-    private synchronized <T extends FactoryBase<?,?>> T copy(int level) {
+    private synchronized <T extends FactoryBase<?,?>> T copy(Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, int level) {
         ArrayList<FactoryBase<?,?>> oldDataList;
         if (treeChildrenCounter >0){
             oldDataList = new ArrayList<>(treeChildrenCounter);
@@ -397,7 +389,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             oldDataList = new ArrayList<>();
         }
 
-        FactoryBase<?,?> copy = copyDeep(0, level,oldDataList,null,(R)this);
+        FactoryBase<?,?> copy = copyDeep(newCopyInstanceProvider,0, level,oldDataList,null,(R)this);
         copy.treeChildrenCounter =oldDataList.size();
 
         for (FactoryBase<?,?> oldData: oldDataList) {
@@ -408,25 +400,36 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return (T) copy;
     }
 
+    private synchronized <T extends FactoryBase<?,?>> T semanticCopy() {
+        return copy((f) -> {
+            Scope scope = this.root.factoryTreeBuilder.getScope(new FactoryTemplateId<>(f));
+            if (f==this){
+                return f.newCopyInstance(f);
+            }
+            if (scope==Scope.SINGLETON){
+                return f;
+            }
+            return f.newCopyInstance(f);
+        },Integer.MAX_VALUE);
+    }
+
 
     FactoryBase<?,R> copy;
     @SuppressWarnings("unchecked")
-    private <F extends FactoryBase<? extends L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,R> parent, R root){
+    private <F extends FactoryBase<? extends L,R>> F copyDeep(Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,R> parent, R root){
         if (level>maxLevel){
             return null;
         }
         if (copy==null){
-            copy = newCopyInstance(this);
-            if (this.id==null){
-                getId();
-            }
-            copy.id = this.id;
+            copy = (FactoryBase<?, R>) newCopyInstanceProvider.apply(this);
 
-            this.visitAttributesForCopy(copy, (thisAttribute, copyAttribute) -> {
-                thisAttribute.internal_copyTo(copyAttribute,level + 1, maxLevel,oldData,this,root);
-                copyAttribute.internal_addBackReferences(root.copy,copy);
-                return true;
-            });
+            if (this!=this.copy){
+                this.visitAttributesForCopy(copy, (thisAttribute, copyAttribute) -> {
+                    thisAttribute.internal_copyTo(copyAttribute,newCopyInstanceProvider,level + 1, maxLevel,oldData,this,root);
+                    copyAttribute.internal_addBackReferences(root.copy,copy);
+                    return true;
+                });
+            }
 
             oldData.add(this);
 
@@ -796,8 +799,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         @SuppressWarnings("unchecked")
-        public <F extends FactoryBase<L,R>> F copyDeep(final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
-            return factory.copyDeep(level,maxLevel,oldData,(FactoryBase<?,R>)parent,(R)root);
+        public <F extends FactoryBase<L,R>> F copyDeep(Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
+            return factory.copyDeep(newCopyInstanceProvider, level,maxLevel,oldData,(FactoryBase<?,R>)parent,(R)root);
         }
 
         /**

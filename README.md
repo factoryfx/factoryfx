@@ -120,6 +120,8 @@ Different ways to change the configuration at runtime
 Configuration via web application
 * [Reuse Factories in mutiple projects](docu/src/main/java/io/github/factoryfx/docu/reusability)  
 Factory with generic RootFactory
+* [Encrypted attributes](docu/src/main/java/io/github/factoryfx/docu/encryptedattributes)  
+Hiding information from the client like passwords
 
 ## Example
 

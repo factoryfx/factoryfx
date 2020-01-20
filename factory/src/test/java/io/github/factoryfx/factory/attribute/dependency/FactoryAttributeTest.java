@@ -252,25 +252,5 @@ public class FactoryAttributeTest {
         Assertions.assertTrue(attribute.internal_getListeners().size()==0);
     }
 
-    @Test
-    public void test_semanticcopy_self(){
-        FactoryAttribute<Void,ExampleDataA> attributeFrom =new FactoryAttribute<>();
-        attributeFrom.setCopySemantic(CopySemantic.SELF);
-        attributeFrom.set(new ExampleDataA());
-        FactoryAttribute<Void,ExampleDataA> attributeTo =new FactoryAttribute<>();
-        attributeFrom.internal_semanticCopyTo(attributeTo);
-        Assertions.assertTrue(attributeFrom.get()==attributeTo.get(),"same reference");
-    }
-
-    @Test
-    public void test_semanticcopy_copy(){
-        FactoryAttribute<Void,ExampleDataA> attributeFrom =new FactoryAttribute<>();
-        attributeFrom.setCopySemantic(CopySemantic.COPY);
-        attributeFrom.set(new ExampleDataA());
-        FactoryAttribute<Void,ExampleDataA> attributeTo =new FactoryAttribute<>();
-        attributeFrom.internal_semanticCopyTo(attributeTo);
-        Assertions.assertTrue(attributeFrom.get()!=attributeTo.get(),"not same reference");
-        Assertions.assertNotEquals(attributeFrom.get().getId(),attributeTo.get().getId());
-    }
 
 }

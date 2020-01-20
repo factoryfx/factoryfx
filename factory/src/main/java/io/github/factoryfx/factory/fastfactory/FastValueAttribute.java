@@ -26,12 +26,7 @@ public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase
         //nothing
     }
 
-    public void internal_copyTo(AttributeCopy<V> copyAttribute, final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
-        copyAttribute.set(valueGetter.apply(boundFactory));
-    }
-
-    @Override
-    public void internal_semanticCopyTo(AttributeCopy<V> copyAttribute) {
+    public void internal_copyTo(AttributeCopy<V> copyAttribute, Function<FactoryBase<?, ?>, FactoryBase<?, ?>> newCopyInstanceProvider, final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
         copyAttribute.set(valueGetter.apply(boundFactory));
     }
 

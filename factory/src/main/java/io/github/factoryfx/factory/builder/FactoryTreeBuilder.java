@@ -246,6 +246,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootTemplateId.clazz);
         }
         rootFactory.internal().finalise();
+        rootFactory.internal().setFactoryTreeBuilder(this);
         return rootFactory;
     }
 
@@ -278,8 +279,8 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
 
-    public Scope getScope(Class<?> factoryClazz){
-        return factoryContext.getScope(factoryClazz);
+    public Scope getScope(FactoryTemplateId<?> factoryTemplateId){
+        return factoryContext.getScope(factoryTemplateId);
     }
 
     public void fillFromExistingFactoryTree(R root) {

@@ -75,6 +75,10 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
         if (factoryTreeBuilderBasedAttributeSetup!=null){
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(update.root);
         }
+        if (factoryTreeBuilderBasedAttributeSetup!=null){
+            factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(update.root);
+        }
+
         return update;
     }
 

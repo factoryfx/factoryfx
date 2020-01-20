@@ -41,32 +41,15 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
     }
 
     @Override
-    public void internal_copyTo(AttributeCopy<List<V>> copyAttribute, final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
+    public void internal_copyTo(AttributeCopy<List<V>> copyAttribute, Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, final int level, final int maxLevel, final List<FactoryBase<?,?>> oldData, FactoryBase<?,?> parent, FactoryBase<?,?> root){
         List<V> valueFactories = valueGetter.apply(this.boundFactory);
         ArrayList<V> result = new ArrayList<>();
         for (V valueFactory : valueFactories) {
-            V copy = valueFactory.internal().copyDeep(level, maxLevel, oldData, parent, root);
+            V copy = valueFactory.internal().copyDeep(newCopyInstanceProvider, level, maxLevel, oldData, parent, root);
             result.add(copy);
         }
         copyAttribute.set(result);
 
-    }
-
-    @Override
-    public void internal_semanticCopyTo(AttributeCopy<List<V>> copyAttribute) {
-        List<V> valueFactories = valueGetter.apply(this.boundFactory);
-        if (getAttribute().internal_getCopySemantic()== CopySemantic.SELF){
-            copyAttribute.set(valueFactories);
-        } else {
-            List<V> result = new ArrayList<>();
-            for (V item: valueFactories){
-                final V itemCopy = item.utility().semanticCopy();
-                if (itemCopy!=null){
-                    result.add(itemCopy);
-                }
-            }
-            copyAttribute.set(result);
-        }
     }
 
     @Override

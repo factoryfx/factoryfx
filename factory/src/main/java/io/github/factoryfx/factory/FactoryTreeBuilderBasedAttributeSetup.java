@@ -3,6 +3,7 @@ package io.github.factoryfx.factory;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
@@ -35,8 +36,8 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
     }
 
     private void setupReferenceAttribute(AttributeMetadata attributeMetadata,FactoryAttribute<?, ?> referenceAttribute) {
-        Class<?> referenceClass = attributeMetadata.referenceClass;
-        Scope scope = factoryTreeBuilder.getScope(referenceClass);
+        Class<? extends FactoryBase<?,?>> referenceClass = attributeMetadata.referenceClass;
+        Scope scope = factoryTreeBuilder.getScope(new FactoryTemplateId<>(referenceClass,null));
         if (scope== Scope.SINGLETON) {
             referenceAttribute.userNotSelectable();
         }
@@ -46,8 +47,8 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
     }
 
     private void setupReferenceListAttribute(AttributeMetadata attributeMetadata,FactoryListAttribute<?, ?> referenceAttribute) {
-        Class<?> referenceClass = attributeMetadata.referenceClass;
-        Scope scope = factoryTreeBuilder.getScope(referenceClass);
+        Class<? extends FactoryBase<?,?>> referenceClass = attributeMetadata.referenceClass;
+        Scope scope = factoryTreeBuilder.getScope(new FactoryTemplateId<>(referenceClass,null));
         if (scope== Scope.SINGLETON) {
             referenceAttribute.userNotSelectable();
         }
@@ -67,6 +68,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
 
     public void applyToRootFactoryDeep(R root) {
         root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(this);
+        root.internal().setFactoryTreeBuilder(this.factoryTreeBuilder);
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
 
         root.internal().collectChildrenDeep().forEach(data -> {

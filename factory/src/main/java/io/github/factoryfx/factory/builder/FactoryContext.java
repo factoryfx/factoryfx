@@ -103,8 +103,8 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         return factoryCreators.stream().anyMatch(fc -> fc.match(clazz));
     }
 
-    public Scope getScope(Class<?> factoryClazz) {
-        return factoryCreators.stream().filter(fc -> fc.match(factoryClazz)).findAny().map(FactoryCreator::getScope).orElse(null);
+    public Scope getScope(FactoryTemplateId<?> factoryTemplateId) {
+        return factoryCreators.stream().filter(fc -> fc.match(factoryTemplateId.clazz,factoryTemplateId.name)).findAny().map(FactoryCreator::getScope).orElse(null);
     }
 
     boolean isEmpty() {

@@ -1,12 +1,13 @@
 module io.github.factoryfx.factory {
     //automatic module that should be transitive but can't until they are real modules
-    requires jackson.annotations;
-    requires com.google.common;
-    requires com.fasterxml.jackson.databind;
-    requires com.fasterxml.jackson.datatype.jdk8;
-    requires com.fasterxml.jackson.datatype.jsr310;
-    requires com.fasterxml.jackson.core;
 
+    requires com.google.common;
+
+    requires transitive com.fasterxml.jackson.databind;
+    requires transitive com.fasterxml.jackson.datatype.jdk8;
+    requires transitive com.fasterxml.jackson.datatype.jsr310;
+    requires transitive com.fasterxml.jackson.core;
+    requires transitive com.fasterxml.jackson.annotation;
     requires transitive java.sql;//for jackson DateDeserializer
     requires transitive org.slf4j;
 

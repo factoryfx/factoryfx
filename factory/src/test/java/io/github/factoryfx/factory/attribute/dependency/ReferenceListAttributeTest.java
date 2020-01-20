@@ -155,27 +155,6 @@ public class ReferenceListAttributeTest {
     }
 
     @Test
-    public void test_semanticcopy_self(){
-        FactoryListAttribute<Void,ExampleDataA> attributeFrom =new FactoryListAttribute<>();
-        attributeFrom.setCopySemantic(CopySemantic.SELF);
-        attributeFrom.add(new ExampleDataA());
-        FactoryListAttribute<Void,ExampleDataA> attributeTo =new FactoryListAttribute<>();
-        attributeFrom.internal_semanticCopyTo(attributeTo);
-        Assertions.assertTrue(attributeFrom.get(0)==attributeTo.get(0),"same reference");
-    }
-
-    @Test
-    public void test_semanticcopy_copy(){
-        FactoryListAttribute<Void,ExampleDataA> attributeFrom =new FactoryListAttribute<>();
-        attributeFrom.setCopySemantic(CopySemantic.COPY);
-        attributeFrom.add(new ExampleDataA());
-        FactoryListAttribute<Void,ExampleDataA> attributeTo =new FactoryListAttribute<>();
-        attributeFrom.internal_semanticCopyTo(attributeTo);
-        Assertions.assertTrue(attributeFrom.get(0)!=attributeTo.get(0),"not same reference");
-        Assertions.assertNotEquals(attributeFrom.get(0).getId(),attributeTo.get(0).getId());
-    }
-
-    @Test
     public void test_sort_notifies_listener(){
         FactoryListAttribute<Void,ExampleDataA> attribute =new FactoryListAttribute<>();
         {

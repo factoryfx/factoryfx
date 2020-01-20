@@ -239,71 +239,6 @@ public class DataTest {
 
 
     @Test
-    public void test_copy_semantic_self(){
-        ExampleDataA exampleFactoryA = new ExampleDataA();
-        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
-
-        ExampleDataA copy =  exampleFactoryA.utility().semanticCopy();
-
-        Assertions.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
-        Assertions.assertEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
-        Assertions.assertEquals(exampleFactoryA.referenceListAttribute.get(0), copy.referenceListAttribute.get(0));
-    }
-
-    @Test
-    public void test_copy_semantic_copy(){
-        ExampleDataA exampleFactoryA = new ExampleDataA();
-        exampleFactoryA.stringAttribute.set("dfssfdsfdsfd");
-        exampleFactoryA.referenceAttribute.set(new ExampleDataB());
-        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
-
-        exampleFactoryA.referenceAttribute.setCopySemantic(CopySemantic.COPY);
-        exampleFactoryA.referenceListAttribute.setCopySemantic(CopySemantic.COPY);
-
-        ExampleDataA copy =  exampleFactoryA.utility().semanticCopy();
-
-        Assertions.assertEquals(exampleFactoryA.stringAttribute.get(), copy.stringAttribute.get());
-        Assertions.assertNotEquals(exampleFactoryA.referenceAttribute.get(), copy.referenceAttribute.get());
-        Assertions.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
-        Assertions.assertNotEquals(exampleFactoryA.referenceListAttribute.get(), copy.referenceListAttribute.get());
-        Assertions.assertNotEquals(exampleFactoryA.referenceAttribute.get().getId(), copy.referenceAttribute.get().getId());
-    }
-
-    @Test
-    public void test_copy_semantic_copy_json_id_unique(){
-        ExampleDataA exampleFactoryA = new ExampleDataA();
-        exampleFactoryA.referenceListAttribute.add(new ExampleDataB());
-
-        exampleFactoryA.referenceAttribute.setCopySemantic(CopySemantic.COPY);
-        exampleFactoryA.referenceListAttribute.setCopySemantic(CopySemantic.COPY);
-
-        ExampleDataB copy =  exampleFactoryA.referenceListAttribute.get(0).utility().semanticCopy();
-        exampleFactoryA.referenceListAttribute.add(copy);
-
-        ObjectMapperBuilder.build().copy(exampleFactoryA);
-    }
-
-    @Test
-    public void test_copy_semantic_copy_json_id_unique_2(){
-        ExampleDataA factoryA = new ExampleDataA();
-        final ExampleDataB factoryB = new ExampleDataB();
-        factoryB.referenceAttributeC.set(new ExampleDataC());
-        factoryA.referenceListAttribute.add(factoryB);
-
-        factoryB.referenceAttributeC.setCopySemantic(CopySemantic.SELF);
-        factoryA.referenceAttribute.setCopySemantic(CopySemantic.SELF);
-        factoryA.referenceListAttribute.setCopySemantic(CopySemantic.SELF);
-
-        ExampleDataB copy =  factoryA.referenceListAttribute.get(0).utility().semanticCopy();
-        factoryA.referenceListAttribute.add(copy);
-
-        Assertions.assertEquals(2, factoryA.referenceListAttribute.size());
-        ObjectMapperBuilder.build().copy(factoryA);
-    }
-
-    @Test
     public void test_parent_navigation(){
         ExampleDataA dataA = new ExampleDataA();
         ExampleDataB dataB = new ExampleDataB();
@@ -614,27 +549,6 @@ public class DataTest {
 
         Assertions.assertEquals(1,exampleDataB.internal().getPathFromRoot().size());
         Assertions.assertEquals(data,exampleDataB.internal().getPathFromRoot().get(0));
-    }
-
-    @Test
-    public void test_semanticCopy_bugrecreation(){
-        ExampleDataA data = new ExampleDataA();
-        ExampleDataB exampleDataB = new ExampleDataB();
-        exampleDataB.referenceAttributeC.setCopySemantic(CopySemantic.SELF);
-        exampleDataB.referenceAttributeC.set(new ExampleDataC());
-
-        data.referenceAttribute.set(exampleDataB);
-
-        data.internal().finalise();
-
-        ExampleDataB copy = exampleDataB.utility().semanticCopy();
-        data.referenceListAttribute.add(copy);
-
-        data.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
-            if (attributeMetadata.attributeVariableName.equals("referenceAttribute")){
-                Assertions.assertEquals(2,data.referenceAttribute.internal_possibleValues(attributeMetadata).size());
-            }
-        });
     }
 
     @Test

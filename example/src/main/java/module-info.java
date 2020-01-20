@@ -5,7 +5,6 @@ open module io.github.factoryfx.example {
 
     requires ch.qos.logback.classic;
     requires java.desktop;
-    requires jackson.annotations;
     requires java.ws.rs;
     requires org.eclipse.jetty.server;
 

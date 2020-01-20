@@ -60,6 +60,8 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
 
         AttributeAndMetadata attribute = resolveAttribute(request);
         if (attribute.attributeMetadata.liveObjectClass!=null) {
+
+
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(microservice.prepareNewFactory().root);
             return factoryTreeBuilderBasedAttributeSetup.createNewFactory(attribute.attributeMetadata.liveObjectClass).get(0);
         }

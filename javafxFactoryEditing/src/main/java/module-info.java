@@ -1,7 +1,6 @@
 module io.github.factoryfx.javafxFactoryEditing {
     requires transitive io.github.factoryfx.factory;
     requires transitive io.github.factoryfx.microserviceRestClient;
-    requires com.fasterxml.jackson.databind;
 
     requires transitive javafx.graphics;
     requires transitive javafx.controls;

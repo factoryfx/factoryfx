@@ -12,8 +12,8 @@ import io.github.factoryfx.factory.validation.ValidationResult;
 
 public class ExampleDataA extends FactoryBase<Void,ExampleDataA> {
     public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleA1");
-    public final FactoryAttribute<Void,ExampleDataB> referenceAttribute = new FactoryAttribute<Void,ExampleDataB>().setCopySemantic(CopySemantic.SELF).labelText("ExampleA2");
-    public final FactoryListAttribute<Void,ExampleDataB> referenceListAttribute = new FactoryListAttribute<Void,ExampleDataB>().setCopySemantic(CopySemantic.SELF).labelText("ExampleA3");
+    public final FactoryAttribute<Void,ExampleDataB> referenceAttribute = new FactoryAttribute<Void,ExampleDataB>().labelText("ExampleA2");
+    public final FactoryListAttribute<Void,ExampleDataB> referenceListAttribute = new FactoryListAttribute<Void,ExampleDataB>().labelText("ExampleA3");
 
     public ExampleDataA(){
         config().setDisplayTextProvider(() -> stringAttribute.get());

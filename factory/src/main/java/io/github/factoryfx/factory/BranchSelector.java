@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 
@@ -37,12 +38,12 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
     }
 
     @SuppressWarnings("unchecked")
-    public <LB,B extends FactoryBase<LB,R>> Branch<LB,B> select(Class<B> factoryClass, String name){
-        if (treeBuilder!=null && treeBuilder.getScope(factoryClass)!= Scope.SINGLETON){
+    public <LB,B extends FactoryBase<LB,R>> Branch<LB,B> select(Class<B> factoryClass, String treeBuilderName){
+        if (treeBuilder!=null && treeBuilder.getScope(new FactoryTemplateId<B>(factoryClass,treeBuilderName))!= Scope.SINGLETON){
             throw new IllegalArgumentException("can't select prototype");
         }
         for (FactoryBase<?, R> child : this.root.internal().collectChildrenDeep()) {
-            if (matchFactory(child,factoryClass,name)){
+            if (matchFactory(child,factoryClass,treeBuilderName)){
                 return new Branch<>((B)child);
             }
         }

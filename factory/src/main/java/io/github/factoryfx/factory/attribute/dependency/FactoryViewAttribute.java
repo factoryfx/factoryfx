@@ -68,15 +68,9 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
     }
 
     @Override
-    public void internal_copyTo(AttributeCopy<F> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+    public void internal_copyTo(AttributeCopy<F> copyAttribute,Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
 
     }
-
-    @Override
-    public void internal_semanticCopyTo(AttributeCopy<F> copyAttribute) {
-        //nothing
-    }
-
 
     //** so we don't need to initialise javax toolkit in test, Platform.runLater(runnable);*/
     Consumer<Runnable> runlaterExecutor;

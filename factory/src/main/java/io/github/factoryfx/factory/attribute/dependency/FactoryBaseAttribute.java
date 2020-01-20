@@ -13,6 +13,7 @@ import io.github.factoryfx.factory.FactoryBase;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Attribute with factory
@@ -71,23 +72,11 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
 
     @SuppressWarnings("unchecked")
     @Override
-    public void internal_copyTo(AttributeCopy<F> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+    public void internal_copyTo(AttributeCopy<F> copyAttribute, Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         F factory = get();
         if (factory!=null) {
-            F copy = (F) factory.internal().copyDeep(level, maxLevel, oldData, parent, root);
+            F copy = (F) factory.internal().copyDeep(newCopyInstanceProvider, level, maxLevel, oldData, parent, root);
             copyAttribute.set(copy);
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void internal_semanticCopyTo(AttributeCopy<F> copyAttribute) {
-        if (get()!=null){
-            if (internal_getCopySemantic()== CopySemantic.SELF){
-                copyAttribute.set(get());
-            } else {
-                copyAttribute.set((F)get().utility().semanticCopy());
-            }
         }
     }
 

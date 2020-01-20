@@ -77,11 +77,6 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
         //nothing
     }
 
-    @Override
-    public void internal_semanticCopyTo(AttributeCopy<List<F>> copyAttribute) {
-        //nothing
-    }
-
     //** so we don't need to initialise javax toolkit for tests*/
     Consumer<Runnable> runlaterExecutor;
     @Override
@@ -191,7 +186,7 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         //nothing
     }
 

@@ -18,7 +18,7 @@ public class LocaleAttributeTest {
     public void test_copy(){
         LocaleAttribute attribute= new LocaleAttribute().defaultValue(Locale.FRANCE);
         LocaleAttribute copy= new LocaleAttribute();
-        attribute.internal_copyTo(copy, 0, 0, null, null, null);
+        attribute.internal_copyTo(copy, null,0, 0, null, null, null);
         Assertions.assertEquals(Locale.FRANCE,copy.get());
     }
 }
