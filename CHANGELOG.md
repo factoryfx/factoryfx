@@ -76,7 +76,7 @@
     ```
     **new**
     ```java          
-    builder.addBuilder(ctx->new SimpleJettyServerBuilder<Root,RootFactory>()
+    builder.addBuilder(ctx->new SimpleJettyServerBuilder<RootFactory>()
             .withHostWildcard()
             .withResource(ctx.get(ResourceFactory.class))      
     ```          
