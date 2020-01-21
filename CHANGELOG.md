@@ -1,5 +1,19 @@
 # 2.2.9
 
+### Features
+* **javafxFactoryEditing**
+  * Select copy support
+  * show factory usage in order to clarify the implications of data changes
+  
+### BREAKING CHANGES
+* **semantic copy rework**
+    semantic now respect the scope from the FactoryTreeBuilder. Nested singleton factories are not copied. 
+    The semantic copy configuration on the attributes is removed. This also affect Attributes marked as catalog.
+    For catalog attributes you have to make sure that they are registered as singleton in the builder.
+    
+
+# 2.2.9
+
 ### BREAKING CHANGES
 * **ParametrizedObjectCreatorAttribute**
     removed ParametrizedObjectCreatorAttribute because it was not thread safe.

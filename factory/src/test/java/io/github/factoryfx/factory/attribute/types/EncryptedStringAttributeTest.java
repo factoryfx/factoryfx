@@ -32,4 +32,18 @@ public class EncryptedStringAttributeTest {
 
         Assertions.assertEquals("test123üÄ",attribute.decrypt(key));
     }
+
+    @Test
+    public void set_null(){
+        EncryptedStringAttribute attribute = new EncryptedStringAttribute().nullable();
+        attribute.set(null,"key");
+        Assertions.assertNull(attribute.get());
+    }
+
+    @Test
+    public void get_null(){
+        EncryptedStringAttribute attribute = new EncryptedStringAttribute().nullable();
+        attribute.set(null,"key");
+        Assertions.assertNull(attribute.decrypt("key"));
+    }
 }

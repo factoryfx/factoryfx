@@ -7,9 +7,12 @@ import io.github.factoryfx.server.Microservice;
 
 public class Main {
 
-    public static final String KEY = EncryptedStringAttribute.createKey(); //must not be part of a factory
+    public static final String KEY = "YONWc4GmsXIRPWaMb54QPA=="; //must not be part of a factory
 
     public static void main(String[] args) {
+        //example how to generate a key
+        System.out.println(":ExampleKey: " + EncryptedStringAttribute.createKey());
+
         FactoryTreeBuilder<Printer, PrinterFactory> builder = new FactoryTreeBuilder<>(PrinterFactory.class, ctx->{
             PrinterFactory factory = new PrinterFactory();
             factory.password.set("Hello World", KEY);
@@ -21,6 +24,6 @@ public class Main {
 
         PrinterFactory update = microservice.prepareNewFactory().root;
         String updateString = ObjectMapperBuilder.build().writeValueAsString(update);
-        System.out.println("update does not contain the secreat text: "+!updateString.contains("Hello World"));
+        System.out.println("update does not contain the secret text: "+!updateString.contains("Hello World"));
     }
 }

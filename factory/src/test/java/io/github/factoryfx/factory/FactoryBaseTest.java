@@ -858,5 +858,15 @@ public class FactoryBaseTest {
         ObjectMapperBuilder.build().copy(copy);
     }
 
+    @Test
+    public void test_collectChildrenFlat(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        ExampleFactoryB factoryB = new ExampleFactoryB();
+        root.referenceAttribute.set(factoryB);
+        root.internal().finalise();
+
+        assertEquals(1,root.internal().collectChildrenFlat().size());
+        assertEquals(factoryB,root.internal().collectChildrenFlat().get(0));
+    }
 
 }

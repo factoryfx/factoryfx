@@ -52,11 +52,22 @@ public class EncryptedStringAttribute extends ImmutableValueAttribute<EncryptedS
     }
 
     public EncryptedStringAttribute set(String value, String key) {
+        if (value==null){
+            this.set(null);
+            return null;
+        }
         return encrypt(value,key);
     }
 
     public String decrypt(String key) {
+        if (get()==null){
+            return null;
+        }
         return get().decrypt(key);
+    }
+
+    public String get(String key) {
+        return decrypt(key);
     }
 
     public boolean internal_isValidKey(String key) {

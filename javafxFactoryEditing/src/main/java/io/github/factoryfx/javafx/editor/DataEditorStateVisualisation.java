@@ -1,23 +1,36 @@
 package io.github.factoryfx.javafx.editor;
 
+import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
 import io.github.factoryfx.javafx.util.ObservableFactoryDisplayText;
 import io.github.factoryfx.javafx.util.UniformDesign;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class DataEditorStateVisualisation extends BorderPane {
     private final UniformDesign uniformDesign;
@@ -31,16 +44,86 @@ public class DataEditorStateVisualisation extends BorderPane {
         this.dataEditor = dataEditor;
         this.visCustomizer = visCustomizer;
 
+        SplitPane splitPane = new SplitPane();
+        splitPane.setOrientation(Orientation.VERTICAL);
+
         FactoryBase<?,?> previousValue=null;
         if (displayedEntities.size()>1){
             previousValue=displayedEntities.get(displayedEntities.size()-1);
         }
-        setCenter(createEditor(currentData,previousValue));
+        splitPane.getItems().add( createEditor(currentData,previousValue));
+        setCenter(splitPane);
+
+
 
         if (showNavigation){
             setTop(createNavigation(displayedEntities,currentData,previousData,nextData));
         }
+        if (currentData!=null){
+            createUsages(currentData,splitPane);
+        }
     }
+
+    private Node createUsages(FactoryBase<?, ?> currentData, SplitPane splitPane) {
+        Set<FactoryBase<?, ?>> usages = new HashSet<>();
+        List<? extends FactoryBase<?, ?>> factoryBases = currentData.utility().getRoot().internal().collectChildrenDeep();
+        for (FactoryBase<?, ?> factoryBase : factoryBases) {
+            for (FactoryBase<?, ?> child : factoryBase.internal().collectChildrenFlat()) {
+                if (child==currentData){
+                    usages.add(factoryBase);
+                }
+            }
+        }
+        TableView<FactoryBase<?, ?>> table = new TableView<>();
+        table.getItems().addAll(usages);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<FactoryBase<?, ?>, String> factory = new TableColumn<>("Factory");
+        table.getColumns().add(factory);
+        factory.setCellValueFactory(param -> {
+            return new SimpleStringProperty(param.getValue().internal().getDisplayText());
+        });
+
+        TableColumn<FactoryBase<?, ?>, String> path = new TableColumn<>("Path");
+        table.getColumns().add(path);
+        path.setCellValueFactory(param -> {
+            return new SimpleStringProperty(param.getValue().internal().getPathFromRoot().stream().map(f->f.internal().getDisplayText()).collect(Collectors.joining("/")));
+        });
+
+
+        table.setOnMouseClicked(event -> {
+            if (event.getClickCount()==2) {
+                dataEditor.navigate(table.getSelectionModel().getSelectedItem());
+            }
+        });
+
+
+        VBox vBox = new VBox(3);
+        uniformDesign.setBackground(vBox);
+
+        Label header = new Label("Dependent factories");
+        vBox.getChildren().add(header);
+        header.setFont(new Font(16));
+        header.setStyle("-fx-font-weight: bold;-fx-text-fill: white;");
+        VBox.setMargin(header,new Insets(3,3,0,3));
+
+        Label description = new Label("Factory is referenced in the factories: (Changes affect these factories.)");
+        vBox.getChildren().add(description);
+        description.setStyle("-fx-text-fill: white;");
+        VBox.setMargin(description,new Insets(0,3,0,3));
+
+
+        vBox.getChildren().add(table);
+        VBox.setMargin(table,new Insets(3));
+        VBox.setVgrow(table,Priority.ALWAYS);
+
+        if (usages.size()>1){
+            splitPane.getItems().add(vBox);
+            splitPane.setDividerPositions(0.7, 0.3);
+        }
+        return vBox;
+    }
+
 
     private Node customizeVis(Node defaultVis, FactoryBase<?,?> data){
         return visCustomizer.apply(defaultVis,data);

@@ -1,6 +1,8 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -69,17 +71,22 @@ class FactoryBaseAttributeTest {
     public void test_createNew()  {
         FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
             ExampleFactoryA root = new ExampleFactoryA();
-            root.referenceAttribute.add(ctx.get(ExampleFactoryB.class));
+            root.referenceAttribute.set(ctx.get(ExampleFactoryB.class,"test"));
             return root;
         });
-        builder.addFactory(ExampleFactoryB.class, Scope.SINGLETON, ctx -> {
+        builder.addFactory(ExampleFactoryB.class,"test", Scope.SINGLETON, ctx -> {
             ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
             exampleFactoryB.stringAttribute.set("bla");
             return exampleFactoryB;
         });
         ExampleFactoryA root = builder.buildTreeUnvalidated();
         root.referenceAttribute.set(null);
+        root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
 
-        root.referenceAttribute.internal_createNewPossibleValues();
+        ExampleFactoryB possibleValue = root.referenceAttribute.internal_createNewPossibleValues(root.internal().getAttributeMetadata(root.referenceAttribute)).get(0);
+        Assertions.assertEquals("bla",possibleValue.stringAttribute.get());
+
+        Assertions.assertEquals(ExampleFactoryB.class,new FactoryTemplateId<>(possibleValue).clazz);
+        Assertions.assertEquals("test",new FactoryTemplateId<>(possibleValue).name);
     }
 }

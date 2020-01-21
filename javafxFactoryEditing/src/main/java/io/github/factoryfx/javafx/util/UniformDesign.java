@@ -12,6 +12,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
@@ -156,4 +160,8 @@ public class UniformDesign {
         return askBeforeDelete;
     }
 
+
+    public void setBackground(Pane pane) {
+        pane.setStyle("-fx-background-color: "+toCssColor(warningColor)+";");
+    }
 }

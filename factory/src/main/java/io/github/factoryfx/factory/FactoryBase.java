@@ -186,6 +186,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return result;
     }
 
+    private List<FactoryBase<?,R>> collectChildrenFlat(){
+        this.ensureTreeIsFinalised();
+        return finalisedChildrenFlat;
+    }
+
     @SuppressWarnings("unchecked")
     private <R extends FactoryBase<?,R>> Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree(){
         HashSet<FactoryBase<?, R>> result = new HashSet<>();
@@ -758,6 +763,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * */
         public List<FactoryBase<?,R> > collectChildrenDeep() {
             return factory.collectChildrenDeep();
+        }
+
+        /**
+         * the direct children of this factory
+         * @return children
+         */
+        public List<FactoryBase<?,R>> collectChildrenFlat(){
+            return factory.collectChildrenFlat();
         }
 
 
