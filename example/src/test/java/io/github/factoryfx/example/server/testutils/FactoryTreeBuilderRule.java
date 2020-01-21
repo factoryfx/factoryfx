@@ -58,12 +58,12 @@ public class FactoryTreeBuilderRule<L, R extends FactoryBase<L, R>> implements B
         if (preStart != null) {
             preStart.accept(this);
         }
-        builder.branch().select(builder.buildTree().getClass()).start();
+        builder.branch().select(builder.getRootTemplateId()).start();
     }
 
     @SuppressWarnings("unchecked")
     private void after() {
-        builder.branch().select(builder.buildTree().getClass()).stop();
+        builder.branch().select(builder.getRootTemplateId()).stop();
     }
 
     @Override

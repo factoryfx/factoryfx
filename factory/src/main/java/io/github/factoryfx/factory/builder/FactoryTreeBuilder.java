@@ -366,4 +366,8 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     public void addBuilder(Function<FactoryContext<R>, NestedBuilder<R>> builderCreators) {
         customBuildersCreators.add(builderCreators);
     }
+
+    public FactoryTemplateId<R> getRootTemplateId() {
+        return rootTemplateId;
+    }
 }

@@ -50,6 +50,11 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
         return null;
     }
 
+
+    public <LB,B extends FactoryBase<LB,R>> Branch<LB,B> select(FactoryTemplateId<B> template){
+        return select(template.clazz,template.name);
+    }
+
     public <LB,B extends FactoryBase<LB,R>> Branch<LB,B> select(Class<B> factoryClass){
         return select(factoryClass,null);
     }

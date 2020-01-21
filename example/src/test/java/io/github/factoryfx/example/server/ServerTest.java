@@ -41,9 +41,9 @@ public class ServerTest {
     @RegisterExtension
     public final FactoryTreeBuilderRule<Server, JettyServerRootFactory> ctx = new FactoryTreeBuilderRule<>(ServerBuilder.build(), rule -> {
 
-        rule.getFactory(JettyServerRootFactory.class).connectors.get(0).port.set(0);
+        rule.getFactory(JettyServerRootFactory.class,"DefaultJettySetup").connectors.get(0).port.set(0);
 
-        server = rule.get(JettyServerRootFactory.class);
+        server = rule.get(JettyServerRootFactory.class,"DefaultJettySetup");
     });
 
     @Test
