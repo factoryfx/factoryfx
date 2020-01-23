@@ -1,21 +1,17 @@
 package io.github.factoryfx.factory;
 
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.DataMerger;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryC;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.support.hierarchical.ThrowableCollector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 
