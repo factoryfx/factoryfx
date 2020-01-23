@@ -3,6 +3,7 @@ package io.github.factoryfx.soap;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.builder.FactoryTemplateName;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.soap.server.SoapJettyServerFactory;
@@ -37,7 +38,7 @@ public class SoapTest {
 
         builder.addBuilder(ctx->{
             SimpleJettyServerBuilder<SoapJettyServerFactory> jettyServerBuilder = new SimpleJettyServerBuilder<>();
-            jettyServerBuilder.withHost("localhost").withPort(8088).withServlet(ctx.getUnsafe(SoapHandlerFactory.class), "/*", "soap");
+            jettyServerBuilder.withHost("localhost").withPort(8088).withServlet(ctx.getUnsafe(SoapHandlerFactory.class), "/*", new FactoryTemplateName("soap"));
             return jettyServerBuilder;
         });
 
