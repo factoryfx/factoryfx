@@ -35,7 +35,6 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
 
     public void visitAttributesFlat(F factory, AttributeVisitor attributeVisitor) {
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList1=attributesCreator.get();//recreate for threadsafety
-
         for (FastFactoryAttributeUtility<R, F,?, ?> attributeUtility : attributeList1) {
             attributeUtility.setAttribute(factory);
         }
@@ -123,7 +122,6 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
         ((FastFactoryAttributeUtility<R, F, V, ?>)factory).accept((FastFactoryAttributeUtility<R, F, V, ?>)other1,(FastFactoryAttributeUtility<R, F, V, ?>)other2,consumer);
     }
 
-
     public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList=attributesCreator.get();
         for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList) {
@@ -131,7 +129,4 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
         }
     }
 
-    public void addBackReferencesToAttributes(F data, R root) {
-
-    }
 }

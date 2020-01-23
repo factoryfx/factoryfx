@@ -26,7 +26,7 @@ public class MicroserviceResource<R extends FactoryBase<?,R>> implements Microse
     private Optional<AuthorizedUser> authenticate(UserAwareRequest<?> request){
         if (userManagement.authorisationRequired()){
             final Optional<AuthorizedUser> authorizedUser = userManagement.authenticate(request.user, request.passwordHash);
-            if (!authorizedUser.isPresent()){
+            if (authorizedUser.isEmpty()){
                 throw new IllegalStateException("invalid user");
             }
             return authorizedUser;

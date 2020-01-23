@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.*;
 
 import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
-import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;

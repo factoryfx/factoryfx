@@ -4,6 +4,6 @@ public class OutPrinter implements Printer{
 
     @Override
     public void print() {
-
+        System.out.println();
     }
 }

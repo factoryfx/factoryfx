@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 public class DataEditorTest {
 
     @Test
-    public void testBack() throws Exception {
+    public void testBack() {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
@@ -58,7 +58,7 @@ public class DataEditorTest {
 
 
     @Test
-    public void testForward() throws Exception {
+    public void testForward(){
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
@@ -92,7 +92,7 @@ public class DataEditorTest {
     }
 
     @Test
-    public void test_navigated_hierarchy() throws Exception {
+    public void test_navigated_hierarchy() {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
@@ -108,13 +108,13 @@ public class DataEditorTest {
         Assertions.assertEquals(value,dataEditor.dataEditorState.displayedEntities.get(1));
 
         dataEditor.navigate(root);
-        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(1,dataEditor.dataEditorState.displayedEntities.size());
         Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
 
     }
 
     @Test
-    public void test_navigated_hierarchy2() throws Exception {
+    public void test_navigated_hierarchy2() {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 

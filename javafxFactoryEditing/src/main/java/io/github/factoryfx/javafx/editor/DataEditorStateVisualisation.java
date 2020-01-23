@@ -1,29 +1,20 @@
 package io.github.factoryfx.javafx.editor;
 
-import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMappingBuilder;
 import io.github.factoryfx.javafx.util.ObservableFactoryDisplayText;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
 import org.controlsfx.control.BreadCrumbBar;
 import org.controlsfx.glyphfont.FontAwesome;
 
@@ -207,7 +198,7 @@ public class DataEditorStateVisualisation extends BorderPane {
         Button back = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_LEFT));
         back.prefHeightProperty().bind(breadCrumbBar.heightProperty().add(1));
         back.setOnAction(event -> dataEditor.back());
-        back.setDisable(!previousData.isPresent());
+        back.setDisable(previousData.isEmpty());
         Button next = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_RIGHT));
         next.prefHeightProperty().bind(breadCrumbBar.heightProperty().add(1));
         next.setDisable(!nextData.isPresent());

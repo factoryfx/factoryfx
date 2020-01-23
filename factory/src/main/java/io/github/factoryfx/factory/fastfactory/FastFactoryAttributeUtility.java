@@ -39,6 +39,7 @@ public abstract class FastFactoryAttributeUtility<R extends FactoryBase<?,R>, F 
         getAttribute().internal_reset();
         getAttribute().set(valueGetter.apply(factory));
         getAttribute().internal_addListener((attribute1, value) -> valueSetter.accept(factory,value));
+        getAttribute().internal_addBackReferences(factory.internal().getRoot(),factory);
     }
 
     public void setAttributeName(String attributeName) {

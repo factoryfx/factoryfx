@@ -79,7 +79,9 @@
     builder.addBuilder(ctx->new SimpleJettyServerBuilder<RootFactory>()
             .withHostWildcard()
             .withResource(ctx.get(ResourceFactory.class))      
-    ```          
+    ```
+    The server can be used in other factory build templates with  ```ctx.get(JettyServerFactory.class)```   
+      
   * derived factory from JettyServerFactory.class registration  
     **old**
     ```java
@@ -124,11 +126,11 @@
   This was intended as simple index for the factory storage but never used.  
   
   example:  
-  old 
+  **old**
   ```java
   FactoryTreeBuilder<Server, ServerRootFactory,Void> serverBuilder = ...
   ```
-  new
+  **new**
   ```java
   FactoryTreeBuilder<Server, ServerRootFactory> serverBuilder = ...
   ```
@@ -138,11 +140,11 @@
   This affects: FactoryAttribute/FactoryListAttribute/FactoryPolymorphicAttribute/FactoryPolymorphicListAttribute
   
   example:  
-  old 
+  **old** 
   ```java
   FactoryAttribute<ServerRoot,Test,TestFactory> attribute = ...
   ```
-  new
+  **new**
   ```java
   FactoryAttribute<Test,TestFactory> attribute = ...
   ```
@@ -156,14 +158,14 @@
 * **JettyServerBuilder:**
 removed generic parameter JettyServerBuilder and constructor parameter. To create a derived JettyServerFactory a new buildTo method is added.
 
-old
-```java
-new JettyServerBuilder<RootFactory,JettyServerDerivedFactory>(new JettyServerDerivedFactory()).withHost("localhost").withPort(8015).build()
-```
-new
-```java
-new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(8015).buildTo(new JettyServerDerivedFactory())
-```
+    **old**
+    ```java
+    new JettyServerBuilder<RootFactory,JettyServerDerivedFactory>(new JettyServerDerivedFactory()).withHost("localhost").withPort(8015).build()
+    ```
+    **new**
+    ```java
+    new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(8015).buildTo(new JettyServerDerivedFactory())
+    ```
 
 # 2.0.5
 
@@ -266,7 +268,7 @@ new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(8015).build
   Replacement is the **ByteArrayAttribute** or FileContentAttribute
 * **json:** Changed EnumAttribute json format. 
 
-  before
+  **before**
   ```
   ...
   "enumAttribute" : {
@@ -274,7 +276,7 @@ new JettyServerBuilder<RootFactory>().withHost("localhost").withPort(8015).build
   }
   ...
   ```
-  new
+  **new**
   ```
   ...
   "enumAttribute" : {

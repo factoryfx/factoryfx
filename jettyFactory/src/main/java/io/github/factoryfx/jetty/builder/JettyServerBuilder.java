@@ -10,7 +10,9 @@ import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import io.github.factoryfx.jetty.*;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.glassfish.jersey.logging.LoggingFeature;
 
@@ -22,14 +24,6 @@ import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.NestedBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.GzipHandlerFactory;
-import io.github.factoryfx.jetty.HandlerCollectionFactory;
-import io.github.factoryfx.jetty.HttpServerConnectorFactory;
-import io.github.factoryfx.jetty.JettyServerFactory;
-import io.github.factoryfx.jetty.ServletAndPathFactory;
-import io.github.factoryfx.jetty.ServletContextHandlerFactory;
-import io.github.factoryfx.jetty.ThreadPoolFactory;
-import io.github.factoryfx.jetty.UpdateableServletFactory;
 import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
 
 /**
@@ -47,6 +41,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     private final List<ServletBuilder<R>> additionalServletBuilders = new ArrayList<>();
     private FactoryBase<Handler, R> firstHandler;
     private int threadPoolSize=200;
+    private boolean enabledRequestLog=true;
 
     private final FactoryTemplateId<JR> rootTemplateId;
     private ServerConnectorBuilder<R> defaultServerConnector;
@@ -56,6 +51,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     private Consumer<JR> additionalConfiguration = jr-> {};
 
     private final FactoryTemplateId<ThreadPoolFactory<R>> threadPoolFactoryTemplateId;
+    private final FactoryTemplateId<FactoryBase<RequestLog,R>> requestLogerTemplateId;
     private final FactoryTemplateId<HandlerCollectionFactory<R>> handlerCollectionFactoryTemplateId;
     private final FactoryTemplateId<GzipHandlerFactory<R>> gzipHandlerFactoryTemplateId;
     private final FactoryTemplateId<ServletContextHandlerFactory<R>> servletContextHandlerFactoryTemplateId;
@@ -71,6 +67,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         this.jettyRootCreator=jettyRootCreator;
 
         this.threadPoolFactoryTemplateId=new FactoryTemplateId<>(rootTemplateId.name, ThreadPoolFactory.class);
+        this.requestLogerTemplateId=new FactoryTemplateId<>(rootTemplateId.name, Slf4jRequestLogFactory.class);
         this.handlerCollectionFactoryTemplateId=new FactoryTemplateId<>(rootTemplateId.name, HandlerCollectionFactory.class);
         this.gzipHandlerFactoryTemplateId=new FactoryTemplateId<>(rootTemplateId.name, GzipHandlerFactory.class);
         this.servletContextHandlerFactoryTemplateId=new FactoryTemplateId<>(rootTemplateId.name, ServletContextHandlerFactory.class);
@@ -85,13 +82,12 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      * @param name builder unique name, used in the builder to associate match the templates
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withAdditionalConnector(Consumer<ServerConnectorBuilder<R>> connectorBuilderSetup, String name){
-        ServerConnectorBuilder<R> resourceBuilder = new ServerConnectorBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name, ServletAndPathFactory.class));
+    public JettyServerBuilder<R, JR> withAdditionalConnector(Consumer<ServerConnectorBuilder<R>> connectorBuilderSetup, FactoryTemplateName name){
+        ServerConnectorBuilder<R> resourceBuilder = new ServerConnectorBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name.name, ServletAndPathFactory.class));
         connectorBuilderSetup.accept(resourceBuilder);
         serverConnectorBuilders.add(resourceBuilder);
         return this;
     }
-
 
     /**
      * add a new jersey servlet with REST Resources
@@ -101,8 +97,8 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      * @param name builder unique name, used in the builder to associate match the templates
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withJersey(Consumer<ResourceBuilder<R>> resourceBuilderSetup, String name){
-        ResourceBuilder<R> resourceBuilder = new ResourceBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name, ServletAndPathFactory.class));
+    public JettyServerBuilder<R, JR> withJersey(Consumer<ResourceBuilder<R>> resourceBuilderSetup, FactoryTemplateName name){
+        ResourceBuilder<R> resourceBuilder = new ResourceBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name.name, ServletAndPathFactory.class));
         resourceBuilderSetup.accept(resourceBuilder);
         addResourceBuilder(resourceBuilder);
         return this;
@@ -115,8 +111,8 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      * @param name builder unique name, used in the builder to associate match the templates
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withServlet(FactoryBase<? extends Servlet, R> servlet, String pathSpec, String name){
-        additionalServletBuilders.add(new ServletBuilder<>(new FactoryTemplateId<>(null,name),pathSpec,servlet));
+    public JettyServerBuilder<R, JR> withServlet(FactoryBase<? extends Servlet, R> servlet, String pathSpec, FactoryTemplateName name){
+        additionalServletBuilders.add(new ServletBuilder<>(new FactoryTemplateId<>(null,name.name),pathSpec,servlet));
         return this;
     }
 
@@ -139,6 +135,15 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      */
     public JettyServerBuilder<R, JR> withThreadPoolSize(int size){
         this.threadPoolSize=size;
+        return this;
+    }
+
+    /**
+     * disable the jetty request log
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withDisabledRequestLog(){
+        this.enabledRequestLog=false;
         return this;
     }
 
@@ -182,8 +187,10 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         builder.addFactory(rootTemplateId, Scope.SINGLETON, (FactoryContext<R> ctx) ->{
             JR jettyServerFactory=jettyRootCreator.get();
             additionalConfiguration.accept(jettyServerFactory);
-            FactoryBase<ThreadPool, ?> factoryBase = ctx.get(threadPoolFactoryTemplateId);
-            jettyServerFactory.threadPool.set(factoryBase);
+            jettyServerFactory.threadPool.set(ctx.get(threadPoolFactoryTemplateId));
+            if (enabledRequestLog) {
+                jettyServerFactory.requestLog.set(ctx.get(requestLogerTemplateId));
+            }
             for (ServerConnectorBuilder<R> connectorBuilder : serverConnectorBuilders) {
                 jettyServerFactory.connectors.add( ctx.get(connectorBuilder.getTemplateId()));
             }
@@ -191,6 +198,12 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             jettyServerFactory.handler.set(ctx.get(handlerCollectionFactoryTemplateId));
             return jettyServerFactory;
         });
+
+        if (enabledRequestLog) {
+            builder.addFactory(requestLogerTemplateId, Scope.SINGLETON, (ctx) -> {
+                return new Slf4jRequestLogFactory<>();
+            });
+        }
 
         builder.addFactory(threadPoolFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             ThreadPoolFactory<R> threadPoolFactory=new ThreadPoolFactory<>();

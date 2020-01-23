@@ -116,11 +116,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
             }
         }
         if (this.listeners!=null) {
-            for (AttributeChangeListener<T, A> listenerItem : new ArrayList<>(listeners)) {
-                if (listenerItem.unwrap() == removeListener || listenerItem.unwrap() == null) {
-                    listeners.remove(listenerItem);
-                }
-            }
+            listeners.removeIf(listenerItem -> listenerItem.unwrap() == removeListener || listenerItem.unwrap() == null);
         }
     }
 

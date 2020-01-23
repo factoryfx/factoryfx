@@ -126,14 +126,12 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("if (this.").append(metadata.attributeVariableName).append(") result.push(this.").append(metadata.attributeVariableName).append(");\n");
-                return;
             }
             if (FactoryListBaseAttribute.class.isAssignableFrom(metadata.attributeClass)){
                 Class<? extends FactoryBase<?,?>> referenceClass = metadata.referenceClass;
                 TsClassConstructed dataClass = dataToOverrideTs.get(referenceClass);
                 mapValuesFromJsonImports.add(dataClass);
                 fromJsonCode.append("if (this.").append(metadata.attributeVariableName).append(") for (let child of this.").append(metadata.attributeVariableName).append(") {result.push(child)};\n");
-                return;
             }
         });
         fromJsonCode.append("return result;");

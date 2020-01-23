@@ -5,8 +5,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -46,7 +45,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
     public final FactoryListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>> connectors = new FactoryListAttribute<HttpServerConnector,HttpServerConnectorFactory<R>>().labelText("Connectors").userNotSelectable();
     public final FactoryAttribute<HandlerCollection,HandlerCollectionFactory<R>> handler = new FactoryAttribute<HandlerCollection,HandlerCollectionFactory<R>>().labelText("Handler collection");
     public final FactoryPolymorphicAttribute<ThreadPool> threadPool = new FactoryPolymorphicAttribute<ThreadPool>().labelText("Thread Pool").nullable();
-
+    public final FactoryPolymorphicAttribute<RequestLog> requestLog = new FactoryPolymorphicAttribute<RequestLog>().labelText("RequestLog").nullable();
 
     public JettyServerFactory(){
         configLifeCycle().setCreator(this::createJetty);
@@ -69,6 +68,8 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
 
         handler.instance().setServer(server);
         server.setHandler(handler.instance());
+
+        server.setRequestLog(requestLog.instance());
         return server;
     }
 

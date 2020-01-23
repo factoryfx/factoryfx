@@ -1309,6 +1309,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
+    @JsonIgnore
     Microservice<?, R> microservice;
     private void setMicroservice(Microservice<?, R> microservice) {
         this.microservice = microservice;
@@ -1317,7 +1318,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return getRoot().microservice;
     }
 
+    @JsonIgnore
     FactoryTreeBuilder<?, R> factoryTreeBuilder;
+
     private void setFactoryTreeBuilder(FactoryTreeBuilder<?, R> factoryTreeBuilder) {
         this.factoryTreeBuilder =  factoryTreeBuilder;
     }

@@ -81,15 +81,9 @@ public class DataEditorState {
 
     public DataEditorState edit(FactoryBase<?,?> newValue) {
         if (!displayedEntities.contains(newValue)){
-            removeUpToCurrent(currentData);
             displayedEntities.add(newValue);
         } else {
-            int indexOfCurrent = displayedEntities.indexOf(currentData);
-            int indexOfNewValue = displayedEntities.indexOf(newValue);
-            if (indexOfNewValue > indexOfCurrent) {
-                removeUpToCurrent(currentData);
-                displayedEntities.add(newValue);
-            }
+            removeUpToCurrent(newValue);
         }
         if (displayedEntities.size()>HISTORY_LIMIT){
             displayedEntities.remove(0);
@@ -106,12 +100,7 @@ public class DataEditorState {
         if (newValue == null)
             return;
         int idx = displayedEntities.indexOf(newValue);
-        if (idx >= 0) {
-            for (int i = displayedEntities.size()-1; i >= idx+1; i--) {
-                displayedEntities.remove(i);
-            }
-
-        }
+        displayedEntities.removeAll(displayedEntities.subList(idx+1,displayedEntities.size()));
     }
 
     public DataEditorState reset() {

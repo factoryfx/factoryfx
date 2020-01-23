@@ -16,7 +16,7 @@ public class TsValueString implements TsValue {
             Escapers.builder()
                     .addEscape('\\', "\\\\")
                     .addEscape('"', "\\\"")
-                    .addEscape('\'', "\\\'")
+                    .addEscape('\'', "\\'")
                     .build();
 
     private String escapeTsString(String text){
@@ -32,4 +32,6 @@ public class TsValueString implements TsValue {
     public String construct() {
         return escapeTsString(value);
     }
+
+
 }

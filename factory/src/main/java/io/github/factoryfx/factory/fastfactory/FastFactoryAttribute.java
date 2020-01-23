@@ -4,7 +4,6 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
-import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 
@@ -22,11 +21,6 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
         super(attributeCreator,valueGetter,valueSetter,attributeName);
         this.referenceClass=referenceClass;
         this.liveObjectClass=liveObjectClass;
-    }
-
-    @Override
-    protected FactoryAttribute<L, V> getAttribute() {
-        return super.getAttribute();
     }
 
     @Override

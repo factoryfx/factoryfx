@@ -156,11 +156,7 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     @Override
     public void internal_removeListener(AttributeChangeListener<List<F>, FactoryViewListAttribute<R,L, F>> listener) {
         if (listeners!=null) {
-            for (AttributeChangeListener<List<F>, FactoryViewListAttribute<R,L, F>> listenerItem: new ArrayList<>(listeners)){
-                if (listenerItem.unwrap()==listener){
-                    listeners.remove(listenerItem);
-                }
-            }
+            listeners.removeIf(listenerItem -> listenerItem.unwrap() == listener);
             if (listeners.isEmpty() && dirtyTracking != null){
                 dirtyTracking.stopTracking();
                 dirtyTracking=null;

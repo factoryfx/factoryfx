@@ -37,6 +37,7 @@ import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.builder.FactoryTemplateName;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
@@ -94,7 +95,7 @@ public class JettyServerTest {
             }
 
             DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
-            update.root.connectors.get(0).port.set(8081);
+            update.root.connectors.get(0).port.set(8082);
             microservice.updateCurrentFactory(update);
 
 
@@ -109,7 +110,7 @@ public class JettyServerTest {
 
             try {
                 HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8081/Resource1")).GET().build();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8082/Resource1")).GET().build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 Assertions.assertEquals(200, response.statusCode());
             } catch (IOException | InterruptedException e) {
@@ -307,7 +308,7 @@ public class JettyServerTest {
     @Test
     public void test_custom_jersey() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),"/new/*");
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
@@ -317,7 +318,7 @@ public class JettyServerTest {
     @Test
     public void test_double_build() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),"/new/*");
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
@@ -330,7 +331,7 @@ public class JettyServerTest {
     @Test
     public void test_rebuild() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),"/new/*");
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();

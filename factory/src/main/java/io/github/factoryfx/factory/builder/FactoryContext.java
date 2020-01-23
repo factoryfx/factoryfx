@@ -14,8 +14,7 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
 
     @SuppressWarnings("unchecked")
     public <F extends FactoryBase<?,R>> F get(Predicate<FactoryCreator<?,R>> filter){
-        F factory = factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
-        return factory;
+        return factoryCreators.stream().filter(filter).findAny().map(rFactoryCreator -> (F) rFactoryCreator.create(this)).orElse(null);
     }
 
     <F extends FactoryBase<?,R>> F getUnchecked(Class<?> clazz){

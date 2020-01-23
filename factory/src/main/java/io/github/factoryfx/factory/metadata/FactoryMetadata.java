@@ -260,12 +260,12 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         return null;
     }
 
-    public void addBackReferencesToAttributes(F data, R root) {
+    public void addBackReferencesToAttributes(F factory, R root) {
         if (fastFactoryUtility!=null){
-            this.fastFactoryUtility.addBackReferencesToAttributes( data,  root);
+            //parent and root is set after dynamic creation
         } else {
-            visitFactoryEnclosingAttributesFlat(data, (attributeMetadata, attribute) -> {
-                attribute.internal_addBackReferences(root,data);
+            visitFactoryEnclosingAttributesFlat(factory, (attributeMetadata, attribute) -> {
+                attribute.internal_addBackReferences(root,factory);
             });
         }
     }

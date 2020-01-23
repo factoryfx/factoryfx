@@ -1,17 +1,21 @@
 package io.github.factoryfx.factory;
 
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.DataMerger;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryC;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.support.hierarchical.ThrowableCollector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -211,6 +215,24 @@ public class FastFactoryUtilityTest {
         List<String> attributes=new ArrayList<>();
         example.internal().visitAttributesFlat((attributeMetadata, attribute) -> attributes.add(attributeMetadata.attributeVariableName));
         Assertions.assertEquals(List.of("stringAttribute","referenceAttribute","referenceListAttribute"),attributes);
+    }
+
+    @Test
+    public void test_possibleValues(){
+        FastExampleFactoryA factory = new FastExampleFactoryA();
+        factory.referenceAttribute=new FastExampleFactoryB();
+        factory.internal().finalise();
+
+        List<FactoryBase<?,?>> possibleValues = new ArrayList<>();
+
+        factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
+            if (attribute instanceof FactoryAttribute){
+                possibleValues.addAll(((FactoryAttribute<?, ?>) attribute).internal_possibleValues(attributeMetadata));
+            }
+        });
+
+        Assertions.assertEquals(1,possibleValues.size());
+        Assertions.assertEquals(factory.referenceAttribute,factory.referenceAttribute);
     }
 
 }
