@@ -1,5 +1,6 @@
 package io.github.factoryfx.javafx.editor;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -25,7 +26,7 @@ public class DataEditor implements Widget {
      * @param dataVisualisationCustomizer way to customize or extend the editor visualisation for a specific data class, e.g. add a green border(silly example), add special button
      */
     public DataEditor(AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign, BiFunction<Node, FactoryBase<?,?>,Node> dataVisualisationCustomizer) {
-        this.dataEditorState = new DataEditorState(null, new ArrayList<>(), attributeVisualisationMappingBuilder,uniformDesign,this,dataVisualisationCustomizer,true);
+        this.dataEditorState = new DataEditorState(null, new ArrayDeque<>(),new ArrayDeque<>(), attributeVisualisationMappingBuilder,uniformDesign,this,dataVisualisationCustomizer,true);
         historyNavigationVisible.set(true);
         historyNavigationVisible.addListener(observable -> updateState(dataEditorState.setShowNavigation(historyNavigationVisible.get())));
     }
@@ -45,6 +46,10 @@ public class DataEditor implements Widget {
      */
     public void navigate(FactoryBase<?,?> newValue) {
         updateState(dataEditorState.edit(newValue));
+    }
+
+    public void navigateBack(FactoryBase<?,?> newValue) {
+        updateState(dataEditorState.navigateBack(newValue));
     }
 
     public void edit(FactoryBase<?,?> newValue) {

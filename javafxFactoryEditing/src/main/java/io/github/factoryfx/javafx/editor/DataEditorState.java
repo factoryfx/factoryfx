@@ -11,7 +11,8 @@ import java.util.function.BiFunction;
 //immutable editor state
 public class DataEditorState {
     public static final int HISTORY_LIMIT = 20;
-    final List<FactoryBase<?,?>> displayedEntities;
+    final ArrayDeque<FactoryBase<?,?>> displayedEntities;
+    final ArrayDeque<FactoryBase<?,?>> nextEntities;
     private final FactoryBase<?,?> currentData;
     private final AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder;
     private final UniformDesign uniformDesign;
@@ -19,8 +20,9 @@ public class DataEditorState {
     private final BiFunction<Node,FactoryBase<?,?>,Node> visCustomizer;
     private final boolean showNavigation;
 
-    public DataEditorState(FactoryBase<?,?> currentData, List<FactoryBase<?,?>> displayedEntities, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,FactoryBase<?,?>,Node> visCustomizer, boolean showNavigation) {
+    public DataEditorState(FactoryBase<?,?> currentData, ArrayDeque<FactoryBase<?,?>> displayedEntities, ArrayDeque<FactoryBase<?,?>> nextEntities, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,FactoryBase<?,?>,Node> visCustomizer, boolean showNavigation) {
         this.displayedEntities = displayedEntities;
+        this.nextEntities = nextEntities;
         this.currentData = currentData;
         this.attributeVisualisationMappingBuilder = attributeVisualisationMappingBuilder;
         this.uniformDesign = uniformDesign;
@@ -36,79 +38,77 @@ public class DataEditorState {
     }
 
     public DataEditorState resetHistory() {
-        return new DataEditorState(currentData,new ArrayList<>(Collections.singletonList(currentData)), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+        return new DataEditorState(currentData,new ArrayDeque<>(),new ArrayDeque<>(), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public DataEditorState withHistory(List<FactoryBase<?,?>> data) {
-        return new DataEditorState(currentData,data, attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+        return new DataEditorState(currentData,new ArrayDeque<>(data),new ArrayDeque<>(), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     private Optional<FactoryBase<?,?>> previousData(){
-        int index = displayedEntities.indexOf(currentData)-1;
-        if (index>=0){
-            return Optional.ofNullable(displayedEntities.get(index));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(displayedEntities.peek());
     }
 
     private Optional<FactoryBase<?,?>> nextData(){
-        int index = displayedEntities.indexOf(currentData)+1;
-        if (index<displayedEntities.size()){
-            return Optional.ofNullable(displayedEntities.get(index));
+        if (!nextEntities.isEmpty()){
+            return Optional.ofNullable(nextEntities.peek());
         }
         return Optional.empty();
     }
 
 
     public DataEditorState back(){
-        FactoryBase<?,?> newData=currentData;
-        Optional<FactoryBase<?,?>> data = previousData();
-        if(data.isPresent()){
-            newData=data.get();
+        FactoryBase<?, ?> newCurrent = currentData;
+        if (!displayedEntities.isEmpty()){
+            newCurrent = displayedEntities.poll();
+            nextEntities.push(currentData);
         }
-        return new DataEditorState(newData,new ArrayList<>(displayedEntities), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+        return new DataEditorState(newCurrent,displayedEntities,nextEntities, attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public DataEditorState next(){
         FactoryBase<?,?> newData=currentData;
-        Optional<FactoryBase<?,?>> data = nextData();
-        if(data.isPresent()){
-            newData=data.get();
+        if(!nextEntities.isEmpty()){
+            newData=nextEntities.poll();
+            displayedEntities.push(currentData);
         }
-        return new DataEditorState(newData,new ArrayList<>(displayedEntities), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+        return new DataEditorState(newData,displayedEntities,nextEntities, attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+    }
+
+    public DataEditorState navigateBack(FactoryBase<?,?> newValue){
+        while (true){
+            FactoryBase<?, ?> poll = displayedEntities.poll();
+            if (poll ==newValue || poll==null) {
+                break;
+            }
+            nextEntities.push(poll);
+        }
+        return new DataEditorState(newValue,displayedEntities,nextEntities, attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
 
     public DataEditorState edit(FactoryBase<?,?> newValue) {
-        if (!displayedEntities.contains(newValue)){
-            displayedEntities.add(newValue);
-        } else {
-            removeUpToCurrent(newValue);
+        if (this.currentData!=null){
+            displayedEntities.push(this.currentData);
         }
         if (displayedEntities.size()>HISTORY_LIMIT){
-            displayedEntities.remove(0);
+            displayedEntities.pollLast();
         }
 
-        return new DataEditorState(newValue,new ArrayList<>(displayedEntities), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+        return new DataEditorState(newValue,displayedEntities,nextEntities, attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public FactoryBase<?,?> getCurrentData() {
         return currentData;
     }
 
-    private void removeUpToCurrent(FactoryBase<?,?> newValue) {
-        if (newValue == null)
-            return;
-        int idx = displayedEntities.indexOf(newValue);
-        displayedEntities.removeAll(displayedEntities.subList(idx+1,displayedEntities.size()));
-    }
 
     public DataEditorState reset() {
-        return new DataEditorState(null,new ArrayList<>(), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
+        return new DataEditorState(null,new ArrayDeque<>(),new ArrayDeque<>(), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,showNavigation);
     }
 
     public DataEditorState setShowNavigation(boolean newShowNavigation) {
-        return new DataEditorState(null,new ArrayList<>(), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,newShowNavigation);
+        return new DataEditorState(null,new ArrayDeque<>(),new ArrayDeque<>(), attributeVisualisationMappingBuilder,uniformDesign,dataEditor, visCustomizer,newShowNavigation);
     }
 
     public void destroy() {

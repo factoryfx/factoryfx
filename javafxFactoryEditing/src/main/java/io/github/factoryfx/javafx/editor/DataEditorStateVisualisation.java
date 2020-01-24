@@ -29,7 +29,7 @@ public class DataEditorStateVisualisation extends BorderPane {
     private final DataEditor dataEditor;
     private final BiFunction<Node, FactoryBase<?,?>,Node> visCustomizer;
 
-    public DataEditorStateVisualisation(FactoryBase<?,?> currentData, List<FactoryBase<?,?>> displayedEntities, Optional<FactoryBase<?,?>> previousData, Optional<FactoryBase<?,?>> nextData, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,FactoryBase<?,?>,Node> visCustomizer, boolean showNavigation){
+    public DataEditorStateVisualisation(FactoryBase<?,?> currentData, ArrayDeque<FactoryBase<?,?>> displayedEntities, Optional<FactoryBase<?,?>> previousData, Optional<FactoryBase<?,?>> nextData, AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder, UniformDesign uniformDesign, DataEditor dataEditor, BiFunction<Node,FactoryBase<?,?>,Node> visCustomizer, boolean showNavigation){
         this.uniformDesign=uniformDesign;
         this.attributeVisualisationMappingBuilder = attributeVisualisationMappingBuilder;
         this.dataEditor = dataEditor;
@@ -40,7 +40,7 @@ public class DataEditorStateVisualisation extends BorderPane {
 
         FactoryBase<?,?> previousValue=null;
         if (displayedEntities.size()>1){
-            previousValue=displayedEntities.get(displayedEntities.size()-1);
+            previousValue=displayedEntities.peek();
         }
         splitPane.getItems().add( createEditor(currentData,previousValue));
         setCenter(splitPane);
@@ -143,7 +143,7 @@ public class DataEditorStateVisualisation extends BorderPane {
         }
     }
 
-    private Node createNavigation(List<FactoryBase<?,?>> displayedEntities, FactoryBase<?,?> currentData, Optional<FactoryBase<?,?>> previousData, Optional<FactoryBase<?,?>> nextData){
+    private Node createNavigation(ArrayDeque<FactoryBase<?,?>> displayedEntities, FactoryBase<?,?> currentData, Optional<FactoryBase<?,?>> previousData, Optional<FactoryBase<?,?>> nextData){
         BreadCrumbBar<FactoryBase<?,?>> breadCrumbBar = new BreadCrumbBar<>();
 
 
@@ -175,7 +175,7 @@ public class DataEditorStateVisualisation extends BorderPane {
             return breadCrumbButton;
         });
         breadCrumbBar.setOnCrumbAction(event -> {
-            dataEditor.navigate(event.getSelectedCrumb().getValue());
+            dataEditor.navigateBack(event.getSelectedCrumb().getValue());
         });
 
 
@@ -187,7 +187,10 @@ public class DataEditorStateVisualisation extends BorderPane {
 //            }
 //        }
 
-        breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(displayedEntities.toArray(new FactoryBase<?,?>[0])));
+        ArrayList<FactoryBase<?, ?>> breadcrumbData = new ArrayList<>(displayedEntities);
+        Collections.reverse(breadcrumbData);
+        breadcrumbData.add(currentData);
+        breadCrumbBar.setSelectedCrumb(BreadCrumbBar.buildTreeModel(breadcrumbData.toArray(new FactoryBase<?,?>[0])));
         breadCrumbBar.layout();
 
 
@@ -201,7 +204,7 @@ public class DataEditorStateVisualisation extends BorderPane {
         back.setDisable(previousData.isEmpty());
         Button next = new Button("",uniformDesign.createIcon(FontAwesome.Glyph.CARET_RIGHT));
         next.prefHeightProperty().bind(breadCrumbBar.heightProperty().add(1));
-        next.setDisable(!nextData.isPresent());
+        next.setDisable(nextData.isEmpty());
         next.setOnAction(event -> dataEditor.next());
 
         navigation.getChildren().add(back);

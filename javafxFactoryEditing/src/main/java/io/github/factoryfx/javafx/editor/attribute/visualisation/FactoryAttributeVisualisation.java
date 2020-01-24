@@ -28,7 +28,6 @@ import io.github.factoryfx.javafx.util.UniformDesign;
 
 public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends FactoryBaseAttribute<?, F,A>> extends ValueAttributeVisualisation<F,A> {
 
-    private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
     private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
     private LanguageText editText= new LanguageText("edit").de("Editieren");

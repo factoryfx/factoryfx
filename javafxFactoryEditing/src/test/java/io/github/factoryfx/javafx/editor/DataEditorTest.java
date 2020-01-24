@@ -45,7 +45,7 @@ public class DataEditorTest {
     }
 
     @Test
-    public void testBack_limit() throws Exception {
+    public void testBack_limit() {
         UniformDesign uniformDesign = UniformDesignBuilder.build();
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
 
@@ -56,6 +56,43 @@ public class DataEditorTest {
         Assertions.assertEquals(DataEditorState.HISTORY_LIMIT,dataEditor.dataEditorState.displayedEntities.size());
     }
 
+    @Test
+    public void testForward_simple(){
+        UniformDesign uniformDesign = UniformDesignBuilder.build();
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
+
+
+        ExampleData1 exampleData1 = new ExampleData1();
+        ExampleData1 exampleData2 = new ExampleData1();
+
+        dataEditor.navigate(exampleData1);
+        dataEditor.navigate(exampleData2);
+        dataEditor.back();
+        Assertions.assertEquals(exampleData1, dataEditor.editData.get());
+        dataEditor.next();
+        Assertions.assertEquals(exampleData2, dataEditor.editData.get());
+    }
+
+    @Test
+    public void testForward_simple_2(){
+        UniformDesign uniformDesign = UniformDesignBuilder.build();
+        DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(new ArrayList<>()),uniformDesign);
+
+
+        ExampleData1 exampleData1 = new ExampleData1();
+        ExampleData1 exampleData2 = new ExampleData1();
+
+        dataEditor.navigate(exampleData1);
+        dataEditor.navigate(exampleData2);
+        dataEditor.back();
+        Assertions.assertEquals(exampleData1, dataEditor.editData.get());
+        dataEditor.next();
+        Assertions.assertEquals(exampleData2, dataEditor.editData.get());
+        dataEditor.back();
+        Assertions.assertEquals(exampleData1, dataEditor.editData.get());
+        dataEditor.next();
+        Assertions.assertEquals(exampleData2, dataEditor.editData.get());
+    }
 
     @Test
     public void testForward(){
@@ -75,7 +112,6 @@ public class DataEditorTest {
         dataEditor.navigate(exampleData4);
 
 
-
         dataEditor.back();
         Assertions.assertEquals(exampleData3, dataEditor.editData.get());
         dataEditor.back();
@@ -85,7 +121,6 @@ public class DataEditorTest {
         dataEditor.next();
         Assertions.assertEquals(exampleData4,dataEditor.editData.get());
 
-        Assertions.assertEquals(4,dataEditor.dataEditorState.displayedEntities.size());
 
         dataEditor.next();
         Assertions.assertEquals(exampleData4,dataEditor.editData.get());
@@ -103,13 +138,12 @@ public class DataEditorTest {
         dataEditor.navigate(root);
         dataEditor.navigate(value);
 
-        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
-        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
-        Assertions.assertEquals(value,dataEditor.dataEditorState.displayedEntities.get(1));
+        Assertions.assertEquals(1,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(root,new ArrayList<>(dataEditor.dataEditorState.displayedEntities).get(0));
 
         dataEditor.navigate(root);
-        Assertions.assertEquals(1,dataEditor.dataEditorState.displayedEntities.size());
-        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
+        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(value,new ArrayList<>(dataEditor.dataEditorState.displayedEntities).get(0));
 
     }
 
@@ -127,13 +161,14 @@ public class DataEditorTest {
         dataEditor.navigate(root);
         dataEditor.navigate(value1);
         dataEditor.back();
-        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
-        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
+        Assertions.assertEquals(0,dataEditor.dataEditorState.displayedEntities.size());
+        Assertions.assertEquals(root,dataEditor.editData().get());
 
         dataEditor.navigate(value2);
-        Assertions.assertEquals(2,dataEditor.dataEditorState.displayedEntities.size());
-        Assertions.assertEquals(root,dataEditor.dataEditorState.displayedEntities.get(0));
-        Assertions.assertEquals(value2,dataEditor.dataEditorState.displayedEntities.get(1));
+        dataEditor.back();
+        Assertions.assertEquals(root,dataEditor.editData().get());
+
+
 
     }
 }
