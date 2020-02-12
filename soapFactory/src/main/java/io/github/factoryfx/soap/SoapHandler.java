@@ -1,17 +1,25 @@
 package io.github.factoryfx.soap;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.soap.*;
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.Objects;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.transform.stream.StreamSource;
 
 public class SoapHandler implements Servlet {
-
     //If not setting the system property javax.xml.soap.MessageFactory to
     //com.sun.xml.internal.messaging.saaj.soap.ver1_2.SOAPMessageFactory1_2Impl
     //there will be useless log warnings for each MessageFactory.newInstance call.
@@ -42,7 +50,8 @@ public class SoapHandler implements Servlet {
         try {
             MessageFactory messageFactory;
             boolean soap12 = false;
-            if (Objects.equals(request.getHeader("Content-Type"),"text/xml")){
+            String header = request.getHeader("Content-Type");
+            if (header != null && header.contains(SOAPConstants.SOAP_1_1_CONTENT_TYPE)){
                 messageFactory  = SOAP11FACTORY;
             } else {
                 //"application/soap+xml"
@@ -50,7 +59,7 @@ public class SoapHandler implements Servlet {
                 soap12 = true;
             }
 
-            StreamSource messageSource = new StreamSource(request.getInputStream());
+            StreamSource messageSource = new StreamSource(new NoNewLineInputStream(request.getInputStream()));
             SOAPMessage message = messageFactory.createMessage();
             SOAPPart soapPart = message.getSOAPPart();
             soapPart.setContent(messageSource);
