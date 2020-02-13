@@ -10,6 +10,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
@@ -17,7 +20,12 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMSource;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class SoapHandler implements Servlet {
     //If not setting the system property javax.xml.soap.MessageFactory to
@@ -44,33 +52,40 @@ public class SoapHandler implements Servlet {
     @Override
     public void service(ServletRequest req, ServletResponse res) throws IOException {
 
-        HttpServletRequest request = (HttpServletRequest)req;
-        HttpServletResponse response = (HttpServletResponse)res;
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
 
         try {
             MessageFactory messageFactory;
             boolean soap12 = false;
             String header = request.getHeader("Content-Type");
-            if (header != null && header.contains(SOAPConstants.SOAP_1_1_CONTENT_TYPE)){
-                messageFactory  = SOAP11FACTORY;
+            if (header != null && header.contains(SOAPConstants.SOAP_1_1_CONTENT_TYPE)) {
+                messageFactory = SOAP11FACTORY;
             } else {
                 //"application/soap+xml"
-                messageFactory  = SOAP12FACTORY;
+                messageFactory = SOAP12FACTORY;
                 soap12 = true;
             }
 
-            StreamSource messageSource = new StreamSource(new NoNewLineInputStream(request.getInputStream()));
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dbFactory.setNamespaceAware(true);
+            DocumentBuilder builder = dbFactory.newDocumentBuilder();
+            Document document = builder.parse(request.getInputStream());
+
+            trimWhitespace(document);
+
+            DOMSource domSource = new DOMSource(document);
             SOAPMessage message = messageFactory.createMessage();
             SOAPPart soapPart = message.getSOAPPart();
-            soapPart.setContent(messageSource);
+            soapPart.setContent(domSource);
             message.saveChanges();
 
             WebServiceCallResult callResult = dispatcher.execute(message, soapMessageUtil.parseRequest(message), request, response);
             SOAPMessage responseMessage;
-            if(callResult.result != null) {
-                responseMessage =soapMessageUtil.wrapResponse(callResult.result, messageFactory);
-            } else if (callResult.fault!=null){
-                responseMessage =soapMessageUtil.wrapFault(callResult.createFaultDetail(),callResult.fault.getMessage(), messageFactory, soap12);
+            if (callResult.result != null) {
+                responseMessage = soapMessageUtil.wrapResponse(callResult.result, messageFactory);
+            } else if (callResult.fault != null) {
+                responseMessage = soapMessageUtil.wrapFault(callResult.createFaultDetail(), callResult.fault.getMessage(), messageFactory, soap12);
             } else {
                 responseMessage = messageFactory.createMessage();
             }
@@ -85,7 +100,7 @@ public class SoapHandler implements Servlet {
             responseMessage.writeTo(os);
             os.flush();
 
-        } catch (SOAPException e) {
+        } catch (SOAPException | ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
 
@@ -107,9 +122,7 @@ public class SoapHandler implements Servlet {
             MimeHeader header = it.next();
 
             String[] values = headers.getHeader(header.getName());
-            if (values.length == 1)
-                res.setHeader(header.getName(), header.getValue());
-            else {
+            if (values.length == 1) { res.setHeader(header.getName(), header.getValue()); } else {
                 StringBuilder concat = new StringBuilder();
                 int i = 0;
                 while (i < values.length) {
@@ -124,6 +137,7 @@ public class SoapHandler implements Servlet {
     }
 
     ServletConfig config;
+
     @Override
     public void init(ServletConfig config) {
         this.config = config;
@@ -134,5 +148,15 @@ public class SoapHandler implements Servlet {
         return config;
     }
 
+    private static void trimWhitespace(Node node) {
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); ++i) {
+            Node child = children.item(i);
+            if (child.getNodeType() == Node.TEXT_NODE) {
+                child.setTextContent(child.getTextContent().trim());
+            }
+            trimWhitespace(child);
+        }
+    }
 
 }

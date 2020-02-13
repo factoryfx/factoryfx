@@ -1,14 +1,23 @@
 package io.github.factoryfx.soap;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.xml.soap.DetailEntry;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFault;
+import javax.xml.soap.SOAPMessage;
 
 public class SOAPMessageUtil {
     private final JAXBContext jaxbContext;
@@ -26,10 +35,8 @@ public class SOAPMessageUtil {
 
     public Object parseRequest(SOAPMessage soapMessage){
         try {
-
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             return unmarshaller.unmarshal(soapMessage.getSOAPBody().getFirstChild());
-
         } catch (JAXBException | SOAPException e) {
             throw new RuntimeException(e);
         }
