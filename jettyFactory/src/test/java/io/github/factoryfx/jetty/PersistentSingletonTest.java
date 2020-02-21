@@ -20,7 +20,6 @@ public class PersistentSingletonTest {
     public static class RootFactory extends SimpleFactoryBase<Void, RootFactory> {
         public final FactoryAttribute<Server, JettyServerFactory<RootFactory>> jettyServer = new FactoryAttribute<>();
         public final FactoryAttribute<Object, Fact1<RootFactory>> fact1 = new FactoryAttribute<>();
-        public final FactoryAttribute<Void, Fact2<RootFactory>> fact2 = new FactoryAttribute<>();
 
         @Override
         protected Void createImpl() {
@@ -29,15 +28,8 @@ public class PersistentSingletonTest {
     }
 
     public static class Fact1<R extends FactoryBase<?, R>> extends SimpleFactoryBase<Object, R> {
-        public final FactoryAttribute<Void, Fact2<R>> fact2 = new FactoryAttribute<>();
-
         @Override
         protected Object createImpl() { return new Object(); }
-    }
-
-    public static class Fact2<R extends FactoryBase<?, R>> extends SimpleFactoryBase<Void, R> {
-        @Override
-        protected Void createImpl() { return null; }
     }
 
     //@Test
@@ -49,7 +41,6 @@ public class PersistentSingletonTest {
             .withResource(ctx.get(Fact1.class)));
 
         factoryTreeBuilder.addSingleton(Fact1.class);
-        factoryTreeBuilder.addSingleton(Fact2.class);
         Microservice<Void, RootFactory> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
 
@@ -63,7 +54,6 @@ public class PersistentSingletonTest {
 
     public static class RootFactory2 extends SimpleFactoryBase<Void, RootFactory2> {
         public final FactoryAttribute<Object, Fact1<RootFactory2>> fact1 = new FactoryAttribute<>();
-        public final FactoryAttribute<Void, Fact2<RootFactory2>> fact2 = new FactoryAttribute<>();
         public final FactoryAttribute<Server, JettyServerFactory<RootFactory2>> jettyServer = new FactoryAttribute<>();
 
         @Override
@@ -81,7 +71,6 @@ public class PersistentSingletonTest {
             .withResource(ctx.get(Fact1.class)));
 
         factoryTreeBuilder.addSingleton(Fact1.class);
-        factoryTreeBuilder.addSingleton(Fact2.class);
         Microservice<Void, RootFactory2> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
 
@@ -101,7 +90,6 @@ public class PersistentSingletonTest {
             .withResource(ctx.get(Fact1.class)));
 
         factoryTreeBuilder.addSingleton(Fact1.class);
-        factoryTreeBuilder.addSingleton(Fact2.class);
         factoryTreeBuilder.markAsNonPersistentFactoryBuilder();
         Microservice<Void, RootFactory> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
