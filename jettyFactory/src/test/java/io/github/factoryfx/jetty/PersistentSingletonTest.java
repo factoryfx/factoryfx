@@ -44,10 +44,10 @@ public class PersistentSingletonTest {
         Microservice<Void, RootFactory> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
 
-        RootFactory rootFactoryFact1 = microservice.prepareNewFactory().root;
-        assertEquals(rootFactoryFact1.getId(),
+        RootFactory root = microservice.prepareNewFactory().root;
+        assertEquals(root.fact1.get().getId(),
                      ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory)
-                         rootFactoryFact1.jettyServer.get().handler.get().handlers.get().get(0))
+                         root.jettyServer.get().handler.get().handlers.get().get(0))
                          .handler.get()).updatableRootServlet.get())
                          .servletAndPaths.get().get(0))
                          .servlet.get())).resources.get(0)).getId());
