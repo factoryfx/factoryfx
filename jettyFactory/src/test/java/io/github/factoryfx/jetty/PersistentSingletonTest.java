@@ -2,8 +2,10 @@ package io.github.factoryfx.jetty;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.github.factoryfx.factory.builder.FactoryContext;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
 
@@ -30,27 +32,58 @@ public class PersistentSingletonTest {
     public static class Fact1<R extends FactoryBase<?, R>> extends SimpleFactoryBase<Object, R> {
         @Override
         protected Object createImpl() { return new Object(); }
+
+
+        public Fact1() {
+            System.out.println();
+        }
     }
 
-    //@Test
+
+    @Test
+    void test_buildTreeUnvalidated() {
+
+        FactoryTreeBuilder<Void, RootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory.class, ctx -> {
+            RootFactory rootFactory = new RootFactory();
+            rootFactory.fact1.set(ctx.get(Fact1.class));
+            rootFactory.jettyServer.set(ctx.get(JettyServerFactory.class));
+            return rootFactory;
+        });
+        factoryTreeBuilder.addBuilder(ctx -> new JettyServerBuilder<>(new FactoryTemplateId<>(null, JettyServerFactory.class),
+                (Supplier<JettyServerFactory<RootFactory>>) JettyServerFactory::new)
+                .withResource(ctx.get(Fact1.class)));
+        factoryTreeBuilder.addSingleton(Fact1.class);
+
+        RootFactory root1 = factoryTreeBuilder.buildTreeUnvalidated();
+        RootFactory root2 = factoryTreeBuilder.buildTreeUnvalidated();
+        assertEquals(root1.internal().collectChildrenDeep().size(),root2.internal().collectChildrenDeep().size());
+    }
+
+    @Test
     void brokenSingleton() {
 
-        FactoryTreeBuilder<Void, RootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory.class);
+        FactoryTreeBuilder<Void, RootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory.class, ctx -> {
+            RootFactory rootFactory = new RootFactory();
+            rootFactory.fact1.set(ctx.get(Fact1.class));
+            rootFactory.jettyServer.set(ctx.get(JettyServerFactory.class));
+            return rootFactory;
+        });
         factoryTreeBuilder.addBuilder(ctx -> new JettyServerBuilder<>(new FactoryTemplateId<>(null, JettyServerFactory.class),
                                                                       (Supplier<JettyServerFactory<RootFactory>>) JettyServerFactory::new)
             .withResource(ctx.get(Fact1.class)));
 
-        factoryTreeBuilder.addSingleton(Fact1.class);
+        factoryTreeBuilder.addSingleton(Fact1.class, new Function<FactoryContext<RootFactory>, Fact1>() {
+            @Override
+            public Fact1 apply(FactoryContext<RootFactory> rootFactoryFactoryContext) {
+                return new Fact1();
+            }
+        });
+
         Microservice<Void, RootFactory> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
 
-        RootFactory rootFactoryFact1 = microservice.prepareNewFactory().root;
-        assertEquals(rootFactoryFact1.getId(),
-                     ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory)
-                         rootFactoryFact1.jettyServer.get().handler.get().handlers.get().get(0))
-                         .handler.get()).updatableRootServlet.get())
-                         .servletAndPaths.get().get(0))
-                         .servlet.get())).resources.get(0)).getId());
+        RootFactory root = microservice.prepareNewFactory().root;
+        assertEquals(root.fact1.get(),root.jettyServer.get().getResource(Fact1.class));
 
     }
 
@@ -77,10 +110,7 @@ public class PersistentSingletonTest {
         microservice.start();
 
         RootFactory2 root = microservice.prepareNewFactory().root;
-        assertEquals(root.fact1.get().getId(),
-                     ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory) root.jettyServer.get().handler.get().handlers.get()
-                                                                                                                                                                                                                                               .get(0)).handler
-                         .get()).updatableRootServlet.get()).servletAndPaths.get().get(0)).servlet.get())).resources.get(0)).getId());
+        assertEquals(root.fact1.get(),root.jettyServer.get().getResource(Fact1.class));
     }
 
     @Test

@@ -2,9 +2,11 @@ package io.github.factoryfx.jetty.builder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.ws.rs.ext.ExceptionMapper;
 
+import io.github.factoryfx.factory.builder.FactoryContext;
 import org.glassfish.jersey.logging.LoggingFeature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -118,8 +120,13 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
         return this.pathSpec.equals(resourceBuilder.pathSpec);
     }
 
+    private <F extends FactoryBase<?,R>> void addFactory(FactoryTreeBuilder<?,R> builder, FactoryTemplateId<F> templateId, Scope scope, Function<FactoryContext<R>, F> creator){
+        builder.removeFactory(templateId);
+        builder.addFactory(templateId,scope,creator);
+    }
+
     void build(FactoryTreeBuilder<?, R> builder) {
-        builder.addFactory(servletAndPathFactoryTemplateId, Scope.PROTOTYPE, (ctx) -> {
+        addFactory(builder,servletAndPathFactoryTemplateId, Scope.PROTOTYPE, (ctx) -> {
             ServletAndPathFactory<R> servletAndPathFactory = new ServletAndPathFactory<>();
             servletAndPathFactory.pathSpec.set(pathSpec);
             servletAndPathFactory.servlet.set(ctx.get(jerseyServletFactoryTemplateId));
@@ -127,7 +134,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
         });
 
 
-        builder.addFactory(jerseyServletFactoryTemplateId, Scope.PROTOTYPE, (ctx) -> {
+        addFactory(builder,jerseyServletFactoryTemplateId, Scope.PROTOTYPE, (ctx) -> {
             JerseyServletFactory<R> jerseyServlet = new JerseyServletFactory<>();
             jerseyServlet.exceptionMapper.set(ctx.get(exceptionMapperTemplateId));
             jerseyServlet.objectMapper.set(ctx.get(objectMapperTemplateId));
@@ -139,10 +146,10 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
             return jerseyServlet;
         });
 
-        builder.addFactory(exceptionMapperTemplateId, Scope.PROTOTYPE, (ctx) -> exceptionMapper);
+        addFactory(builder,exceptionMapperTemplateId, Scope.PROTOTYPE, (ctx) -> exceptionMapper);
 
-        builder.addFactory(objectMapperTemplateId, Scope.PROTOTYPE, (ctx) -> objectMapper);
+        addFactory(builder,objectMapperTemplateId, Scope.PROTOTYPE, (ctx) -> objectMapper);
 
-        builder.addFactory(loggingFeatureTemplateId, Scope.PROTOTYPE, (ctx) -> loggingFeature);
+        addFactory(builder,loggingFeatureTemplateId, Scope.PROTOTYPE, (ctx) -> loggingFeature);
     }
 }

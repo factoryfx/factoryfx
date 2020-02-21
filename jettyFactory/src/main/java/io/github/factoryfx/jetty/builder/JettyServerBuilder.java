@@ -3,6 +3,7 @@ package io.github.factoryfx.jetty.builder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.zip.Deflater;
 
@@ -177,6 +178,10 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         return this;
     }
 
+    private <F extends FactoryBase<?,R>> void addFactory(FactoryTreeBuilder<?,R> builder, FactoryTemplateId<F> templateId, Scope scope, Function<FactoryContext<R>, F> creator){
+        builder.removeFactory(templateId);
+        builder.addFactory(templateId,scope,creator);
+    }
 
     /**
      * internal method
@@ -184,7 +189,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      */
     @Override
     public void internal_build(FactoryTreeBuilder<?,R> builder){
-        builder.addFactory(rootTemplateId, Scope.SINGLETON, (FactoryContext<R> ctx) ->{
+        addFactory(builder,rootTemplateId, Scope.SINGLETON, (FactoryContext<R> ctx) ->{
             JR jettyServerFactory=jettyRootCreator.get();
             additionalConfiguration.accept(jettyServerFactory);
             jettyServerFactory.threadPool.set(ctx.get(threadPoolFactoryTemplateId));
@@ -200,12 +205,12 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         });
 
         if (enabledRequestLog) {
-            builder.addFactory(requestLogerTemplateId, Scope.SINGLETON, (ctx) -> {
+            addFactory(builder,requestLogerTemplateId, Scope.SINGLETON, (ctx) -> {
                 return new Slf4jRequestLogFactory<>();
             });
         }
 
-        builder.addFactory(threadPoolFactoryTemplateId, Scope.SINGLETON, (ctx)->{
+        addFactory(builder,threadPoolFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             ThreadPoolFactory<R> threadPoolFactory=new ThreadPoolFactory<>();
             threadPoolFactory.poolSize.set(threadPoolSize);
             return threadPoolFactory;
@@ -215,7 +220,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             connectorBuilder.build(builder);
         }
 
-        builder.addFactory(handlerCollectionFactoryTemplateId, Scope.SINGLETON, (ctx)->{
+        addFactory(builder,handlerCollectionFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             HandlerCollectionFactory<R> handlerCollection = new HandlerCollectionFactory<>();
             if (firstHandler!=null) {
                 handlerCollection.handlers.add(firstHandler);
@@ -224,7 +229,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             return handlerCollection;
         });
 
-        builder.addFactory(gzipHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
+        addFactory(builder,gzipHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             GzipHandlerFactory<R> gzipHandler = new GzipHandlerFactory<>();
             gzipHandler.minGzipSize.set(0);
             gzipHandler.compressionLevel.set(Deflater.DEFAULT_COMPRESSION);
@@ -237,13 +242,13 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             return gzipHandler;
         });
 
-        builder.addFactory(servletContextHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
+        addFactory(builder,servletContextHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             ServletContextHandlerFactory<R> servletContextHandlerFactory = new ServletContextHandlerFactory<>();
             servletContextHandlerFactory.updatableRootServlet.set(ctx.get(updateableServletFactoryTemplateId));
             return servletContextHandlerFactory;
         });
 
-        builder.addFactory(updateableServletFactoryTemplateId, Scope.SINGLETON, (ctx)->{
+        addFactory(builder,updateableServletFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             UpdateableServletFactory<R> updateableServletFactory = new UpdateableServletFactory<>();
 
             for (ResourceBuilder<R> resourceBuilder : resourceBuilders) {

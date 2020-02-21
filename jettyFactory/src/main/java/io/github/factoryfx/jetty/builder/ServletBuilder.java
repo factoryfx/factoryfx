@@ -24,6 +24,7 @@ public class ServletBuilder<R extends FactoryBase<?,R>>{
     }
 
     void build(FactoryTreeBuilder<?,R> builder){
+        builder.removeFactory(templateId);
         builder.addFactory(templateId, Scope.PROTOTYPE , (ctx)->{
             ServletAndPathFactory<R> servletAndPathFactory = new ServletAndPathFactory<>();
             servletAndPathFactory.pathSpec.set(pathSpec);

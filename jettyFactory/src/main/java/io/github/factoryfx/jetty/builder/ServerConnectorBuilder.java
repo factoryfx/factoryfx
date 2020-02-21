@@ -72,6 +72,7 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
     }
 
     void build(FactoryTreeBuilder<?,R> builder) {
+        builder.removeFactory(connectorTemplateId);
         builder.addFactory(connectorTemplateId, Scope.SINGLETON, (ctx)->{
             HttpServerConnectorFactory<R> serverConnectorFactory = new HttpServerConnectorFactory<>();
             serverConnectorFactory.host.set(host);
