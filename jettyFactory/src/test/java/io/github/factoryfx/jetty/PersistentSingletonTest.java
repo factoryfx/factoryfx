@@ -32,11 +32,6 @@ public class PersistentSingletonTest {
     public static class Fact1<R extends FactoryBase<?, R>> extends SimpleFactoryBase<Object, R> {
         @Override
         protected Object createImpl() { return new Object(); }
-
-
-        public Fact1() {
-            System.out.println();
-        }
     }
 
 
@@ -60,6 +55,7 @@ public class PersistentSingletonTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void brokenSingleton() {
 
         FactoryTreeBuilder<Void, RootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory.class, ctx -> {
@@ -72,19 +68,13 @@ public class PersistentSingletonTest {
                                                                       (Supplier<JettyServerFactory<RootFactory>>) JettyServerFactory::new)
             .withResource(ctx.get(Fact1.class)));
 
-        factoryTreeBuilder.addSingleton(Fact1.class, new Function<FactoryContext<RootFactory>, Fact1>() {
-            @Override
-            public Fact1 apply(FactoryContext<RootFactory> rootFactoryFactoryContext) {
-                return new Fact1();
-            }
-        });
+        factoryTreeBuilder.addSingleton(Fact1.class);
 
         Microservice<Void, RootFactory> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
 
         RootFactory root = microservice.prepareNewFactory().root;
         assertEquals(root.fact1.get(),root.jettyServer.get().getResource(Fact1.class));
-
     }
 
     public static class RootFactory2 extends SimpleFactoryBase<Void, RootFactory2> {
@@ -98,6 +88,7 @@ public class PersistentSingletonTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void nowItWorks() {
 
         FactoryTreeBuilder<Void, RootFactory2> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory2.class);
@@ -114,6 +105,7 @@ public class PersistentSingletonTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void alsoLikeThis() {
 
         FactoryTreeBuilder<Void, RootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory.class);
@@ -127,9 +119,6 @@ public class PersistentSingletonTest {
         microservice.start();
 
         RootFactory root = microservice.prepareNewFactory().root;
-        assertEquals(root.fact1.get().getId(),
-                     ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory) root.jettyServer.get().handler.get().handlers.get()
-                                                                                                                                                                                                                                               .get(0)).handler
-                         .get()).updatableRootServlet.get()).servletAndPaths.get().get(0)).servlet.get())).resources.get(0)).getId());
+        assertEquals(root.fact1.get().getId(),root.jettyServer.get().getResource(Fact1.class).getId());
     }
 }
