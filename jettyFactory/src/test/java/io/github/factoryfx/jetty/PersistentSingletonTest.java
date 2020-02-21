@@ -76,9 +76,9 @@ public class PersistentSingletonTest {
         Microservice<Void, RootFactory2> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
 
-
-        assertEquals(microservice.prepareNewFactory().root.fact1.get().getId(),
-                     ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory) microservice.prepareNewFactory().root.jettyServer.get().handler.get().handlers.get()
+        RootFactory2 root = microservice.prepareNewFactory().root;
+        assertEquals(root.fact1.get().getId(),
+                     ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory) root.jettyServer.get().handler.get().handlers.get()
                                                                                                                                                                                                                                                .get(0)).handler
                          .get()).updatableRootServlet.get()).servletAndPaths.get().get(0)).servlet.get())).resources.get(0)).getId());
     }
@@ -96,9 +96,9 @@ public class PersistentSingletonTest {
         Microservice<Void, RootFactory> microservice = factoryTreeBuilder.microservice().build();
         microservice.start();
 
-
-        assertEquals(microservice.prepareNewFactory().root.fact1.get().getId(),
-                     ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory) microservice.prepareNewFactory().root.jettyServer.get().handler.get().handlers.get()
+        RootFactory root = microservice.prepareNewFactory().root;
+        assertEquals(root.fact1.get().getId(),
+                     ((Fact1) ((JerseyServletFactory)(((ServletAndPathFactory) ((UpdateableServletFactory) ((ServletContextHandlerFactory) ((GzipHandlerFactory) root.jettyServer.get().handler.get().handlers.get()
                                                                                                                                                                                                                                                .get(0)).handler
                          .get()).updatableRootServlet.get()).servletAndPaths.get().get(0)).servlet.get())).resources.get(0)).getId());
     }
