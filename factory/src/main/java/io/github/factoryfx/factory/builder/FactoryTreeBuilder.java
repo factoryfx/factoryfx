@@ -122,6 +122,11 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
 
+    public <F extends FactoryBase<?,R>> void removeFactory(FactoryTemplateId<F> templateId){
+        factoryContext.removeFactoryCreator(templateId);
+    }
+
+
     /**
      * workaround for factories with generic Parameter e.g. FactoryX{@literal <}R{@literal >},  used in combination with {@link FactoryContext#getUnsafe(Class)}
      * @param templateId templateId
@@ -240,7 +245,6 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
             NestedBuilder<R> nestedBuilder = customBuildersCreator.apply(factoryContext);
             nestedBuilder.internal_build(this);
         }
-        customBuildersCreators.clear();//only add once
         this.rootFactory = factoryContext.get(rootTemplateId);
         if (rootFactory==null){
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootTemplateId.clazz);
