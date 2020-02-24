@@ -138,4 +138,8 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
             creator.reset();
         }
     }
+
+    public <F extends FactoryBase<?, R>> void removeFactoryCreator(FactoryTemplateId<F> templateId) {
+        this.factoryCreators.removeIf(rFactoryCreator -> rFactoryCreator.match(templateId.clazz, templateId.name));
+    }
 }
