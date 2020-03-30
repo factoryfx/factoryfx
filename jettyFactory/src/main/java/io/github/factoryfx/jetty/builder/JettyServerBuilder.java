@@ -331,6 +331,16 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     }
 
     /**
+     * @see ServerConnectorBuilder#withHttpConfiguration(HttpConfigurationFactory)
+     * @param httpConfiguration httpConfiguration
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withHttpConfiguration(HttpConfigurationFactory<R> httpConfiguration) {
+        getDefaultServerConnector().withHttpConfiguration(httpConfiguration);
+        return this;
+    }
+
+    /**
      * @see ServerConnectorBuilder#withRandomPort()
      * @return builder
      */

@@ -55,7 +55,7 @@ public class DataEditorStateVisualisation extends BorderPane {
         }
     }
 
-    private Node createUsages(FactoryBase<?, ?> currentData, SplitPane splitPane) {
+    private void createUsages(FactoryBase<?, ?> currentData, SplitPane splitPane) {
         Set<FactoryBase<?, ?>> usages = new HashSet<>();
         List<? extends FactoryBase<?, ?>> factoryBases = currentData.utility().getRoot().internal().collectChildrenDeep();
         for (FactoryBase<?, ?> factoryBase : factoryBases) {
@@ -112,7 +112,6 @@ public class DataEditorStateVisualisation extends BorderPane {
             splitPane.getItems().add(vBox);
             splitPane.setDividerPositions(0.7, 0.3);
         }
-        return vBox;
     }
 
 

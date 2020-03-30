@@ -11,10 +11,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
@@ -398,7 +400,65 @@ public class JettyServerTest {
         logger.detachAppender(listAppender);
     }
 
+    @Test
+    public void test_httpConfiguration_sendServerVersion() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+                    .withHttpConfiguration(ctx.getUnsafe(HttpConfigurationFactory.class));
+        });
+        builder.addFactoryUnsafe(HttpConfigurationFactory.class, Scope.SINGLETON,ctx -> {
+            HttpConfigurationFactory<JettyServerRootFactory> httpConfigurationFactory = new HttpConfigurationFactory<>();
+            httpConfigurationFactory.sendServerVersion.set(true);
+            return httpConfigurationFactory;
+        });
+        builder.addSingleton(Resource1Factory.class, ctx -> {
+            return new Resource1Factory();
+        });
 
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        try{
+            microservice.start();
+
+            ClientConfig cc = new ClientConfig();
+            Client client = ClientBuilder.newBuilder().withConfig(cc).build();
+            Response response = client.target("http://localhost:8087/Resource1").request().buildGet().invoke();
+            Assertions.assertTrue(response.getHeaders().get("Server").get(0).toString().contains("Jetty"));
+            Assertions.assertEquals(200, response.getStatus());
+
+        } finally {
+            microservice.stop();
+        }
+    }
+
+    @Test
+    public void test_httpConfiguration_notServerVersion() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+                    .withHttpConfiguration(ctx.getUnsafe(HttpConfigurationFactory.class));
+        });
+        builder.addFactoryUnsafe(HttpConfigurationFactory.class, Scope.SINGLETON,ctx -> {
+            HttpConfigurationFactory<JettyServerRootFactory> httpConfigurationFactory = new HttpConfigurationFactory<>();
+            httpConfigurationFactory.sendServerVersion.set(false);
+            return httpConfigurationFactory;
+        });
+        builder.addSingleton(Resource1Factory.class, ctx -> {
+            return new Resource1Factory();
+        });
+
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        try{
+            microservice.start();
+
+            ClientConfig cc = new ClientConfig();
+            Client client = ClientBuilder.newBuilder().withConfig(cc).build();
+            Response response = client.target("http://localhost:8087/Resource1").request().buildGet().invoke();
+            Assertions.assertNull(response.getHeaders().get("Server"));
+            Assertions.assertEquals(200, response.getStatus());
+
+        } finally {
+            microservice.stop();
+        }
+    }
 
 
 

@@ -4,6 +4,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.HttpConfigurationFactory;
 import io.github.factoryfx.jetty.HttpServerConnectorFactory;
 import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
 
@@ -16,6 +17,7 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
     String host="localhost";
     int port=8080;
     SslContextFactoryFactory<R> ssl;
+    HttpConfigurationFactory<R> httpConfiguration;
 
     private final FactoryTemplateId<HttpServerConnectorFactory<R>> connectorTemplateId;
 
@@ -71,6 +73,11 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
         return this;
     }
 
+    public ServerConnectorBuilder<R> withHttpConfiguration(HttpConfigurationFactory<R> httpConfiguration){
+        this.httpConfiguration=httpConfiguration;
+        return this;
+    }
+
     void build(FactoryTreeBuilder<?,R> builder) {
         builder.removeFactory(connectorTemplateId);
         builder.addFactory(connectorTemplateId, Scope.SINGLETON, (ctx)->{
@@ -80,8 +87,11 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
 
             if (ssl!=null) {
                 serverConnectorFactory.ssl.set(ssl);
-
             }
+            if (httpConfiguration!=null) {
+                serverConnectorFactory.httpConfiguration.set(httpConfiguration);
+            }
+
             return serverConnectorFactory;
         });
 

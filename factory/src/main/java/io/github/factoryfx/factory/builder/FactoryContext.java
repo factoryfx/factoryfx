@@ -79,6 +79,10 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         factoryCreators.add(factoryCreator);
     }
 
+    void removeFactoryCreator(FactoryTemplateId<?> factoryTemplateId){
+        factoryCreators.removeIf(creator -> creator.match(factoryTemplateId.clazz,factoryTemplateId.name));
+    }
+
 
     @SuppressWarnings("unchecked")
     <L, F extends FactoryBase<L,R>> List<F> getList(Class<F> clazz) {
@@ -137,9 +141,5 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
         for (FactoryCreator<?, R> creator : factoryCreators) {
             creator.reset();
         }
-    }
-
-    public <F extends FactoryBase<?, R>> void removeFactoryCreator(FactoryTemplateId<F> templateId) {
-        this.factoryCreators.removeIf(rFactoryCreator -> rFactoryCreator.match(templateId.clazz, templateId.name));
     }
 }
