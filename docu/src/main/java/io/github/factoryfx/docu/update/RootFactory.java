@@ -17,5 +17,6 @@ public class RootFactory extends FactoryBase<Root, RootFactory> {
                 Thread.currentThread().interrupt();
             }
         });
+        configLifeCycle().setUpdater(root -> root.setDummy(stringAttribute.get()));
     }
 }
