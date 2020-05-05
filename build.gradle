@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.8"
+        classpath "com.github.spotbugs:spotbugs-gradle-plugin:3.0.0"
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
     }
 }
@@ -29,7 +29,7 @@ allprojects {
 
 
 wrapper {
-    gradleVersion = '5.5.1'
+    gradleVersion = '6.3'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -226,8 +226,8 @@ subprojects {
     }
 
     spotbugs {
+        toolVersion = '4.0.0'
         sourceSets = [sourceSets.main]
-//        toolVersion = "3.0.1"
         ignoreFailures = true
         excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
     }
