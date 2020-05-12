@@ -161,8 +161,8 @@ export abstract class Data  {
         return year+"-"+this.pad(monthIndex,2)+"-"+this.pad(day,2)+'T'+this.pad(hour,2)+':'+this.pad(min,2)+':'+this.pad(sec,2)+'.'+milliseconds+'Z';
     }
 
-    protected mapLongFromJson(jsonValue: any): bigint | null {
-        if (!jsonValue) return null;
+    protected mapLongFromJson(jsonValue: any): bigint | undefined {
+        if (!jsonValue) return undefined;
         return BigInt(jsonValue);
     }
 

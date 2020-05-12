@@ -171,7 +171,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
     private TsAttribute getTsAttribute(AttributeMetadata metadata){
         TsType tsType = getTsType(metadata);
         if (tsType instanceof TsTypeArray) {
-            return new TsAttribute(metadata.attributeVariableName, tsType,false,true,false,List.of());
+            return new TsAttribute(metadata.attributeVariableName, tsType,false,true,false,List.of(),!metadata.required);
         }
         return new TsAttribute(metadata.attributeVariableName, tsType);
     }
@@ -192,7 +192,7 @@ public class DataGeneratedTs<R extends FactoryBase<?,R>, L,  F extends FactoryBa
         constructorParameters.add(new TsValueBoolean(!metadata.required));
         constructorParameters.add(new TsValueStringArray(getPossibleEnumValues(metadata)));
 
-        return new TsAttribute(metadata.attributeVariableName+"Metadata", new TsTypeClass(attributeMetadataTsClass,getTsType(metadata)),true,true,true, constructorParameters);
+        return new TsAttribute(metadata.attributeVariableName+"Metadata", new TsTypeClass(attributeMetadataTsClass,getTsType(metadata)),true,true,true, constructorParameters,false);
     }
 
     private TsType getTsType(AttributeMetadata metadata){

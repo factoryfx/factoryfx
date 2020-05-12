@@ -13,6 +13,7 @@ public class TsAttribute {
     private final boolean initialised;
     private final List<TsValue> constructorParameters;
     private final boolean readonly;
+    private final boolean optional;
 
     public TsAttribute(String name, TsType type) {
         this.name = name;
@@ -21,15 +22,17 @@ public class TsAttribute {
         this.initialised = false;
         this.constructorParameters = Collections.emptyList();
         this.readonly = false;
+        this.optional = false;
     }
 
-    public TsAttribute(String name, TsType type, boolean isStatic, boolean initialised, boolean readonly, List<TsValue> constructorParameters) {
+    public TsAttribute(String name, TsType type, boolean isStatic, boolean initialised, boolean readonly, List<TsValue> constructorParameters, boolean optional) {
         this.name = name;
         this.type = type;
         this.isStatic = isStatic;
         this.initialised = initialised;
         this.readonly = readonly;
         this.constructorParameters = constructorParameters;
+        this.optional = optional;
     }
 
     public String constructClassDeclaration(){
@@ -56,7 +59,11 @@ public class TsAttribute {
         if (readonly){
             readonlyString="readonly ";
         }
-        return "public "+staticString+readonlyString+name+(initialised?"":"!")+": "+type.construct()+initialisation+";";
+        String optionalOperator = optional ? "?" : "!";
+        if (initialised){
+            optionalOperator="";
+        }
+        return "public "+staticString+readonlyString+name+ optionalOperator +": "+type.construct()+initialisation+";";
     }
 
     public void addImport(Set<TsFile> imports) {
