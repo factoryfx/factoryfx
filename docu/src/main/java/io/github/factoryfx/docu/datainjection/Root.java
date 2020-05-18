@@ -2,12 +2,19 @@ package io.github.factoryfx.docu.datainjection;
 
 public class Root {
     private final String text;
+    private final Printer printer;
 
-    public Root(String text) {
+    /**
+     *
+     * @param text data, this is considered data that injected from the framework
+     * @param printer dependency,  this is considered a dependency that injected from the framework
+     */
+    public Root(String text, Printer printer) {
         this.text = text;
+        this.printer= printer;
     }
 
-    public void doX(){
-        System.out.println(text);
+    public void print(){
+        printer.print(text);
     }
 }
