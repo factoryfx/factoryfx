@@ -2,7 +2,7 @@
 
 Factorfx handles data in the same way as dependencies.
 
-```
+```java
 public class HelloWorld{
     public constructor(String text, Printer printer){
 ...
@@ -22,7 +22,7 @@ With that architecture it is hard to implement data encapsulation which is one o
 Often you will end up with data only classes and other classes that implement business logic based on the data classes. 
 That will result in a procedural design that does not convey the original motivation begin object oriented programming. 
 
-```
+```java
 public class HelloWorld{
     public constructor(TextDatabase textDatabase, Printer printer){
 ...
