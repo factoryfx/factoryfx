@@ -53,25 +53,33 @@ public class Printer {
 }
 ```
 * API Advantages
-  * new Dependencies must only be declared once instead of 2 times
-  * no Translation between Attribute types. String vs StringAttribute
-  * immutable by default, no extra association in the constructor for each dependency
+  * New dependencies must only be declared once instead of 2 times
+  * No translation between Attribute types. String <=> StringAttribute
+  * Immutable by default, no extra association in the constructor for each dependency
   * Adding new Dependencies is much easier. (just one change in the record)
 
 * Performance
-  * equals should be a lot faster with records instead of the old solution that used reflection
+  * Equals should be a lot faster with records instead of the old solution that used reflection
 
 * Memory
-  * Old System had high memory consumption because for every attribute an additional attributeobject was created.
+  * Old system had high memory consumption because for every attribute an additional attributeobject was created.
 
 
 ## Risks and Assumptions
 
 * Record is a java preview feature and can change (unlikely)
-* compatibility, possible to supports both APIs?
-* confusion between different API
+* Compatibility, possible to supports both APIs?
+* If the old api is preserved this can lead to confusion between old and new api
 
-## Dependencies
+## Record
+Advantages of records 
+* Records are immutable
+    * Java classes can also be immutable, but they require additional boilerplate. Using Records reduce the necessary boilerplate code.
+* Records implements equals as default
+    * Improved performance compared to an implementation using reflection.
 
+Disadvantages of records 
+* Records are immutable
+  * This is problematic for data editing in the gui. It's no longer possible to support 2 way binding in the richtclient. That means if you set a value programmatically, the GUI does no update. This is not too bad because in most cases the user edits the data.
 
 
