@@ -66,10 +66,7 @@ public class DynamicDataDictionary {
     }
 
     private List<String> getPossibleEnumValues(AttributeMetadata attributeMetadata) {
-        System.out.println(attributeMetadata.attributeClass);
-        System.out.println(attributeMetadata.attributeVariableName);
         if (attributeMetadata.enumClass!=null){
-            System.out.println("222");
             return Arrays.stream(attributeMetadata.enumClass.getEnumConstants()).map(Object::toString).collect(Collectors.toList());
         }
         return List.of();

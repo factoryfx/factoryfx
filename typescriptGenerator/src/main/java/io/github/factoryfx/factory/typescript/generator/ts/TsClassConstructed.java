@@ -86,12 +86,6 @@ public class TsClassConstructed extends TsFile {
         if (constructor!=null){
             constructor.addImports(imports);
         }
-        if (imports.contains(null)){
-            System.out.println();
-            for (TsFile anImport : imports) {
-                System.out.println(anImport);
-            }
-        }
         for (TsAttribute attribute : attributes) {
 
             attribute.addImport(imports);
