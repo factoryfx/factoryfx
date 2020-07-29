@@ -173,7 +173,10 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
 
     private void compileTsToJS(Path tsBuildDirectory) {
         try {
-            String osNameMatch = StandardSystemProperty.OS_NAME.value().toLowerCase();
+            String osNameMatch = StandardSystemProperty.OS_NAME.value();
+            if (osNameMatch!=null){
+                osNameMatch=osNameMatch.toLowerCase();
+            }
             String first="cmd";
             String second="/c";
             if(osNameMatch.contains("linux")) {

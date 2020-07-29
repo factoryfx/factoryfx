@@ -116,7 +116,7 @@ public class BooleanAttributeSetNullTest {
     public void test_json_compatibility(){
         String old =
                 "{\n" +
-                "  \"@class\" : \"io.github.factoryfx.factory.BooleanAttributeSetNullTest$ChildFactory\",\n" +
+                "  \"@class\" : \""+ChildFactory.class.getName()+"\",\n" +
                 "  \"id\" : \"c2e46d42-a11e-8c61-65cb-43fb9a5e58e9\",\n" +
                 "  \"treeBuilderClassUsed\" : false,\n" +
                 "  \"booleanAttribute\" : { }\n" +
