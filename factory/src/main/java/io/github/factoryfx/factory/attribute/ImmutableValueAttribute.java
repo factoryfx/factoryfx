@@ -3,10 +3,7 @@ package io.github.factoryfx.factory.attribute;
 import java.util.*;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.*;
 
 
 import io.github.factoryfx.factory.FactoryBase;
@@ -17,6 +14,7 @@ import io.github.factoryfx.factory.validation.ValidationResult;
 
 /** base class for Attributes with immutable value(for ChangeListener)*/
 //@JsonDeserialize(using = JsonNullAwareDeserializer.class)
+@JsonInclude()//include null attributes
 public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extends Attribute<T,A> {
     //    @JsonProperty
     @JsonProperty("v")
@@ -105,6 +103,12 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         return super.internal_validate(parent, attributeVariableName);
     }
 
+
+    /**
+     * this method is deprecated, instead default values should be set with the {@link io.github.factoryfx.factory.builder.FactoryTreeBuilder}
+     * @param defaultValue
+     * @return attribute
+     */
     @SuppressWarnings("unchecked")
     public A defaultValue(T defaultValue) {
         set(defaultValue);

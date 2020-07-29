@@ -129,7 +129,7 @@ export class Data {
     }
     mapLongFromJson(jsonValue) {
         if (!jsonValue)
-            return null;
+            return undefined;
         return BigInt(jsonValue);
     }
     mapLongToJson(value) {

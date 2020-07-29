@@ -12,11 +12,15 @@ public class BooleanAttribute extends ImmutableValueAttribute<Boolean,BooleanAtt
 
     @Override
     public Boolean get() {
-        Boolean r = super.get();
-        if (r == null) {
-            return Boolean.FALSE;
+        return super.get();
+    }
+
+    @Override
+    public String toString() {
+        if (value!=null) {
+            return String.valueOf(value);
         }
-        return r;
+        return "BooleanAttribute value: null";
     }
 
 }
