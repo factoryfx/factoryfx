@@ -40,7 +40,7 @@ nexusStaging {//https://github.com/Codearte/gradle-nexus-staging-plugin
     packageGroup = 'io.github.factoryfx'
     stagingProfileId = '78e9b0494c64ba'
 //    stagingRepositoryId = ??? requires external mechanism
-    numberOfRetries = 30
+    numberOfRetries = 40
 }
 
 subprojects {
@@ -87,7 +87,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '2.2.16'
+    version = '2.2.17'
 
     publishing {
 

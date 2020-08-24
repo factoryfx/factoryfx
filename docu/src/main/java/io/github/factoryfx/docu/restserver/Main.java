@@ -1,6 +1,8 @@
 package io.github.factoryfx.docu.restserver;
 
 import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.jetty.HttpServerConnectorFactory;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
@@ -43,6 +45,13 @@ public class Main {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
+        HttpServerConnectorFactory<JettyServerRootFactory> connector = new HttpServerConnectorFactory<>();
+        connector.port.set(1234);
+        connector.host.set("localhost");
+        update.root.connectors.add(connector);
+        microservice.updateCurrentFactory(update);
 
     }
 

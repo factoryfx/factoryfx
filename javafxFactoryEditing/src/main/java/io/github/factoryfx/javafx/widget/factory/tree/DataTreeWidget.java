@@ -4,6 +4,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -47,6 +48,7 @@ public class DataTreeWidget implements Widget {
 
     private boolean programmaticallySelect=false;
 
+    ChangeListener<FactoryBase<?,?>> dataChangeListener;
     private Node createTree(){
         TreeView<TreeData> tree = new TreeView<>();
         tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -59,7 +61,7 @@ public class DataTreeWidget implements Widget {
             }
         });
 
-        ChangeListener<FactoryBase<?,?>> dataChangeListener = (observable, oldValue, newValue) -> {
+        dataChangeListener = (observable, oldValue, newValue) -> {
             Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
                 if (treeStructureChanged(root)){
                     TreeItem<TreeData> treeItemRoot = constructTreeFromRoot();
@@ -77,7 +79,7 @@ public class DataTreeWidget implements Widget {
             });
 
         };
-        dataEditor.editData().addListener(dataChangeListener);
+        dataEditor.editData().addListener(new WeakChangeListener<>(dataChangeListener));
         dataChangeListener.changed(dataEditor.editData(),dataEditor.editData().get(),dataEditor.editData().get());
 
         ScrollPane scrollPane = new ScrollPane(tree);

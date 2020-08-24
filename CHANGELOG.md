@@ -1,3 +1,10 @@
+# 2.2.16
+
+### BREAKING CHANGES
+* **json format**
+    * json format now includes null values, v=null (JsonInclude.Include.NON_NULL)
+    (normally this should be compatible with the old format) 
+
 # 2.2.10
 
 ### Features
