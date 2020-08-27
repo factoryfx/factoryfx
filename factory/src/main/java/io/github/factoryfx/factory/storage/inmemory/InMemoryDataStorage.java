@@ -14,7 +14,7 @@ import io.github.factoryfx.factory.storage.*;
  *
  * @param <R> Root factory
  */
-public class InMemoryDataStorage<R extends FactoryBase<?,?>> implements DataStorage<R> {
+public class InMemoryDataStorage<R extends FactoryBase<?,R>> implements DataStorage<R> {
     private final Map<String, DataAndStoredMetadata<R>> storage = new TreeMap<>();
     private final Map<String, ScheduledUpdate<R>> future = new TreeMap<>();
     private String currentFactoryId;

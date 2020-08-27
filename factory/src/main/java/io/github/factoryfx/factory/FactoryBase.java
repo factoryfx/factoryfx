@@ -369,8 +369,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         return copy(0);
     }
 
-    private <T extends FactoryBase<?,?>> T copy() {
-        return copy(Integer.MAX_VALUE);
+    @SuppressWarnings("unchecked")
+    private <T extends FactoryBase<?,R>> T copy() {
+        T copy = copy(Integer.MAX_VALUE);
+        copy.factoryTreeBuilder=this.factoryTreeBuilder;
+        if (copy.factoryTreeBuilder!=null){
+            copy.factoryTreeBuilder.fillFromExistingFactoryTree((R)copy);
+        }
+        return copy;
     }
 
     private <T extends FactoryBase<?, ?>> T copy(int level) {
@@ -807,7 +813,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.getPathFromRoot();
         }
 
-        public <T extends FactoryBase<?,?> > T copy() {
+        public <T extends FactoryBase<?,R> > T copy() {
             return factory.copy();
         }
 
@@ -1604,7 +1610,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * @param <T> self
          * @return scopy
          */
-        public <T extends FactoryBase<?,?> > T copy(){
+        public <T extends FactoryBase<?,R> > T copy(){
             return factory.copy();
         }
 

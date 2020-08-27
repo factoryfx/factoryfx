@@ -3,6 +3,7 @@ package io.github.factoryfx.factory;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
 import io.github.factoryfx.factory.attribute.CopySemantic;
+import io.github.factoryfx.factory.attribute.DefaultPossibleValueProvider;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
@@ -867,6 +868,21 @@ public class FactoryBaseTest {
 
         assertEquals(1,root.internal().collectChildrenFlat().size());
         assertEquals(factoryB,root.internal().collectChildrenFlat().get(0));
+    }
+
+    @Test
+    public void test_copy_factoryTreeBuilder(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> treeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class,ctx->{
+            return new ExampleFactoryA();
+        });
+        ExampleFactoryA original = treeBuilder.buildTree();
+
+        ExampleFactoryA copy = original.internal().copy();
+        assertNotNull(original.utility().getFactoryTreeBuilder(),"original");
+        assertNotNull(copy.utility().getFactoryTreeBuilder(),"copy");
+
+        //don't get factories from original treeBuilder
+        assertEquals(copy, copy.utility().getFactoryTreeBuilder().buildSubTrees(ExampleFactoryA.class).get(0));
     }
 
 }

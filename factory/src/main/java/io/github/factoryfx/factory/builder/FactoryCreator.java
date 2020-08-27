@@ -77,4 +77,8 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
     public void reset() {
         factory=null;
     }
+
+    public FactoryCreator<F,R> copy() {
+        return new FactoryCreator<>(this.templateId,this.scope,this.creator);
+    }
 }

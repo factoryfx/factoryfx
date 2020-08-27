@@ -25,11 +25,16 @@ import java.util.stream.Collectors;
  * */
 public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
-    private final FactoryContext<R> factoryContext = new FactoryContext<>();
+    private final FactoryContext<R> factoryContext;
     protected final FactoryTemplateId<R> rootTemplateId;
 
-    protected FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, Consumer<FactoryTreeBuilder<L,R>> rootTemplateAdder) {
+    protected FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, FactoryContext<R> factoryContext) {
         this.rootTemplateId = rootTemplateId;
+        this.factoryContext = factoryContext;
+    }
+
+    protected FactoryTreeBuilder(FactoryTemplateId<R> rootTemplateId, Consumer<FactoryTreeBuilder<L,R>> rootTemplateAdder) {
+        this(rootTemplateId,new FactoryContext<>());
         rootTemplateAdder.accept(this);
     }
 
@@ -373,5 +378,9 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
     public FactoryTemplateId<R> getRootTemplateId() {
         return rootTemplateId;
+    }
+
+    public FactoryTreeBuilder<L,R> copy() {
+        return new FactoryTreeBuilder<>(rootTemplateId,factoryContext.copy());
     }
 }

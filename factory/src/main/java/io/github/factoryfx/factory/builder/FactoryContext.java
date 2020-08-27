@@ -142,4 +142,12 @@ public class FactoryContext<R extends FactoryBase<?,R>> {
             creator.reset();
         }
     }
+
+    public FactoryContext<R> copy() {
+        FactoryContext<R> copy = new FactoryContext<>();
+        for (FactoryCreator<?, R> factoryCreator : this.factoryCreators) {
+            copy.factoryCreators.add(factoryCreator.copy());
+        }
+        return copy;
+    }
 }

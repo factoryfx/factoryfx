@@ -651,4 +651,23 @@ public class FactoryTreeBuilderTest {
         Assertions.assertEquals(ExampleFactoryB.class, list.get(1).getClass());
     }
 
+    @Test
+    public void test_copy(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> factoryTreeBuilder = new FactoryTreeBuilder<>(ExampleFactoryA.class, context -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.stringAttribute.set("123");
+            return factory;
+        });
+
+        ExampleFactoryA root1 = factoryTreeBuilder.buildTreeUnvalidated();
+        Assertions.assertEquals("123",root1.stringAttribute.get());
+        ExampleFactoryA root2 = factoryTreeBuilder.buildTreeUnvalidated();
+        Assertions.assertEquals(root1,root2);
+
+        ExampleFactoryA root3 = factoryTreeBuilder.copy().buildTreeUnvalidated();
+        Assertions.assertEquals("123",root3.stringAttribute.get());
+        Assertions.assertNotEquals(root1,root3);//don't copy state
+
+    }
+
 }
