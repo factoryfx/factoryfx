@@ -260,7 +260,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     /**
-     *  the passed factoryClazz ist created new even if they is declared as Singleton
+     *  the passed factoryClazz is created new even if they is declared as singleton
      *
      * @param factoryClazz factory
      * @param <LO> liveobject
@@ -269,6 +269,18 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
      */
     public <LO, FO extends FactoryBase<LO,R>> FO buildNewSubTree(Class<FO> factoryClazz){
         return factoryContext.getNew(factoryClazz);
+    }
+
+    /**
+     *  the passed the factoryClazz is created under consideration of the scope
+     *
+     * @param factoryClazz factory
+     * @param <LO> liveobject
+     * @param <FO> factory result
+     * @return factory
+     */
+    public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(Class<FO> factoryClazz){
+        return factoryContext.get(factoryClazz);
     }
 
     public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
