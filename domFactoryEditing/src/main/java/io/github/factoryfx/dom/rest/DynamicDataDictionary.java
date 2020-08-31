@@ -28,6 +28,27 @@ public class DynamicDataDictionary {
                 }
             });
         }
+        fillClassaNameToItem(factoryClasses);
+
+    }
+
+    public DynamicDataDictionary(List<? extends FactoryBase<?,?>> roots){
+        HashSet<Class<?>> factoryClasses = new HashSet<>();
+        for (FactoryBase<?, ?> root : roots) {
+            root.internal().finalise();
+            for (FactoryBase<?, ?> factoryBase : root.internal().collectChildrenDeep()) {
+                factoryClasses.add(factoryBase.getClass());
+                factoryBase.internal().visitAttributesMetadata((attributeMetadata) -> {
+                    if (attributeMetadata.referenceClass!=null){
+                        factoryClasses.add(attributeMetadata.referenceClass);
+                    }
+                });
+            }
+        }
+        fillClassaNameToItem(factoryClasses);
+    }
+
+    private void fillClassaNameToItem(HashSet<Class<?>> factoryClasses) {
 
         for (Class<?> factoryClass : factoryClasses) {
             DynamicDataDictionaryItem item = new DynamicDataDictionaryItem();
@@ -44,7 +65,6 @@ public class DynamicDataDictionary {
                 }
             });
         }
-
     }
 
     private String getLabel(Locale locale, AttributeMetadata attributeMetadata) {

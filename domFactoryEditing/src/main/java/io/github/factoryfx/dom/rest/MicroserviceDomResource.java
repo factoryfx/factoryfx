@@ -53,20 +53,25 @@ public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends Microse
     }
 
     @POST
-    @Path("/createNewFactory")
+    @Path("/createNewFactories")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public FactoryBase<?,R> createNewFactory(AttributeAdressingRequest request) {
+    public CreateNewFactoriesResponse createNewFactories(AttributeAdressingRequest request) {
+        CreateNewFactoriesResponse<R> response = new CreateNewFactoriesResponse<>();
 
         AttributeAndMetadata attribute = resolveAttribute(request);
         if (attribute.attributeMetadata.liveObjectClass!=null) {
-
-
-            factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(microservice.prepareNewFactory().root);
-            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(attribute.attributeMetadata.liveObjectClass).get(0);
+            response.factories = factoryTreeBuilderBasedAttributeSetup.createNewFactory(attribute.attributeMetadata.liveObjectClass);
+            response.dynamicDataDictionary = new DynamicDataDictionary(response.factories);
+            return response;
         }
         //TODO select dialog if multiple in gui
         throw new IllegalArgumentException("no liveObjectClass found for: "+request);
+    }
+
+    public static class CreateNewFactoriesResponse<R extends FactoryBase<?,R>>{
+        public List<? extends FactoryBase<?, R>> factories;
+        public DynamicDataDictionary dynamicDataDictionary;
     }
     
     public static class AttributeAdressingRequest {

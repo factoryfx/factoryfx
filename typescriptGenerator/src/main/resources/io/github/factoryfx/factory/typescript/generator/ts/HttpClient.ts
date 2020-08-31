@@ -1,6 +1,9 @@
 import {Data} from "./Data";
 import {HttpClientStatusReporter} from "./HttpClientStatusReporter";
 import {StoredDataMetadata} from "./StoredDataMetadata";
+import {DynamicDataDictionary} from "./DynamicDataDictionary";
+import {DynamicData} from "./DynamicData";
+import {FactorySelectDialog} from "./utility/FactorySelectDialog";
 
 
 export class HttpClient {
@@ -61,13 +64,34 @@ export class HttpClient {
         });
     }
 
-    createNewFactory(factoryId: string, attributeVariableName: string, root: Data, responseCallback: ((response: any) => any)){
+    createNewFactories(factoryId: string, attributeVariableName: string, root: Data, responseCallback: ((possibleValues: Data[]) => any)){
         let createRequestBody: any = {
             "factoryId" : factoryId,
             "attributeVariableName" : attributeVariableName,
             "root" : root.mapToJsonFromRoot()
         };
-        this.post("createNewFactory",createRequestBody,responseCallback);
+        this.post("createNewFactories",createRequestBody, (response)=>{
+
+            let dynamicDataDictionary: DynamicDataDictionary= new DynamicDataDictionary();
+            dynamicDataDictionary.mapFromJson(response.dynamicDataDictionary);
+
+            let possibleValues: Data[]=[];
+            let idToDataMap: any={};
+            for (let collectChild of root.collectChildren()) {
+                idToDataMap[collectChild.getId()]=collectChild;
+            }
+            for (let json of response.factories){
+                if (typeof json === 'string'){
+                    possibleValues.push(idToDataMap[json]);
+                } else {
+                    let dynamicData = new DynamicData();
+                    dynamicData.mapFromJsonFromRootDynamicWidthMap(json,idToDataMap,dynamicDataDictionary);
+                    possibleValues.push(dynamicData);
+                }
+            }
+            responseCallback(possibleValues);
+
+        });
     }
 
     encryptAttribute(text: string, key: string, responseCallback: (encryptedText: string)=>any){

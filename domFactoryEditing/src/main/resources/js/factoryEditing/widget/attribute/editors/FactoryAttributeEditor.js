@@ -1,5 +1,6 @@
 //generated code don't edit manually
 import { AttributeEditorWidget } from "../AttributeEditorWidget";
+import { FactorySelectDialog } from "../../../utility/FactorySelectDialog";
 export class FactoryAttributeEditor extends AttributeEditorWidget {
     constructor(attributeAccessor, inputId, factoryEditorNode, httpClient) {
         super(attributeAccessor, inputId);
@@ -35,8 +36,16 @@ export class FactoryAttributeEditor extends AttributeEditorWidget {
         newButton.type = "button";
         newButton.textContent = "new";
         newButton.onclick = (e) => {
-            this.httpClient.createNewFactory(this.factoryEditorNode.getFactory().getId(), this.attributeAccessor.getAttributeName(), this.factoryEditorNode.getFactory().getRoot(), (response) => {
-                this.attributeAccessor.setValue(this.factoryEditorNode.getFactory().createNewChildFactory(response));
+            this.httpClient.createNewFactories(this.factoryEditorNode.getFactory().getId(), this.attributeAccessor.getAttributeName(), this.factoryEditorNode.getFactory().getRoot(), (possibleValues) => {
+                if (possibleValues.length > 1) {
+                    let dialog = new FactorySelectDialog(newButton.parentElement, possibleValues, (selected) => {
+                        this.attributeAccessor.setValue(selected);
+                    });
+                    dialog.show();
+                }
+                else {
+                    this.attributeAccessor.setValue(possibleValues[0]);
+                }
             });
         };
         newButton.className = "btn btn-outline-secondary";

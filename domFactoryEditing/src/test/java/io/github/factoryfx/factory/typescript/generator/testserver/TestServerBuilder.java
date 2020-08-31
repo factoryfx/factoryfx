@@ -5,6 +5,7 @@ import io.github.factoryfx.dom.rest.MicroserviceDomResourceFactory;
 import io.github.factoryfx.factory.attribute.types.EncryptedString;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.GzipHandlerFactory;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
@@ -40,6 +41,12 @@ public class TestServerBuilder {
             FilesystemStaticFileAccessFactory<TestServerFactory> filesystemStaticFileAccessFactory = new FilesystemStaticFileAccessFactory<>();
             filesystemStaticFileAccessFactory.basePath.set(new File("./src/main/resources/js/").getAbsolutePath()+"/");
             return filesystemStaticFileAccessFactory;
+        });
+
+        builder.addFactory(TestHandlerFactory.class, Scope.SINGLETON, ctx-> {
+            TestHandlerFactory testHandlerFactory = new TestHandlerFactory();
+            testHandlerFactory.test.set("123");;
+            return testHandlerFactory;
         });
 
         return builder;

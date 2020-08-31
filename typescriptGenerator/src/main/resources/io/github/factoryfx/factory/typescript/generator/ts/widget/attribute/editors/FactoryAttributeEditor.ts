@@ -2,6 +2,10 @@ import {AttributeEditorWidget} from "../AttributeEditorWidget";
 import {AttributeAccessor} from "../../../AttributeAccessor";
 import {FactoryEditorModel} from "../../factoryeditor/FactoryEditorModel";
 import {HttpClient} from "../../../HttpClient";
+import {FactorySelectDialog} from "../../../utility/FactorySelectDialog";
+import {Data} from "../../../Data";
+import {DynamicData} from "../../../DynamicData";
+import {DynamicDataDictionary} from "../../../DynamicDataDictionary";
 
 export class FactoryAttributeEditor extends AttributeEditorWidget{
 
@@ -46,12 +50,20 @@ export class FactoryAttributeEditor extends AttributeEditorWidget{
         newButton.textContent="new";
         newButton.onclick=(e)=>{
 
-            this.httpClient.createNewFactory(
+            this.httpClient.createNewFactories(
                 this.factoryEditorNode.getFactory().getId(),
                 this.attributeAccessor.getAttributeName(),
                 this.factoryEditorNode.getFactory().getRoot(),
-                (response)=>{
-                    this.attributeAccessor.setValue(this.factoryEditorNode.getFactory().createNewChildFactory(response));
+                (possibleValues: Data[])=>{
+                    if (possibleValues.length>1){
+                        let dialog: FactorySelectDialog = new FactorySelectDialog(newButton.parentElement!,possibleValues,(selected: Data)=>{
+                            this.attributeAccessor.setValue(selected);
+                        });
+                        dialog.show();
+                    } else {
+                        this.attributeAccessor.setValue(possibleValues[0]);
+                    }
+
                 }
             )
 

@@ -7,6 +7,6 @@ export class ShortAttributeEditor extends NumberBaseAttributeEditor {
     }
     additionalInputSetup() {
         this.input.max = "32767";
-        this.input.min = "-32767";
+        this.input.min = "-32768";
     }
 }

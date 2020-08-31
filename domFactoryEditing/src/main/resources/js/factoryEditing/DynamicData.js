@@ -136,4 +136,9 @@ export class DynamicData extends Data {
         this.collectChildrenRecursive(idToDataMap);
         return this.dynamicDataDictionary.createData(json, idToDataMap, this);
     }
+    createNewChildFactories(jsons) {
+        let idToDataMap = {};
+        this.collectChildrenRecursive(idToDataMap);
+        return this.dynamicDataDictionary.createDataList(jsons, idToDataMap, this);
+    }
 }

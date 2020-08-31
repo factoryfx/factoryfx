@@ -4,6 +4,8 @@ import {AttributeEditorWidget} from "../AttributeEditorWidget";
 import {FactoryEditorModel} from "../../factoryeditor/FactoryEditorModel";
 import {HttpClient} from "../../../HttpClient";
 import {BootstrapUtility} from "../../../BootstrapUtility";
+import {FactorySelectDialog} from "../../../utility/FactorySelectDialog";
+import {DynamicData} from "../../../DynamicData";
 
 export class FactoryListAttributeEditor extends AttributeEditorWidget{
 
@@ -35,13 +37,24 @@ export class FactoryListAttributeEditor extends AttributeEditorWidget{
         newButton.textContent="add";
         newButton.onclick=(e)=>{
 
-            this.httpClient.createNewFactory(
+            this.httpClient.createNewFactories(
                 this.factoryEditorModel.getFactory().getId(),
                 this.attributeAccessor.getAttributeName(),
-                this.factoryEditorModel.getFactory().getRoot(),(response)=>{
-                    let items = this.attributeAccessor.getValue();
-                    items.push(this.factoryEditorModel.getFactory().createNewChildFactory(response));
-                    this.attributeAccessor.setValue(items);
+                this.factoryEditorModel.getFactory().getRoot(),(possibleValues: Data[])=>{
+                    if (possibleValues.length>1){
+                        let dialog: FactorySelectDialog = new FactorySelectDialog(newButton.parentElement!,possibleValues,(selected: Data)=>{
+                            let items = this.attributeAccessor.getValue();
+                            items.push(selected);
+                            this.attributeAccessor.setValue(items);
+                        });
+                        dialog.show();
+                    } else {
+                        let items = this.attributeAccessor.getValue();
+                        items.push(possibleValues[0]);
+                        this.attributeAccessor.setValue(items);
+                    }
+
+
 
                     // this.factoryEditor.updateTree();
                 }
