@@ -4,10 +4,10 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 
 public class RootFactory extends FactoryBase<Root, RootFactory> {
-    public final StringAttribute stringAttribute = new StringAttribute();
+    public final StringAttribute dummy = new StringAttribute();
 
     public RootFactory() {
-        configLifeCycle().setCreator(() -> new Root(stringAttribute.get()));
+        configLifeCycle().setCreator(() -> new Root(dummy.get()));
         configLifeCycle().setStarter(root -> {
             //artificial long start time
             try {
@@ -16,7 +16,7 @@ public class RootFactory extends FactoryBase<Root, RootFactory> {
                 Thread.currentThread().interrupt();
             }
         });
-        configLifeCycle().setUpdater(root -> root.setDummy(stringAttribute.get()));
+        configLifeCycle().setUpdater(root -> root.setDummy(dummy.get()));
 
         // You can also conditionally recreate the expensive resource
         //configLifeCycle().setReCreator(root -> {

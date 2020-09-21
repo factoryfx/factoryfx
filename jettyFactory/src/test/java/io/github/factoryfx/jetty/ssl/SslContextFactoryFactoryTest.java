@@ -80,6 +80,7 @@ public class SslContextFactoryFactoryTest {
             SslContextFactoryFactoryCustom<JettyServerRootFactory> ssl = new SslContextFactoryFactoryCustom<>();
             ssl.keyStoreType.set(KeyStoreType.jks);
             ssl.trustStoreType.set(KeyStoreType.jks);
+            ssl.connectorType.set(SslContextFactoryFactory.ConnectorType.SERVER);
             try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){
                 byte[] bytes = in.readAllBytes();
                 ssl.keyStore.set(bytes);

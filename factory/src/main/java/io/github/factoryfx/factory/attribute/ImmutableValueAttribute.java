@@ -106,7 +106,7 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
 
     /**
      * this method is deprecated, instead default values should be set with the {@link io.github.factoryfx.factory.builder.FactoryTreeBuilder}
-     * @param defaultValue
+     * @param defaultValue defaultValue
      * @return attribute
      */
     @SuppressWarnings("unchecked")

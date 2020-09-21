@@ -159,9 +159,9 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         if (newValuesProviderFromRootAndAttribute!=null) {
             return newValuesProviderFromRootAndAttribute.apply(root,(A)this);
         }
-        FactoryTreeBuilderBasedAttributeSetup factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
+        FactoryTreeBuilderBasedAttributeSetup<?> factoryTreeBuilderBasedAttributeSetup = root.internal().getFactoryTreeBuilderBasedAttributeSetup();
         if (factoryTreeBuilderBasedAttributeSetup!=null && attributeMetadata.liveObjectClass !=null ){
-            return factoryTreeBuilderBasedAttributeSetup.createNewFactory(attributeMetadata.liveObjectClass);
+            return (List<F>)factoryTreeBuilderBasedAttributeSetup.createNewFactory(attributeMetadata.liveObjectClass);
         }
         if (attributeMetadata.referenceClass !=null ){
             return List.of((F)FactoryMetadataManager.getMetadataUnsafe(attributeMetadata.referenceClass).newInstance());

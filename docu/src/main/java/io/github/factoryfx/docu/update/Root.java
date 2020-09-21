@@ -10,4 +10,8 @@ public class Root {
     public void setDummy(String dummy){
         this.dummy = dummy;
     }
+
+    public void printDummy() {
+        System.out.println(dummy);
+    }
 }

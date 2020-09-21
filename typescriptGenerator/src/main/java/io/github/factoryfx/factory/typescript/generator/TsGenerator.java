@@ -179,7 +179,7 @@ public class TsGenerator<R extends FactoryBase<?,R>> {
             }
             String first="cmd";
             String second="/c";
-            if(osNameMatch.contains("linux")) {
+            if(osNameMatch!=null && osNameMatch.contains("linux")) {
                 first="/bin/bash";
                 second="-c";
             }

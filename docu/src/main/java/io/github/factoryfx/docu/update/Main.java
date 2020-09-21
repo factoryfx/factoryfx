@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         FactoryTreeBuilder< Root, RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class, ctx->{
             RootFactory root = new RootFactory();
-            root.stringAttribute.set("1");
+            root.dummy.set("1");
             return root;
         });
 
@@ -19,14 +19,16 @@ public class Main {
 
         //over 5000ms most time for the ExpensiveResource
         System.out.println(System.currentTimeMillis()-start);
+        microservice.getRootLiveObject().printDummy();//1
 
         long updateStart=System.currentTimeMillis();
         DataUpdate<RootFactory> update = microservice.prepareNewFactory();
-        update.root.stringAttribute.set("2");
+        update.root.dummy.set("2");
         microservice.updateCurrentFactory(update);
 
-        //much less than the 5000ms => ExpensiveResource not recreated
+        //significantly less than the 5000ms => ExpensiveResource not recreated
         System.out.println(System.currentTimeMillis()-updateStart);
+        microservice.getRootLiveObject().printDummy();//2
 
     }
 }
