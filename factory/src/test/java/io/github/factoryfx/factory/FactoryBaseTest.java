@@ -885,4 +885,16 @@ public class FactoryBaseTest {
         assertEquals(copy, copy.utility().getFactoryTreeBuilder().buildSubTrees(ExampleFactoryA.class).get(0));
     }
 
+    @Test
+    public void test_semanticCopy_singleton_nonBuilder(){
+        ExampleFactoryB factoryB = new ExampleFactoryB();
+
+        ExampleFactoryA factoryA = new ExampleFactoryA();
+        factoryA.referenceAttribute.set(factoryB);
+        factoryA.referenceListAttribute.add(factoryB);
+
+        ExampleFactoryA copy = factoryA.internal().finalise().utility().semanticCopy();
+        Assertions.assertEquals(copy.referenceAttribute.get(), copy.referenceListAttribute.get(0));
+    }
+
 }

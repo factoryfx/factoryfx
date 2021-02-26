@@ -13,6 +13,7 @@ import io.github.factoryfx.factory.merge.MergeResult;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadata;
 import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
+import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.validation.AttributeValidation;
@@ -413,7 +414,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private synchronized <T extends FactoryBase<?,?>> T semanticCopy() {
         return copy((f) -> {
-            Scope scope = this.root.factoryTreeBuilder.getScope(new FactoryTemplateId<>(f));
+            Scope scope = null;
+            if (f.internal().isTreeBuilderClassUsed()){
+                scope=this.root.factoryTreeBuilder.getScope(new FactoryTemplateId<>(f));
+            }
             if (f==this){
                 return f.newCopyInstance(f);
             }
@@ -1058,28 +1062,43 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     @SuppressWarnings("unchecked")
     private DataStorageMetadataDictionary createDataStorageMetadataDictionaryFromRoot() {
         HashMap<Class<FactoryBase<?,R>>,Long> dataClassesToCount = new HashMap<>();
-
+        ArrayList<FactoryBase<?,R>> factoryList = new ArrayList<>();
 
         for (FactoryBase<?,R> data : this.collectChildrenDeep()) {
-            Long counter=dataClassesToCount.get(data.getClass());
+            Long counter=dataClassesToCount.get(data.internal_getDataClass());
             if (counter==null){
                 counter=0L;
             }
             counter++;
-            dataClassesToCount.put((Class<FactoryBase<?, R>>) data.getClass(),counter);
-        }
-
-        List<DataStorageMetadata> dataStorageMetadataList= new ArrayList<>();
-        ArrayList<Class<? extends FactoryBase<?,R>>> sortedClasses = new ArrayList<>(dataClassesToCount.keySet());
-        sortedClasses.sort(Comparator.comparing(Class::getName));
-        for (Class<? extends FactoryBase<?,R>> clazz : sortedClasses) {
-            if (!Modifier.isAbstract(clazz.getModifiers())){
-                dataStorageMetadataList.add(FactoryMetadataManager.getMetadata(clazz).createDataStorageMetadata(dataClassesToCount.get(clazz)));
+            if (dataClassesToCount.put((Class<FactoryBase<?, R>>) data.getClass(),counter)==null){
+                factoryList.add(data);
             }
         }
 
-        sortedClasses.sort(Comparator.comparing(Class::getName));
+        List<DataStorageMetadata> dataStorageMetadataList= new ArrayList<>();
+        factoryList.sort(Comparator.comparing(factory -> factory.getClass().getName()));
+        for (FactoryBase<?,R> factory : factoryList) {
+            if (!Modifier.isAbstract(factory.getClass().getModifiers())){
+                dataStorageMetadataList.add(factory.internal_createDataStorageMetadata(dataClassesToCount.get(factory.getClass())));
+            }
+        }
         return new DataStorageMetadataDictionary(dataStorageMetadataList,this.getClass().getName());
+    }
+
+    /**
+     * used to identify factory by class
+     * @return class that contains the data, (record or factory child)
+     */
+    protected Class<?> internal_getDataClass() {
+        return this.getClass();
+    }
+
+    protected DataStorageMetadata internal_createDataStorageMetadata(long count) {
+        ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
+        visitAttributesFlat((attributeMetadata, attribute) -> {
+            attributes.add(attribute.createAttributeStorageMetadata(attributeMetadata));
+        });
+        return new DataStorageMetadata(attributes,internal_getDataClass().getName(),count);
     }
 
     //TODO model path with multiple parents

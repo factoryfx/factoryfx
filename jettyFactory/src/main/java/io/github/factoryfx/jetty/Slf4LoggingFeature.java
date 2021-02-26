@@ -16,4 +16,8 @@ public class Slf4LoggingFeature extends LoggingFeature {
     public Slf4LoggingFeature(Slf4LoggingFeatureLogger.JerseyLogLevel jettyLogLevel){
         super(new Slf4LoggingFeatureLogger(jettyLogLevel));
     }
+
+    public Slf4LoggingFeature(Slf4LoggingFeatureLogger slf4LoggingFeatureLogger){
+        super(slf4LoggingFeatureLogger);
+    }
 }

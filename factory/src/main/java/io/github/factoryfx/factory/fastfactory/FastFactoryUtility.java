@@ -15,9 +15,21 @@ import java.util.stream.Collectors;
  * faster but less convenient Factory
  * provides utility methods
 */
-public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> {
+public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> implements FastFactoryUtilityInterface<R, F> {
 
-    public static <L,R extends FactoryBase<?,R>,F extends FactoryBase<L,R>> void setup(Class<F> clazz, FastFactoryUtility<R,F> fastFactoryUtility ){
+    public static <L, R extends FactoryBase<?, R>> L instance(FactoryBase<L, R> childFactory) {
+        L instance = null;
+        if (childFactory != null) {
+            instance = childFactory.internal().instance();
+        }
+        return instance;
+    }
+
+    public static <L, R extends FactoryBase<?, R>, F extends FactoryBase<L, R>> List<L> instances(List<F> childFactories) {
+        return childFactories.stream().map((f) -> f.internal().instance()).collect(Collectors.toList());
+    }
+
+    public static <L,R extends FactoryBase<?,R>,F extends FactoryBase<L,R>> void setup(Class<F> clazz, FastFactoryUtilityInterface<R,F> fastFactoryUtility ){
         FactoryMetadataManager.getMetadata(clazz).setFastFactoryUtility(fastFactoryUtility);
     }
 
@@ -33,6 +45,7 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
         attributeListForMatch2=attributesCreator.get();
     }
 
+    @Override
     public void visitAttributesFlat(F factory, AttributeVisitor attributeVisitor) {
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList1=attributesCreator.get();//recreate for threadsafety
         for (FastFactoryAttributeUtility<R, F,?, ?> attributeUtility : attributeList1) {
@@ -44,20 +57,9 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
 
-    public static <L,R extends FactoryBase<?,R>> L instance(FactoryBase<L,R> childFactory){
-        L instance = null;
-        if (childFactory!=null){
-            instance = childFactory.internal().instance();
-        }
-        return instance;
-    }
-
-    public static <L,R extends FactoryBase<?,R>, F extends FactoryBase<L,R>> List<L> instances(List<F> childFactories){
-        return childFactories.stream().map((f) -> f.internal().instance()).collect(Collectors.toList());
-    }
-
     private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForCopy1;
     private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForCopy2;
+    @Override
     public synchronized void visitAttributesForCopy(F factory, F other, FactoryBase.BiCopyAttributeVisitor<?> consumer) {
         for (int i = 0; i < attributeListForCopy1.size(); i++) {
             FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility1 = attributeListForCopy1.get(i);
@@ -69,13 +71,14 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     @SuppressWarnings("unchecked")
-    private  <V> void visitAttributeForCopy(FastFactoryAttributeUtility<R, F, ?, ?> factory, FastFactoryAttributeUtility<R, F, ?, ?> other, FactoryBase.BiCopyAttributeVisitor<V> consumer) {
-        consumer.accept((FastFactoryAttributeUtility<R, F, V, ?>)factory,(FastFactoryAttributeUtility<R, F, V, ?>)other);
+    private <V> void visitAttributeForCopy(FastFactoryAttributeUtility<R, F, ?, ?> factory, FastFactoryAttributeUtility<R, F, ?, ?> other, FactoryBase.BiCopyAttributeVisitor<V> consumer) {
+        consumer.accept((FastFactoryAttributeUtility<R, F, V, ?>) factory, (FastFactoryAttributeUtility<R, F, V, ?>) other);
     }
 
 
     private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForMatch1;
     private final List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeListForMatch2;
+    @Override
     public synchronized <V> void visitAttributesForMatch(F factory, F other, FactoryBase.AttributeMatchVisitor<V> consumer) {
         for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeListForMatch1) {
             attributeUtility.bindFactory(factory);
@@ -89,10 +92,11 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     @SuppressWarnings("unchecked")
-    private  <V> void visitAttributeForMatch(FastFactoryAttributeUtility<R, F, ?, ?> factory, FastFactoryAttributeUtility<R, F, ?, ?> other, FactoryBase.AttributeMatchVisitor<V> consumer) {
-       ((FastFactoryAttributeUtility<R, F, V, ?>)factory).accept((FastFactoryAttributeUtility<R, F, V, ?>)other,consumer);
+    private <V> void visitAttributeForMatch(FastFactoryAttributeUtility<R, F, ?, ?> factory, FastFactoryAttributeUtility<R, F, ?, ?> other, FactoryBase.AttributeMatchVisitor<V> consumer) {
+        ((FastFactoryAttributeUtility<R, F, V, ?>) factory).accept((FastFactoryAttributeUtility<R, F, V, ?>) other, consumer);
     }
 
+    @Override
     public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?, ?>> consumer) {
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList=attributesCreator.get();//recreate for threadsafety
         for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList) {
@@ -101,6 +105,7 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
         }
     }
 
+    @Override
     public void visitAttributesTripleFlat(F factory, F other1, F other2, FactoryBase.TriAttributeVisitor<?> consumer) {
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList1=attributesCreator.get();//recreate for the delayed merge (merge is executed after the visit)
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList2=attributesCreator.get();
@@ -118,10 +123,11 @@ public class FastFactoryUtility<R extends FactoryBase<?,R>,F extends FactoryBase
     }
 
     @SuppressWarnings("unchecked")
-    private <V> void visitAttributeTripleFlat(FastFactoryAttributeUtility<R, F, ?, ?> factory, FastFactoryAttributeUtility<R, F, ?, ?> other1,FastFactoryAttributeUtility<R, F, ?, ?> other2, FactoryBase.TriAttributeVisitor<V> consumer) {
-        ((FastFactoryAttributeUtility<R, F, V, ?>)factory).accept((FastFactoryAttributeUtility<R, F, V, ?>)other1,(FastFactoryAttributeUtility<R, F, V, ?>)other2,consumer);
+    private <V> void visitAttributeTripleFlat(FastFactoryAttributeUtility<R, F, ?, ?> factory, FastFactoryAttributeUtility<R, F, ?, ?> other1, FastFactoryAttributeUtility<R, F, ?, ?> other2, FactoryBase.TriAttributeVisitor<V> consumer) {
+        ((FastFactoryAttributeUtility<R, F, V, ?>) factory).accept((FastFactoryAttributeUtility<R, F, V, ?>) other1, (FastFactoryAttributeUtility<R, F, V, ?>) other2, consumer);
     }
 
+    @Override
     public void visitAttributesMetadataFlat(AttributeMetadataVisitor consumer) {
         List<? extends FastFactoryAttributeUtility<R,F,?,?>> attributeList=attributesCreator.get();
         for (FastFactoryAttributeUtility<R, F, ?, ?> attributeUtility : attributeList) {

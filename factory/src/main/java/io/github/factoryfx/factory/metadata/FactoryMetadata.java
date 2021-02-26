@@ -6,6 +6,7 @@ import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.fastfactory.FastFactoryUtilityInterface;
 import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 
@@ -57,8 +58,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         }
     }
 
-    private FastFactoryUtility<R,F> fastFactoryUtility;
-    public void setFastFactoryUtility(FastFactoryUtility<R,F> fastFactoryUtility) {
+    private FastFactoryUtilityInterface<R,F> fastFactoryUtility;
+    public void setFastFactoryUtility(FastFactoryUtilityInterface<R,F> fastFactoryUtility) {
         this.fastFactoryUtility=fastFactoryUtility;
     }
 
@@ -319,15 +320,6 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 
     public F newInstance(){
         return newCopyInstance(null);
-    }
-
-    public DataStorageMetadata createDataStorageMetadata(long count) {
-        F data = newInstance();
-        ArrayList<AttributeStorageMetadata> attributes = new ArrayList<>();
-        visitAttributesFlat(data, (attributeMetadata, attribute) -> {
-            attributes.add(attribute.createAttributeStorageMetadata(attributeMetadata));
-        });
-        return new DataStorageMetadata(attributes,clazz.getName(),count);
     }
 
     public void visitChildFactoriesAndViewsFlat(F factory, Consumer<FactoryBase<?,?>> consumer, boolean includeViews) {
