@@ -6,6 +6,8 @@ import io.github.factoryfx.factory.attribute.CopySemantic;
 import io.github.factoryfx.factory.attribute.DefaultPossibleValueProvider;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.builder.DefaultCreator;
+import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
@@ -20,6 +22,8 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -895,6 +899,40 @@ public class FactoryBaseTest {
 
         ExampleFactoryA copy = factoryA.internal().finalise().utility().semanticCopy();
         Assertions.assertEquals(copy.referenceAttribute.get(), copy.referenceListAttribute.get(0));
+    }
+
+    @Test
+    public void test_convert_nonBuilder(){
+
+        FactoryTemplateId<ExampleFactoryA> templateId = new FactoryTemplateId<>(ExampleFactoryA.class,"root");
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(templateId, ctx -> new ExampleFactoryA());
+        builder.addSingleton(ExampleFactoryB.class, ctx -> {
+            ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+            exampleFactoryB.referenceAttributeC.set(ctx.get(ExampleFactoryC.class));
+            return exampleFactoryB;
+        });
+        builder.addSingleton(ExampleFactoryC.class, ctx -> {
+            return new ExampleFactoryC();
+        });
+
+        ExampleFactoryC factoryC = new ExampleFactoryC();
+        ExampleFactoryB factoryB = new ExampleFactoryB();
+        ExampleFactoryA factoryA = new ExampleFactoryA();
+        factoryB.referenceAttributeC.set(factoryC);
+        factoryA.referenceAttribute.set(factoryB);
+        factoryA.internal().finalise();
+
+
+        factoryA.internal().setFactoryTreeBuilder(builder);
+        for (FactoryBase<?, ExampleFactoryA> factory : factoryA.internal().collectChildrenDeep()) {
+            if (builder.getScope(new FactoryTemplateId<FactoryBase<?, ExampleFactoryA>>(null,factory.getClass()))!=null){
+                factory.internal().setTreeBuilderClassUsed(true);
+            }
+        }
+
+        ExampleFactoryB copyB = factoryA.referenceAttribute.get().utility().semanticCopy();
+        factoryA.referenceListAttribute.add(copyB);
+        Assertions.assertEquals(factoryA.referenceAttribute.get().referenceAttributeC.get(), factoryA.referenceListAttribute.get(0).referenceAttributeC.get());
     }
 
 }
