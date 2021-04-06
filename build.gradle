@@ -290,10 +290,6 @@ project(':microserviceRestIntegrationTest') {
         }
         implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '1.2.1'
     }
-
-    spotbugs {
-        enabled = false
-    }
 }
 
 
