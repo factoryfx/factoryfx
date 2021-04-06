@@ -9,8 +9,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.github.spotbugs:spotbugs-gradle-plugin:3.0.0"
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
+        classpath "com.github.spotbugs:spotbugs-gradle-plugin:4.7.0"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
     }
 }
 ext.platform = "win"
