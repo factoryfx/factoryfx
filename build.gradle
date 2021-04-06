@@ -53,15 +53,9 @@ subprojects {
 
 
     if (!'benchmark'.equals(project.name)){//jmh does not work with module-info
-        compileJava {
-            inputs.property("moduleName", "io.github.factoryfx.$project.name")
-            doFirst {
-                options.compilerArgs = [
-                        '--module-path', classpath.asPath,
-                ]
-                classpath = files()
-            }
-        }  
+        java {
+            modularity.inferModulePath = true
+        }
     }
 
 
@@ -72,8 +66,6 @@ subprojects {
     javadoc {
         failOnError = false
         doFirst {
-            exclude "**/module-info.java"
-            options.addStringOption('-module-path', classpath.asPath)
             options.encoding = StandardCharsets.UTF_8
         }
     }
