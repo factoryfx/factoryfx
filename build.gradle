@@ -220,9 +220,12 @@ subprojects {
 
     spotbugs {
         toolVersion = '4.2.2'
-        sourceSets = [sourceSets.main]
         ignoreFailures = true
         excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
+    }
+
+    spotbugsTest {
+        enabled = false
     }
 
 }
