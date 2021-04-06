@@ -1,14 +1,12 @@
-package io.github.factoryfx.record;
+package io.github.factoryfx.factory.record;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.util.LanguageText;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.RecordComponent;

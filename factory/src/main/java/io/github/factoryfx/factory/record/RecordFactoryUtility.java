@@ -1,10 +1,12 @@
-package io.github.factoryfx.record;
+package io.github.factoryfx.factory.record;
 
 import io.github.factoryfx.factory.AttributeMetadataVisitor;
 import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.fastfactory.FastFactoryUtilityInterface;
+import io.github.factoryfx.factory.record.Dependency;
+import io.github.factoryfx.factory.record.RecordFactory;
 
 import java.util.List;
 import java.util.function.Consumer;

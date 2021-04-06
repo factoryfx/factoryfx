@@ -1,4 +1,4 @@
-package io.github.factoryfx.record;
+package io.github.factoryfx.factory.record;
 
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;

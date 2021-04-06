@@ -1,9 +1,7 @@
-package io.github.factoryfx.record;
+package io.github.factoryfx.factory.record;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DependenciesTest {
     record TestExample(String stringAttribute) implements Dependencies<RecordExampleA.Dep>{

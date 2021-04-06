@@ -1,4 +1,4 @@
-package io.github.factoryfx.record;
+package io.github.factoryfx.factory.record;
 
 public class RecordExampleB {
 

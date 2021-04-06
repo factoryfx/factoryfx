@@ -1,12 +1,10 @@
-package io.github.factoryfx.record;
+package io.github.factoryfx.factory.record;
 
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class RecordDeserializerTest {
 

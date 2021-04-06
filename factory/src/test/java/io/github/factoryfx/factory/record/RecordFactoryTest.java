@@ -1,4 +1,4 @@
-package io.github.factoryfx.record;
+package io.github.factoryfx.factory.record;
 
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
