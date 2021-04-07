@@ -11,13 +11,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.BiConsumer;
 
+import javax.servlet.*;
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -461,6 +460,55 @@ public class JettyServerTest {
     }
 
 
+    @Test
+    public void test_servletFilter() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withServletFilter(ctx.get(ServletFilterFactory.class),"/*",new FactoryTemplateName("filter1"));
+        });
+        builder.addSingleton(ServletFilterFactory.class, ctx -> {
+            return new ServletFilterFactory();
+        });
 
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        try{
+            microservice.start();
+            ServletFilter.executed=0;
+
+            ClientConfig cc = new ClientConfig();
+            Client client = ClientBuilder.newBuilder().withConfig(cc).build();
+            Response response = client.target("http://localhost:8087/anything").request().buildGet().invoke();
+
+            Assertions.assertEquals(1, ServletFilter.executed);
+        } finally {
+            microservice.stop();
+        }
+    }
+
+    public static class ServletFilter implements Filter{
+        static int executed=0;
+
+        @Override
+        public void init(FilterConfig filterConfig) {
+
+        }
+
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
+            executed++;
+        }
+
+        @Override
+        public void destroy() {
+
+        }
+    }
+
+    public static class ServletFilterFactory extends SimpleFactoryBase<Filter, JettyServerRootFactory>{
+
+        @Override
+        protected Filter createImpl() {
+            return new ServletFilter();
+        }
+    }
 
 }

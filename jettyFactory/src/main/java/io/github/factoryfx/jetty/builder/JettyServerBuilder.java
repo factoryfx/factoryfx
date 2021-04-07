@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import java.util.zip.Deflater;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.ws.rs.ext.ExceptionMapper;
 
@@ -40,6 +41,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
 
 
     private final List<ServletBuilder<R>> additionalServletBuilders = new ArrayList<>();
+    private final List<ServletFilterBuilder<R>> servletFilterBuilders = new ArrayList<>();
     private FactoryBase<Handler, R> firstHandler;
     private int threadPoolSize=200;
     private boolean enabledRequestLog=true;
@@ -126,6 +128,30 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      */
     public JettyServerBuilder<R, JR> withServlet(FactoryTemplateId<ServletAndPathFactory<R>> templateId, String pathSpec, FactoryBase<? extends Servlet, R> servlet){
         additionalServletBuilders.add(new ServletBuilder<>(templateId,pathSpec,servlet));
+        return this;
+    }
+
+    /**
+     * adds a servlet filter
+     * @param filter filter
+     * @param pathSpec pathSpec
+     * @param name builder unique name, used in the builder to associate match the templates
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withServletFilter(FactoryBase<? extends Filter, R> filter, String pathSpec, FactoryTemplateName name){
+        servletFilterBuilders.add(new ServletFilterBuilder<>(new FactoryTemplateId<>(null,name.name),pathSpec,filter));
+        return this;
+    }
+
+    /**
+     * adds a servlet filter
+     * @param templateId templateId for the filter
+     * @param pathSpec pathSpec
+     * @param filter filter
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withServletFilter(FactoryTemplateId<ServletFilterAndPathFactory<R>> templateId, String pathSpec, FactoryBase<? extends Filter, R> filter){
+        servletFilterBuilders.add(new ServletFilterBuilder<>(templateId,pathSpec,filter));
         return this;
     }
 
@@ -245,6 +271,9 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         addFactory(builder,servletContextHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             ServletContextHandlerFactory<R> servletContextHandlerFactory = new ServletContextHandlerFactory<>();
             servletContextHandlerFactory.updatableRootServlet.set(ctx.get(updateableServletFactoryTemplateId));
+            for (ServletFilterBuilder<R> servletFilterBuilder : servletFilterBuilders) {
+                servletContextHandlerFactory.servletFilters.add(ctx.get(servletFilterBuilder.getTemplateId()));
+            }
             return servletContextHandlerFactory;
         });
 
@@ -269,6 +298,9 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             servletBuilder.build(builder);
         }
 
+        for (ServletFilterBuilder<R> filterBuilder : servletFilterBuilders) {
+            filterBuilder.build(builder);
+        }
     }
 
     private void addResourceBuilder(ResourceBuilder<R> resourceBuilder){
