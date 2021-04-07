@@ -320,8 +320,8 @@ project(':factory') {
 project(':postgresqlStorage') {
 
     dependencies {
-        implementation project(":factory")
-        implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
+        api project(":factory")
+        api group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
         testImplementation 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         testImplementation project(":testfactories")
     }
@@ -465,7 +465,7 @@ project(':docu') {
         implementation project(':initializr')
         implementation project(":domFactoryEditing")
         
-        implementation group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '3.2.4'
+        implementation group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '4.1.18'
         implementation 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha4'){
             exclude group: 'javax.activation'
