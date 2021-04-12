@@ -5,4 +5,6 @@ Most other examples use InMemoryFactoryStorage which does not store data changes
 It is usefully for testing or small projects but usually you want to safely store changes that survive an application restart.
 This example uses the PostgresFactoryStorage.
 
+(requires the postgresqlStorage [**dependency**](https://mvnrepository.com/artifact/io.github.factoryfx/postgresqlStorage))
+
 [**code**](https://github.com/factoryfx/factoryfx/tree/master/docu/src/main/java/io/github/factoryfx/docu/persistentstorage)
