@@ -1,6 +1,7 @@
 package io.github.factoryfx.server;
 
 import com.google.common.base.Throwables;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
@@ -311,6 +312,50 @@ public class MicroserviceTest {
 
         Assertions.assertEquals(1,exampleFactoryAFactoryUpdateLog.mergeDiffInfo.conflictInfos.size());
         Assertions.assertEquals("first update",microservice.prepareNewFactory().root.referenceListAttribute.get(0).stringAttribute.get());
+
+    }
+
+
+
+    public static class ExampleFactoryUpdateA extends SimpleFactoryBase<ExampleUpdateA, ExampleFactoryUpdateA> {
+        public final StringAttribute test= new StringAttribute().nullable();
+
+        @Override
+        protected ExampleUpdateA createImpl() {
+            return new ExampleUpdateA(test.get(),this.internal().copy(),this.utility().getMicroservice());
+        }
+    }
+
+    public static class ExampleUpdateA  {
+        private final ExampleFactoryUpdateA copyForUpdate;
+        private final String test;
+        private final Microservice<?,ExampleFactoryUpdateA> microservice;
+        public ExampleUpdateA(String test, ExampleFactoryUpdateA copy, Microservice<?,ExampleFactoryUpdateA> microservice ) {
+            copyForUpdate=copy;
+            this.test=test;
+            this.microservice=microservice;
+        }
+
+        public void update(){
+            copyForUpdate.test.set("123");
+            DataUpdate<ExampleFactoryUpdateA> update = microservice.prepareNewFactory();
+            update.root=copyForUpdate;
+            microservice.updateCurrentFactory(update);
+        }
+
+        public String print() {
+            return test;
+        }
+    }
+
+    @Test
+    public void test_selfUpdate(){
+        FactoryTreeBuilder<ExampleUpdateA,ExampleFactoryUpdateA> builder = new FactoryTreeBuilder<>(ExampleFactoryUpdateA.class, ctx -> new ExampleFactoryUpdateA());
+        Microservice<ExampleUpdateA,ExampleFactoryUpdateA> microservice = builder.microservice().build();
+        ExampleUpdateA exampleUpdateA = microservice.start();
+        Assertions.assertNotEquals("123",microservice.getRootLiveObject().print());
+        microservice.getRootLiveObject().update();
+        Assertions.assertEquals("123",microservice.getRootLiveObject().print());
 
     }
 }

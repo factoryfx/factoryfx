@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 
 
 /**
- * Utility factory for a liveobject that has no attributes .
+ * Utility factory for a liveobject that has no attributes(dependencies).
  * e.g. setting a ExceptionMapper,ObjectMapper class in jersey
  * */
 public class AttributelessFactory<L,R extends FactoryBase<?,R>> extends SimpleFactoryBase<L,R> {

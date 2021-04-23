@@ -14,7 +14,7 @@ import java.util.function.Function;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DataUpdate<R extends FactoryBase<?,?>> {
     @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
-    public final R root;
+    public R root;
     public String user;
     public String comment;
 
