@@ -3,6 +3,7 @@ package io.github.factoryfx.soap;
 import org.w3c.dom.Element;
 
 import javax.annotation.Resource;
+import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -15,6 +16,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -261,7 +263,7 @@ public class WebServiceRequestDispatcher {
         }
 
         for (Method m : webService.getClass().getDeclaredMethods()) {
-            if (m.getParameterCount() >= 1 && m.getReturnType() != null) {
+            if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() >= 1 && m.getReturnType() != null) {
                 ParameterSupplyer[] suppliers = new ParameterSupplyer[m.getParameterCount()];
                 boolean isWebService = true;
                 Class<?> rootElementClass = null;
@@ -270,7 +272,7 @@ public class WebServiceRequestDispatcher {
                         suppliers[i] = HTTP_REQUEST_SUPPLIER;
                     } else if (m.getParameterTypes()[i].isAssignableFrom(HttpServletResponse.class)) {
                         suppliers[i] = HTTP_RESPONSE_SUPPLIER;
-                    } else if (m.getParameterTypes()[i].getAnnotation(XmlRootElement.class) != null) {
+                    } else if (true || m.getParameterTypes()[i].getAnnotation(XmlRootElement.class) != null || Arrays.stream(m.getParameterAnnotations()[i]).anyMatch(a -> a instanceof WebParam)) {
                         if (rootElementClass != null)
                             isWebService = false;
                         suppliers[i] = REQUEST_SUPPLIER;
