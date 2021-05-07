@@ -3,7 +3,9 @@ package io.github.factoryfx.soap;
 import org.w3c.dom.Element;
 
 import javax.annotation.Resource;
+import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.jws.WebService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 public class WebServiceRequestDispatcher {
 
     private final Object webService;
-    private final HashMap<Class<?>,Invoker> dispatchMap = new HashMap<>();
+    private final HashMap<Class<?>, Invoker> dispatchMap = new HashMap<>();
 
     static final class RequestContext {
         final HttpServletRequest request;
@@ -37,6 +39,7 @@ public class WebServiceRequestDispatcher {
             this.soapMessage = soapMessage;
         }
     }
+
     private final ThreadLocal<RequestContext> msgContext = new ThreadLocal<>();
     private final WebServiceContext webServiceContext = new WebServiceContext() {
         @Override
@@ -105,8 +108,8 @@ public class WebServiceRequestDispatcher {
                 @Override
                 public boolean containsValue(Object value) {
                     if (value == ctx().request ||
-                        value == ctx().response ||
-                        value == ctx().soapMessage)
+                            value == ctx().response ||
+                            value == ctx().soapMessage)
                         return true;
                     return false;
                 }
@@ -116,12 +119,18 @@ public class WebServiceRequestDispatcher {
                     if (key == null)
                         return false;
                     switch (key.toString()) {
-                        case HTTP_REQUEST_HEADERS: return buildHeaders(ctx().request);
-                        case HTTP_REQUEST_METHOD: return ctx().request.getMethod();
-                        case HTTP_RESPONSE_CODE: return ctx().response.getStatus();
-                        case HTTP_RESPONSE_HEADERS: return buildHeaders(ctx().response);
-                        case SERVLET_REQUEST: return ctx().request;
-                        case SERVLET_RESPONSE: return ctx().response;
+                        case HTTP_REQUEST_HEADERS:
+                            return buildHeaders(ctx().request);
+                        case HTTP_REQUEST_METHOD:
+                            return ctx().request.getMethod();
+                        case HTTP_RESPONSE_CODE:
+                            return ctx().response.getStatus();
+                        case HTTP_RESPONSE_HEADERS:
+                            return buildHeaders(ctx().response);
+                        case SERVLET_REQUEST:
+                            return ctx().request;
+                        case SERVLET_RESPONSE:
+                            return ctx().response;
                     }
                     return null;
                 }
@@ -148,23 +157,23 @@ public class WebServiceRequestDispatcher {
 
                 @Override
                 public Set<String> keySet() {
-                    return new HashSet<>(Arrays.asList(HTTP_REQUEST_HEADERS,HTTP_REQUEST_METHOD,HTTP_RESPONSE_CODE,HTTP_RESPONSE_HEADERS,SERVLET_REQUEST,SERVLET_RESPONSE));
+                    return new HashSet<>(Arrays.asList(HTTP_REQUEST_HEADERS, HTTP_REQUEST_METHOD, HTTP_RESPONSE_CODE, HTTP_RESPONSE_HEADERS, SERVLET_REQUEST, SERVLET_RESPONSE));
                 }
 
                 @Override
                 public Collection<Object> values() {
-                    return Arrays.asList(ctx().soapMessage,buildHeaders(ctx().request),ctx().request.getMethod(),ctx().response.getStatus(),buildHeaders(ctx().response),ctx().request,ctx().response);
+                    return Arrays.asList(ctx().soapMessage, buildHeaders(ctx().request), ctx().request.getMethod(), ctx().response.getStatus(), buildHeaders(ctx().response), ctx().request, ctx().response);
                 }
 
                 @Override
                 public Set<Entry<String, Object>> entrySet() {
-                    HashMap<String,Object> entries = new HashMap<>();
-                    entries.put(HTTP_REQUEST_HEADERS,ctx().soapMessage);
-                    entries.put(HTTP_REQUEST_METHOD,ctx().soapMessage);
-                    entries.put(HTTP_RESPONSE_CODE,ctx().soapMessage);
-                    entries.put(HTTP_RESPONSE_HEADERS,ctx().soapMessage);
-                    entries.put(SERVLET_REQUEST,ctx().soapMessage);
-                    entries.put(SERVLET_RESPONSE,ctx().soapMessage);
+                    HashMap<String, Object> entries = new HashMap<>();
+                    entries.put(HTTP_REQUEST_HEADERS, ctx().soapMessage);
+                    entries.put(HTTP_REQUEST_METHOD, ctx().soapMessage);
+                    entries.put(HTTP_RESPONSE_CODE, ctx().soapMessage);
+                    entries.put(HTTP_RESPONSE_HEADERS, ctx().soapMessage);
+                    entries.put(SERVLET_REQUEST, ctx().soapMessage);
+                    entries.put(SERVLET_RESPONSE, ctx().soapMessage);
                     return entries.entrySet();
                 }
             };
@@ -191,20 +200,20 @@ public class WebServiceRequestDispatcher {
         }
     };
 
-    private Map<String,List<String>> buildHeaders(HttpServletRequest request) {
-        HashMap<String,List<String>> map = new HashMap<>();
+    private Map<String, List<String>> buildHeaders(HttpServletRequest request) {
+        HashMap<String, List<String>> map = new HashMap<>();
         Enumeration<String> en = request.getHeaderNames();
         while (en.hasMoreElements()) {
             String name = en.nextElement();
-            map.put(name,enum2list(request.getHeaders(name)));
+            map.put(name, enum2list(request.getHeaders(name)));
         }
         return map;
     }
 
-    private Map<String,List<String>> buildHeaders(HttpServletResponse response) {
-        HashMap<String,List<String>> map = new HashMap<>();
+    private Map<String, List<String>> buildHeaders(HttpServletResponse response) {
+        HashMap<String, List<String>> map = new HashMap<>();
         for (String name : response.getHeaderNames()) {
-            map.put(name,response.getHeaders(name).stream().collect(Collectors.toList()));
+            map.put(name, response.getHeaders(name).stream().collect(Collectors.toList()));
         }
         return map;
     }
@@ -241,26 +250,28 @@ public class WebServiceRequestDispatcher {
         public Object invoke(Object webService, Object request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws InvocationTargetException, IllegalAccessException {
             Object[] args = new Object[suppliers.length];
             for (int i = 0; i < args.length; ++i) {
-                args[i] = suppliers[i].supply(request,httpServletRequest,httpServletResponse);
+                args[i] = suppliers[i].supply(request, httpServletRequest, httpServletResponse);
             }
-            return method.invoke(webService,args);
+            return method.invoke(webService, args);
         }
     }
 
-    public WebServiceRequestDispatcher(Object webService){
-        this.webService=webService;
+    public WebServiceRequestDispatcher(Object webService) {
+        this.webService = webService;
         for (Field f : webService.getClass().getDeclaredFields()) {
             if (f.getAnnotation(Resource.class) != null) {
                 if (f.getType().isAssignableFrom(WebServiceContext.class)) {
                     f.setAccessible(true);
                     try {
-                        f.set(webService,webServiceContext);
+                        f.set(webService, webServiceContext);
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
                 }
             }
         }
+
+        Set<Class<?>> webParamAnnotatedClassSet = collectWebParamAnnotatedParams(webService.getClass());
 
         for (Method m : webService.getClass().getDeclaredMethods()) {
             if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() >= 1 && m.getReturnType() != null) {
@@ -272,7 +283,7 @@ public class WebServiceRequestDispatcher {
                         suppliers[i] = HTTP_REQUEST_SUPPLIER;
                     } else if (m.getParameterTypes()[i].isAssignableFrom(HttpServletResponse.class)) {
                         suppliers[i] = HTTP_RESPONSE_SUPPLIER;
-                    } else if (true || m.getParameterTypes()[i].getAnnotation(XmlRootElement.class) != null || Arrays.stream(m.getParameterAnnotations()[i]).anyMatch(a -> a instanceof WebParam)) {
+                    } else if (m.getParameterTypes()[i].getAnnotation(XmlRootElement.class) != null || webParamAnnotatedClassSet.contains(m.getParameterTypes()[i])) {
                         if (rootElementClass != null)
                             isWebService = false;
                         suppliers[i] = REQUEST_SUPPLIER;
@@ -283,9 +294,38 @@ public class WebServiceRequestDispatcher {
                 }
 
                 if (isWebService)
-                    dispatchMap.put(rootElementClass, new Invoker(m,suppliers));
+                    dispatchMap.put(rootElementClass, new Invoker(m, suppliers));
             }
         }
+    }
+
+    public static void getWebParamAnnotatedSet(Class<?> clazz, Set<Class<?>> classSet) {
+
+        if (clazz.getAnnotation(WebService.class) != null) {
+            for (Method m : clazz.getDeclaredMethods()) {
+                if (Modifier.isPublic(m.getModifiers())) {
+                    for (int i = 0; i < m.getParameterCount(); i++) {
+                        if (Arrays.stream(m.getParameterAnnotations()[i]).anyMatch(a -> a instanceof WebParam)) {
+                            classSet.add(m.getParameterTypes()[i]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static Set<Class<?>> collectWebParamAnnotatedParams(Class<?> clazz) {
+        Set<Class<?>> collectedClasses = new HashSet<>();
+
+        while (clazz != null) {
+            getWebParamAnnotatedSet(clazz, collectedClasses);
+            for (var i : clazz.getInterfaces()) {
+                getWebParamAnnotatedSet(i, collectedClasses);
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return collectedClasses;
+
     }
 
     public WebServiceCallResult execute(SOAPMessage message, Object request, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -293,15 +333,15 @@ public class WebServiceRequestDispatcher {
         try {
             msgContext.set(new RequestContext(httpServletRequest, httpServletResponse, message));
             return WebServiceCallResult.fromResult(method.invoke(webService, request, httpServletRequest, httpServletResponse));
-        } catch (IllegalAccessException  e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException t) {
             Throwable ex = t.getTargetException();
             if (ex instanceof Error)
-                throw (Error)ex;
+                throw (Error) ex;
             if (ex instanceof RuntimeException)
-                throw (RuntimeException)ex;
-            return WebServiceCallResult.fromFault((Exception)ex);
+                throw (RuntimeException) ex;
+            return WebServiceCallResult.fromFault((Exception) ex);
         } finally {
             msgContext.set(null);
         }

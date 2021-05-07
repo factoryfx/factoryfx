@@ -17,4 +17,12 @@ public class HelloWorldNoXmlRootElementImpl implements HelloWorldNoXmlRootElemen
     public SoapDummyResponseNoRoot2 methodWithRequestResponse(SoapDummyRequestNoRoot2 parameters, HttpServletRequest request, HttpServletResponse resp) {
         return null;
     }
+
+    public OtherClass2 otherMethod(OtherClass1 param) {
+        return new OtherClass2();
+    }
+
+    public OtherClass2 otherMethodRequestResponse(OtherClass1 param, HttpServletRequest request, HttpServletResponse resp) {
+        return new OtherClass2();
+    }
 }
