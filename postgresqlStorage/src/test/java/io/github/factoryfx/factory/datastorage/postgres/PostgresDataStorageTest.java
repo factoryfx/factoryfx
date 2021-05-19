@@ -11,6 +11,7 @@ import java.util.*;
 import javax.sql.DataSource;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -18,6 +19,8 @@ import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.ScheduledUpdate;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
+import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -272,6 +275,26 @@ public class PostgresDataStorageTest {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",postgresFactoryStorage.getCurrentData().root.stringAttribute.get());
+    }
+
+    @Test
+    @Disabled
+    public void test_peformance()  {
+        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(),ObjectMapperBuilder.build());
+        String id=postgresFactoryStorage.getCurrentData().id;
+
+        ExampleFactoryA root = new ExampleFactoryA();
+        for (int i = 0; i < 500000; i++) {
+            ExampleFactoryB value = new ExampleFactoryB();
+            value.stringAttribute.set("1322313sfdsfd2"+i);
+            root.referenceListAttribute.add(value);
+        }
+
+        root.internal().finalise();
+        DataUpdate<ExampleFactoryA> update = new DataUpdate<>(root,"user","comment","13213");;
+        long start = System.currentTimeMillis();
+        postgresFactoryStorage.updateCurrentData(update,null);
+        System.out.println(System.currentTimeMillis()-start);
     }
 
     //TODO

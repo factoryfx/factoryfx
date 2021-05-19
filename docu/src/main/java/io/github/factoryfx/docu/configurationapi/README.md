@@ -19,3 +19,12 @@ Limited customizability
 FactoryFX provides a typescript generator that can be used as the basis for a custom Web GUI.
 ##### Advantage
 Flexibility in terms of framework and layout choice.
+
+
+
+## Factoryfx support 
+| Configuration  | Server | Transport  | Client |
+| ------------- | ------------- | ------------- | ------------- |
+| Webapp/Rich client  | X  | X  |  X  |
+| Typescript generator  |  X  | X  |  -  |
+| Custom Resource  |  X  | -  |  -  |

@@ -1,7 +1,9 @@
 package io.github.factoryfx.jetty.builder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.ws.rs.ext.ExceptionMapper;
@@ -29,6 +31,7 @@ import io.github.factoryfx.jetty.Slf4LoggingFeature;
 public class ResourceBuilder<R extends FactoryBase<?,R>> {
 
     private String pathSpec="/*";
+    private Map<String,Boolean> jerseyProperties=new HashMap<>();
 
     FactoryBase<ObjectMapper,R> objectMapper= AttributelessFactory.create(DefaultObjectMapper.class);
     FactoryBase<LoggingFeature,R> loggingFeature = AttributelessFactory.create(Slf4LoggingFeature.class);
@@ -59,6 +62,16 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
      */
     public ResourceBuilder<R> withPathSpec(String pathSpec){
         this.pathSpec=pathSpec;
+        return this;
+    }
+
+    /**
+     * jersey properties {@link org.glassfish.jersey.server.ResourceConfig#addProperties}
+     * @param jerseyProperties properties e.g (ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true)
+     * @return builder
+     */
+    public ResourceBuilder<R> withJerseyProperties(Map<String,Boolean> jerseyProperties){
+        this.jerseyProperties=jerseyProperties;
         return this;
     }
 
@@ -139,9 +152,9 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
             jerseyServlet.exceptionMapper.set(ctx.get(exceptionMapperTemplateId));
             jerseyServlet.objectMapper.set(ctx.get(objectMapperTemplateId));
             jerseyServlet.restLogging.set(ctx.get(loggingFeatureTemplateId));
+            jerseyServlet.jerseyProperties.set(jerseyProperties);
 
             jerseyServlet.resources.addAll(resources);
-
             jerseyServlet.additionalJaxrsComponents.addAll(jaxrsComponents);
             return jerseyServlet;
         });

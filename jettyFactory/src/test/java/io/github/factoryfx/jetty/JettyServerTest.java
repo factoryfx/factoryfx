@@ -11,6 +11,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -21,9 +23,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
@@ -44,6 +44,8 @@ import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.internal.util.PropertiesHelper;
+import org.glassfish.jersey.server.ServerProperties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -510,5 +512,58 @@ public class JettyServerTest {
             return new ServletFilter();
         }
     }
+
+    @Test
+    public void test_jersey_property(){
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8015).withJerseyProperties(Map.of(ServerProperties.BV_SEND_ERROR_IN_RESPONSE,true)).withJaxrsComponent(ctx.get(TestFeatureFactory.class));
+        });
+        builder.addSingleton(TestFeatureFactory.class);
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        try{
+            microservice.start();
+            Assertions.assertEquals(true,TestFeature.propertyValue);
+        } finally {
+            microservice.stop();
+        }
+    }
+
+    @Test
+    public void test_jersey_property_false(){
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8015).withJerseyProperties(Map.of(ServerProperties.BV_SEND_ERROR_IN_RESPONSE,false)).withJaxrsComponent(ctx.get(TestFeatureFactory.class));
+        });
+        builder.addSingleton(TestFeatureFactory.class);
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        try{
+            microservice.start();
+            Assertions.assertEquals(false,TestFeature.propertyValue);
+        } finally {
+            microservice.stop();
+        }
+    }
+
+    public static class TestFeatureFactory extends SimpleFactoryBase<Feature, JettyServerRootFactory>{
+        @Override
+        protected Feature createImpl() {
+            return new TestFeature();
+        }
+    }
+
+    public static class TestFeature  implements Feature {
+        static Boolean propertyValue;
+
+        @Override
+        public boolean configure(final FeatureContext context) {
+            final Configuration config = context.getConfiguration();
+            propertyValue = (Boolean) config.getProperty(ServerProperties.BV_SEND_ERROR_IN_RESPONSE) ;
+            return true;
+        }
+    }
+
+
+
+
+
 
 }

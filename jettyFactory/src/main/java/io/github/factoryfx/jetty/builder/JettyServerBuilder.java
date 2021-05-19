@@ -2,6 +2,7 @@ package io.github.factoryfx.jetty.builder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -449,6 +450,16 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      */
     public JettyServerBuilder<R, JR> withExceptionMapper(FactoryBase<ExceptionMapper<Throwable>,R> exceptionMapper) {
         getDefaultJersey().withExceptionMapper(exceptionMapper);
+        return this;
+    }
+
+    /**
+     * @see ResourceBuilder#withJerseyProperties(Map)
+     * @param jerseyProperties jerseyProperties
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withJerseyProperties(Map<String,Boolean> jerseyProperties) {
+        getDefaultJersey().withJerseyProperties(jerseyProperties);
         return this;
     }
 
