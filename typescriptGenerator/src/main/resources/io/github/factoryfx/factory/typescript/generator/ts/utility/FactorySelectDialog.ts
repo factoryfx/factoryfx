@@ -5,6 +5,8 @@ import {StringValue} from "../base/StringValue";
 import {Data} from "../Data";
 import {BootstrapUtility} from "../BootstrapUtility";
 
+declare var dialogPolyfill: any;
+
 export class FactorySelectDialog{
 
     constructor(private parent :HTMLElement, private possibleValues: Data[], private selectCallback: (selected: Data)=>any){
@@ -14,6 +16,7 @@ export class FactorySelectDialog{
 
     public show(){
         let dialog: HTMLDialogElement = document.createElement("dialog");
+        dialogPolyfill.registerDialog(dialog);
         this.parent.appendChild(dialog);
 
         let list: HTMLUListElement = document.createElement("ul");

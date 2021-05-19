@@ -7,6 +7,7 @@ export class FactorySelectDialog {
     }
     show() {
         let dialog = document.createElement("dialog");
+        dialogPolyfill.registerDialog(dialog);
         this.parent.appendChild(dialog);
         let list = document.createElement("ul");
         list.className = "list-group";

@@ -46,6 +46,7 @@ export class FactoryAttributeEditor extends AttributeEditorWidget {
                 else {
                     this.attributeAccessor.setValue(possibleValues[0]);
                 }
+                this.bindValue();
             });
         };
         newButton.className = "btn btn-outline-secondary";
