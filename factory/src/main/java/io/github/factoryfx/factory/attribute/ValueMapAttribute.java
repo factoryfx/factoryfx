@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 //TODO remove ObservableMap same as list
-public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>> extends ImmutableValueAttribute<Map<K,V>,ValueMapAttribute<K,V,A>> implements Map<K,V> {
+public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>> extends ImmutableValueAttribute<Map<K,V>,A> implements Map<K,V> {
     private final Class<K> keyType;
     private final Class<V> valueType;
 
