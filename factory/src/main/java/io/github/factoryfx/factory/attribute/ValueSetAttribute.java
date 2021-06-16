@@ -31,6 +31,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
         this.value.addAll(value);
     }
 
+
     //FIXME useful but breaks jackson, try to find workaround
 //    @JsonIgnore
 //    @Override
@@ -40,6 +41,24 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 
     private void afterModify(){
         this.updateListeners(ValueSetAttribute.this);
+        if (this.root!=null){
+            root.internal().addModified(this.parent);
+        }
+    }
+
+    private void beforeModify(){
+        handleOriginalValue(this.value);
+    }
+
+    @Override
+    protected void setOriginalValue(Set<T> old) {
+        this.originalValue=new HashSet<>(old);
+    }
+
+    @Override
+    protected void resetValue() {
+        this.value.clear();
+        this.value.addAll(originalValue);
     }
 
     @Override
@@ -74,6 +93,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 
     @Override
     public boolean add(T t) {
+        beforeModify();
         boolean add = this.value.add(t);
         afterModify();
         return add;
@@ -81,6 +101,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 
     @Override
     public boolean remove(Object o) {
+        beforeModify();
         boolean remove = this.value.remove(o);
         afterModify();
         return remove;
@@ -93,6 +114,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
+        beforeModify();
         boolean b = value.addAll(c);
         afterModify();
         return b;
@@ -105,6 +127,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 
     @Override
     public boolean removeAll(Collection<?> c) {
+        beforeModify();
         boolean b = this.value.removeAll(c);
         afterModify();
         return b;
@@ -112,6 +135,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
 
     @Override
     public void clear() {
+        beforeModify();
         this.value.clear();
         afterModify();
     }

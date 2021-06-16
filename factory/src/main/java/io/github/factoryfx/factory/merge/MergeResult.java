@@ -48,7 +48,7 @@ public class MergeResult<R extends FactoryBase<?,R>> {
             for (Runnable mergeAction : mergeExecutions) {
                 mergeAction.run();
             }
-            currentRoot.internal().needRecalculationForBackReferences();
+            currentRoot.internal().needReFinalisation();
 
             //fix duplicates and priorities old factories to keep there state
             for (FactoryBase<?,R> factory: idToFactory.values()){

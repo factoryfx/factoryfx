@@ -1,3 +1,9 @@
+# 3
+
+### Features
+* **improved factory runtime**
+  * improved performance for factory update in the same process
+
 # 2.2.16
 
 ### BREAKING CHANGES

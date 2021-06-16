@@ -2,6 +2,7 @@ package io.github.factoryfx.factory;
 
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.PossibleNewValue;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.testfactories.FastExampleFactoryA;
@@ -219,7 +220,7 @@ public class FastFactoryUtilityTest {
         factory.referenceAttribute=new FastExampleFactoryB();
         factory.internal().finalise();
 
-        List<FactoryBase<?,?>> possibleValues = new ArrayList<>();
+        List<PossibleNewValue<?>> possibleValues = new ArrayList<>();
 
         factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
             if (attribute instanceof FactoryAttribute){

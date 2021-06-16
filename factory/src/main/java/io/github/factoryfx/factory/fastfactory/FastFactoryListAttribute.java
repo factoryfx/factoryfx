@@ -52,14 +52,14 @@ public class FastFactoryListAttribute<R extends FactoryBase<?,R>, F extends Fact
         return internal_referenceListEquals(list, value.get());
     }
 
-    @Override
-    public void internal_merge(List<V> newList){
-        List<V> oldList = valueGetter.apply(boundFactory);
-        if (oldList==null){
-            oldList=new ArrayList<>(newList);
-        }
-        internal_mergeFactoryList(oldList,newList);
-    }
+//    @Override
+//    public void internal_merge(List<V> newList){
+//        List<V> oldList = valueGetter.apply(boundFactory);
+//        if (oldList==null){
+//            oldList=new ArrayList<>(newList);
+//        }
+//        internal_mergeFactoryList(oldList,newList);
+//    }
 
 
     @Override

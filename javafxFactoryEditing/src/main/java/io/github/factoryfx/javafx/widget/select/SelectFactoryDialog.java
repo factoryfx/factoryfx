@@ -1,6 +1,7 @@
 package io.github.factoryfx.javafx.widget.select;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.PossibleNewValue;
 import io.github.factoryfx.javafx.css.CssUtil;
 import io.github.factoryfx.javafx.util.ObservableFactoryDisplayText;
 import io.github.factoryfx.javafx.util.UniformDesign;
@@ -11,19 +12,20 @@ import javafx.stage.Screen;
 import javafx.stage.Window;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class SelectFactoryDialog<T extends FactoryBase<?,?>> {
-    public final Collection<T> dataList;
+public class SelectFactoryDialog<F extends FactoryBase<?,?>> {
+    public final List<PossibleNewValue<F>> dataList;
     private final UniformDesign uniformDesign;
 
-    public SelectFactoryDialog(Collection<T> dataList, UniformDesign uniformDesign) {
+    public SelectFactoryDialog(List<PossibleNewValue<F>> dataList, UniformDesign uniformDesign) {
         this.dataList = dataList;
         this.uniformDesign = uniformDesign;
     }
 
-    public void show(Window owner, Consumer<T> success){
+    public void show(Window owner, Consumer<PossibleNewValue<F>> success){
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.initOwner(owner);
         dialog.setTitle("Select");
@@ -33,11 +35,11 @@ public class SelectFactoryDialog<T extends FactoryBase<?,?>> {
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         final BorderPane pane = new BorderPane();
-        TableView<T> table = new TableView<>();
+        TableView<PossibleNewValue<F>> table = new TableView<>();
         table.getItems().setAll(dataList);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        TableColumn<T, String> column = new TableColumn<>();
-        column.setCellValueFactory(param -> new ObservableFactoryDisplayText(param.getValue()));
+        TableColumn<PossibleNewValue<F>, String> column = new TableColumn<>();
+        column.setCellValueFactory(param -> new ObservableFactoryDisplayText(param.getValue().newValue));
         table.getColumns().add(column);
         pane.setCenter(table);
 

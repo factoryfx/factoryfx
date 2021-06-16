@@ -18,6 +18,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import javax.servlet.*;
 import javax.ws.rs.ext.ExceptionMapper;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
@@ -28,8 +29,16 @@ public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFact
     public final FactoryPolymorphicAttribute<ExceptionMapper<Throwable>> exceptionMapper = new FactoryPolymorphicAttribute<ExceptionMapper<Throwable>>().userReadOnly().labelText("exceptionMapper");
     public final BooleanMapAttribute jerseyProperties= new BooleanMapAttribute();
 
+    public JerseyServletFactory(){
+        this.configLifeCycle().setUpdater(servlet -> ((ServletContainer)servlet).reload(createResourceConfig()));
+    }
+
     @Override
     protected Servlet createImpl() {
+        return new ServletContainer(createResourceConfig());
+    }
+
+    private ResourceConfig createResourceConfig() {
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);// without we have 2 JacksonJaxbJsonProvider and wrong mapper
 //        resourceConfig.property(ServerProperties.BV_FEATURE_DISABLE, true);
@@ -55,8 +64,7 @@ public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFact
                 resourceConfig.register(r);
             }
         });
-
-        return new ServletContainer(resourceConfig);
+        return resourceConfig;
     }
 
     protected List<Object> getResourcesInstances(){

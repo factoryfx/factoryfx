@@ -100,7 +100,7 @@ public class BranchSelector<R extends FactoryBase<?,R>> {
 
         public Branch<L, B> stop(){
             List<? extends FactoryBase<?, ?>> factoriesInDestroyOrder = branchFactory.internal().getFactoriesInDestroyOrder();
-            factoriesInDestroyOrder.stream().forEach(factoryBase -> factoryBase.internal().destroyRemoved());
+            factoriesInDestroyOrder.stream().forEach(factoryBase -> factoryBase.internal().destroy());
             return this;
         }
 

@@ -83,10 +83,59 @@ class FactoryBaseAttributeTest {
         root.referenceAttribute.set(null);
         root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
 
-        ExampleFactoryB possibleValue = root.referenceAttribute.internal_createNewPossibleValues(root.internal().getAttributeMetadata(root.referenceAttribute)).get(0);
+        ExampleFactoryB possibleValue = root.referenceAttribute.internal_createNewPossibleValues(root.internal().getAttributeMetadata(root.referenceAttribute)).get(0).newValue;
         Assertions.assertEquals("bla",possibleValue.stringAttribute.get());
 
         Assertions.assertEquals(ExampleFactoryB.class,new FactoryTemplateId<>(possibleValue).clazz);
         Assertions.assertEquals("test",new FactoryTemplateId<>(possibleValue).name);
+    }
+
+    @Test
+    public void test_reset()  {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB factory = new ExampleFactoryB();
+        exampleFactoryA.referenceAttribute.set(factory);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.internal().resetModificationFlat();
+        assertEquals(factory,exampleFactoryA.referenceAttribute.get());
+    }
+
+    @Test
+    public void test_reset_setMultiple()  {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB factory = new ExampleFactoryB();
+        exampleFactoryA.referenceAttribute.set(factory);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+
+        exampleFactoryA.internal().resetModificationFlat();
+        assertEquals(factory,exampleFactoryA.referenceAttribute.get());
+    }
+
+    @Test
+    public void test_reset_null()  {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.internal().resetModificationFlat();
+        assertEquals(null,exampleFactoryA.referenceAttribute.get());
+    }
+
+    @Test
+    public void test_reset_setNull()  {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB factory = new ExampleFactoryB();
+        exampleFactoryA.referenceAttribute.set(factory);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceAttribute.set(null);
+        exampleFactoryA.internal().resetModificationFlat();
+        assertEquals(factory,exampleFactoryA.referenceAttribute.get());
     }
 }

@@ -770,6 +770,7 @@ public class MergeTest {
         ExampleDataA newModel = currentModel.internal().copy();
 
         newModel.referenceAttribute.set(new ExampleDataB());
+        newModel.internal().finalise();
         Assertions.assertTrue(newModel.referenceAttribute.get().internal().getParents().size()>0);
 
         DataMerger<ExampleDataA> dataMerger = new DataMerger<>(currentModel, originalModel, newModel);

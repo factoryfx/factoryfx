@@ -25,7 +25,7 @@ Why use FactoryFX?
 | :-----------------: | :---------: | :-----: |
 | io.github.factoryfx | factory  | 2.1.0  |
 
-java 11+ required
+java 16+ required
 
 ### Dependencies
 [Gradle example dependency setups](docu/src/main/java/io/github/factoryfx/docu/dependencysetup)

@@ -40,8 +40,12 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
         return factoriesInDestroyOrder;
     }
 
-    public void determineRecreationNeedFromRoot(Set<FactoryBase<?,R>> changedData) {
+    public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedData) {
         rootFactory.internal().determineRecreationNeedFromRoot(changedData);
+    }
+
+    public Set<FactoryBase<?,?>> getRemoved() {
+        return rootFactory.internal().getRemoved();
     }
 
     public static class MergeResult<R extends FactoryBase<?,R>> {

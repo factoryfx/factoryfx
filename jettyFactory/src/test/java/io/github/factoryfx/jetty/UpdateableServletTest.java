@@ -213,4 +213,32 @@ public class UpdateableServletTest {
         }
     }
 
+
+    public static void main(String[] args) {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(UpdateableTestResourceFactory.class));
+        });
+
+        builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {
+            UpdateableTestResourceFactory resource = new UpdateableTestResourceFactory();
+            resource.response.set("123");
+            return resource;
+        });
+
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        microservice.start();
+        try {
+
+            DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory();
+            update.root.getResource(UpdateableTestResourceFactory.class).response.set("abc");
+
+            long start=System.currentTimeMillis();
+            microservice.updateCurrentFactory(update);
+            System.out.println("qqqqq");
+            System.out.println(System.currentTimeMillis()-start);
+
+        } finally {
+            microservice.stop();
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 
 import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;
@@ -24,6 +25,10 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
 
     @JsonProperty("v")
     private F value;
+    @JsonIgnore
+    private F originalValue;
+    @JsonIgnore
+    private boolean originalValueSet;
 
     public FactoryBaseAttribute() {
         super();
@@ -59,15 +64,35 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
 
     @Override
     public void set(F factory) {
+        F old= this.value;
+        if (old!=null && root!=null){
+            root.internal().addRemoved(old);
+        }
         this.value=factory;
-        if (root!=null) {
-            root.internal().needRecalculationForBackReferences();
-            if (factory!=null){
-                factory.internal().setRootDeepUnchecked(root);//intentionally just added flat, this compromise between performance an convenience, deep set would be too slow for that case finalise must be called manually
+        if (isFinalised()) {
+            root.internal().needReFinalisation();
+            this.root.internal().addModified(parent);
+            if (!originalValueSet){
+                originalValue=old;
+                originalValueSet=true;
             }
         }
         updateListeners(factory);
     }
+
+    @Override
+    public void internal_resetModification() {
+        if (originalValueSet) {
+            value = originalValue;
+        }
+    }
+
+    @Override
+    public void internal_clearModifyState() {
+        originalValue =null;
+        originalValueSet=false;
+    }
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -106,11 +131,6 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
         if (additionalDeleteAction!=null){
             additionalDeleteAction.accept(removedFactory, root);
         }
-    }
-
-    @Override
-    public void internal_merge(F newValue) {
-        this.value=newValue;
     }
 
     public L instance(){
@@ -160,5 +180,13 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
         if (value != null) {
             consumer.accept(value);
         }
+    }
+
+    public List<PossibleNewValue<F>> internal_createNewPossibleValues(AttributeMetadata attributeMetadata){
+        return internal_createNewPossibleValuesFactories(attributeMetadata).stream().map(f->new PossibleNewValue<>((newFactory)->this.set(newFactory),f,this.root)).toList();
+    }
+
+    public List<PossibleNewValue<F>> internal_possibleValues(AttributeMetadata attributeMetadata){
+        return internal_possibleValuesFactories(attributeMetadata).stream().map(f->new PossibleNewValue<>((newFactory)->this.set(newFactory),f,this.root)).toList();
     }
 }

@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.PossibleNewValue;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -52,8 +53,8 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
 
 
     private final UniformDesign uniformDesign;
-    private final Supplier<List<? extends F>> newValueProvider;
-    private final Supplier<Collection<F>> possibleValuesProvider;
+    private final Supplier<List<PossibleNewValue<F>>> newValueProvider;
+    private final Supplier<List<PossibleNewValue<F>>> possibleValuesProvider;
     private final boolean isUserEditable;
     private final boolean isUserSelectable;
     private final FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute;
@@ -63,7 +64,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
     private final boolean isUserCreateable;
     private final BiConsumer<F,List<F>> deleter;
 
-    public FactoryListAttributeEditWidget(FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute, TableView<F> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<? extends F>> newValueProvider, Supplier<Collection<F>> possibleValuesProvider, BiConsumer<F,List<F>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
+    public FactoryListAttributeEditWidget(FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute, TableView<F> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, Supplier<List<PossibleNewValue<F>>> newValueProvider, Supplier<List<PossibleNewValue<F>>> possibleValuesProvider, BiConsumer<F,List<F>> deleter , boolean isUserEditable, boolean isUserSelectable, boolean isUserCreateable) {
         this.uniformDesign = uniformDesign;
         this.newValueProvider = newValueProvider;
         this.possibleValuesProvider = possibleValuesProvider;
@@ -91,7 +92,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
 
         Button selectButton = new Button("", uniformDesign.createIcon(FontAwesome.Glyph.SEARCH_PLUS));
         selectButton.setOnAction(event -> {
-            new SelectFactoryDialog<>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), data -> factoryListBaseAttribute.get().add(data));
+            new SelectFactoryDialog<>(possibleValuesProvider.get(),uniformDesign).show(selectButton.getScene().getWindow(), PossibleNewValue::add);
         });
         selectButton.setDisable(!isUserEditable || !isUserSelectable);
 
@@ -202,16 +203,16 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
     }
 
     private void addNewReference(Window owner) {
-        List<? extends F> newDataList = newValueProvider.get();
+        List<PossibleNewValue<F>> newDataList = newValueProvider.get();
         if (!newDataList.isEmpty()){
             if (newDataList.size()==1){
-                factoryListBaseAttribute.add(newDataList.get(0));
-                navigateToData.accept(newDataList.get(0));
+                newDataList.get(0).add();
+                navigateToData.accept(newDataList.get(0).newValue);
             } else {
-                List<F> newDataListData = new ArrayList<>(newDataList);
-                new SelectFactoryDialog<>(newDataListData,uniformDesign).show(owner, factory -> {
-                    factoryListBaseAttribute.add(factory);
-                    navigateToData.accept(factory);
+                List<PossibleNewValue<F>> newDataListData = new ArrayList<>(newDataList);
+                new SelectFactoryDialog<>(newDataListData,uniformDesign).show(owner, possibleNewValue -> {
+                    possibleNewValue.add();
+                    navigateToData.accept(possibleNewValue.newValue);
                 });
             }
         }

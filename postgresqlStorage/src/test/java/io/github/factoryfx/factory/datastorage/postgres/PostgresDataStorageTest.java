@@ -266,6 +266,15 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    public void test_getCurrentDataId() {
+        ExampleFactoryA initialExampleFactoryA = createInitialExampleFactoryA();
+        initialExampleFactoryA.stringAttribute.set("initial");
+        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, initialExampleFactoryA, createDataMigrationManager(),ObjectMapperBuilder.build());
+        Assertions.assertNotNull(postgresFactoryStorage.getCurrentDataId());
+        Assertions.assertEquals("initial",postgresFactoryStorage.getHistoryData(postgresFactoryStorage.getCurrentDataId()).stringAttribute.get());
+    }
+
+    @Test
     public void test_patchCurrentData()  {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
         initialExampleDataA.stringAttribute.set("123");

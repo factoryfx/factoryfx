@@ -1,11 +1,15 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class FactoryListAttributeTest {
@@ -49,6 +53,35 @@ public class FactoryListAttributeTest {
         Assertions.assertEquals(1,calls.size());
 
     }
+
+    @Test
+    public void test_reset()  {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB factory = new ExampleFactoryB();
+        exampleFactoryA.referenceListAttribute.add(factory);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.internal().resetModificationFlat();
+        assertEquals(List.of(factory),exampleFactoryA.referenceListAttribute.get());
+    }
+
+    @Test
+    public void test_reset_setMultiple()  {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB factory = new ExampleFactoryB();
+        exampleFactoryA.referenceListAttribute.add(factory);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+
+        exampleFactoryA.internal().resetModificationFlat();
+        assertEquals(List.of(factory),exampleFactoryA.referenceListAttribute.get());
+    }
+
+
 
 
 }

@@ -23,11 +23,6 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
 
     }
 
-    @Override
-    public void internal_merge(T newValue) {
-        set(newValue);
-    }
-
     public List<ValidationError> internal_validate(FactoryBase<?,?> parent, String attributeVariableName) {
         List<ValidationError> validationErrors = new ArrayList<>();
         if (validations==null){
@@ -385,4 +380,7 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
 
     public abstract void internal_reset();
 
+    public abstract void internal_resetModification();
+
+    public abstract void internal_clearModifyState();
 }

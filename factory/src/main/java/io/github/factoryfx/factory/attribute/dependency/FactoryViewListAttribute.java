@@ -24,6 +24,7 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
 
 
     private R root;
+    private FactoryBase<?,?> parent;
     protected final Function<R,List<F>> view;
 
     public FactoryViewListAttribute(Function<R,List<F>> view) {
@@ -49,11 +50,6 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
     }
 
     @Override
-    public void internal_merge(List<F> newList) {
-        //nothing
-    }
-
-    @Override
     public boolean internal_mergeMatch(AttributeMatch<List<F>> value) {
         return internal_referenceListEquals(get(),value.get());
     }
@@ -74,7 +70,10 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
 
     @Override
     public void set(List<F> value) {
-        //nothing
+        if (root!=null) {
+            root.internal().needReFinalisation();
+            this.root.internal().addModified(parent);
+        }
     }
 
     //** so we don't need to initialise javax toolkit for tests*/
@@ -175,10 +174,21 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
         //nothing
     }
 
+    @Override
+    public void internal_resetModification() {
+        //nothing
+    }
+
+    @Override
+    public void internal_clearModifyState() {
+        //nothing
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void internal_addBackReferences(FactoryBase<?,?> root, FactoryBase<?,?> parent){
         this.root=(R)root;
+        this.parent=(R)parent;
     }
 
     @Override

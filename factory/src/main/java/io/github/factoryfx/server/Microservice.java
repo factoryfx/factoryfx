@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
+import io.github.factoryfx.factory.FactoryUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.DataMerger;
@@ -103,12 +105,11 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
      * @return new possible factory update with prepared ids/metadata
      */
     public synchronized DataUpdate<R> prepareNewFactory(String user, String comment) {
-        DataAndId<R> currentFactory = dataStorage.getCurrentData();//TODO optimise we need just the id
         return new DataUpdate<>(
                 factoryManager.getCurrentFactory().utility().copy(),
                 user,
                 comment,
-                currentFactory.id);
+                dataStorage.getCurrentDataId());
     }
 
 
@@ -166,5 +167,9 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         return factoryManager.getCurrentFactory().internal().getLiveObject();
     }
 
+    public void update(FactoryUpdate<R> updater){
+        factoryManager.update(updater);
+        dataStorage.updateCurrentData(new DataUpdate<>(factoryManager.getCurrentFactory(),"system","",dataStorage.getCurrentDataId()),null);
+    }
 
 }

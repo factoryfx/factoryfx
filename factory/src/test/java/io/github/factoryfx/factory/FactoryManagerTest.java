@@ -1,10 +1,10 @@
 package io.github.factoryfx.factory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
+import io.github.factoryfx.factory.exception.ResettingHandler;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
+import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.testfactories.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -127,5 +127,54 @@ public class FactoryManagerTest {
         List<FactoryBase<?, ExampleFactoryA>> removedFactories = factoryManager.getRemovedFactories(previousFactories, newFactories);
         Assertions.assertEquals(0,removedFactories.size());
     }
+
+    @Test
+    public void test_update() {
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
+        ExampleFactoryA root1 = new ExampleFactoryA();
+        factoryManager.start(new RootFactoryWrapper<>(root1));
+
+        ExampleFactoryB addedfactory = new ExampleFactoryB();
+        FactoryUpdateLog<ExampleFactoryA> log = factoryManager.update((root, idToFactory) -> {
+            root.referenceAttribute.set(addedfactory);
+        });
+
+        Assertions.assertEquals(addedfactory,factoryManager.getCurrentFactory().referenceAttribute.get());
+        Assertions.assertNotNull(factoryManager.getCurrentFactory().referenceAttribute.get().internal().getLiveObject());
+    }
+
+    @Test
+    public void test_update_twice() {
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA, ExampleFactoryA>(new RethrowingFactoryExceptionHandler<>());
+        ExampleFactoryA root1 = new ExampleFactoryA();
+        factoryManager.start(new RootFactoryWrapper<>(root1));
+
+        factoryManager.update((root, idToFactory) -> {
+            root.referenceAttribute.set(new ExampleFactoryB());
+        });
+
+        ExampleFactoryB addedfactory = new ExampleFactoryB();
+        factoryManager.update((root, idToFactory) -> {
+            root.referenceAttribute.set(addedfactory);
+        });
+
+        Assertions.assertEquals(addedfactory,factoryManager.getCurrentFactory().referenceAttribute.get());
+    }
+
+    @Test
+    public void test_update_exception() {
+        FactoryManager<ExampleLiveObjectA, ExampleFactoryA> factoryManager = new FactoryManager<ExampleLiveObjectA, ExampleFactoryA>(new ResettingHandler<>());
+        ExampleFactoryA root1 = new ExampleFactoryA();
+        factoryManager.start(new RootFactoryWrapper<>(root1));
+
+        ExampleFactoryB addedfactory = new ExampleFactoryB();
+        factoryManager.update((root, idToFactory) -> {
+            root.referenceAttribute.set(addedfactory);
+            throw new RuntimeException();
+        });
+
+        Assertions.assertEquals(null,factoryManager.getCurrentFactory().referenceAttribute.get());
+    }
+
 
 }

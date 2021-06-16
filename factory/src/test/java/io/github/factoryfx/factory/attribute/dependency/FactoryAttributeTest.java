@@ -170,8 +170,8 @@ public class FactoryAttributeTest {
         exampleReferenceFactory.internal().finalise();
 
         Assertions.assertNull(exampleReferenceFactory.referenceAttribute.get());
-        List<ExampleDataA> exampleFactoryAS = exampleReferenceFactory.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceFactory.class).getAttributeMetadata(f->f.referenceAttribute));
-        exampleReferenceFactory.referenceAttribute.set(exampleFactoryAS.get(0));
+        List<PossibleNewValue<ExampleDataA>> exampleFactoryAS = exampleReferenceFactory.referenceAttribute.internal_createNewPossibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceFactory.class).getAttributeMetadata(f->f.referenceAttribute));
+        exampleFactoryAS.get(0).add();
         Assertions.assertNotNull(exampleReferenceFactory.referenceAttribute.get());
 
     }
@@ -183,9 +183,9 @@ public class FactoryAttributeTest {
         root.referenceAttribute.set(exampleFactoryA);
         root.internal().finalise();
 
-        Collection<ExampleDataA> possibleFactories =root.referenceAttribute.internal_possibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceFactory.class).getAttributeMetadata(f->f.referenceAttribute));
+        List<PossibleNewValue<ExampleDataA>> possibleFactories =root.referenceAttribute.internal_possibleValues(FactoryMetadataManager.getMetadata(ExampleReferenceFactory.class).getAttributeMetadata(f->f.referenceAttribute));
         Assertions.assertEquals(1,possibleFactories.size());
-        Assertions.assertEquals(exampleFactoryA,new ArrayList<>(possibleFactories).get(0));
+        Assertions.assertEquals(exampleFactoryA,new ArrayList<>(possibleFactories).get(0).newValue);
 
     }
 

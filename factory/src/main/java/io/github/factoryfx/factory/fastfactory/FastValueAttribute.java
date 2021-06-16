@@ -35,10 +35,10 @@ public class FastValueAttribute<R extends FactoryBase<?,R>,F extends FactoryBase
         return Objects.equals(valueGetter.apply(boundFactory), value.get());
     }
 
-    @Override
-    public void internal_merge(V newValue){
-        valueSetter.accept(boundFactory,newValue);
-    }
+//    @Override
+//    public void internal_merge(V newValue){
+//        valueSetter.accept(boundFactory,newValue);
+//    }
 
     @Override
     @SuppressWarnings("unchecked")

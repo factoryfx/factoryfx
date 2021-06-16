@@ -37,6 +37,33 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
 
     private void afterModify(){
         updateListeners(ValueMapAttribute.this);
+        if (this.root!=null){
+            root.internal().addModified(this.parent);
+        }
+    }
+
+
+    private void beforeModify(){
+        handleOriginalValue(this.value);
+    }
+
+    @Override
+    protected void setOriginalValue(Map<K,V> old) {
+        this.originalValue=new HashMap<>(old);
+    }
+
+    @Override
+    protected void resetValue() {
+        this.value.clear();
+        this.value.putAll(originalValue);
+    }
+
+    @Override
+    public void internal_resetModification() {
+        if (originalValue!=null) {
+            this.value.clear();
+            this.value.putAll(originalValue);
+        }
     }
 
     @Override
@@ -66,6 +93,7 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
 
     @Override
     public V put(K key, V value) {
+        beforeModify();
         V put = this.value.put(key, value);
         afterModify();
         return put;
@@ -73,6 +101,7 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
 
     @Override
     public V remove(Object key) {
+        beforeModify();
         V remove = this.value.remove(key);
         afterModify();
         return remove;
@@ -80,12 +109,14 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
+        beforeModify();
         this.value.putAll(m);
         afterModify();
     }
 
     @Override
     public void clear() {
+        beforeModify();
         this.value.clear();
         afterModify();
     }

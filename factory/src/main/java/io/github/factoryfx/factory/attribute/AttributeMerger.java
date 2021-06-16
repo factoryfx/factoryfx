@@ -7,11 +7,11 @@ import java.util.function.Function;
 
 public interface AttributeMerger<V> extends AttributeMatch<V> {
 
-    void internal_merge(V newValue);
+//    void internal_merge(V newValue);
     boolean internal_hasWritePermission(Function<String,Boolean> permissionChecker);
 
-    default <F extends FactoryBase<?,?>>  void internal_mergeFactoryList(List<F> oldList, List<F> newList) {
-        oldList.clear();
-        oldList.addAll(newList);
-    }
+//    default <F extends FactoryBase<?,?>>  void internal_mergeFactoryList(List<F> oldList, List<F> newList) {
+//        oldList.clear();
+//        oldList.addAll(newList);
+//    }
 }

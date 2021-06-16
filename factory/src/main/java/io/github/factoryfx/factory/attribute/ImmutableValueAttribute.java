@@ -20,6 +20,11 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     @JsonProperty("v")
     protected T value;
 
+    @JsonIgnore
+    protected T originalValue;
+    @JsonIgnore
+    private boolean originalValueSet;
+
     public ImmutableValueAttribute() {
         super();
     }
@@ -36,8 +41,41 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
 
     @Override
     public void set(T value) {
+        T old=this.value;
         this.value = value;
         updateListeners(value);
+        if (this.root!=null){
+            this.root.internal().addModified(parent);
+            handleOriginalValue(old);
+        }
+    }
+
+    protected void handleOriginalValue(T old){
+        if (!originalValueSet  && root!=null){
+            originalValueSet=true;
+            setOriginalValue(old);
+        }
+    }
+
+    protected void resetValue(){
+        value=originalValue;
+    }
+
+    protected void setOriginalValue(T old){
+        originalValue=old;
+    }
+
+    @Override
+    public void internal_resetModification() {
+        if (originalValueSet) {
+            resetValue();
+        }
+    }
+
+    @Override
+    public void internal_clearModifyState() {
+        originalValue=null;
+        originalValueSet=false;
     }
 
     @Override
@@ -120,9 +158,16 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
         internal_removeAllListener();
     }
 
+    protected FactoryBase<?, ?> root;
+    protected FactoryBase<?, ?> parent;
     @Override
     public void internal_addBackReferences(FactoryBase<?, ?> root, FactoryBase<?, ?> parent) {
-        //nothing
+        this.root = root;
+        this.parent = parent;
+    }
+
+    public FactoryBase<?, ?> internal_getRoot() {
+        return this.root;
     }
 
     public Optional<T> getNullable(){

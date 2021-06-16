@@ -46,7 +46,7 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         return (A)this;
     }
 
-    public Collection<F> internal_possibleValues(AttributeMetadata attributeMetadata){
+    protected Collection<F> internal_possibleValuesFactories(AttributeMetadata attributeMetadata){
         if (attributeMetadata.referenceClass!=null && possibleValueProviderFromRoot==null){
             possibleValueProviderFromRoot=new DefaultPossibleValueProvider<>(attributeMetadata.referenceClass);
         }
@@ -155,7 +155,7 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
     private boolean catalogueBased =false;
 
     @SuppressWarnings("unchecked")
-    public List<F> internal_createNewPossibleValues(AttributeMetadata attributeMetadata){
+    protected List<F> internal_createNewPossibleValuesFactories(AttributeMetadata attributeMetadata){
         if (newValuesProviderFromRootAndAttribute!=null) {
             return newValuesProviderFromRootAndAttribute.apply(root,(A)this);
         }
@@ -179,6 +179,10 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
     @SuppressWarnings("unchecked")
     public AttributeMetadata internal_getMetadata(){
         return FactoryMetadataManager.getMetadata(parent.getClass()).getAttributeMetadata(parent,this);
+    }
+
+    protected boolean isFinalised(){
+        return root!=null;
     }
 
 }

@@ -1,6 +1,7 @@
 package io.github.factoryfx.server;
 
 import com.google.common.base.Throwables;
+import io.github.factoryfx.factory.FactoryUpdate;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
@@ -357,5 +358,18 @@ public class MicroserviceTest {
         microservice.getRootLiveObject().update();
         Assertions.assertEquals("123",microservice.getRootLiveObject().print());
 
+    }
+
+
+    @Test
+    public void test_update(){
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
+        microservice.start();
+        Assertions.assertEquals(1,microservice.getHistoryFactoryList().size());
+        microservice.update((root, idToFactory) -> root.referenceAttribute.set(new ExampleFactoryB()));
+
+        Assertions.assertEquals(2,microservice.getHistoryFactoryList().size());
     }
 }

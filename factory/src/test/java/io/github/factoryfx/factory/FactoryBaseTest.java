@@ -2,12 +2,8 @@ package io.github.factoryfx.factory;
 
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
-import io.github.factoryfx.factory.attribute.CopySemantic;
-import io.github.factoryfx.factory.attribute.DefaultPossibleValueProvider;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.factory.builder.DefaultCreator;
-import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
@@ -22,8 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -202,7 +196,7 @@ public class FactoryBaseTest {
         final XRoot usableCopy = root.internal().finalise();
         usableCopy.internal().instance();
 
-        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(usableCopy);
         usableCopy.internal().determineRecreationNeedFromRoot(changed);
         assertTrue(usableCopy.needRecreation);
@@ -219,7 +213,7 @@ public class FactoryBaseTest {
 
         root.internal().finalise();
 
-        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.referenceAttribute.get());
         root.internal().determineRecreationNeedFromRoot(changed);
         assertTrue(root.needRecreation);
@@ -236,7 +230,7 @@ public class FactoryBaseTest {
 
         root.internal().finalise();
 
-        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.referenceAttribute.get());
         changed.add(root.xFactory.get());
 
@@ -255,7 +249,7 @@ public class FactoryBaseTest {
 
         root.internal().finalise();
 
-        Set<FactoryBase<?,XRoot>> changed = Set.of(root.xFactory.get());
+        Set<FactoryBase<?,?>> changed = Set.of(root.xFactory.get());
 
         root.internal().determineRecreationNeedFromRoot(changed);
         assertTrue(root.needRecreation);
@@ -274,7 +268,7 @@ public class FactoryBaseTest {
         root.internal().finalise();
         root.internal().instance();
 
-        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.xFactoryList.get().get(0));
 
         root.internal().determineRecreationNeedFromRoot(changed);
@@ -294,7 +288,7 @@ public class FactoryBaseTest {
         root.internal().instance();
 
 
-        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.xFactory.get());
         root.internal().determineRecreationNeedFromRoot(changed);
         assertTrue(root.needRecreation);
@@ -407,7 +401,7 @@ public class FactoryBaseTest {
         root.internal().finalise();
 
 
-        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(root.xFactory.get().xFactory2.get());
         root.internal().determineRecreationNeedFromRoot(changed);
         assertFalse(root.needRecreation);
@@ -428,7 +422,7 @@ public class FactoryBaseTest {
         root.internal().finalise();
 
 
-        HashSet<FactoryBase<?,XRoot>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(x3Factory);
         root.internal().determineRecreationNeedFromRoot(changed);
         assertFalse(root.needRecreation);
@@ -543,7 +537,7 @@ public class FactoryBaseTest {
         root.internal().finalise();
         root.internal().instance();
 
-        HashSet<FactoryBase<?,ExampleFactoryA>> changed =new HashSet<>();
+        HashSet<FactoryBase<?,?>> changed =new HashSet<>();
         changed.add(exampleFactoryB);
         root.internal().determineRecreationNeedFromRoot(changed);
 
@@ -553,7 +547,7 @@ public class FactoryBaseTest {
 
         root.internal().instance();
 
-        HashSet<FactoryBase<?,ExampleFactoryA>> nochange =new HashSet<>();
+        HashSet<FactoryBase<?,?>> nochange =new HashSet<>();
         root.internal().determineRecreationNeedFromRoot(nochange);
         assertFalse(rootForTestVisibility.needRecreation);
         assertFalse(rootForTestVisibility.needRecreation);
@@ -933,6 +927,186 @@ public class FactoryBaseTest {
         ExampleFactoryB copyB = factoryA.referenceAttribute.get().utility().semanticCopy();
         factoryA.referenceListAttribute.add(copyB);
         Assertions.assertEquals(factoryA.referenceAttribute.get().referenceAttributeC.get(), factoryA.referenceListAttribute.get(0).referenceAttributeC.get());
+    }
+
+
+    @Test
+    public void test_remove(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+//        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+//        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+
+
+        Assertions.assertEquals(exampleFactoryB,exampleFactoryA.internal().getRemoved().iterator().next());
+    }
+
+    @Test
+    public void test_remove_null(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.referenceAttribute.set(null);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+
+
+        Assertions.assertTrue(exampleFactoryA.internal().getRemoved().isEmpty());
+    }
+
+    @Test
+    public void test_remove_nested(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+//        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+//        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+
+
+        Set<FactoryBase<?, ?>> removed = exampleFactoryA.internal().getRemoved();
+        Assertions.assertEquals(2, removed.size());
+        Assertions.assertTrue(removed.contains(exampleFactoryB));
+        Assertions.assertTrue(removed.contains(exampleFactoryC));
+    }
+
+    @Test
+    public void test_remove_nested_double_use(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+//        ExampleFactoryC exampleFactoryC = new ExampleFactoryC();
+//        exampleFactoryB.referenceAttributeC.set(exampleFactoryC);
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+
+
+        Set<FactoryBase<?, ?>> removed = exampleFactoryA.internal().getRemoved();
+        Assertions.assertEquals(0, removed.size());
+    }
+
+    @Test
+    public void test_remove_list(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceListAttribute.remove(exampleFactoryB);
+
+        Set<FactoryBase<?, ?>> removed = exampleFactoryA.internal().getRemoved();
+        Assertions.assertEquals(1, removed.size());
+        Assertions.assertTrue(removed.contains(exampleFactoryB));
+    }
+
+    @Test
+    public void test_remove_list_set(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceListAttribute.set(List.of());
+
+        Set<FactoryBase<?, ?>> removed = exampleFactoryA.internal().getRemoved();
+        Assertions.assertEquals(1, removed.size());
+        Assertions.assertTrue(removed.contains(exampleFactoryB));
+    }
+
+    @Test
+    public void test_modify_value(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryB.stringAttribute.set("111");
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryB.stringAttribute.set("222");
+
+        Set<FactoryBase<?, ?>> modified = exampleFactoryA.internal().getModified();
+        Assertions.assertEquals(1, modified.size());
+        Assertions.assertTrue(modified.contains(exampleFactoryB));
+    }
+
+    @Test
+    public void test_modify_factory(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryB.referenceAttribute.set(new ExampleFactoryA());
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryB.referenceAttribute.set(new ExampleFactoryA());
+
+        Set<FactoryBase<?, ?>> modified = exampleFactoryA.internal().getModified();
+        Assertions.assertEquals(1, modified.size());
+        Assertions.assertTrue(modified.contains(exampleFactoryB));
+    }
+
+    @Test
+    public void test_modify_factoryList(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.referenceListAttribute.add(new ExampleFactoryB());
+        exampleFactoryA.internal().finalise();
+
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryA.referenceListAttribute.add(exampleFactoryB);
+
+        Set<FactoryBase<?, ?>> modified = exampleFactoryA.internal().getModified();
+        Assertions.assertEquals(1, modified.size());
+        Assertions.assertTrue(modified.contains(exampleFactoryA));
+    }
+
+    public static class ExampleFactoryD extends SimpleFactoryBase<Void,ExampleFactoryA> {
+        public final StringAttribute stringAttribute= new StringAttribute().labelText("ExampleB1");
+
+        @Override
+        protected Void createImpl() {
+            return null;
+        }
+    }
+    @Test
+    public void test_attribute_root(){
+        ExampleFactoryD exampleFactoryD = new ExampleFactoryD();
+        exampleFactoryD.internal().finalise();
+        Assertions.assertEquals(exampleFactoryD, exampleFactoryD.stringAttribute.internal_getRoot());
+    }
+
+    @Test
+    public void test_attribute_root_nested(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
+        exampleFactoryB.stringAttribute.set("111");
+        exampleFactoryA.referenceAttribute.set(exampleFactoryB);
+        exampleFactoryA.internal().finalise();
+
+        Assertions.assertEquals(exampleFactoryA, exampleFactoryB.stringAttribute.internal_getRoot());
+    }
+
+    @Test
+    public void test_attribute_root_root(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.internal().finalise();
+        Assertions.assertEquals(exampleFactoryA, exampleFactoryA.stringAttribute.internal_getRoot());
+    }
+
+    @Test
+    public void test_reset(){
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.stringAttribute.set("1111");
+        exampleFactoryA.internal().finalise();
+        exampleFactoryA.stringAttribute.set("2222");
+        exampleFactoryA.internal().resetModificationFlat();
+        Assertions.assertEquals("1111", exampleFactoryA.stringAttribute.get());
     }
 
 }

@@ -77,17 +77,34 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>> implements DataStor
             throw new RuntimeException(e);
         }
 
-        StoredDataMetadata metadata=new StoredDataMetadata(
-                UUID.randomUUID().toString(),
-                "System",
-                "initial factory",
-                UUID.randomUUID().toString(),
-                null,
-                initialData.internal().createDataStorageMetadataDictionaryFromRoot(),null
-        );
+        StoredDataMetadata metadata = initCurrentData();
+        return new DataAndId<>(initialData, metadata.id);
+    }
+
+    private StoredDataMetadata initCurrentData() {
+        StoredDataMetadata metadata = new StoredDataMetadata(UUID.randomUUID().toString(), "System", "initial factory", UUID.randomUUID().toString(), null, initialData.internal().createDataStorageMetadataDictionaryFromRoot(), null);
 
         update(initialData, metadata);
-        return new DataAndId<>(initialData, metadata.id);
+        return metadata;
+    }
+
+    @Override
+    public String getCurrentDataId() {
+        try (Connection connection= connectionSupplier.get();
+             Statement statement = connection.createStatement()){
+            String sql = "SELECT * FROM FACTORY_CURRENT";
+
+            try (ResultSet resultSet =statement.executeQuery(sql)){
+                if(resultSet.next()){
+                    return resultSet.getString("id");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        StoredDataMetadata metadata = initCurrentData();
+        return metadata.id;
     }
 
     @Override

@@ -98,17 +98,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
                     ResultSet rs = pstmt.executeQuery()) {
 
                     if (!rs.next()) {//"No current factory found
-                        StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
-                                UUID.randomUUID().toString(),
-                                "System",
-                                "initial factory",
-                                UUID.randomUUID().toString(),
-                                null,
-                                initialData.internal().createDataStorageMetadataDictionaryFromRoot(),null
-                        );
-
-                        updateCurrentFactory(connection, new DataAndStoredMetadata<>(initialData,metadata));
-                        connection.commit();
+                        StoredDataMetadata metadata = initCurrentData(connection);
                         return new DataAndId<>(initialData, metadata.id);
                     } else {
                         StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
@@ -120,6 +110,37 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read current factory",e);
         }
+    }
+
+    @Override
+    public String getCurrentDataId() {
+        try {
+            try (Connection connection = dataSource.getConnection()){
+                ensureTablesAreAvailable(connection);
+                try (
+                        PreparedStatement pstmt = connection.prepareStatement("select id from currentconfiguration");
+                        ResultSet rs = pstmt.executeQuery()) {
+
+                    if (!rs.next()) {//"No current factory found
+                        StoredDataMetadata metadata = initCurrentData(connection);
+                        return metadata.id;
+                    } else {
+                        return rs.getString("id");
+                    }
+
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot read current factory",e);
+        }
+    }
+
+    private StoredDataMetadata initCurrentData(Connection connection) throws SQLException {
+        StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(), UUID.randomUUID().toString(), "System", "initial factory", UUID.randomUUID().toString(), null, initialData.internal().createDataStorageMetadataDictionaryFromRoot(), null);
+
+        updateCurrentFactory(connection, new DataAndStoredMetadata<>(initialData, metadata));
+        connection.commit();
+        return metadata;
     }
 
 

@@ -265,7 +265,7 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
         if (fastFactoryUtility!=null){
             //parent and root is set after dynamic creation
         } else {
-            visitFactoryEnclosingAttributesFlat(factory, (attributeMetadata, attribute) -> {
+            visitAttributesFlat(factory, (attributeMetadata, attribute) -> {
                 attribute.internal_addBackReferences(root,factory);
             });
         }

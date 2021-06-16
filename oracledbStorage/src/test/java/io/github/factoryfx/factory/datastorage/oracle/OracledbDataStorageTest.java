@@ -86,5 +86,13 @@ public class OracledbDataStorageTest extends DatabaseTest{
         Assertions.assertEquals("qqq",oracleStorage.getHistoryData(id).stringAttribute.get());
     }
 
+    @Test
+    public void test_currentId()  {
+        ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
+        initialExampleDataA.stringAttribute.set("123");
+        OracledbDataStorage<ExampleFactoryA> oracleStorage = new OracledbDataStorage<>(connectionSupplier, initialExampleDataA, createMigrationManager(), ObjectMapperBuilder.build());
 
+        Assertions.assertNotNull(oracleStorage.getCurrentDataId());
+        Assertions.assertEquals("123",oracleStorage.getHistoryData(oracleStorage.getCurrentDataId()).stringAttribute.get());
+    }
 }

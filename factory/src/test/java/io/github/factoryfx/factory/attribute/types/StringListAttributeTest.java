@@ -61,4 +61,24 @@ public class StringListAttributeTest {
         exampleListFactory.listAttribute.add("7787");
         Assertions.assertEquals(1,calls.size());
     }
+
+    @Test
+    public void test_modify(){
+        ExampleListFactory exampleListFactory = new ExampleListFactory();
+        exampleListFactory.internal().finalise();
+        exampleListFactory.listAttribute.add("7787");
+        Assertions.assertEquals(1,exampleListFactory.getModified().size());
+        Assertions.assertTrue(exampleListFactory.getModified().contains(exampleListFactory));
+    }
+
+    @Test
+    public void test_resetModification(){
+        ExampleListFactory exampleFactory = new ExampleListFactory();
+        exampleFactory.listAttribute.add("111");
+        exampleFactory.internal().finalise();
+
+        exampleFactory.listAttribute.add("222");
+        exampleFactory.internal().resetModificationFlat();
+        Assertions.assertEquals(List.of("111"),exampleFactory.listAttribute.get());
+    }
 }

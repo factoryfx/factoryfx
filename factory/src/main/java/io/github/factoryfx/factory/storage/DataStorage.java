@@ -34,6 +34,11 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
     DataAndId<R> getCurrentData();
 
     /**
+     * get the current data id
+     * */
+    String getCurrentDataId();
+
+    /**
      * get the initial data created from a FactoryTreeBuilder
      * @return initial data
      * */

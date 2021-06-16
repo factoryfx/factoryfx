@@ -27,11 +27,6 @@ public class ObjectValueAttribute<T> extends ImmutableValueAttribute<T,ObjectVal
     }
 
     @Override
-    public void internal_merge(T newValue) {
-        //nothing   ignore for merging
-    }
-
-    @Override
     public boolean internal_mergeMatch(AttributeMatch<T> value) {
         return true;//to ignore ObjectValueAttribute during merge
     }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class RecordFactoryTest {
 
@@ -66,8 +67,7 @@ public class RecordFactoryTest {
         Assertions.assertEquals("testB",update.root.recordA.get().dep().exampleB().dep().stringAttribute());
 
         //update
-        update.root.recordB.set(new RecordFactory<>(new RecordExampleB.Dep("testB2")));
-        microservice.updateCurrentFactory(update);
+        microservice.update((root,map) -> root.recordB.set(new RecordFactory<>(new RecordExampleB.Dep("testB2"))));
         Assertions.assertEquals("testB2",microservice.getRootLiveObject().print());
     }
 

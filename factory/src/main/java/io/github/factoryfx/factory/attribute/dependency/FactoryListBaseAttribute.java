@@ -10,10 +10,13 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 
 
 public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A extends FactoryListBaseAttribute<L, F,A>> extends ReferenceBaseAttribute<F,List<F>,A> implements List<F> {
     final List<F> list = new ArrayList<>();
+    @JsonIgnore
+    private List<F> previouslist;
 
     public FactoryListBaseAttribute() {
         super();
@@ -38,11 +41,6 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     }
 
     @Override
-    public void internal_merge(List<F> newList) {
-        internal_mergeFactoryList(this.list,newList);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <RL extends FactoryBase<?,RL>> void internal_fixDuplicateObjects(Map<UUID, FactoryBase<?,RL>> idToDataMap) {
 
@@ -64,16 +62,40 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     /** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
     @Override
     public void set(List<F> value) {
+        beforeModify();
         if (value==null){
             if (!list.isEmpty()){
+                beforeRemove(list);
                 this.list.clear();
                 afterModify();
             }
         } else {
+            beforeRemove(list);
             this.list.clear();
             this.list.addAll(value);
             afterAdd(value);
             afterModify();
+        }
+
+    }
+
+    @Override
+    public void internal_resetModification() {
+        if (previouslist!=null){
+            this.list.clear();
+            this.list.addAll(previouslist);
+            root.internal().needReFinalisation();
+        }
+    }
+
+    @Override
+    public void internal_clearModifyState() {
+        previouslist=null;
+    }
+
+    private void beforeModify(){
+        if (previouslist==null && isFinalised()){
+            previouslist=new ArrayList<>(list);
         }
     }
 
@@ -114,9 +136,6 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         if (added == null) {
             throw new IllegalStateException("cant't add null to list");
         }
-        if (root!=null) {
-            added.internal().setRootDeepUnchecked(root);
-        }
     }
 
 
@@ -126,9 +145,25 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         }
     }
 
+    private void beforeRemove(F removed){
+        if (root!=null) {
+            root.internal().addRemoved(removed);
+        }
+    }
+
+    private void beforeRemove(Collection<? extends F> removed){
+        for (F remove: removed){
+            beforeRemove(remove);
+        }
+    }
+
     private void afterModify(){
         if (root!=null) {
-            root.internal().needRecalculationForBackReferences();
+            root.internal().needReFinalisation();
+            this.root.internal().addModified(parent);
+            if (previouslist==null){
+                previouslist=new ArrayList<>(list);
+            }
         }
         updateListeners(list);
     }
@@ -136,6 +171,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public void sort(Comparator<? super F> c) {
+        beforeModify();
         list.sort(c);
         afterModify();
     }
@@ -176,8 +212,10 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     }
 
     @Override
-    public boolean remove(Object o) {
-        boolean remove = list.remove(o);
+    public boolean remove(Object object) {
+        beforeModify();
+        beforeRemove(list.get(list.indexOf(object)));
+        boolean remove = list.remove(object);
         afterModify();
         return remove;
     }
@@ -189,6 +227,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public boolean addAll(Collection<? extends F> c) {
+        beforeModify();
         boolean result = list.addAll(c);
         afterAdd(c);
         afterModify();
@@ -197,6 +236,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public boolean addAll(int index, Collection<? extends F> c) {
+        beforeModify();
         boolean result = list.addAll(index, c);
         afterAdd(c);
         afterModify();
@@ -205,6 +245,8 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public boolean removeAll(Collection<?> c) {
+        beforeModify();
+        beforeRemove(list);
         boolean result = list.removeAll(c);
         afterModify();
         return result;
@@ -212,6 +254,8 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public boolean removeIf(Predicate<? super F> filter) {
+        beforeModify();
+        beforeRemove(list);
         boolean result = list.removeIf(filter);
         afterModify();
         return result;
@@ -219,11 +263,17 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return list.retainAll(c);
+        beforeModify();
+        beforeRemove(list);
+        boolean retainAll = list.retainAll(c);
+        afterModify();
+        return retainAll;
     }
 
     @Override
     public void clear() {
+        beforeModify();
+        beforeRemove(list);
         list.clear();
         afterModify();
     }
@@ -235,14 +285,17 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public F set(int index, F element) {
-        F set = list.set(index, element);
+        beforeModify();
+        F oldReplaced = list.set(index, element);
+        beforeRemove(oldReplaced);
         afterAdd(element);
         afterModify();
-        return set;
+        return oldReplaced;
     }
 
     @Override
     public void add(int index, F element) {
+        beforeModify();
         list.add(index,element);
         afterAdd(element);
         afterModify();
@@ -250,7 +303,9 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public F remove(int index) {
+        beforeModify();
         F remove = list.remove(index);
+        beforeRemove(remove);
         afterModify();
         return remove;
     }
@@ -297,6 +352,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public boolean add(F value) {
+        beforeModify();
         list.add(value);
         afterAdd(value);
         afterModify();
@@ -339,6 +395,14 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         afterAdd(list);
         afterModify();
 
+    }
+
+    public List<PossibleNewValue<F>> internal_createNewPossibleValues(AttributeMetadata attributeMetadata){
+        return internal_createNewPossibleValuesFactories(attributeMetadata).stream().map(f->new PossibleNewValue<>(this::add,f,this.root)).toList();
+    }
+
+    public List<PossibleNewValue<F>> internal_possibleValues(AttributeMetadata attributeMetadata){
+        return internal_possibleValuesFactories(attributeMetadata).stream().map(f->new PossibleNewValue<>(this::add,f,this.root)).toList();
     }
 
 

@@ -44,6 +44,11 @@ public class InMemoryDataStorage<R extends FactoryBase<?,R>> implements DataStor
     }
 
     @Override
+    public String getCurrentDataId() {
+        return currentFactoryId;
+    }
+
+    @Override
     public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
         StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
                 UUID.randomUUID().toString(),

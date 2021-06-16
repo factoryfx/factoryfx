@@ -46,10 +46,10 @@ public class FastFactoryAttribute<R extends FactoryBase<?,R>, F extends FactoryB
         return internal_referenceEquals(thisValue,value.get());
     }
 
-    @Override
-    public void internal_merge(V newValue){
-        valueSetter.accept(boundFactory,newValue);
-    }
+//    @Override
+//    public void internal_merge(V newValue){
+//        valueSetter.accept(boundFactory,newValue);
+//    }
 
     @SuppressWarnings("unchecked")
     @Override

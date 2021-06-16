@@ -22,6 +22,7 @@ import io.github.factoryfx.factory.FactoryBase;
 public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends FactoryBase<L,R>>  extends Attribute<F, FactoryViewAttribute<R,L, F>> implements RunLaterAble, FactoryChildrenEnclosingAttribute {
 
     R root;
+    FactoryBase<?,?> parent;
     protected final Function<R, F> view;
 
     public FactoryViewAttribute(Function<R, F> view) {
@@ -33,11 +34,6 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
             return null;
         }
         return get().internal().instance();
-    }
-
-    @Override
-    public void internal_merge(F newFactory) {
-        //nothing
     }
 
     @Override
@@ -58,13 +54,17 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
 
     @Override
     public void set(F value) {
-        //nothing
+        if (root!=null) { // set is called from merge if view has changed
+            root.internal().needReFinalisation();
+            this.root.internal().addModified(parent);
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void internal_addBackReferences(FactoryBase<?,?> root, FactoryBase<?,?> parent) {
         this.root=(R)root;
+        this.parent=parent;
     }
 
     @Override
@@ -157,6 +157,16 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
 
     @Override
     public void internal_reset() {
+        //nothing
+    }
+
+    @Override
+    public void internal_resetModification() {
+        //nothing
+    }
+
+    @Override
+    public void internal_clearModifyState() {
         //nothing
     }
 

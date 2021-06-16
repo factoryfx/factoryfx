@@ -88,6 +88,11 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
     }
 
     @Override
+    public String getCurrentDataId() {
+        return getCurrentData().id;//TODO optimize
+    }
+
+    @Override
     public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
         StoredDataMetadata metadata = new StoredDataMetadata(
                 UUID.randomUUID().toString(),

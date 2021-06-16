@@ -318,7 +318,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
                     final AttributeDiffInfo attributeDiffInfo = new AttributeDiffInfo(attributeName,FactoryBase.this.getId());
                     if (currentMerger.internal_hasWritePermission(permissionChecker)){
                         mergeResult.addMergeInfo(attributeDiffInfo);
-                        mergeResult.addMergeExecutions(() -> currentMerger.internal_merge(newMerger.get()),this);
+                        mergeResult.addMergeExecutions(() -> currentMerger.set(newMerger.get()),this);
                     } else {
                         mergeResult.addPermissionViolationInfo(attributeDiffInfo);
                     }
@@ -637,6 +637,57 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
+    private Set<FactoryBase<?,?>> removed;
+    private void addRemoved(FactoryBase<?,?> old) {
+        if (removed==null){
+            removed=new HashSet<>();
+        }
+        removed.add(old);
+    }
+
+    @JsonIgnore
+    private Set<FactoryBase<?,?>> getRemoved() {
+        if (removed==null){
+            return Set.of();
+        }
+        Set<FactoryBase<?,?>> result = new HashSet<>();
+        for (FactoryBase<?, ?> factory : removed) {
+            result.addAll(factory.collectionChildrenDeepFromNonFinalizedTree());
+        }
+
+        List<FactoryBase<?, R>> childrenDeep = this.collectChildrenDeep();
+        for (FactoryBase<?, ?> child : childrenDeep) {
+            result.remove(child);
+        }
+        return result;
+    }
+
+    private Set<FactoryBase<?,?>> modified;
+    private void addModified(FactoryBase<?,?> modifiedFactory) {
+        if (modified == null) {
+            modified = new HashSet<>();
+        }
+        modified.add(modifiedFactory);
+    }
+
+    @JsonIgnore
+    public Set<FactoryBase<?,?>> getModified() {
+        if (modified==null){
+            return Set.of();
+        }
+        return modified;
+    }
+
+    public void clearModifyStateFlat(){
+        if (modified!=null) modified.clear();
+        if (removed!=null) removed.clear();
+        this.visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_clearModifyState());
+    }
+
+    private void resetModificationFlat() {
+        this.visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_resetModification());
+    }
+
     @JsonIgnore
     private boolean isCreatedWithBuilderTemplate() {
         return this.treeBuilderClassUsed || this.treeBuilderName!=null;
@@ -892,7 +943,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          * determine which live objects needs recreation
          * @param changedFactories changed factories
          * */
-        public void determineRecreationNeedFromRoot(Set<FactoryBase<?,R>> changedFactories) {
+        public void determineRecreationNeedFromRoot(Set<FactoryBase<?,?>> changedFactories) {
             factory.determineRecreationNeed(changedFactories);
         }
 
@@ -906,10 +957,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         /**
-         * destroy liveobject form a removed factory
+         * destroy liveobject form a factory
          * */
-        public void destroyRemoved() {
-            factory.destroyRemoved();
+        public void destroy() {
+            factory.destroy();
         }
 
         /**
@@ -920,16 +971,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         public void cleanUpAfterCrash() {
-            try {
-                destroyRemoved();
-            } catch (Exception e) {
-                logger.info("exception trying to cleanup after crash",e);
-            }
-            try {
-                destroyUpdated();
-            } catch (Exception e) {
-                logger.info("exception trying to cleanup after crash",e);
-            }
+            factory.cleanUpAfterCrash();
         }
 
         public L instance() {
@@ -1018,7 +1060,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.setRootDeep((R)root);
         }
 
-        public void needRecalculationForBackReferences() {
+        public void needReFinalisation() {
             factory.needReFinalisation();
         }
 
@@ -1050,8 +1092,49 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.getAttributeMetadata(attribute);
         }
 
+        public void addRemoved(FactoryBase<?,?> old) {
+            factory.addRemoved(old);
+        }
+
+        public Set<FactoryBase<?,?>> getRemoved() {
+            return factory.getRemoved();
+        }
+
+        public void addModified(FactoryBase<?,?> modified) {
+            factory.addModified(modified);
+        }
+
+        public Set<FactoryBase<?,?>> getModified() {
+            return factory.getModified();
+        }
+
+        public void clearModifyStateFlat() {
+            factory.clearModifyStateFlat();
+        }
+
+        /**
+         * reset factory modifications
+         */
+        public void resetModificationFlat() {
+            factory.resetModificationFlat();
+        }
+
     }
 
+    private void cleanUpAfterCrash() {
+        try {
+            destroy();
+        } catch (Exception e) {
+            logger.info("exception trying to cleanup after crash",e);
+        }
+        try {
+            destroyUpdated();
+        } catch (Exception e) {
+            logger.info("exception trying to cleanup after crash",e);
+        }
+        this.needRecreation=false;
+        this.started=false;
+    }
 
 
     FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup;
@@ -1188,7 +1271,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         previousLiveObject=null;
     }
 
-    private void destroyRemoved() {
+    private void destroy() {
         if (createdLiveObject!=null && destroyerWithPreviousLiveObject!=null){
             destroyerWithPreviousLiveObject.accept(createdLiveObject);
             logDestroy();
@@ -1196,7 +1279,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         createdLiveObject=null;
     }
 
-    private void determineRecreationNeed(Set<FactoryBase<?,R> > changedFactories){
+    private void determineRecreationNeed(Set<FactoryBase<?,?> > changedFactories){
         for (FactoryBase<?,?> factory : changedFactories) {
             factory.needRecreation=true;
             if (factory.needsCreatePropagation()){

@@ -1,10 +1,6 @@
 package io.github.factoryfx.factory.attribute;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -26,6 +22,9 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     private void afterModify(){
         updateListeners(ValueListAttribute.this);
+        if (this.root!=null){
+            root.internal().addModified(this.parent);
+        }
     }
 
     @JsonCreator
@@ -38,6 +37,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
     public String getDisplayText() {
         return new CollectionAttributeUtil<>(this.value, Object::toString).getDisplayText();
     }
+
 
     @Override
     public List<T> get() {
@@ -53,6 +53,21 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
             this.value.clear();
             this.value.addAll(value);
         }
+    }
+
+    private void beforeModify(){
+        handleOriginalValue(this.value);
+    }
+
+    @Override
+    protected void setOriginalValue(List<T> old) {
+        this.originalValue=new ArrayList<>(old);
+    }
+
+    @Override
+    protected void resetValue() {
+        this.value.clear();
+        this.value.addAll(originalValue);
     }
 
     public List<T> filtered(Predicate<T> predicate) {
@@ -91,6 +106,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public boolean add(T t) {
+        beforeModify();
         boolean add = this.value.add(t);
         afterModify();
         return add;
@@ -98,6 +114,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public boolean remove(Object o) {
+        beforeModify();
         boolean remove = this.value.remove(o);
         afterModify();
         return remove;
@@ -110,6 +127,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
+        beforeModify();
         boolean b = this.value.addAll(c);
         afterModify();
         return b;
@@ -117,6 +135,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
+        beforeModify();
         boolean b = this.value.addAll(index, c);
         afterModify();
         return b;
@@ -124,6 +143,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public boolean removeAll(Collection<?> c) {
+        beforeModify();
         boolean b = this.value.removeAll(c);
         afterModify();
         return b;
@@ -136,6 +156,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public void clear() {
+        beforeModify();
         this.value.clear();
         afterModify();
     }
@@ -147,6 +168,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public T set(int index, T element) {
+        beforeModify();
         T result = this.value.set(index, element);
         afterModify();
         return result;
@@ -154,12 +176,14 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public void add(int index, T element) {
+        beforeModify();
         this.value.add(index,element);
         afterModify();
     }
 
     @Override
     public T remove(int index) {
+        beforeModify();
         T remove = this.value.remove(index);
         afterModify();
         return remove;

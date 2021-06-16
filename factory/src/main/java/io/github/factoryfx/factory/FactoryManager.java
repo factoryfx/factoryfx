@@ -36,60 +36,60 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
             throw new IllegalStateException("update on a not started manager");
         }
 
-        Collection<FactoryBase<?,R>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
-        previousFactories.forEach((f) -> f.internal().resetLog());
-        R previousFactoryCopyRoot = currentFactoryRoot.copy();
 
+        return this.update((root, idToFactory) -> {
+            Collection<FactoryBase<?,R>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
+            previousFactories.forEach((f) -> f.internal().resetLog());
+            RootFactoryWrapper.MergeResult<R> merge = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
+            return merge.mergeDiffInfo;
+        });
+
+    }
+
+    private FactoryUpdateLog<R> updateCurrentFactory(MergeDiffInfo<R> mergeDiffInfo) {
+        long totalUpdateDuration;
         FactoryBase<?,?> factoryBaseInFocus=null;//for better exception reporting
+        try {
+            long start = System.nanoTime();
 
-        RootFactoryWrapper.MergeResult<R> mergeDiff = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
-        long totalUpdateDuration = 0;
-        List<FactoryBase<?,R>> removed = new ArrayList<>();
-
-        if (mergeDiff.mergeDiffInfo.successfullyMerged()) {
-            try {
-                final Collection<FactoryBase<?,R>> currentFactoriesAfterMerge = currentFactoryRoot.collectChildFactories();
-                removed = getRemovedFactories(previousFactories, new HashSet<>(currentFactoriesAfterMerge));
-
-                long start = System.nanoTime();
-                currentFactoryRoot.determineRecreationNeedFromRoot(mergeDiff.mergedFactories);
-
-                //attention lifecycle method call order is important
-
-                final Collection<FactoryBase<?,R>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
-                for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
-                    factoryBaseInFocus=factory;
-                    factory.internal().instance();
-                    //createWithExceptionHandling(factory, new RootFactoryWrapper<>(previousFactoryCopyRoot), currentFactoryRoot);
-                }
-
-                for (FactoryBase<?,R> factory : currentFactoriesAfterMerge) {
-                    factoryBaseInFocus=factory;
-                    factory.internal().destroyUpdated();
-                }
-                for (FactoryBase<?,R> factory : removed) {
-                    factoryBaseInFocus=factory;
-                    factory.internal().destroyRemoved();
-                }
+            final Collection<FactoryBase<?,R>> currentFactoriesAfterMerge = currentFactoryRoot.collectChildFactories();
+            Set<FactoryBase<?,?>> removed = currentFactoryRoot.getRemoved();//getRemovedFactories(previousFactories, new HashSet<>(currentFactoriesAfterMerge));
 
 
-                //factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
-                for (FactoryBase<?,R> factory : factoriesInCreateAndStartOrder) {
-                    factoryBaseInFocus=factory;
-                    factory.internal().start();
-                }
-                totalUpdateDuration = System.nanoTime() - start;
-                String log = currentFactoryRoot.logUpdateDisplayTextDeep();
-                logger.info(log);
-                return new FactoryUpdateLog<>(log,mergeDiff.mergeDiffInfo,totalUpdateDuration,null);
-            } catch(Exception e){
-                factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this, new RootFactoryWrapper<>(previousFactoryCopyRoot),currentFactoryRoot,removed));
-                return new FactoryUpdateLog<>(Throwables.getStackTraceAsString(e));
+            currentFactoryRoot.determineRecreationNeedFromRoot(currentFactoryRoot.getRoot().internal().getModified());
+
+            //attention lifecycle method call order is important
+
+            final Collection<FactoryBase<?,R>> factoriesInCreateAndStartOrder = currentFactoryRoot.getFactoriesInCreateAndStartOrder();
+            for (FactoryBase<?,?> factory : factoriesInCreateAndStartOrder) {
+                factoryBaseInFocus=factory;
+                factory.internal().instance();
+                //createWithExceptionHandling(factory, new RootFactoryWrapper<>(previousFactoryCopyRoot), currentFactoryRoot);
             }
-        } else {
-            return new FactoryUpdateLog<>("",mergeDiff.mergeDiffInfo,totalUpdateDuration,null);
-        }
 
+            for (FactoryBase<?,R> factory : currentFactoriesAfterMerge) {
+                factoryBaseInFocus=factory;
+                factory.internal().destroyUpdated();
+            }
+            for (FactoryBase<?,?> factory : removed) {
+                factoryBaseInFocus=factory;
+                factory.internal().destroy();
+            }
+
+
+            //factoriesInCreateAndStartOrder.forEach(this::startWithExceptionHandling);
+            for (FactoryBase<?,R> factory : factoriesInCreateAndStartOrder) {
+                factoryBaseInFocus=factory;
+                factory.internal().start();
+            }
+            totalUpdateDuration = System.nanoTime() - start;
+            String log = currentFactoryRoot.logUpdateDisplayTextDeep();
+            logger.info(log);
+            return new FactoryUpdateLog<>(log, mergeDiffInfo,totalUpdateDuration,null);
+        } catch(Exception e){
+            factoryExceptionHandler.updateException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this,currentFactoryRoot));
+            return new FactoryUpdateLog<>(Throwables.getStackTraceAsString(e));
+        }
     }
 
     List<FactoryBase<?,R>> getRemovedFactories(Collection<FactoryBase<?,R>> previousFactories, Set<FactoryBase<?,R>> newFactories){
@@ -137,7 +137,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
             logger.info(currentFactoryRoot.logStartDisplayTextDeep());
             return currentFactoryRoot.getRoot().internal().getLiveObject();
         } catch (Exception e){
-            factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this,null,currentFactoryRoot,new ArrayList<>()));
+            factoryExceptionHandler.startException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this,currentFactoryRoot));
             return null;
         }
     }
@@ -151,23 +151,61 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         try {
             for (FactoryBase<?,?> factory: factories){
                 factoryBaseInFocus=factory;
-                factory.internal().destroyRemoved();
+                factory.internal().destroy();
             }
         } catch(Exception e){
-            factoryExceptionHandler.destroyException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this, null,null,new ArrayList<>()));
+            factoryExceptionHandler.destroyException(e,factoryBaseInFocus,new ExceptionResponseAction<>(this, null));
         }
         currentFactoryRoot=null;
 
     }
 
     public void resetAfterCrash() {
-        for (FactoryBase<?,?> factory : currentFactoryRoot.getFactoriesInDestroyOrder()) {
+        for (FactoryBase<?,?> factory : currentFactoryRoot.getRoot().internal().getFactoriesInDestroyOrder()) {
             factory.internal().cleanUpAfterCrash();
         }
-        this.currentFactoryRoot=null;
+        for (FactoryBase<?, ?> factory : currentFactoryRoot.getRoot().internal().getRemoved()) {
+            factory.internal().cleanUpAfterCrash();
+        }
+        for (FactoryBase<?, R> factory : currentFactoryRoot.getRoot().internal().collectChildrenDeep()) {
+            factory.internal().resetModificationFlat();
+        }
+        for (FactoryBase<?, ?> factory : currentFactoryRoot.getRoot().internal().getRemoved()) {
+            factory.internal().resetModificationFlat();
+        }
+        currentFactoryRoot.getRoot().internal().needReFinalisation();
+        start(new RootFactoryWrapper<>(currentFactoryRoot.getRoot()));
     }
 
     public boolean isStarted(){
         return currentFactoryRoot!=null;
+    }
+
+    private FactoryUpdateLog<R> update(FactoryUpdateMerge<R> updater) {
+        currentFactoryRoot.collectChildFactories();
+
+        try {
+            MergeDiffInfo<R> mergeDiffInfo = updater.update(currentFactoryRoot.getRoot(), currentFactoryRoot.getRoot().internal().collectChildFactoryMap());
+            currentFactoryRoot.getRoot().internal().needReFinalisation();
+            currentFactoryRoot=new RootFactoryWrapper<>(currentFactoryRoot.getRoot());
+            return this.updateCurrentFactory(mergeDiffInfo);
+        } catch (Exception e){
+            logger.error("factory reset after exception during update",e);
+            for (FactoryBase<?, R> factory : currentFactoryRoot.collectChildFactories()) {
+                factory.internal().resetModificationFlat();
+            }
+            return new FactoryUpdateLog<>(Throwables.getStackTraceAsString(e));
+        } finally {
+            for (FactoryBase<?, R> factory : currentFactoryRoot.collectChildFactories()) {
+                factory.internal().clearModifyStateFlat();
+            }
+        }
+    }
+
+    public FactoryUpdateLog<R> update(FactoryUpdate<R> updater) {
+        return update((root, idToFactory) -> {
+            updater.update(root,idToFactory);
+            return null;
+        });
     }
 }
