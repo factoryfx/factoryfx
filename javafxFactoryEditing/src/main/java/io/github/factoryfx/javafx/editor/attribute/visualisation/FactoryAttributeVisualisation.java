@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.PossibleNewValue;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.widget.select.SelectFactoryDialog;
@@ -39,12 +40,11 @@ public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends
 
     private final UniformDesign uniformDesign;
     private final Consumer<FactoryBase<?,?>> navigateToData;
-    private final Supplier<List<F>> newValueProvider;
-    private final Supplier<Collection<F>> possibleValuesProvider;
+    private final Supplier<List<PossibleNewValue<F>>> newValueProvider;
+    private final Supplier<List<PossibleNewValue<F>>> possibleValuesProvider;
     private final SimpleBooleanProperty isUserSelectable;
     private final SimpleBooleanProperty isUserCreateable;
     private final Runnable remover;
-    private final Consumer<F> referenceSetter;
 
 
 
@@ -58,7 +58,6 @@ public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends
         this.isUserSelectable=new SimpleBooleanProperty(attribute.internal_isUserSelectable());
         this.isUserCreateable=new SimpleBooleanProperty(attribute.internal_isUserCreatable());
         this.remover=attribute::internal_deleteFactory;
-        this.referenceSetter=attribute::set;
     }
 
     @Override
@@ -79,8 +78,8 @@ public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends
             MenuItem selectFactoryMenuItem = new MenuItem(uniformDesign.getText(selectFactoryText));
             uniformDesign.addIcon(selectFactoryMenuItem, FontAwesome.Glyph.SEARCH_PLUS);
             selectFactoryMenuItem.setOnAction(event -> {
-                Collection<F> collection = possibleValuesProvider.get();
-                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), t -> observableAttributeValue.set((F) t.utility().semanticCopy()));
+                List<PossibleNewValue<F>> collection = possibleValuesProvider.get();
+                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), PossibleNewValue::addSemanticCopy);
             });
             newButton.getItems().add(selectFactoryMenuItem);
         }
@@ -88,8 +87,8 @@ public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends
             MenuItem selectFactoryCopyMenuItem = new MenuItem(uniformDesign.getText(selectFactoryCopyText));
             uniformDesign.addIcon(selectFactoryCopyMenuItem, FontAwesome.Glyph.COPY);
             selectFactoryCopyMenuItem.setOnAction(event -> {
-                Collection<F> collection = possibleValuesProvider.get();
-                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), t -> observableAttributeValue.set((F) t.utility().semanticCopy()));
+                List<PossibleNewValue<F>> collection = possibleValuesProvider.get();
+                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), PossibleNewValue::addSemanticCopy);
             });
             newButton.getItems().add(selectFactoryCopyMenuItem);
         }
@@ -149,15 +148,15 @@ public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends
     }
 
     private void addNewReference(Window owner) {
-        List<F> newData = newValueProvider.get();
+        List<PossibleNewValue<F>> newData = newValueProvider.get();
         if (!newData.isEmpty()){
             if (newData.size()==1){
-                referenceSetter.accept(newData.get(0));
-                navigateToData.accept(newData.get(0));
+                newData.get(0).add();
+                navigateToData.accept(newData.get(0).newValue);
             } else {
                 new SelectFactoryDialog<>(newData,uniformDesign).show(owner, data -> {
-                    referenceSetter.accept(data);
-                    navigateToData.accept(data);
+                    data.add();
+                    navigateToData.accept(data.newValue);
                 });
             }
         }

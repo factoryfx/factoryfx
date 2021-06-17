@@ -89,7 +89,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.0.0-alpha0'
+    version = '3.0.0-alpha1'
 
     publishing {
 
@@ -579,8 +579,8 @@ project(':benchmark') {
         implementation project(":factory")
         implementation project(":testfactories")
 
-        implementation group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
-        implementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.21'
+        implementation group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.32'
+        implementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.32'
     }
 }
 

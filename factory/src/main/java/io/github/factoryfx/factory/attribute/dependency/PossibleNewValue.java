@@ -22,5 +22,9 @@ public class PossibleNewValue<F extends FactoryBase<?,?>> {
         root.internal().finalise();
     }
 
-
+    @SuppressWarnings("unchecked")
+    public void addSemanticCopy(){
+        adder.accept((F)newValue.utility().semanticCopy());
+        root.internal().finalise();
+    }
 }

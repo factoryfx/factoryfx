@@ -18,7 +18,7 @@ public class Main {
 //        CommandLineOptions cmdOptions = new CommandLineOptions(args);
 
         Options opt = new OptionsBuilder()
-                .include(IteratePerformance.class.getSimpleName())
+                .include(FactoryUpdateInProcessBenchmark.class.getSimpleName())
                 .forks(1)
                 .build();
 

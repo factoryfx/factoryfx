@@ -182,7 +182,6 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
     }
 
     private FactoryUpdateLog<R> update(FactoryUpdateMerge<R> updater) {
-        currentFactoryRoot.collectChildFactories();
 
         try {
             MergeDiffInfo<R> mergeDiffInfo = updater.update(currentFactoryRoot.getRoot(), currentFactoryRoot.getRoot().internal().collectChildFactoryMap());
