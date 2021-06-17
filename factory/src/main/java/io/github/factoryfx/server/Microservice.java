@@ -99,6 +99,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
     }
 
     /**
+     *  Update from different process(browser java richclient)
      *  prepare a new factory which could be used to update data. mainly give it the correct baseVersionId
      * @param user use
      * @param comment comment
@@ -167,6 +168,10 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         return factoryManager.getCurrentFactory().internal().getLiveObject();
     }
 
+    /**
+     * updates the current factories from the same process(jvm)
+     * @param updater update execution
+     */
     public void update(FactoryUpdate<R> updater){
         factoryManager.update(updater);
         dataStorage.updateCurrentData(new DataUpdate<>(factoryManager.getCurrentFactory(),"system","",dataStorage.getCurrentDataId()),null);

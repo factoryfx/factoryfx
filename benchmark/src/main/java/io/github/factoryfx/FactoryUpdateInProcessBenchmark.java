@@ -64,7 +64,13 @@ public class FactoryUpdateInProcessBenchmark {
 
 
     public static void main(String[] args) {
+
         FactoryUpdateInProcessBenchmark factoryUpdateBenchmark = new FactoryUpdateInProcessBenchmark();
+        //warmup
+        factoryUpdateBenchmark.update_merge();
+        factoryUpdateBenchmark.update_in_process();
+
+
         long start=System.currentTimeMillis();
         factoryUpdateBenchmark.update_merge();
         System.out.println("update_merge "+(System.currentTimeMillis()-start));

@@ -1,5 +1,7 @@
 package io.github.factoryfx.docu.customconfig;
 
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.FactoryUpdate;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
@@ -7,6 +9,8 @@ import io.github.factoryfx.server.Microservice;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Map;
+import java.util.UUID;
 
 @Path("/CustomConfiguration")
 public class CustomConfigurationResource {
@@ -24,9 +28,7 @@ public class CustomConfigurationResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response config(CustomConfigurationRequest request) {
-        DataUpdate<JettyServerRootFactory> update = microservice.prepareNewFactory("CustomConfigurationResource","port change");
-        update.root.connectors.get(0).port.set(request.port);
-        microservice.updateCurrentFactory(update);
+        microservice.update((root, idToFactory) -> root.connectors.get(0).port.set(request.port));
         return Response.ok().build();
     }
 

@@ -1,9 +1,11 @@
 package io.github.factoryfx.javafx.editor.attribute.visualisation;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.PossibleNewValue;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.editor.attribute.ListAttributeVisualisation;
@@ -21,7 +23,7 @@ import io.github.factoryfx.javafx.util.UniformDesign;
 
 public class CatalogListAttributeVisualisation<T extends FactoryBase<?,?>, A extends FactoryListBaseAttribute<?,T,A>> extends ListAttributeVisualisation<T,A> {
     private final UniformDesign uniformDesign;
-    private final Supplier<Collection<T>> possibleValuesProvider;
+    private final Supplier<List<PossibleNewValue<T>>> possibleValuesProvider;
     private final A referenceListAttribute;
 
     public CatalogListAttributeVisualisation(A referenceListAttribute, AttributeMetadata attributeMetadata, ValidationDecoration validationDecoration, UniformDesign uniformDesign) {
@@ -39,7 +41,7 @@ public class CatalogListAttributeVisualisation<T extends FactoryBase<?,?>, A ext
     @Override
     public Node createValueListVisualisation() {
         CheckComboBox<T> comboBox = new CheckComboBox<>();
-        possibleValuesProvider.get().stream().distinct().forEach(comboBox.getItems()::add);
+        possibleValuesProvider.get().stream().map(p->p.newValue).distinct().forEach(comboBox.getItems()::add);
         CheckComboBoxHelper.addOpenCloseListener(comboBox, this::updateCheckComboBox);
 
         comboBox.setConverter(new DataStringConverter<>());
