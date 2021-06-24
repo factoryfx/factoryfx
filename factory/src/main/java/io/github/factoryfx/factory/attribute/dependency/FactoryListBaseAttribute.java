@@ -134,10 +134,12 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     private void afterAdd(F added){
         if (added == null) {
-            throw new IllegalStateException("cant't add null to list");
+            throw new IllegalStateException("can't add null to list");
+        }
+        if (root!=null && !batchEditStarted) {
+            added.internal().setRootDeepUnchecked(root);
         }
     }
-
 
     private void afterAdd(Collection<? extends F> added){
         for (F add: added){

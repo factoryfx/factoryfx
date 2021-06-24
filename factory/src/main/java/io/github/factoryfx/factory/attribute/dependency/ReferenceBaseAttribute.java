@@ -185,4 +185,14 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         return root!=null;
     }
 
+
+    boolean batchEditStarted;
+    public void internal_startBatchEdit(){
+        batchEditStarted=true;
+    }
+
+    public void internal_endBatchEdit(){
+        batchEditStarted=false;
+    }
+
 }

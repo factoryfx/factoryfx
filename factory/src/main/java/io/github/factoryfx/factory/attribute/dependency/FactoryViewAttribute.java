@@ -191,4 +191,12 @@ public class FactoryViewAttribute<R extends FactoryBase<?,R>,L, F extends Factor
         }
     }
 
+    public void internal_startBatchEdit(){
+        //nothing
+    }
+
+    public void internal_endBatchEdit(){
+        //nothing
+    }
+
 }

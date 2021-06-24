@@ -76,6 +76,9 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
                 originalValue=old;
                 originalValueSet=true;
             }
+            if (!batchEditStarted && factory!=null) {
+                factory.internal().setRootDeepUnchecked(root);
+            }
         }
         updateListeners(factory);
     }

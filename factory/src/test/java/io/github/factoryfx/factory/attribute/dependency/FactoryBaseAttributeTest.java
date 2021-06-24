@@ -1,10 +1,13 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
+import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.AttributeChangeListener;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
@@ -40,7 +43,6 @@ class FactoryBaseAttributeTest {
         exampleFactoryA.internal().finalise();
         exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
 
-        exampleFactoryA.internal().finalise();
         assertEquals(1,exampleFactoryA.referenceAttribute.get().internal().getParents().size());
     }
 
@@ -60,11 +62,24 @@ class FactoryBaseAttributeTest {
         exampleFactoryC.referenceAttribute.set(factoryB);
         exampleFactoryA.referenceListAttribute.add(factoryB);
 
-        exampleFactoryA.internal().finalise();
         assertEquals(2,factoryB.internal().getParents().size());
-
-
     }
+
+    @Test
+    public void test_batch_edit()  {
+        ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
+        exampleFactoryA.internal().finalise();
+
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        assertEquals(1,exampleFactoryA.referenceAttribute.get().internal().getParents().size());
+
+
+        exampleFactoryA.internal().visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_startBatchEdit());
+        exampleFactoryA.referenceAttribute.set(new ExampleFactoryB());
+        exampleFactoryA.internal().visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_endBatchEdit());
+        assertEquals(0,exampleFactoryA.referenceAttribute.get().internal().getParents().size());
+    }
+
 
 
     @Test

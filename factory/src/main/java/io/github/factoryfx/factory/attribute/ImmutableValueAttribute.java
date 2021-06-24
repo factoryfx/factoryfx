@@ -173,4 +173,12 @@ public abstract class ImmutableValueAttribute<T,A extends Attribute<T,A>> extend
     public Optional<T> getNullable(){
         return Optional.ofNullable(get());
     }
+
+    public void internal_startBatchEdit(){
+        //nothing
+    }
+
+    public void internal_endBatchEdit(){
+        //nothing
+    }
 }

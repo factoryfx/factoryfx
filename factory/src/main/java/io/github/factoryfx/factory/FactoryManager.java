@@ -4,12 +4,14 @@ import java.util.*;
 import java.util.function.Function;
 
 import com.google.common.base.Throwables;
+import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.exception.AllOrNothingFactoryExceptionHandler;
 import io.github.factoryfx.factory.exception.ExceptionResponseAction;
 import io.github.factoryfx.factory.exception.FactoryExceptionHandler;
 import io.github.factoryfx.factory.log.FactoryUpdateLog;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -182,6 +184,9 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
     }
 
     private FactoryUpdateLog<R> update(FactoryUpdateMerge<R> updater) {
+        for (FactoryBase<?, R> factory : currentFactoryRoot.collectChildFactories()) {
+            factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_startBatchEdit());
+        }
 
         try {
             MergeDiffInfo<R> mergeDiffInfo = updater.update(currentFactoryRoot.getRoot(), currentFactoryRoot.getRoot().internal().collectChildFactoryMap());
@@ -197,6 +202,7 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         } finally {
             for (FactoryBase<?, R> factory : currentFactoryRoot.collectChildFactories()) {
                 factory.internal().clearModifyStateFlat();
+                factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_endBatchEdit());
             }
         }
     }

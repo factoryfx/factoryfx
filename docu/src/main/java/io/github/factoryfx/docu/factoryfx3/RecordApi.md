@@ -40,7 +40,7 @@ public class Printer {
 New API
 ```java
 public class Printer {
-    public record Dependency (String text, Factory<TextPrinterFacility.Dependency, TextPrinterFacility> textFacility) implements Dependencies<Printer> {}
+    public record Dependency (String text, Dependency<TextPrinterFacility,TextPrinterFacility.Dependency> textFacility) implements Dependencies<Printer> {}
 
     private final Dependency dep;
     public Printer(Dependency dep){

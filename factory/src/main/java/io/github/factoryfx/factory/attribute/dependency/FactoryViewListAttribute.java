@@ -219,5 +219,13 @@ public class FactoryViewListAttribute<R extends FactoryBase<?,R>,L, F extends Fa
             }
         }
     }
+
+    public void internal_startBatchEdit(){
+        //nothing
+    }
+
+    public void internal_endBatchEdit(){
+        //nothing
+    }
 }
 
