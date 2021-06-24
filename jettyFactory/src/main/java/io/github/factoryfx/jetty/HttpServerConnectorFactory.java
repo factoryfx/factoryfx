@@ -1,5 +1,6 @@
 package io.github.factoryfx.jetty;
 
+import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.FactoryBase;
@@ -16,9 +17,11 @@ public class HttpServerConnectorFactory<R extends FactoryBase<?,R>> extends Simp
     public final FactoryAttribute<SslContextFactory, SslContextFactoryFactory<R>> ssl = new FactoryAttribute<SslContextFactory, SslContextFactoryFactory<R>>().de("ssl").en("ssl").nullable();
     public final FactoryAttribute<HttpConfiguration, HttpConfigurationFactory<R>> httpConfiguration = new FactoryAttribute<HttpConfiguration, HttpConfigurationFactory<R>>().de("httpConfiguration").en("httpConfiguration").nullable();
 
+    public final BooleanAttribute useHttp2 = new BooleanAttribute().de("useHttp2").en("useHttp2").nullable();
+
     @Override
     protected HttpServerConnector createImpl() {
-        return new HttpServerConnector(host.get(),port.get(),ssl.instance(),httpConfiguration.instance());
+        return new HttpServerConnector(host.get(),port.get(),ssl.instance(),httpConfiguration.instance(),useHttp2.getNullable().orElse(false));
     }
 
     public HttpServerConnectorFactory(){

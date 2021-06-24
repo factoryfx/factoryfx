@@ -89,7 +89,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.0.0-alpha1'
+    version = '3.0.0-alpha2'
 
     publishing {
 
@@ -344,6 +344,8 @@ project(':jettyFactory') {
         api  (group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.31.v20200723')
         api  (group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.31.v20200723')
         api  (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '9.4.31.v20200723')
+        api  (group: 'org.eclipse.jetty.http2', name: 'http2-server', version: '9.4.31.v20200723')
+        api  (group: 'org.eclipse.jetty', name: 'jetty-alpn-java-server', version: '9.4.31.v20200723')
 
         api  group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '2.3.2'
 

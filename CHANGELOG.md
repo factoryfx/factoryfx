@@ -4,6 +4,9 @@
 * **improved factory runtime**
   * improved performance for factory update in the same process
 
+* **http2 jetty server builder:**
+  * http2 configuration added
+
 # 2.2.16
 
 ### BREAKING CHANGES

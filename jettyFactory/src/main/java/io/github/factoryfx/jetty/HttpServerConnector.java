@@ -1,9 +1,9 @@
 package io.github.factoryfx.jetty;
 
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.NetworkTrafficServerConnector;
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
+import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 
@@ -15,9 +15,10 @@ public class HttpServerConnector {
     private final HttpConfiguration httpConfiguration;
 
 
-    private  NetworkTrafficServerConnector connector;
+    private ServerConnector connector;
+    private boolean useHttp2;
 
-    public HttpServerConnector(String host, int port, SslContextFactory sslContextFactory, HttpConfiguration httpConfiguration) {
+    public HttpServerConnector(String host, int port, SslContextFactory sslContextFactory, HttpConfiguration httpConfiguration, boolean useHttp2) {
         this.host = host;
         this.port = port;
         this.sslContextFactory= sslContextFactory;
@@ -26,13 +27,30 @@ public class HttpServerConnector {
         } else {
             this.httpConfiguration = httpConfiguration;
         }
+        this.useHttp2=useHttp2;
     }
 
     public void addToServer(Server server) {
-        if (sslContextFactory!=null){
-            connector = new NetworkTrafficServerConnector(server,new HttpConnectionFactory(httpConfiguration),sslContextFactory);
+
+
+        if (useHttp2) {
+            HttpConfiguration httpConfiguration = new HttpConfiguration();
+            HttpConnectionFactory h1 = new HttpConnectionFactory(httpConfiguration);
+            HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpConfiguration);
+            ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
+            alpn.setDefaultProtocol(h1.getProtocol());
+            connector = new ServerConnector(server,sslContextFactory,alpn,h1,h2);
+            if (sslContextFactory!=null){
+                connector = new ServerConnector(server, sslContextFactory, alpn, h2, new HttpConnectionFactory(httpConfiguration));
+            } else {
+                connector = new ServerConnector(server, alpn, h1, h2);
+            }
         } else {
-            connector = new NetworkTrafficServerConnector(server,new HttpConnectionFactory(httpConfiguration));
+            if (sslContextFactory!=null){
+                connector = new NetworkTrafficServerConnector(server,new HttpConnectionFactory(httpConfiguration),sslContextFactory);
+            } else {
+                connector = new NetworkTrafficServerConnector(server,new HttpConnectionFactory(httpConfiguration));
+            }
         }
 
         connector.setPort(port);
@@ -48,5 +66,6 @@ public class HttpServerConnector {
             }
         }
     }
+
 
 }

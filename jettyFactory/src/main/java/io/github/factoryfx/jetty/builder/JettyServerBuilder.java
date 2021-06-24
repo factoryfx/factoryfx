@@ -94,6 +94,21 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     }
 
     /**
+     * add a jetty connector, useful for jetty on multiple ports or support both http and ssl
+     *
+     * @param connectorBuilderSetup connectorBuilderSetup e.g. {@code withAdditionalConnector((connector)->connector.withPort(8080),"con1")}
+     * @param name builder unique name, used in the builder to associate match the templates
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> setAdditionalConnector(Consumer<ServerConnectorBuilder<R>> connectorBuilderSetup, FactoryTemplateName name){
+        serverConnectorBuilders.clear();
+        ServerConnectorBuilder<R> resourceBuilder = new ServerConnectorBuilder<>(new FactoryTemplateId<>(this.rootTemplateId.name+name.name, ServletAndPathFactory.class));
+        connectorBuilderSetup.accept(resourceBuilder);
+        serverConnectorBuilders.add(resourceBuilder);
+        return this;
+    }
+
+    /**
      * add a new jersey servlet with REST Resources
      * this can be used to support different ObjectMappers/ExceptionHandler
      *

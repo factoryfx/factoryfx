@@ -18,6 +18,7 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
     int port=8080;
     SslContextFactoryFactory<R> ssl;
     HttpConfigurationFactory<R> httpConfiguration;
+    boolean useHttp2=false;
 
     private final FactoryTemplateId<HttpServerConnectorFactory<R>> connectorTemplateId;
 
@@ -84,6 +85,7 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
             HttpServerConnectorFactory<R> serverConnectorFactory = new HttpServerConnectorFactory<>();
             serverConnectorFactory.host.set(host);
             serverConnectorFactory.port.set(port);
+            serverConnectorFactory.useHttp2.set(useHttp2);
 
             if (ssl!=null) {
                 serverConnectorFactory.ssl.set(ssl);
@@ -100,5 +102,10 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
 
     FactoryTemplateId<HttpServerConnectorFactory<R>> getTemplateId() {
         return this.connectorTemplateId;
+    }
+
+    public ServerConnectorBuilder<R> withHttp2() {
+        useHttp2=true;
+        return this;
     }
 }

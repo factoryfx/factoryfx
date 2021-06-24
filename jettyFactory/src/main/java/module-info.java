@@ -12,6 +12,8 @@ module io.github.factoryfx.jettyFactory {
     requires org.eclipse.jetty.util;
     requires org.eclipse.jetty.servlet;
     requires org.eclipse.jetty.http;
+    requires org.eclipse.jetty.http2.server;
+    requires org.eclipse.jetty.alpn.server;
 
     requires java.logging;
     requires transitive io.github.factoryfx.factory;
