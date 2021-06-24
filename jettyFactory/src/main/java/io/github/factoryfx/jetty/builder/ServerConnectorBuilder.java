@@ -104,6 +104,10 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
         return this.connectorTemplateId;
     }
 
+    /**
+     * enables http 2
+     * @return builder
+     */
     public ServerConnectorBuilder<R> withHttp2() {
         useHttp2=true;
         return this;

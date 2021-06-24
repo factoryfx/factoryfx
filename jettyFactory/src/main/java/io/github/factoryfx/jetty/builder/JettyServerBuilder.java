@@ -478,4 +478,13 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         return this;
     }
 
+    /**
+     * @see ServerConnectorBuilder#withHttp2()
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withHttp2() {
+        getDefaultServerConnector().withHttp2();
+        return this;
+    }
+
 }
