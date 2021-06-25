@@ -109,7 +109,7 @@ public class OracledbDataStorage<R extends FactoryBase<?,R>> implements DataStor
 
     @Override
     public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
-        StoredDataMetadata metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentData().id);
+        StoredDataMetadata metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentDataId());
         update(update.root, metadata);
     }
 

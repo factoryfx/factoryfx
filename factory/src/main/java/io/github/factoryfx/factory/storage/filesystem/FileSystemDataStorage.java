@@ -100,7 +100,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
                 update.comment,
                 update.baseVersionId,
                 changeSummary,
-                update.root.internal().createDataStorageMetadataDictionaryFromRoot(),getCurrentData().id);
+                update.root.internal().createDataStorageMetadataDictionaryFromRoot(),getCurrentDataId());
         update(update.root, metadata);
     }
 
