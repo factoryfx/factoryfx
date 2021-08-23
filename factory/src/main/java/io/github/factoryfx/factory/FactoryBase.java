@@ -413,7 +413,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private synchronized <T extends FactoryBase<?,?>> T semanticCopy() {
         return copy((f) -> {
-            Scope scope = this.root.factoryTreeBuilder.getScope(new FactoryTemplateId<>(f));
+            Scope scope = null;
+            if (f.internal().isTreeBuilderClassUsed()){
+                scope=this.root.factoryTreeBuilder.getScope(new FactoryTemplateId<>(f));
+            }
+            if (f.catalogItem){
+                scope=Scope.SINGLETON;
+            }
             if (f==this){
                 return f.newCopyInstance(f);
             }
