@@ -633,6 +633,11 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
+    private boolean catalogItem;
+    private void markAsCatalogItem() {
+        catalogItem=true;
+    }
+
     @JsonIgnore
     private boolean isCreatedWithBuilderTemplate() {
         return this.treeBuilderClassUsed || this.treeBuilderName!=null;
@@ -717,6 +722,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          */
         public <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
             factory.addValidation(validation,dependencies);
+        }
+
+        /**
+         * mark factory as catalog item means that for semanticCopy the factory is considered as singleton
+         * @param <T> this
+         */
+        public <T> void markAsCatalogItem(){
+            factory.markAsCatalogItem();
         }
 
     }

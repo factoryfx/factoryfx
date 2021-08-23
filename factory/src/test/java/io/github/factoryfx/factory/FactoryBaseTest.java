@@ -885,4 +885,23 @@ public class FactoryBaseTest {
         assertEquals(copy, copy.utility().getFactoryTreeBuilder().buildSubTrees(ExampleFactoryA.class).get(0));
     }
 
+    public static class ExampleFactoryBCatalogItem extends ExampleFactoryB  {
+        {
+            this.config().markAsCatalogItem();
+        }
+    }
+
+    @Test
+    public void test_copy_catolog(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        ExampleFactoryBCatalogItem factoryB = new ExampleFactoryBCatalogItem();
+        root.referenceAttribute.set(factoryB);
+        root.referenceListAttribute.add(factoryB);
+        root.internal().finalise();
+
+        ExampleFactoryA copy = root.utility().semanticCopy();
+        assertEquals(root.referenceAttribute.get(), copy.referenceAttribute.get());
+    }
+
+
 }
