@@ -639,6 +639,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
+    @JsonIgnore
     private boolean catalogItem;
     private void markAsCatalogItem() {
         catalogItem=true;
