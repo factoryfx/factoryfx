@@ -1,4 +1,4 @@
-# 2.2.15
+# 2.2.24
 * Factories can be marked as catalog item to support semantic copy. 
 
 ```java
