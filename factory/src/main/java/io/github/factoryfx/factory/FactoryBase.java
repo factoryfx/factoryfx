@@ -485,7 +485,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
      *<br>
      */
     int treeChildrenCounter;
-    long backReferencesIterationRun=0;
+    boolean backReferencesIterationRunVisited=false;
     @SuppressWarnings("unchecked")
     private void finalise(){
         R root = (R)this;
@@ -493,13 +493,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         if (!needReFinalisation){
             return;
         }
-
+        List<FactoryBase<?,R>> visited=new ArrayList<>();
         ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
         stack.push(root);
-        long backReferencesIterationRun = root.backReferencesIterationRun+1;
         while (!stack.isEmpty()) {
             FactoryBase<?,R> factory = stack.pop();
-            factory.backReferencesIterationRun=backReferencesIterationRun;
+            visited.add(factory);
+            factory.backReferencesIterationRunVisited=true;
 
             factory.root=root;
             factory.root.treeChildrenCounter++;
@@ -507,7 +507,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
             factory.finalizeChildren();
             for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
-                if (child.backReferencesIterationRun!=backReferencesIterationRun) {
+                if (!child.backReferencesIterationRunVisited) {
                     child.resetParents();
                     stack.push(child);
                 }
@@ -515,6 +515,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             }
         }
         needReFinalisation =false;
+
+        for (FactoryBase<?, R> item : visited) {
+            item.backReferencesIterationRunVisited=false;
+        }
     }
 
     boolean needReFinalisation =true;
@@ -522,23 +526,28 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         this.root.needReFinalisation =true;
     }
 
-    long rootDeepIterationRun=0;
+    boolean rootDeepIterationRunVisited=false;
     private void setRootDeep(R root) {
+        List<FactoryBase<?,R>> visited=new ArrayList<>();
         ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
         stack.push(this);
-        long rootDeepIterationRun = root.rootDeepIterationRun+1;
         while (!stack.isEmpty()) {
             FactoryBase<?,R> factory = stack.pop();
-            factory.rootDeepIterationRun=rootDeepIterationRun;
+            visited.add(factory);
+            factory.rootDeepIterationRunVisited=true;
             factory.root=root;
             factory.getFactoryMetadata().addBackReferencesToAttributesUnsafe(factory,root);
 
             factory.finalizeChildren();
             for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
-                if (child.rootDeepIterationRun!=rootDeepIterationRun) {
+                if (!child.rootDeepIterationRunVisited) {
                     stack.push(child);
                 }
             }
+        }
+
+        for (FactoryBase<?, R> item : visited) {
+            item.rootDeepIterationRunVisited=false;
         }
     }
 
@@ -1300,6 +1309,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     List<FactoryBase<?,R>> addedTo;
     @SuppressWarnings("unchecked")
     void finalizeChildren() {
+        System.out.println(this);
         finalisedChildrenFlat = new ArrayList<>();
         getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, childUntyped->{
             FactoryBase<?,R> child = (FactoryBase<?,R>)childUntyped;

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class MicroserviceTest {
 
@@ -311,6 +312,44 @@ public class MicroserviceTest {
 
         Assertions.assertEquals(1,exampleFactoryAFactoryUpdateLog.mergeDiffInfo.conflictInfos.size());
         Assertions.assertEquals("first update",microservice.prepareNewFactory().root.referenceListAttribute.get(0).stringAttribute.get());
+
+    }
+
+
+    public static class ExampleFactoryBDestroyTracking extends ExampleFactoryB{
+        static int destroyCalled=0;
+        public ExampleFactoryBDestroyTracking(){
+            this.configLifeCycle().setDestroyer(exampleLiveObjectB -> destroyCalled++);
+        }
+    }
+
+    @Test
+    public void test_removed_factories() {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
+
+        microservice.start();
+
+        {
+            DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+            update.root.referenceAttribute.set(new ExampleFactoryBDestroyTracking());
+            microservice.updateCurrentFactory(update);
+        }
+
+
+        {
+            DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+            update.root.referenceListAttribute.add(new ExampleFactoryBDestroyTracking());
+            microservice.updateCurrentFactory(update);
+        }
+        Assertions.assertEquals(0,ExampleFactoryBDestroyTracking.destroyCalled);
+
+        {
+            DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+            update.root.referenceAttribute.set(null);
+            microservice.updateCurrentFactory(update);
+        }
+        Assertions.assertEquals(1,ExampleFactoryBDestroyTracking.destroyCalled);
 
     }
 }
