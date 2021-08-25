@@ -1309,7 +1309,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     List<FactoryBase<?,R>> addedTo;
     @SuppressWarnings("unchecked")
     void finalizeChildren() {
-        System.out.println(this);
         finalisedChildrenFlat = new ArrayList<>();
         getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, childUntyped->{
             FactoryBase<?,R> child = (FactoryBase<?,R>)childUntyped;
