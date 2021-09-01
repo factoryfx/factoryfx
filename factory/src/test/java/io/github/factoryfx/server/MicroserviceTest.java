@@ -1,6 +1,7 @@
 package io.github.factoryfx.server;
 
 import com.google.common.base.Throwables;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;

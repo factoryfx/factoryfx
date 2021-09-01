@@ -650,6 +650,63 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     @JsonIgnore
+    private boolean catalogItem;
+    private void markAsCatalogItem() {
+        catalogItem=true;
+    }
+
+    private Set<FactoryBase<?,?>> removed;
+    private void addRemoved(FactoryBase<?,?> old) {
+        if (removed==null){
+            removed=new HashSet<>();
+        }
+        removed.add(old);
+    }
+
+    @JsonIgnore
+    private Set<FactoryBase<?,?>> getRemoved() {
+        if (removed==null){
+            return Set.of();
+        }
+        Set<FactoryBase<?,?>> result = new HashSet<>();
+        for (FactoryBase<?, ?> factory : removed) {
+            result.addAll(factory.collectionChildrenDeepFromNonFinalizedTree());
+        }
+
+        List<FactoryBase<?, R>> childrenDeep = this.collectChildrenDeep();
+        for (FactoryBase<?, ?> child : childrenDeep) {
+            result.remove(child);
+        }
+        return result;
+    }
+
+    private Set<FactoryBase<?,?>> modified;
+    private void addModified(FactoryBase<?,?> modifiedFactory) {
+        if (modified == null) {
+            modified = new HashSet<>();
+        }
+        modified.add(modifiedFactory);
+    }
+
+    @JsonIgnore
+    public Set<FactoryBase<?,?>> getModified() {
+        if (modified==null){
+            return Set.of();
+        }
+        return modified;
+    }
+
+    public void clearModifyStateFlat(){
+        if (modified!=null) modified.clear();
+        if (removed!=null) removed.clear();
+        this.visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_clearModifyState());
+    }
+
+    private void resetModificationFlat() {
+        this.visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_resetModification());
+    }
+
+    @JsonIgnore
     private boolean isCreatedWithBuilderTemplate() {
         return this.treeBuilderClassUsed || this.treeBuilderName!=null;
     }
@@ -742,7 +799,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public <T> void markAsCatalogItem(){
             factory.markAsCatalogItem();
         }
-
     }
 
 
@@ -1087,8 +1143,8 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public void resetModificationFlat() {
             factory.resetModificationFlat();
         }
-
     }
+
 
     private void cleanUpAfterCrash() {
         try {
@@ -1613,7 +1669,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
 
         /**the factory data has changed therefore a new liveobject is needed.<br>
-         * previousLiveObject can be used to pass runtime status from previous object (e.g request counter).<br>
+         * previousLiveObject can be used to pass transient state from previous object (e.g request counter, cache).<br>
          * passed previous liveobject is never null
          *
          * @param reCreatorWithPreviousLiveObject reCreatorWithPreviousLiveObject*/
@@ -1621,7 +1677,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             factory.setReCreator(reCreatorWithPreviousLiveObject);
         }
 
-        /**the factory data has changed therefore bud you want to reuse the liveObject and only update it.<br>
+        /**
+         * the factory data has changed but you want to reuse the liveObject and only update it.<br>
+         * Usually because creating/starting it from scratch is slow.<br>
          * (that means that parents do not have to be recreated.)
          *
          * @param updater updater*/
