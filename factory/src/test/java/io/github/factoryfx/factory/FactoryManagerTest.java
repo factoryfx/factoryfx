@@ -2,9 +2,7 @@ package io.github.factoryfx.factory;
 
 import java.util.*;
 
-import io.github.factoryfx.factory.exception.ResettingHandler;
 import io.github.factoryfx.factory.exception.RethrowingFactoryExceptionHandler;
-import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.testfactories.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -176,5 +174,67 @@ public class FactoryManagerTest {
         Assertions.assertEquals(null,factoryManager.getCurrentFactory().referenceAttribute.get());
     }
 
+    public static class ExampleFactoryViewRoot extends SimpleFactoryBase<Void,ExampleFactoryViewRoot> {
+
+        public final FactoryListAttribute<Void, ExampleFactoryWithViewAttribute> refView = new FactoryListAttribute<>();
+        public final FactoryAttribute<Void,ExampleFactoryViewA> refA = new FactoryAttribute<>();
+
+        @Override
+        protected Void createImpl() {
+            return null;
+        }
+    }
+
+    public static class ExampleFactoryViewA extends SimpleFactoryBase<Void,ExampleFactoryViewRoot> {
+        @JsonIgnore
+        public int createCounter=0;
+
+        @Override
+        protected Void createImpl() {
+            createCounter++;
+            return null;
+        }
+    }
+
+
+    public static class ExampleFactoryWithViewAttribute extends SimpleFactoryBase<Void,ExampleFactoryViewRoot> {
+        public final FactoryViewAttribute<ExampleFactoryViewRoot,Void,ExampleFactoryViewA> referenceView = new FactoryViewAttribute<>(
+                root -> root.refA.get());
+
+        public StringAttribute stringAttribute = new StringAttribute();
+
+        @Override
+        protected Void createImpl() {
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName()+":"+stringAttribute.toString();
+        }
+    }
+
+    @Test
+    public void test_add_view() {
+        FactoryManager<Void, ExampleFactoryViewRoot> factoryManager = new FactoryManager<Void, ExampleFactoryViewRoot>(new RethrowingFactoryExceptionHandler<>());
+
+        ExampleFactoryViewRoot root = new ExampleFactoryViewRoot();
+        root.refA.set(new ExampleFactoryViewA());
+        ExampleFactoryWithViewAttribute value = new ExampleFactoryWithViewAttribute();
+        value.stringAttribute.set("initial");
+        root.refView.add(value);
+        factoryManager.start(new RootFactoryWrapper<>(root));
+
+        {
+            ExampleFactoryViewRoot update2 = ObjectMapperBuilder.build().copy(root);
+            ExampleFactoryWithViewAttribute value1 = new ExampleFactoryWithViewAttribute();
+            value1.stringAttribute.set("added");
+            update2.refView.add(value1);
+            update2.refA.get().createCounter=0;
+            factoryManager.update(root.utility().copy(), update2, (p) -> true);
+            Assertions.assertEquals(0, update2.refA.get().createCounter);
+        }
+
+    }
 
 }

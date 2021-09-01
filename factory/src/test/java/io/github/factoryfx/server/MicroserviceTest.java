@@ -1,8 +1,6 @@
 package io.github.factoryfx.server;
 
 import com.google.common.base.Throwables;
-import io.github.factoryfx.factory.FactoryUpdate;
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
@@ -371,5 +369,42 @@ public class MicroserviceTest {
         microservice.update((root, idToFactory) -> root.referenceAttribute.set(new ExampleFactoryB()));
 
         Assertions.assertEquals(2,microservice.getHistoryFactoryList().size());
+    }
+
+    public static class ExampleFactoryBDestroyTracking extends ExampleFactoryB{
+        static int destroyCalled=0;
+        public ExampleFactoryBDestroyTracking(){
+            this.configLifeCycle().setDestroyer(exampleLiveObjectB -> destroyCalled++);
+        }
+    }
+
+    @Test
+    public void test_removed_factories() {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> new ExampleFactoryA());
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
+
+        microservice.start();
+
+        {
+            DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+            update.root.referenceAttribute.set(new ExampleFactoryBDestroyTracking());
+            microservice.updateCurrentFactory(update);
+        }
+
+
+        {
+            DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+            update.root.referenceListAttribute.add(new ExampleFactoryBDestroyTracking());
+            microservice.updateCurrentFactory(update);
+        }
+        Assertions.assertEquals(0,ExampleFactoryBDestroyTracking.destroyCalled);
+
+        {
+            DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+            update.root.referenceAttribute.set(null);
+            microservice.updateCurrentFactory(update);
+        }
+        Assertions.assertEquals(1,ExampleFactoryBDestroyTracking.destroyCalled);
+
     }
 }

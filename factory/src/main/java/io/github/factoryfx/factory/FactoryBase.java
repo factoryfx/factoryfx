@@ -418,6 +418,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             if (f.internal().isTreeBuilderClassUsed()){
                 scope=this.root.factoryTreeBuilder.getScope(new FactoryTemplateId<>(f));
             }
+            if (f.catalogItem){
+                scope=Scope.SINGLETON;
+            }
             if (f==this){
                 return f.newCopyInstance(f);
             }
@@ -483,7 +486,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
      *<br>
      */
     int treeChildrenCounter;
-    long backReferencesIterationRun=0;
+    boolean backReferencesIterationRunVisited=false;
     @SuppressWarnings("unchecked")
     private void finalise(){
         R root = (R)this;
@@ -491,13 +494,13 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         if (!needReFinalisation){
             return;
         }
-
+        List<FactoryBase<?,R>> visited=new ArrayList<>();
         ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
         stack.push(root);
-        long backReferencesIterationRun = root.backReferencesIterationRun+1;
         while (!stack.isEmpty()) {
             FactoryBase<?,R> factory = stack.pop();
-            factory.backReferencesIterationRun=backReferencesIterationRun;
+            visited.add(factory);
+            factory.backReferencesIterationRunVisited=true;
 
             factory.root=root;
             factory.root.treeChildrenCounter++;
@@ -505,7 +508,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
             factory.finalizeChildren();
             for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
-                if (child.backReferencesIterationRun!=backReferencesIterationRun) {
+                if (!child.backReferencesIterationRunVisited) {
                     child.resetParents();
                     stack.push(child);
                 }
@@ -513,6 +516,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             }
         }
         needReFinalisation =false;
+
+        for (FactoryBase<?, R> item : visited) {
+            item.backReferencesIterationRunVisited=false;
+        }
     }
 
     boolean needReFinalisation =true;
@@ -520,23 +527,28 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         this.root.needReFinalisation =true;
     }
 
-    long rootDeepIterationRun=0;
+    boolean rootDeepIterationRunVisited=false;
     private void setRootDeep(R root) {
+        List<FactoryBase<?,R>> visited=new ArrayList<>();
         ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
         stack.push(this);
-        long rootDeepIterationRun = root.rootDeepIterationRun+1;
         while (!stack.isEmpty()) {
             FactoryBase<?,R> factory = stack.pop();
-            factory.rootDeepIterationRun=rootDeepIterationRun;
+            visited.add(factory);
+            factory.rootDeepIterationRunVisited=true;
             factory.root=root;
             factory.getFactoryMetadata().addBackReferencesToAttributesUnsafe(factory,root);
 
             factory.finalizeChildren();
             for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
-                if (child.rootDeepIterationRun!=rootDeepIterationRun) {
+                if (!child.rootDeepIterationRunVisited) {
                     stack.push(child);
                 }
             }
+        }
+
+        for (FactoryBase<?, R> item : visited) {
+            item.rootDeepIterationRunVisited=false;
         }
     }
 
@@ -637,57 +649,6 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         }
     }
 
-    private Set<FactoryBase<?,?>> removed;
-    private void addRemoved(FactoryBase<?,?> old) {
-        if (removed==null){
-            removed=new HashSet<>();
-        }
-        removed.add(old);
-    }
-
-    @JsonIgnore
-    private Set<FactoryBase<?,?>> getRemoved() {
-        if (removed==null){
-            return Set.of();
-        }
-        Set<FactoryBase<?,?>> result = new HashSet<>();
-        for (FactoryBase<?, ?> factory : removed) {
-            result.addAll(factory.collectionChildrenDeepFromNonFinalizedTree());
-        }
-
-        List<FactoryBase<?, R>> childrenDeep = this.collectChildrenDeep();
-        for (FactoryBase<?, ?> child : childrenDeep) {
-            result.remove(child);
-        }
-        return result;
-    }
-
-    private Set<FactoryBase<?,?>> modified;
-    private void addModified(FactoryBase<?,?> modifiedFactory) {
-        if (modified == null) {
-            modified = new HashSet<>();
-        }
-        modified.add(modifiedFactory);
-    }
-
-    @JsonIgnore
-    public Set<FactoryBase<?,?>> getModified() {
-        if (modified==null){
-            return Set.of();
-        }
-        return modified;
-    }
-
-    public void clearModifyStateFlat(){
-        if (modified!=null) modified.clear();
-        if (removed!=null) removed.clear();
-        this.visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_clearModifyState());
-    }
-
-    private void resetModificationFlat() {
-        this.visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_resetModification());
-    }
-
     @JsonIgnore
     private boolean isCreatedWithBuilderTemplate() {
         return this.treeBuilderClassUsed || this.treeBuilderName!=null;
@@ -772,6 +733,14 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
          */
         public <T> void addValidation(Validation<T> validation, Attribute<?,?>... dependencies){
             factory.addValidation(validation,dependencies);
+        }
+
+        /**
+         * mark factory as catalog item means that for semanticCopy the factory is considered as singleton
+         * @param <T> this
+         */
+        public <T> void markAsCatalogItem(){
+            factory.markAsCatalogItem();
         }
 
     }

@@ -1,7 +1,10 @@
 package io.github.factoryfx.factory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
@@ -29,25 +32,39 @@ public class FactoryManagerLifeCycleTest {
     }
 
     public static class LifecycleFactoryBase extends FactoryBase<DummyLifeObject, LifecycleFactoryA> {
-        public List<String> createCalls= new ArrayList<>();
-        public List<String> reCreateCalls= new ArrayList<>();
-        public List<String> startCalls= new ArrayList<>();
-        public List<String> destroyCalls= new ArrayList<>();
+        public List<Integer> createCalls= new ArrayList<>();
+        public List<Integer> reCreateCalls= new ArrayList<>();
+        public List<Integer> startCalls= new ArrayList<>();
+        public List<Integer> destroyCalls= new ArrayList<>();
+
+        public Consumer<DummyLifeObject> additionalDestroyer;
+
+        public static int counter=0;
 
         public LifecycleFactoryBase(){
             configLifeCycle().setCreator(() -> {
-                createCalls.add("created");
+                counter++;
+                createCalls.add(counter);
                 return new DummyLifeObject("",null);
             });
             configLifeCycle().setReCreator(dummyLifeObject -> {
-                reCreateCalls.add("created");
+                counter++;
+                reCreateCalls.add(counter);
                 return new DummyLifeObject("",null);
             });
-            configLifeCycle().setDestroyer(dummyLifeObject -> destroyCalls.add("created"));
-            configLifeCycle().setStarter(dummyLifeObject -> startCalls.add("created"));
+            configLifeCycle().setDestroyer(dummyLifeObject -> {
+                counter++;
+                destroyCalls.add(counter);
+                if (additionalDestroyer!=null) additionalDestroyer.accept(dummyLifeObject);
+            });
+            configLifeCycle().setStarter(dummyLifeObject -> {
+                counter++;
+                startCalls.add(counter);
+            });
         }
 
         public void resetCounter(){
+            counter=0;
             createCalls.clear();
             reCreateCalls.clear();
             startCalls.clear();
@@ -55,6 +72,7 @@ public class FactoryManagerLifeCycleTest {
         }
 
         public void copyCounters(LifecycleFactoryBase from){
+            counter = from.counter;
             createCalls.clear();
             reCreateCalls.clear();
             startCalls.clear();
@@ -75,6 +93,7 @@ public class FactoryManagerLifeCycleTest {
         public final FactoryAttribute<DummyLifeObject, LifecycleFactoryA> refA = new FactoryAttribute<>();
 
         public final FactoryAttribute<DummyLifeObject, LifecycleFactoryB> ref2 = new FactoryAttribute<>();
+
     }
 
     public static class LifecycleFactoryB extends LifecycleFactoryBase {
@@ -637,5 +656,118 @@ public class FactoryManagerLifeCycleTest {
     @Test
     public void test_getLiveObjectCLass(){
         Assertions.assertEquals(DummyLifeObject.class, FactoryMetadataManager.getMetadata(LifecycleFactoryA.class).getLiveObjectClass());
+    }
+
+
+    @Test
+    public void test_no_liveobject_mixup(){
+        FactoryManager<DummyLifeObject, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObject, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
+
+        LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
+        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
+
+        Set<DummyLifeObject> destroyed=new HashSet<>();
+
+        {
+            factoryManager.getCurrentFactory().additionalDestroyer= dummyLifeObject -> {
+                destroyed.add(dummyLifeObject);
+            };
+
+            LifecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+            LifecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
+
+            //changes
+            update.refList.get().add(new LifecycleFactoryC());
+
+            factoryManager.getCurrentFactory().resetCounter();
+            factoryManager.update(common, update, (permission) -> true);
+        }
+
+
+        {
+            factoryManager.getCurrentFactory().additionalDestroyer= dummyLifeObject -> {
+                destroyed.add(dummyLifeObject);
+            };
+
+            LifecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+            LifecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
+
+            //changes
+            update.refList.get().add(new LifecycleFactoryC());
+
+            factoryManager.getCurrentFactory().resetCounter();
+            factoryManager.update(common, update, (permission) -> true);
+        }
+
+        Assertions.assertEquals(2,destroyed.size());
+
+    }
+
+    @Test
+    public void test_order(){
+        FactoryManager<DummyLifeObject, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObject, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
+
+        LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
+        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
+
+        LifecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+        LifecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
+
+        {
+            //changes
+            update.refList.get().add(new LifecycleFactoryC());
+
+            factoryManager.getCurrentFactory().resetCounter();
+            factoryManager.update(common, update, (permission) -> true);
+        }
+
+//        Assertions.assertEquals(1,update.createCalls.get(1));
+
+        Assertions.assertEquals(2,factoryManager.getCurrentFactory().reCreateCalls.get(0));
+        Assertions.assertEquals(3,factoryManager.getCurrentFactory().destroyCalls.get(0));
+        Assertions.assertEquals(4,factoryManager.getCurrentFactory().refList.get(0).startCalls.get(0));
+        Assertions.assertEquals(5,factoryManager.getCurrentFactory().startCalls.get(0));
+
+    }
+
+    @Test
+    public void test_destoy_called_only_once(){
+        FactoryManager<DummyLifeObject, LifecycleFactoryA> factoryManager = new FactoryManager<DummyLifeObject, LifecycleFactoryA>(new RethrowingFactoryExceptionHandler<>());
+
+        LifecycleFactoryA exampleFactoryA = new LifecycleFactoryA();
+        exampleFactoryA = exampleFactoryA.internal().finalise();
+        factoryManager.start(new RootFactoryWrapper<>(exampleFactoryA));
+
+        List<DummyLifeObject> destroyedCalled=new ArrayList<>();
+        factoryManager.getCurrentFactory().additionalDestroyer= dummyLifeObject -> {
+            destroyedCalled.add(dummyLifeObject);
+        };
+
+        {
+            LifecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+            LifecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
+
+            //changes
+            update.refList.get().add(new LifecycleFactoryC());
+
+            factoryManager.getCurrentFactory().resetCounter();
+            factoryManager.update(common, update, (permission) -> true);
+        }
+
+        Assertions.assertEquals(1,destroyedCalled.size());
+
+        {
+            LifecycleFactoryA common = factoryManager.getCurrentFactory().internal().copy();
+            LifecycleFactoryA update = factoryManager.getCurrentFactory().internal().copy();
+
+            //no changes
+
+            factoryManager.getCurrentFactory().resetCounter();
+            factoryManager.update(common, update, (permission) -> true);
+        }
+
+        Assertions.assertEquals(1,destroyedCalled.size());
     }
 }

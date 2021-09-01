@@ -7,6 +7,17 @@
 * **http2 jetty server builder:**
   * http2 configuration added
 
+# 2.2.24
+* Factories can be marked as catalog item to support semantic copy.
+
+```java
+public static class FactoryCatalogItem extends SimpleFactoryBase  {
+    public FactoryCatalogItem {
+        this.config().markAsCatalogItem();
+    }
+}
+```
+
 # 2.2.16
 
 ### BREAKING CHANGES
