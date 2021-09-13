@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.factoryfx.factory.AttributeVisitor;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 
 
 public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A extends FactoryListBaseAttribute<L, F,A>> extends ReferenceBaseAttribute<F,List<F>,A> implements List<F> {
@@ -103,10 +105,24 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
     }
 
-    public void internal_deleteFactory(F factory){
-        remove(factory);
+    public void internal_deleteFactory(F factoryToDelete){
+        remove(factoryToDelete);
+        if (factoryToDelete.internal().isCatalogItem() && this.root!=null){
+            for (FactoryBase<?, ?> factory: this.root.internal().collectChildrenDeep()) {
+                factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
+                    if (attribute instanceof FactoryBaseAttribute){
+                        if (((FactoryBaseAttribute)attribute).get()==factoryToDelete){
+                            attribute.set(null);
+                        }
+                    }
+                    if (attribute instanceof FactoryListBaseAttribute){
+                        ((FactoryListBaseAttribute)attribute).remove(factoryToDelete);
+                    }
+                });
+            }
+        }
         if (additionalDeleteAction!=null){
-            additionalDeleteAction.accept(factory, root);
+            additionalDeleteAction.accept(factoryToDelete, root);
         }
     }
 

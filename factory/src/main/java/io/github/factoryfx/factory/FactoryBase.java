@@ -1075,6 +1075,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return factory.getAttributeMetadata(attribute);
         }
 
+        public boolean isCatalogItem() {
+            return factory.catalogItem;
+        }
+
     }
 
 
