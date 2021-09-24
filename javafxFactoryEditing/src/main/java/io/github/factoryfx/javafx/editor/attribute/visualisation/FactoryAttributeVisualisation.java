@@ -79,7 +79,7 @@ public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends
             uniformDesign.addIcon(selectFactoryMenuItem, FontAwesome.Glyph.SEARCH_PLUS);
             selectFactoryMenuItem.setOnAction(event -> {
                 List<PossibleNewValue<F>> collection = possibleValuesProvider.get();
-                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), PossibleNewValue::addSemanticCopy);
+                new SelectFactoryDialog<>(collection, uniformDesign).show(newButton.getScene().getWindow(), PossibleNewValue::add);
             });
             newButton.getItems().add(selectFactoryMenuItem);
         }

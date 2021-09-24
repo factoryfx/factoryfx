@@ -65,12 +65,12 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         beforeModify();
         if (value==null){
             if (!list.isEmpty()){
-                beforeRemove(list);
+                removeAdder(list);
                 this.list.clear();
                 afterModify();
             }
         } else {
-            beforeRemove(list);
+            removeAdder(list);
             this.list.clear();
             this.list.addAll(value);
             afterAdd(value);
@@ -125,10 +125,24 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
     }
 
-    public void internal_deleteFactory(F factory){
-        remove(factory);
+    public void internal_deleteFactory(F factoryToDelete){
+        remove(factoryToDelete);
+        if (factoryToDelete.internal().isCatalogItem() && this.root!=null){
+            for (FactoryBase<?, ?> factory: this.root.internal().collectChildrenDeep()) {
+                factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
+                    if (attribute instanceof FactoryBaseAttribute){
+                        if (((FactoryBaseAttribute)attribute).get()==factoryToDelete){
+                            attribute.set(null);
+                        }
+                    }
+                    if (attribute instanceof FactoryListBaseAttribute){
+                        ((FactoryListBaseAttribute)attribute).remove(factoryToDelete);
+                    }
+                });
+            }
+        }
         if (additionalDeleteAction!=null){
-            additionalDeleteAction.accept(factory, root);
+            additionalDeleteAction.accept(factoryToDelete, root);
         }
     }
 
@@ -147,15 +161,15 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         }
     }
 
-    private void beforeRemove(F removed){
+    private void removeAdder(F removed){
         if (root!=null) {
             root.internal().addRemoved(removed);
         }
     }
 
-    private void beforeRemove(Collection<? extends F> removed){
+    private void removeAdder(Collection<? extends F> removed){
         for (F remove: removed){
-            beforeRemove(remove);
+            removeAdder(remove);
         }
     }
 
@@ -213,12 +227,15 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         return list.parallelStream();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean remove(Object object) {
         beforeModify();
-        beforeRemove(list.get(list.indexOf(object)));
         boolean remove = list.remove(object);
-        afterModify();
+        if (remove) {
+            removeAdder((F)object);
+            afterModify();
+        }
         return remove;
     }
 
@@ -248,7 +265,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     @Override
     public boolean removeAll(Collection<?> c) {
         beforeModify();
-        beforeRemove(list);
+        removeAdder(list);
         boolean result = list.removeAll(c);
         afterModify();
         return result;
@@ -257,7 +274,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     @Override
     public boolean removeIf(Predicate<? super F> filter) {
         beforeModify();
-        beforeRemove(list);
+        removeAdder(list);
         boolean result = list.removeIf(filter);
         afterModify();
         return result;
@@ -266,7 +283,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     @Override
     public boolean retainAll(Collection<?> c) {
         beforeModify();
-        beforeRemove(list);
+        removeAdder(list);
         boolean retainAll = list.retainAll(c);
         afterModify();
         return retainAll;
@@ -275,7 +292,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     @Override
     public void clear() {
         beforeModify();
-        beforeRemove(list);
+        removeAdder(list);
         list.clear();
         afterModify();
     }
@@ -289,7 +306,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     public F set(int index, F element) {
         beforeModify();
         F oldReplaced = list.set(index, element);
-        beforeRemove(oldReplaced);
+        removeAdder(oldReplaced);
         afterAdd(element);
         afterModify();
         return oldReplaced;
@@ -307,7 +324,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     public F remove(int index) {
         beforeModify();
         F remove = list.remove(index);
-        beforeRemove(remove);
+        removeAdder(remove);
         afterModify();
         return remove;
     }

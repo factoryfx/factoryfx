@@ -1143,6 +1143,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         public void resetModificationFlat() {
             factory.resetModificationFlat();
         }
+
+        public boolean isCatalogItem() {
+            return factory.catalogItem;
+        }
     }
 
 
