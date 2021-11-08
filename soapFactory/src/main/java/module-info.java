@@ -7,13 +7,11 @@ module io.github.factoryfx.soapFactory {
     requires io.github.factoryfx.jettyFactory;
 
 
-    requires javax.servlet.api;
-    requires java.xml.soap;
-    requires java.xml.bind;
-    requires java.xml.ws;
-    requires java.jws;
+    requires jakarta.xml.bind;
+    requires jakarta.xml.ws;
+    requires jakarta.jws;
 
-    requires java.annotation;
+    requires jakarta.annotation;
 
     exports io.github.factoryfx.soap;
 }

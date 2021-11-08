@@ -6,15 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.ws.rs.ext.ExceptionMapper;
-
-import io.github.factoryfx.factory.builder.FactoryContext;
 import org.glassfish.jersey.logging.LoggingFeature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.factoryfx.factory.AttributelessFactory;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.builder.FactoryContext;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
@@ -23,6 +21,7 @@ import io.github.factoryfx.jetty.DefaultObjectMapper;
 import io.github.factoryfx.jetty.JerseyServletFactory;
 import io.github.factoryfx.jetty.ServletAndPathFactory;
 import io.github.factoryfx.jetty.Slf4LoggingFeature;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 /**
  * Builder for a jersey REST resource

@@ -1,14 +1,11 @@
 package io.github.factoryfx.jetty;
 
-import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
-import io.github.factoryfx.server.Microservice;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -17,17 +14,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
+import io.github.factoryfx.server.Microservice;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 public class HandlerCollectionFactoryTest {
     @BeforeAll

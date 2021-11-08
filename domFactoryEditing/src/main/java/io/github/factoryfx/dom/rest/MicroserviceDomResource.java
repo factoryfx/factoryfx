@@ -1,22 +1,30 @@
 package io.github.factoryfx.dom.rest;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.jetty.http.MimeTypes;
+
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
-import io.github.factoryfx.factory.attribute.dependency.*;
-import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
 import io.github.factoryfx.factory.attribute.types.EncryptedString;
 import io.github.factoryfx.microservice.rest.MicroserviceResource;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.UserManagement;
-import org.eclipse.jetty.http.MimeTypes;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 public class MicroserviceDomResource<R extends FactoryBase<?,R>> extends MicroserviceResource<R> {
     private final StaticFileAccess staticFileAccess;

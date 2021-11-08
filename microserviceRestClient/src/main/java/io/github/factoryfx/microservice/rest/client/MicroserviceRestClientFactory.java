@@ -1,25 +1,23 @@
 package io.github.factoryfx.microservice.rest.client;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.client.proxy.WebResourceFactory;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
 import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
-import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.microservice.common.MicroserviceResourceApi;
-import org.glassfish.jersey.CommonProperties;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.proxy.WebResourceFactory;
-
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 
 /**
  *

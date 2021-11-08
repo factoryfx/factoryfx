@@ -1,10 +1,12 @@
 package io.github.factoryfx.soap;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.ws.WebFault;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import javax.xml.namespace.QName;
+
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.ws.WebFault;
 
 public class WebServiceCallResult {
 

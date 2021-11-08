@@ -6,17 +6,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.zip.Deflater;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
-import javax.ws.rs.ext.ExceptionMapper;
-
-import io.github.factoryfx.jetty.*;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
-import org.eclipse.jetty.util.thread.ThreadPool;
 import org.glassfish.jersey.logging.LoggingFeature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +19,22 @@ import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.NestedBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.ssl.SslContextFactoryFactory;
+import io.github.factoryfx.jetty.GzipHandlerFactory;
+import io.github.factoryfx.jetty.HandlerCollectionFactory;
+import io.github.factoryfx.jetty.HttpConfigurationFactory;
+import io.github.factoryfx.jetty.HttpServerConnectorFactory;
+import io.github.factoryfx.jetty.JettyServerFactory;
+import io.github.factoryfx.jetty.ServletAndPathFactory;
+import io.github.factoryfx.jetty.ServletContextHandlerFactory;
+import io.github.factoryfx.jetty.ServletFilterAndPathFactory;
+import io.github.factoryfx.jetty.Slf4jRequestLogFactory;
+import io.github.factoryfx.jetty.ThreadPoolFactory;
+import io.github.factoryfx.jetty.UpdateableServletFactory;
+import io.github.factoryfx.jetty.ssl.ServerSslContextFactoryFactory;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 /**
  * The builder builds the factory structure for a jetty server not the jetty liveobject<br>
@@ -273,9 +280,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
 
         addFactory(builder,gzipHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             GzipHandlerFactory<R> gzipHandler = new GzipHandlerFactory<>();
-            gzipHandler.minGzipSize.set(0);
-            gzipHandler.compressionLevel.set(Deflater.DEFAULT_COMPRESSION);
-            gzipHandler.deflaterPoolCapacity.set(-1);
+            gzipHandler.minGzipSize.set(23);
             gzipHandler.dispatcherTypes.add(DispatcherType.REQUEST);
             gzipHandler.inflateBufferSize.set(-1);
             gzipHandler.syncFlush.set(false);
@@ -369,11 +374,11 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     }
 
     /**
-     * @see ServerConnectorBuilder#withSsl(SslContextFactoryFactory)
+     * @see ServerConnectorBuilder#withSsl(ServerSslContextFactoryFactory)
      * @param ssl ssl
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withSsl(SslContextFactoryFactory<R> ssl) {
+    public JettyServerBuilder<R, JR> withSsl(ServerSslContextFactoryFactory<R> ssl) {
         getDefaultServerConnector().withSsl(ssl);
         return this;
     }

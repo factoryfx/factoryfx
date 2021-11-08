@@ -1,7 +1,7 @@
 package io.github.factoryfx.docu.restserver;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 @Path("/Resource")
 public class WebResource {

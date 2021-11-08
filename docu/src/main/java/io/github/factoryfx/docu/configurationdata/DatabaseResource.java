@@ -1,6 +1,6 @@
 package io.github.factoryfx.docu.configurationdata;
 
-import javax.ws.rs.GET;
+import jakarta.ws.rs.GET;
 
 public class DatabaseResource {
     private final String url;

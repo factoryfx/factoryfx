@@ -1,6 +1,6 @@
 package io.github.factoryfx.soap.example;
 
-import javax.xml.ws.WebFault;
+import jakarta.xml.ws.WebFault;
 
 @WebFault(name = "SomeFaultElement", targetNamespace = "someNS")
 public class SoapDummyRequestException1 extends Exception {

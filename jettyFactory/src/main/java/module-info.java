@@ -1,13 +1,13 @@
 module io.github.factoryfx.jettyFactory {
     //automatic module that should be transitive but can't until they are real modules
-    requires java.ws.rs;
-    requires javax.servlet.api;
+    requires jakarta.ws.rs;
+    requires jetty.servlet.api;
     requires com.google.common;
     requires jersey.common;
-    requires com.fasterxml.jackson.jaxrs.json;
+    requires com.fasterxml.jackson.jakarta.rs.json;
     requires jersey.server;
     requires jersey.container.servlet.core;
-    requires jersey.media.jaxb;
+    requires jersey.media.json.jackson;
     requires org.eclipse.jetty.server;
     requires org.eclipse.jetty.util;
     requires org.eclipse.jetty.servlet;

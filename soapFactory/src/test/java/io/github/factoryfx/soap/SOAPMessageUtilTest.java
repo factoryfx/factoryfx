@@ -1,5 +1,13 @@
 package io.github.factoryfx.soap;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.xml.namespace.QName;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import io.github.factoryfx.soap.example.HelloWorld;
 import io.github.factoryfx.soap.example.SoapDummyRequest;
 import io.github.factoryfx.soap.example.SoapDummyRequestExceptionFault;
@@ -7,16 +15,10 @@ import io.github.factoryfx.soap.example.SoapDummyRequestNested;
 import io.github.factoryfx.soap.examplenoroot.HelloWorldNoXmlRootElement;
 import io.github.factoryfx.soap.examplenoroot.SoapDummyRequestNoRoot;
 import io.github.factoryfx.soap.examplenoroot.SoapDummyResponseNoRoot;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPMessage;
 
 public class SOAPMessageUtilTest {
 

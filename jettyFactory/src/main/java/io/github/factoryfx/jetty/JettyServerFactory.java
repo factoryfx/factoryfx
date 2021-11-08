@@ -1,17 +1,21 @@
 package io.github.factoryfx.jetty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
-import org.eclipse.jetty.server.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.RequestLog;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 
 /**
  *  usage example.
@@ -158,7 +162,7 @@ public class JettyServerFactory<R extends FactoryBase<?,R>> extends FactoryBase<
         try {
             if (Thread.interrupted())
                 throw new RuntimeException("Interrupted");
-            server.setStopTimeout(1L);
+            //server.setStopTimeout(1L);
             server.stop();
             //because stop call can be inside this one of jetty's threads, we need to clear the interrupt
             //to let the rest of the factory updates run. They might be interrupt-sensitive

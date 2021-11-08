@@ -7,6 +7,9 @@
 * **http2 jetty server builder:**
   * http2 configuration added
 
+* **clean up javax.rs modules:**
+    * replace module java.ws.rs with jakarta.ws.rs, in our project and update used libraries
+
 # 2.2.24
 * Factories can be marked as catalog item to support semantic copy.
 

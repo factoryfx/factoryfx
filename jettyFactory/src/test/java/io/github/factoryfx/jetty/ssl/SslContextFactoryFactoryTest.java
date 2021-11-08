@@ -1,21 +1,5 @@
 package io.github.factoryfx.jetty.ssl;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.builder.FactoryTemplateName;
-import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
-import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
-import io.github.factoryfx.server.Microservice;
-import org.eclipse.jetty.server.Server;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import javax.net.ssl.*;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -29,6 +13,25 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.eclipse.jetty.server.Server;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
+import io.github.factoryfx.server.Microservice;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 public class SslContextFactoryFactoryTest {
 
@@ -73,28 +76,20 @@ public class SslContextFactoryFactoryTest {
         }
     }
 
-    public static class SslContextFactoryFactoryCustom<R extends FactoryBase<?, R>> extends SslContextFactoryFactory<R> {
-        public SslContextFactoryFactoryCustom(){
-            trustStore.nullable();
-        }
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void test_with_ssl() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty
-                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(SslContextFactoryFactoryCustom.class)));
+                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(ServerSslContextFactoryFactory.class)));
 
-        builder.addFactory(SslContextFactoryFactoryCustom.class, Scope.SINGLETON, ctx->{
-            SslContextFactoryFactoryCustom<JettyServerRootFactory> ssl = new SslContextFactoryFactoryCustom<>();
-            ssl.keyStoreType.set(KeyStoreType.jks);
-            ssl.trustStoreType.set(KeyStoreType.jks);
-            ssl.connectorType.set(SslContextFactoryFactory.ConnectorType.SERVER);
-            try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){
+        builder.addFactory(ServerSslContextFactoryFactory.class, Scope.SINGLETON, ctx->{
+            ServerSslContextFactoryFactory<JettyServerRootFactory> ssl = new ServerSslContextFactoryFactory<>();
+            ssl.keyStoreType.set(KeyStoreType.pkcs12);
+            ssl.trustStoreType.set(KeyStoreType.pkcs12);
+            try (InputStream in = getClass().getResourceAsStream("/keystore.p12")){
                 byte[] bytes = in.readAllBytes();
                 ssl.keyStore.set(bytes);
                 ssl.keyStorePassword.set("password");
-
                 ssl.trustStore.set(bytes);
                 ssl.trustStorePassword.set("password");
             } catch (IOException e) {
@@ -112,7 +107,7 @@ public class SslContextFactoryFactoryTest {
             URL url = new URL("https://localhost:8009/test");
             URLConnection conn = url.openConnection();
             InputStream is = conn.getInputStream();
-            Assertions.assertEquals("Hello World",convertStreamToString(is));
+            Assertions.assertEquals("Hello World", convertStreamToString(is));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
@@ -139,13 +134,7 @@ public class SslContextFactoryFactoryTest {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            };
-
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+            HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException(e);
         }
@@ -163,14 +152,13 @@ public class SslContextFactoryFactoryTest {
     @Test
     public void test_http2() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty.
-                withHttp2().withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(SslContextFactoryFactoryCustom.class)));
+                withHttp2().withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(ServerSslContextFactoryFactory.class)));
 
 
-        builder.addFactory(SslContextFactoryFactoryCustom.class, Scope.SINGLETON, ctx->{
-            SslContextFactoryFactoryCustom<JettyServerRootFactory> ssl = new SslContextFactoryFactoryCustom<>();
+        builder.addFactory(ServerSslContextFactoryFactory.class, Scope.SINGLETON, ctx->{
+            ServerSslContextFactoryFactory<JettyServerRootFactory> ssl = new ServerSslContextFactoryFactory<>();
             ssl.keyStoreType.set(KeyStoreType.jks);
             ssl.trustStoreType.set(KeyStoreType.jks);
-            ssl.connectorType.set(SslContextFactoryFactory.ConnectorType.SERVER);
             try (InputStream in = getClass().getResourceAsStream("/keystore.jks")){
                 byte[] bytes = in.readAllBytes();
                 ssl.keyStore.set(bytes);

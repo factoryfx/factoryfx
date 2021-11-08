@@ -1,17 +1,17 @@
 package io.github.factoryfx.microservice.common;
 
+import java.util.Collection;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.log.FactoryUpdateLog;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.util.Collection;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 
 /**

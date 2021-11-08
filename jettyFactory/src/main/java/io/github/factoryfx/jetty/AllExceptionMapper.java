@@ -1,13 +1,14 @@
 package io.github.factoryfx.jetty;
 
-import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import com.google.common.base.Throwables;
+
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 public class AllExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger logger = LoggerFactory.getLogger(AllExceptionMapper.class);

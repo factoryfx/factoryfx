@@ -1,24 +1,23 @@
 package io.github.factoryfx.jetty;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.AttributeCopy;
-import io.github.factoryfx.factory.attribute.ValueMapAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute;
-import io.github.factoryfx.factory.attribute.types.BooleanMapAttribute;
-import io.github.factoryfx.factory.attribute.types.StringMapAttribute;
+import java.util.List;
+import java.util.Map;
+
 import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-import javax.servlet.*;
-import javax.ws.rs.ext.ExceptionMapper;
-import java.util.*;
-import java.util.function.Consumer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute;
+import io.github.factoryfx.factory.attribute.types.BooleanMapAttribute;
+import jakarta.servlet.Servlet;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 

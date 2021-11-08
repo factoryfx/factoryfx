@@ -1,16 +1,14 @@
 package io.github.factoryfx.docu.customconfig;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.FactoryUpdate;
-import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Map;
-import java.util.UUID;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/CustomConfiguration")
 public class CustomConfigurationResource {

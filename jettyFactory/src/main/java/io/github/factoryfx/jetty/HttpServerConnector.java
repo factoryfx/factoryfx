@@ -1,9 +1,12 @@
 package io.github.factoryfx.jetty;
 
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
-import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.NetworkTrafficServerConnector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 
@@ -11,14 +14,14 @@ public class HttpServerConnector {
 
     private final String host;
     private final int port;
-    private final SslContextFactory sslContextFactory;
+    private final SslContextFactory.Server sslContextFactory;
     private final HttpConfiguration httpConfiguration;
 
 
     private ServerConnector connector;
     private boolean useHttp2;
 
-    public HttpServerConnector(String host, int port, SslContextFactory sslContextFactory, HttpConfiguration httpConfiguration, boolean useHttp2) {
+    public HttpServerConnector(String host, int port, SslContextFactory.Server sslContextFactory, HttpConfiguration httpConfiguration, boolean useHttp2) {
         this.host = host;
         this.port = port;
         this.sslContextFactory= sslContextFactory;

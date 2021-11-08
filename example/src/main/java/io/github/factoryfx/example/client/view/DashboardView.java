@@ -1,9 +1,9 @@
 package io.github.factoryfx.example.client.view;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import io.github.factoryfx.example.server.shop.OrderStorage;
-import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.javafx.widget.Widget;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -12,16 +12,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
+
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import io.github.factoryfx.example.server.shop.OrderStorage;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.javafx.widget.Widget;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
 
 public class DashboardView implements Widget {
 

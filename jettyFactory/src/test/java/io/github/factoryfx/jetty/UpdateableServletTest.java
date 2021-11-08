@@ -1,27 +1,28 @@
 package io.github.factoryfx.jetty;
 
-import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.AttributelessFactory;
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
-import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
-import io.github.factoryfx.server.Microservice;
-import org.eclipse.jetty.server.Server;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import org.eclipse.jetty.server.Server;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.AttributelessFactory;
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
+import io.github.factoryfx.server.Microservice;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 public class UpdateableServletTest {
 

@@ -1,17 +1,17 @@
 package io.github.factoryfx.example.server;
 
-import io.github.factoryfx.example.server.testutils.FactoryTreeBuilderRule;
-import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import io.github.factoryfx.example.server.testutils.FactoryTreeBuilderRule;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * This test seems to do more than necessary, by actually starting a real server where we could have just

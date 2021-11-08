@@ -1,8 +1,7 @@
 module io.github.factoryfx.javafxDistributionClient {
     requires javafx.fxml;
     requires javafx.graphics;
-    requires java.ws.rs;
-    requires com.fasterxml.jackson.jaxrs.json;
+    requires jakarta.ws.rs;
     requires com.fasterxml.jackson.databind;
     requires com.google.common;
     requires javafx.controls;

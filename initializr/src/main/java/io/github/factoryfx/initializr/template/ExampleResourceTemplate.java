@@ -1,11 +1,17 @@
 package io.github.factoryfx.initializr.template;
 
-import com.squareup.javapoet.*;
-
-import javax.lang.model.element.Modifier;
-import javax.ws.rs.GET;
 import java.io.IOException;
 import java.nio.file.Path;
+
+import javax.lang.model.element.Modifier;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
+
+import jakarta.ws.rs.GET;
 
 public class ExampleResourceTemplate {
     private final Path targetDir;
@@ -19,7 +25,7 @@ public class ExampleResourceTemplate {
     public TypeSpec generateFile(){
         String name = "ExampleResource";
 
-        AnnotationSpec annotationSpec = AnnotationSpec.builder(javax.ws.rs.Path.class)
+        AnnotationSpec annotationSpec = AnnotationSpec.builder(jakarta.ws.rs.Path.class)
                 .addMember("value", "$S", "/")
                 .build();
 

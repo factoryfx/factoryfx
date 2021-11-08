@@ -5,12 +5,12 @@ open module io.github.factoryfx.example {
 
     requires ch.qos.logback.classic;
     requires java.desktop;
-    requires java.ws.rs;
+    requires jakarta.ws.rs;
     requires org.eclipse.jetty.server;
 
     requires javafx.base;
     requires javafx.graphics;
-    requires com.fasterxml.jackson.jaxrs.json;
+    requires jersey.media.json.jackson;
     requires jersey.client;
     requires jersey.common;
     requires io.github.factoryfx.domFactoryEditing;

@@ -4,11 +4,8 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.ServletAndPathFactory;
 import io.github.factoryfx.jetty.ServletFilterAndPathFactory;
-
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
+import jakarta.servlet.Filter;
 
 /**
  * builder for a servlet. used internal in {@link JettyServerBuilder#withServlet(FactoryTemplateId, String, FactoryBase)}

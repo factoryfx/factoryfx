@@ -1,14 +1,24 @@
 package io.github.factoryfx.jetty;
 
-import org.eclipse.jetty.server.Request;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.eclipse.jetty.http.pathmap.ServletPathSpec;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.ServletPathMapping;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * workaround for servlet limitation, you can't dynamically add/remove servlet if the context is started.
@@ -102,8 +112,11 @@ public class UpdateableServlet implements Servlet {
         {
             //We will presumably always run under a jetty environment, yet we support other environments as well
             if (baseRequest != null) {
-                baseRequest.setServletPath(servletPath);
-                baseRequest.setPathInfo(pathInfo);
+                baseRequest.setServletPathMapping(new ServletPathMapping(new ServletPathSpec(servletPath),
+                                                                         null,
+                                                                         Optional.ofNullable(pathInfo).orElse("")));
+                //baseRequest.setServletPath(servletPath);
+                //baseRequest.setPathInfo(pathInfo);
             } else {
                 request = new HttpServletRequestWrapper(request) {
                     @Override
@@ -122,8 +135,9 @@ public class UpdateableServlet implements Servlet {
         finally
         {
             if (baseRequest != null) {
-                baseRequest.setServletPath(oldPath);
-                baseRequest.setPathInfo(oldInfo);
+                baseRequest.setServletPathMapping(new ServletPathMapping(new ServletPathSpec(oldPath), null, oldInfo));
+                //baseRequest.setServletPath(oldPath);
+                //baseRequest.setPathInfo(oldInfo);
             }
         }
     }

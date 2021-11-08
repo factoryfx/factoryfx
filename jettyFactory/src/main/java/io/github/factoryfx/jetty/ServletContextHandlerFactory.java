@@ -1,18 +1,18 @@
 package io.github.factoryfx.jetty;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import java.util.EnumSet;
+
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import javax.servlet.DispatcherType;
-import java.util.EnumSet;
-import java.util.List;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import jakarta.servlet.DispatcherType;
 
 public class ServletContextHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
 

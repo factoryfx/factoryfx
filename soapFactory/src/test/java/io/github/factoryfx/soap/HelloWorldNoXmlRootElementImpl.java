@@ -2,10 +2,15 @@ package io.github.factoryfx.soap;
 
 import io.github.factoryfx.soap.example.SoapDummyRequestException1;
 import io.github.factoryfx.soap.example.SoapDummyRequestException2;
-import io.github.factoryfx.soap.examplenoroot.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import io.github.factoryfx.soap.examplenoroot.HelloWorldNoXmlRootElement;
+import io.github.factoryfx.soap.examplenoroot.OtherClass1;
+import io.github.factoryfx.soap.examplenoroot.OtherClass2;
+import io.github.factoryfx.soap.examplenoroot.SoapDummyRequestNoRoot;
+import io.github.factoryfx.soap.examplenoroot.SoapDummyRequestNoRoot2;
+import io.github.factoryfx.soap.examplenoroot.SoapDummyResponseNoRoot;
+import io.github.factoryfx.soap.examplenoroot.SoapDummyResponseNoRoot2;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class HelloWorldNoXmlRootElementImpl implements HelloWorldNoXmlRootElement {
     @Override

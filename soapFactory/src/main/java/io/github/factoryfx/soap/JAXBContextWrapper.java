@@ -1,7 +1,8 @@
 package io.github.factoryfx.soap;
 
-import javax.xml.bind.JAXBContext;
 import java.util.Map;
+
+import jakarta.xml.bind.JAXBContext;
 
 public class JAXBContextWrapper {
     public final JAXBContext jaxbContext;

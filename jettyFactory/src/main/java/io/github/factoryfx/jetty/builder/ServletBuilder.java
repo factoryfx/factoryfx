@@ -5,8 +5,7 @@ import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.ServletAndPathFactory;
-
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
 /**
  * builder for a servlet. used internal in {@link JettyServerBuilder#withServlet(FactoryTemplateId, String, FactoryBase)}

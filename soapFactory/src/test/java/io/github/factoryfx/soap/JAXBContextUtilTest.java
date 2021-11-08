@@ -1,19 +1,20 @@
 package io.github.factoryfx.soap;
 
+import java.io.StringWriter;
+import java.util.Set;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import io.github.factoryfx.soap.example.HelloWorld;
 import io.github.factoryfx.soap.example.SoapDummyRequest;
 import io.github.factoryfx.soap.example.SoapDummyRequestNested;
 import io.github.factoryfx.soap.examplenoroot.HelloWorldNoXmlRootElement;
 import io.github.factoryfx.soap.examplenoroot.ObjectFactory;
 import io.github.factoryfx.soap.examplenoroot.SoapDummyRequestNoRoot;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.io.StringWriter;
-import java.util.Set;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 public class JAXBContextUtilTest {
 

@@ -8,7 +8,7 @@ public enum KeyStoreType {
     pkcs11("pkcs11"),
     pkcs12("pkcs12");
 
-    private String value;
+    private final String value;
     KeyStoreType(String value){
         this.value=value;
     }

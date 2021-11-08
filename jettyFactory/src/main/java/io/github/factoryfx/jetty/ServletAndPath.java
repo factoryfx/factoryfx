@@ -2,7 +2,7 @@ package io.github.factoryfx.jetty;
 
 import org.eclipse.jetty.http.pathmap.ServletPathSpec;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
 public class ServletAndPath {
 

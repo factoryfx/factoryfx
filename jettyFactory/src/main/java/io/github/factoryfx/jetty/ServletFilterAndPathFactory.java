@@ -4,8 +4,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
-
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 public class ServletFilterAndPathFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<ServletFilterAndPath,R> {
 

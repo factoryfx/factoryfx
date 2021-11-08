@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import javax.ws.rs.InternalServerErrorException;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
@@ -24,6 +22,7 @@ import io.github.factoryfx.microservice.common.UserAwareRequest;
 import io.github.factoryfx.microservice.common.UserLocaleResponse;
 import io.github.factoryfx.microservice.common.VoidUserAwareRequest;
 import io.github.factoryfx.server.Microservice;
+import jakarta.ws.rs.InternalServerErrorException;
 
 
 /**

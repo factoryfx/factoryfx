@@ -1,9 +1,6 @@
 package io.github.factoryfx.jetty;
 
-import org.eclipse.jetty.http.pathmap.ServletPathSpec;
-
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
+import jakarta.servlet.Filter;
 
 public class ServletFilterAndPath {
 
