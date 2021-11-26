@@ -283,6 +283,10 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         return factoryContext.get(factoryClazz);
     }
 
+    public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(FactoryTemplateId<FO> factoryTemplateId){
+        return factoryContext.get(factoryTemplateId);
+    }
+
     public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
         return factoryContext.getList(factoryClazz);
     }
