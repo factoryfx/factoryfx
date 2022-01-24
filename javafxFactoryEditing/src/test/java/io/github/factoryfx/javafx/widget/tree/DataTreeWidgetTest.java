@@ -31,7 +31,7 @@ public class DataTreeWidgetTest extends Application {
 
 
 
-        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,UniformDesignBuilder.build());
+        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,UniformDesignBuilder.build(), true);
 
 
 

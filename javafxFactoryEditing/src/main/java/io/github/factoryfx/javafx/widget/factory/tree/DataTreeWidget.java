@@ -28,10 +28,12 @@ public class DataTreeWidget implements Widget {
     private final DataEditor dataEditor;
     private final UniformDesign uniformDesign;
     private final SplitPane splitPane = new SplitPane();
+    private final boolean autoExpand;
 
-    public DataTreeWidget(DataEditor dataEditor, UniformDesign uniformDesign) {
+    public DataTreeWidget(DataEditor dataEditor, UniformDesign uniformDesign, boolean autoExpand) {
         this.dataEditor=dataEditor;
         this.uniformDesign = uniformDesign;
+        this.autoExpand = autoExpand;
     }
 
     public void edit(FactoryBase<?,?> root){
@@ -61,24 +63,24 @@ public class DataTreeWidget implements Widget {
             }
         });
 
-        dataChangeListener = (observable, oldValue, newValue) -> {
+        dataChangeListener = autoExpand ? (observable, oldValue, newValue) -> {
             Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
-                if (treeStructureChanged(root)){
+                if (treeStructureChanged(root)) {
                     TreeItem<TreeData> treeItemRoot = constructTreeFromRoot();
                     tree.setRoot(treeItemRoot);
                 }
 
                 tree.getSelectionModel().clearSelection();
                 for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
-                    programmaticallySelect=true;
+                    programmaticallySelect = true;
                     if (item.getValue().match(newValue)) {
                         tree.getSelectionModel().select(item);
                     }
-                    programmaticallySelect=false;
+                    programmaticallySelect = false;
                 }
             });
 
-        };
+        } : (observable, oldValue, newValue) -> {};
         dataEditor.editData().addListener(new WeakChangeListener<>(dataChangeListener));
         dataChangeListener.changed(dataEditor.editData(),dataEditor.editData().get(),dataEditor.editData().get());
 
