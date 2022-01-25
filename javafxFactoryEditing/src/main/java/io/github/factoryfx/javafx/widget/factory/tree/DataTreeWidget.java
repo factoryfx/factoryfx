@@ -49,6 +49,7 @@ public class DataTreeWidget implements Widget {
     }
 
     private boolean programmaticallySelect=false;
+    private boolean disableChangeListenerSelect=false;
 
     ChangeListener<FactoryBase<?,?>> dataChangeListener;
     private Node createTree(){
@@ -59,11 +60,16 @@ public class DataTreeWidget implements Widget {
 
         tree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue!=null && !programmaticallySelect && newValue.getValue()!=null && newValue.getValue().getData()!=null){
-                dataEditor.edit(newValue.getValue().getData());
+                try {
+                    disableChangeListenerSelect=true;
+                    dataEditor.edit(newValue.getValue().getData());
+                } finally {
+                    disableChangeListenerSelect=false;
+                }
             }
         });
 
-        dataChangeListener = autoExpand ? (observable, oldValue, newValue) -> {
+        dataChangeListener = (observable, oldValue, newValue) -> {
             Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
                 if (treeStructureChanged(root)) {
                     TreeItem<TreeData> treeItemRoot = constructTreeFromRoot();
@@ -72,15 +78,16 @@ public class DataTreeWidget implements Widget {
 
                 tree.getSelectionModel().clearSelection();
                 for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
-                    programmaticallySelect = true;
                     if (item.getValue().match(newValue)) {
+                        programmaticallySelect = true;
                         tree.getSelectionModel().select(item);
+                        programmaticallySelect = false;
+                        break;
                     }
-                    programmaticallySelect = false;
                 }
             });
 
-        } : (observable, oldValue, newValue) -> {};
+        };
         dataEditor.editData().addListener(new WeakChangeListener<>(dataChangeListener));
         dataChangeListener.changed(dataEditor.editData(),dataEditor.editData().get(),dataEditor.editData().get());
 
