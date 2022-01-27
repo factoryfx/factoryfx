@@ -9,8 +9,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -28,7 +26,9 @@ import javafx.stage.Window;
 
 import org.controlsfx.glyphfont.FontAwesome;
 
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import io.github.factoryfx.javafx.widget.Widget;
@@ -43,7 +43,8 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
     private LanguageText editText= new LanguageText().en("edit").de("Editieren");
     private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
     private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
-    private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
+    private LanguageText deleteText= new LanguageText().en("delete everywhere").de("Löschen überall");
+    private LanguageText removeText= new LanguageText().en("remove from list").de("Von Liste entfernen");
     private LanguageText copyText= new LanguageText().en("copy").de("Kopieren");
 
     private LanguageText deleteConfirmationTitle= new LanguageText().en("Delete").de("Löschen");
@@ -103,9 +104,14 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
         adderButton.setDisable(!isUserEditable || !isUserCreateable);
 
         Button deleteButton = new Button();
-        uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.TIMES);
+        uniformDesign.addDangerIcon(deleteButton,FontAwesome.Glyph.ERASER);
         deleteButton.setOnAction(event -> deleteSelected(deleteButton.getScene().getWindow()));
         deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
+
+        Button removeButton = new Button();
+        uniformDesign.addDangerIcon(removeButton,FontAwesome.Glyph.TIMES);
+        removeButton.setOnAction(event -> removeSelected());
+        removeButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull().or(new SimpleBooleanProperty(!isUserEditable)));
 
         Button moveUpButton = new Button();
         uniformDesign.addIcon(moveUpButton,FontAwesome.Glyph.ANGLE_UP);
@@ -156,6 +162,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
         buttons.getChildren().add(adderButton);
         buttons.getChildren().add(copyButton);
         buttons.getChildren().add(deleteButton);
+        buttons.getChildren().add(removeButton);
         buttons.getChildren().add(moveUpButton);
         buttons.getChildren().add(moveDownButton);
         buttons.getChildren().add(sortButton);
@@ -164,6 +171,7 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
         selectButton.setTooltip(new Tooltip(uniformDesign.getText(selectText)));
         adderButton.setTooltip(new Tooltip(uniformDesign.getText(addText)));
         deleteButton.setTooltip(new Tooltip(uniformDesign.getText(deleteText)));
+        removeButton.setTooltip(new Tooltip(uniformDesign.getText(removeText)));
         copyButton.setTooltip(new Tooltip(uniformDesign.getText(copyText)));
 
         HBox.setMargin(moveUpButton,new Insets(0,0,0,9));
@@ -199,6 +207,11 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
 
         final List<F> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
         selectedItems.forEach(t -> deleter.accept(t, factoryListBaseAttribute));
+    }
+
+    private void removeSelected() {
+        final List<F> selectedItems = new ArrayList<>(tableView.getSelectionModel().getSelectedItems());
+        factoryListBaseAttribute.removeAll(selectedItems);
     }
 
     private void addNewReference(Window owner) {
