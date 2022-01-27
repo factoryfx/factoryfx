@@ -14,6 +14,7 @@ buildscript {
 ext.platform = "win"
 
 apply plugin: 'idea'
+
 idea {
     project {
         languageLevel = 16
@@ -29,7 +30,7 @@ allprojects {
 
 
 wrapper {
-    gradleVersion = '7.2'
+    gradleVersion = '7.3.3'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -217,8 +218,8 @@ subprojects {
         api (group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'){
             exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
         }
-        testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.0.0'
-        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.8.1'
+        testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.3.1'
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.8.2'
     }
 
     test {
@@ -240,12 +241,12 @@ subprojects {
 project(':copperBridge') {
     dependencies {
         api project(":factory")
-        api (group: 'org.copper-engine', name: 'copper-coreengine', version: '5.4.0'){
+        api (group: 'org.copper-engine', name: 'copper-coreengine', version: '5.4.1'){
             exclude group: "javax.xml.bind"
             exclude group: "javax.activation"
 
         }
-        api (group: 'org.copper-engine', name: 'copper-ext', version: '5.4.0'){
+        api (group: 'org.copper-engine', name: 'copper-ext', version: '5.4.1'){
             exclude group: "javax.xml.bind"
             exclude group: "javax.activation"
         }
@@ -303,15 +304,15 @@ project(':microserviceRestIntegrationTest') {
 
 project(':factory') {
     dependencies {
-        api  (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.0')
-        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.13.0')
-        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.0')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.0'
+        api  (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1')
+        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.13.1')
+        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.1')
+        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.1'
         testImplementation project(":testfactories")
         testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
             exclude group: 'javax.activation'
         }
-        testImplementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.13.0'
+        testImplementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.13.1'
     }
 }
 
@@ -348,7 +349,7 @@ project(':jettyFactory') {
         api  group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '3.0.1'
 
         api  (group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '3.0.3')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.0'
+        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.1'
         api  ('org.glassfish.jersey.containers:jersey-container-servlet-core:3.0.3')
         api  ('org.glassfish.jersey.inject:jersey-hk2:3.0.3')
 
@@ -391,7 +392,7 @@ project(':javafxFactoryEditing') {
         api "org.openjfx:javafx-fxml:17.0.1:$platform"
         api "org.openjfx:javafx-media:11:$platform"
 
-        api group: 'org.controlsfx', name: 'controlsfx', version: '11.1.0'
+        api group: 'org.controlsfx', name: 'controlsfx', version: '11.1.1'
         api group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.7'
 
         api project(":factory")
@@ -425,7 +426,7 @@ project(':javafxDistributionClient') {
 
     dependencies {
         api group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
-        api (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.0'){
+        api (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'){
             exclude group: "javax.annotation"
         }
 
@@ -436,7 +437,7 @@ project(':javafxDistributionClient') {
         api "org.openjfx:javafx-fxml:17.0.1:$platform"
 
         api (group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '3.0.3')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.0'
+        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.1'
         api ('org.glassfish.jersey.media:jersey-media-json-jackson:3.0.3')
         api ('org.glassfish.jersey.inject:jersey-hk2:3.0.3')
         api (group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '3.0.1')
@@ -463,7 +464,7 @@ project(':docu') {
         implementation project(':initializr')
         implementation project(":domFactoryEditing")
         
-        implementation group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '4.2.4'
+        implementation group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '4.2.7'
         implementation 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
         implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
             exclude group: 'javax.activation'
@@ -577,8 +578,8 @@ project(':benchmark') {
         implementation project(":factory")
         implementation project(":testfactories")
 
-        implementation group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.33'
-        implementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.33'
+        implementation group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.34'
+        implementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.34'
     }
 }
 
