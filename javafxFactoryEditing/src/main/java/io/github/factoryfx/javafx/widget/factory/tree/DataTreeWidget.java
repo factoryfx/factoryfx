@@ -28,12 +28,10 @@ public class DataTreeWidget implements Widget {
     private final DataEditor dataEditor;
     private final UniformDesign uniformDesign;
     private final SplitPane splitPane = new SplitPane();
-    private final boolean autoExpand;
 
-    public DataTreeWidget(DataEditor dataEditor, UniformDesign uniformDesign, boolean autoExpand) {
+    public DataTreeWidget(DataEditor dataEditor, UniformDesign uniformDesign) {
         this.dataEditor=dataEditor;
         this.uniformDesign = uniformDesign;
-        this.autoExpand = autoExpand;
     }
 
     public void edit(FactoryBase<?,?> root){
@@ -70,23 +68,24 @@ public class DataTreeWidget implements Widget {
         });
 
         dataChangeListener = (observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
-                if (treeStructureChanged(root)) {
-                    TreeItem<TreeData> treeItemRoot = constructTreeFromRoot();
-                    tree.setRoot(treeItemRoot);
-                }
-
-                tree.getSelectionModel().clearSelection();
-                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
-                    if (item.getValue().match(newValue)) {
-                        programmaticallySelect = true;
-                        tree.getSelectionModel().select(item);
-                        programmaticallySelect = false;
-                        break;
+            if (!disableChangeListenerSelect){
+                Platform.runLater(() -> {//javafx bug workaround http://stackoverflow.com/questions/26343495/indexoutofboundsexception-while-updating-a-listview-in-javafx
+                    if (treeStructureChanged(root)) {
+                        TreeItem<TreeData> treeItemRoot = constructTreeFromRoot();
+                        tree.setRoot(treeItemRoot);
                     }
-                }
-            });
 
+                    tree.getSelectionModel().clearSelection();
+                    for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
+                        if (item.getValue().match(newValue)) {
+                            programmaticallySelect = true;
+                            tree.getSelectionModel().select(item);
+                            programmaticallySelect = false;
+                            break;
+                        }
+                    }
+                });
+            }
         };
         dataEditor.editData().addListener(new WeakChangeListener<>(dataChangeListener));
         dataChangeListener.changed(dataEditor.editData(),dataEditor.editData().get(),dataEditor.editData().get());
@@ -98,8 +97,10 @@ public class DataTreeWidget implements Widget {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem = new MenuItem("expand all");
         menuItem.setOnAction(event -> {
-            for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
-                item.setExpanded(true);
+            if (tree.getRoot().getValue().getData().internal().collectChildrenDeep().size()<200){
+                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
+                    item.setExpanded(true);
+                }
             }
         });
         contextMenu.getItems().addAll(menuItem);
