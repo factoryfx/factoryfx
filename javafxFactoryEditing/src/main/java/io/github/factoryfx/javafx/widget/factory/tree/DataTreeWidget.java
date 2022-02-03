@@ -77,7 +77,7 @@ public class DataTreeWidget implements Widget {
 
                     tree.getSelectionModel().clearSelection();
                     for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
-                        if (item.getValue().match(newValue) && newValue.internal().getParents().contains(oldValue)) {
+                        if (item.getValue().match(newValue)) {
                             programmaticallySelect=true;
                             tree.getSelectionModel().select(item);
                             programmaticallySelect=false;
