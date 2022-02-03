@@ -97,8 +97,10 @@ public class DataTreeWidget implements Widget {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem = new MenuItem("expand all");
         menuItem.setOnAction(event -> {
-            for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
-                item.setExpanded(true);
+            if (tree.getRoot().getValue().getData().internal().collectChildrenDeep().size()<200){
+                for (TreeItem<TreeData> item : treeViewTraverser.breadthFirst(tree.getRoot())) {
+                    item.setExpanded(true);
+                }
             }
         });
         contextMenu.getItems().addAll(menuItem);
