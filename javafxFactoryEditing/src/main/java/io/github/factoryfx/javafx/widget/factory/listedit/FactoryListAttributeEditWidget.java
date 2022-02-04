@@ -1,7 +1,6 @@
 package io.github.factoryfx.javafx.widget.factory.listedit;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +8,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.PossibleNewValue;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -29,7 +25,10 @@ import javafx.stage.Window;
 
 import org.controlsfx.glyphfont.FontAwesome;
 
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.PossibleNewValue;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.javafx.util.UniformDesign;
 import io.github.factoryfx.javafx.widget.Widget;
@@ -41,15 +40,15 @@ import io.github.factoryfx.javafx.widget.select.SelectFactoryDialog;
  */
 public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F extends FactoryBase<L,RS>> implements Widget {
 
-    private LanguageText editText= new LanguageText().en("edit").de("Editieren");
-    private LanguageText selectText= new LanguageText().en("select").de("Auswählen");
-    private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
-    private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
-    private LanguageText copyText= new LanguageText().en("copy").de("Kopieren");
+    private final LanguageText editText= new LanguageText().en("edit").de("Editieren");
+    private final LanguageText selectText= new LanguageText().en("select").de("Auswählen");
+    private final LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
+    private final LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
+    private final LanguageText copyText= new LanguageText().en("copy").de("Kopieren");
 
-    private LanguageText deleteConfirmationTitle= new LanguageText().en("Delete").de("Löschen");
-    private LanguageText deleteConfirmationHeader= new LanguageText().en("delete item").de("Eintrag löschen");
-    private LanguageText deleteConfirmationContent= new LanguageText().en("delete item?").de("Soll der Eintrag gelöscht werden?");
+    private final LanguageText deleteConfirmationTitle= new LanguageText().en("Delete").de("Löschen");
+    private final LanguageText deleteConfirmationHeader= new LanguageText().en("delete item").de("Eintrag löschen");
+    private final LanguageText deleteConfirmationContent= new LanguageText().en("delete item?").de("Soll der Eintrag gelöscht werden?");
 
 
     private final UniformDesign uniformDesign;
@@ -73,9 +72,9 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
         this.factoryListBaseAttribute = factoryListBaseAttribute;
         this.tableView = tableView;
         this.navigateToData =  navigateToData;
-        multipleItemsSelected = Bindings.createBooleanBinding(() -> tableView.getSelectionModel().getSelectedItems().size() > 1, tableView.getSelectionModel().getSelectedItems());
+        this.multipleItemsSelected = Bindings.createBooleanBinding(() -> tableView.getSelectionModel().getSelectedItems().size() > 1, tableView.getSelectionModel().getSelectedItems());
         this.isUserCreateable = isUserCreateable;
-        this.deleter=deleter;
+        this.deleter= deleter;
     }
 
     public FactoryListAttributeEditWidget(TableView<F> tableView, Consumer<FactoryBase<?,?>> navigateToData, UniformDesign uniformDesign, FactoryListBaseAttribute<L, F,?> factoryListBaseAttribute, AttributeMetadata attributeMetadata) {
@@ -216,8 +215,6 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
                 });
             }
         }
-
-
     }
 
 }

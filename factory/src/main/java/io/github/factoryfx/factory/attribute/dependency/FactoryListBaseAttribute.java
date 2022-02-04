@@ -1,6 +1,15 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -8,12 +17,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.*;
+import io.github.factoryfx.factory.attribute.AttributeCopy;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
+import io.github.factoryfx.factory.attribute.CollectionAttributeUtil;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
 
-
-public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A extends FactoryListBaseAttribute<L, F,A>> extends ReferenceBaseAttribute<F,List<F>,A> implements List<F> {
+public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L, ?>, A extends FactoryListBaseAttribute<L, F, A>> extends ReferenceBaseAttribute<F, List<F>, A> implements List<F> {
     final List<F> list = new ArrayList<>();
     @JsonIgnore
     private List<F> previouslist;
@@ -22,31 +33,31 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         super();
     }
 
-    public List<L> instances(){
+    public List<L> instances() {
         ArrayList<L> result = new ArrayList<>(this.size());
-        for(F item: this){
+        for (F item : this) {
             result.add(item.internal().instance());
         }
         return result;
     }
 
-    public L instances(Predicate<F> filter){
+    public L instances(Predicate<F> filter) {
         Optional<F> any = get().stream().filter(filter).findAny();
         return any.map(t -> t.internal().instance()).orElse(null);
     }
 
     @Override
     public boolean internal_mergeMatch(AttributeMatch<List<F>> value) {
-        return internal_referenceListEquals(list,value.get());
+        return internal_referenceListEquals(list, value.get());
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <RL extends FactoryBase<?,RL>> void internal_fixDuplicateObjects(Map<UUID, FactoryBase<?,RL>> idToDataMap) {
+    public <RL extends FactoryBase<?, RL>> void internal_fixDuplicateObjects(Map<UUID, FactoryBase<?, RL>> idToDataMap) {
 
         List<F> fixedList = new ArrayList<>(this.list.size());
         for (F entity : this.list) {
-            fixedList.add((F)idToDataMap.get(entity.getId()));
+            fixedList.add((F) idToDataMap.get(entity.getId()));
         }
 
         this.list.clear();
@@ -58,13 +69,12 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         return this;
     }
 
-
-    /** set list only take the list items not the list itself, (to simplify ChangeListeners)*/
+    /** set list only take the list items not the list itself, (to simplify ChangeListeners) */
     @Override
     public void set(List<F> value) {
         beforeModify();
-        if (value==null){
-            if (!list.isEmpty()){
+        if (value == null) {
+            if (!list.isEmpty()) {
                 removeAdder(list);
                 this.list.clear();
                 afterModify();
@@ -81,7 +91,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public void internal_resetModification() {
-        if (previouslist!=null){
+        if (previouslist != null) {
             this.list.clear();
             this.list.addAll(previouslist);
             root.internal().needReFinalisation();
@@ -90,24 +100,24 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public void internal_clearModifyState() {
-        previouslist=null;
+        previouslist = null;
     }
 
-    private void beforeModify(){
-        if (previouslist==null && isFinalised()){
-            previouslist=new ArrayList<>(list);
+    private void beforeModify() {
+        if (previouslist == null && isFinalised()) {
+            previouslist = new ArrayList<>(list);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, Function<FactoryBase<?,?>,FactoryBase<?,?>> newCopyInstanceProvider, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
+    public void internal_copyTo(AttributeCopy<List<F>> copyAttribute, Function<FactoryBase<?, ?>, FactoryBase<?, ?>> newCopyInstanceProvider, int level, int maxLevel, List<FactoryBase<?, ?>> oldData, FactoryBase<?, ?> parent, FactoryBase<?, ?> root) {
         if (!isEmpty()) {
             List<F> copy = new ArrayList<>(size());
-            for (F item: get()){
-                if (item!=null) {
-                    F itemCopy = (F)item.internal().copyDeep(newCopyInstanceProvider,level, maxLevel, oldData, parent, root);
-                    if (itemCopy!=null){
+            for (F item : get()) {
+                if (item != null) {
+                    F itemCopy = (F) item.internal().copyDeep(newCopyInstanceProvider, level, maxLevel, oldData, parent, root);
+                    if (itemCopy != null) {
                         copy.add(itemCopy);
                     }
                 }
@@ -125,65 +135,64 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         return new CollectionAttributeUtil<>(get(), t -> t.internal().getDisplayText()).getDisplayText();
     }
 
-    public void internal_deleteFactory(F factoryToDelete){
+    public void internal_deleteFactory(F factoryToDelete) {
         remove(factoryToDelete);
-        if (factoryToDelete.internal().isCatalogItem() && this.root!=null){
-            for (FactoryBase<?, ?> factory: this.root.internal().collectChildrenDeep()) {
+        if (internal_isDestroyOnRemove() && factoryToDelete.internal().isCatalogItem() && this.root != null) {
+            for (FactoryBase<?, ?> factory : this.root.internal().collectChildrenDeep()) {
                 factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
-                    if (attribute instanceof FactoryBaseAttribute){
-                        if (((FactoryBaseAttribute)attribute).get()==factoryToDelete){
+                    if (attribute instanceof FactoryBaseAttribute) {
+                        if (((FactoryBaseAttribute) attribute).get() == factoryToDelete) {
                             attribute.set(null);
                         }
                     }
-                    if (attribute instanceof FactoryListBaseAttribute){
-                        ((FactoryListBaseAttribute)attribute).remove(factoryToDelete);
+                    if (attribute instanceof FactoryListBaseAttribute) {
+                        ((FactoryListBaseAttribute) attribute).remove(factoryToDelete);
                     }
                 });
             }
         }
-        if (additionalDeleteAction!=null){
+        if (additionalDeleteAction != null) {
             additionalDeleteAction.accept(factoryToDelete, root);
         }
     }
 
-    private void afterAdd(F added){
+    private void afterAdd(F added) {
         if (added == null) {
             throw new IllegalStateException("can't add null to list");
         }
-        if (root!=null && !batchEditStarted) {
+        if (root != null && !batchEditStarted) {
             added.internal().setRootDeepUnchecked(root);
         }
     }
 
-    private void afterAdd(Collection<? extends F> added){
-        for (F add: added){
+    private void afterAdd(Collection<? extends F> added) {
+        for (F add : added) {
             afterAdd(add);
         }
     }
 
-    private void removeAdder(F removed){
-        if (root!=null) {
+    private void removeAdder(F removed) {
+        if (root != null) {
             root.internal().addRemoved(removed);
         }
     }
 
-    private void removeAdder(Collection<? extends F> removed){
-        for (F remove: removed){
+    private void removeAdder(Collection<? extends F> removed) {
+        for (F remove : removed) {
             removeAdder(remove);
         }
     }
 
-    private void afterModify(){
-        if (root!=null) {
+    private void afterModify() {
+        if (root != null) {
             root.internal().needReFinalisation();
             this.root.internal().addModified(parent);
-            if (previouslist==null){
-                previouslist=new ArrayList<>(list);
+            if (previouslist == null) {
+                previouslist = new ArrayList<>(list);
             }
         }
         updateListeners(list);
     }
-
 
     @Override
     public void sort(Comparator<? super F> c) {
@@ -233,7 +242,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
         beforeModify();
         boolean remove = list.remove(object);
         if (remove) {
-            removeAdder((F)object);
+            removeAdder((F) object);
             afterModify();
         }
         return remove;
@@ -315,7 +324,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     @Override
     public void add(int index, F element) {
         beforeModify();
-        list.add(index,element);
+        list.add(index, element);
         afterAdd(element);
         afterModify();
     }
@@ -351,7 +360,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @Override
     public List<F> subList(int fromIndex, int toIndex) {
-        return list.subList(fromIndex,toIndex);
+        return list.subList(fromIndex, toIndex);
     }
 
     @Override
@@ -380,20 +389,21 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     @JsonIgnore
     @SuppressWarnings("unchecked")
-    public A defaultExpanded(){
-        this.defaultExpanded=true;
-        return (A)this;
+    public A defaultExpanded() {
+        this.defaultExpanded = true;
+        return (A) this;
     }
 
     @JsonIgnore
-    private boolean defaultExpanded =false;
+    private boolean defaultExpanded = false;
 
     /**
      * edit hint to show list initial expanded
+     *
      * @return self
-     * */
+     */
     @JsonIgnore
-    public boolean internal_isDefaultExpanded(){
+    public boolean internal_isDefaultExpanded() {
         return defaultExpanded;
     }
 
@@ -405,24 +415,24 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
     }
 
     /**
-     * add is costly with the change detection and root back reference adding
-     * this halt the change detection until batch is ended;
-     * @param batchAction batchAction
+     * add is costly with the change detection and root back reference adding this halt the change detection until batch is ended;
+     *
+     * @param batchAction
+     *     batchAction
      */
-    public void batchModify(Consumer<List<F>> batchAction){
+    public void batchModify(Consumer<List<F>> batchAction) {
         batchAction.accept(this.list);
         afterAdd(list);
         afterModify();
 
     }
 
-    public List<PossibleNewValue<F>> internal_createNewPossibleValues(AttributeMetadata attributeMetadata){
-        return internal_createNewPossibleValuesFactories(attributeMetadata).stream().map(f->new PossibleNewValue<>(this::add,f,this.root)).toList();
+    public List<PossibleNewValue<F>> internal_createNewPossibleValues(AttributeMetadata attributeMetadata) {
+        return internal_createNewPossibleValuesFactories(attributeMetadata).stream().map(f -> new PossibleNewValue<>(this::add, f, this.root)).toList();
     }
 
-    public List<PossibleNewValue<F>> internal_possibleValues(AttributeMetadata attributeMetadata){
-        return internal_possibleValuesFactories(attributeMetadata).stream().map(f->new PossibleNewValue<>(this::add,f,this.root)).toList();
+    public List<PossibleNewValue<F>> internal_possibleValues(AttributeMetadata attributeMetadata) {
+        return internal_possibleValuesFactories(attributeMetadata).stream().map(f -> new PossibleNewValue<>(this::add, f, this.root)).toList();
     }
-
 
 }
