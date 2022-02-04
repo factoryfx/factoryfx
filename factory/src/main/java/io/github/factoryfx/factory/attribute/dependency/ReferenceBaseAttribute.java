@@ -1,16 +1,20 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
-import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
-import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.DefaultPossibleValueProvider;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
+import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 
 /** Base for Reference attributes, with common api  */
 public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A extends ReferenceBaseAttribute<F,U,A>> extends Attribute<U,A> implements FactoryChildrenEnclosingAttribute {
@@ -135,7 +139,22 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         return userCreatable;
     }
 
+    /**
+     * reference should be removed everywhere on delete
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    public A destroyOnRemove(){
+        destroyOnRemove=true;
+        return (A)this;
+    }
 
+    @JsonIgnore
+    public boolean internal_isDestroyOnRemove(){
+        return destroyOnRemove;
+    }
+
+    private boolean destroyOnRemove =false;
 
     /**
      * reference is a selection from a catalogue

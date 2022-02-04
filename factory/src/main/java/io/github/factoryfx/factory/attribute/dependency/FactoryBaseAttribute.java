@@ -1,18 +1,26 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import com.fasterxml.jackson.annotation.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonMerge;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.OptBoolean;
+
+import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.AttributeCopy;
 import io.github.factoryfx.factory.attribute.AttributeMatch;
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.validation.ValidationResult;
-import io.github.factoryfx.factory.FactoryBase;
-
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Attribute with factory
@@ -63,7 +71,7 @@ public class FactoryBaseAttribute<L,F extends FactoryBase<? extends L,?>, A exte
         if (root!=null) {
             root.internal().needRecalculationForBackReferences();
             if (factory!=null){
-                factory.internal().setRootDeepUnchecked(root);//intentionally just added flat, this compromise between performance an convenience, deep set would be too slow for that case finalise must be called manually
+                factory.internal().setRootDeepUnchecked(root);//intentionally just added flat, this compromise between performance and convenience, deep set would be too slow for that case finalise must be called manually
             }
         }
         updateListeners(factory);

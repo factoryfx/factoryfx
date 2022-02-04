@@ -1,7 +1,5 @@
 package io.github.factoryfx.javafx.widget.factory.tree;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WeakChangeListener;
@@ -16,6 +14,8 @@ import javafx.scene.control.TreeView;
 
 import com.google.common.graph.Traverser;
 
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.javafx.editor.DataEditor;
 import io.github.factoryfx.javafx.util.DataTextFieldTreeCell;
@@ -109,7 +109,7 @@ public class DataTreeWidget implements Widget {
         return scrollPane;
     }
 
-    private Traverser<TreeItem<TreeData>> treeViewTraverser =  Traverser.forTree(TreeItem::getChildren);
+    private final Traverser<TreeItem<TreeData>> treeViewTraverser =  Traverser.forTree(TreeItem::getChildren);
 
     long lastSize=0;
     private boolean treeStructureChanged(FactoryBase<?,?> root){

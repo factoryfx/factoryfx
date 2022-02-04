@@ -1,6 +1,15 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -8,10 +17,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.factoryfx.factory.AttributeVisitor;
+
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.*;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
+import io.github.factoryfx.factory.attribute.AttributeCopy;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
+import io.github.factoryfx.factory.attribute.CollectionAttributeUtil;
 
 
 public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A extends FactoryListBaseAttribute<L, F,A>> extends ReferenceBaseAttribute<F,List<F>,A> implements List<F> {
@@ -107,7 +117,7 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L,?>,A 
 
     public void internal_deleteFactory(F factoryToDelete){
         remove(factoryToDelete);
-        if (factoryToDelete.internal().isCatalogItem() && this.root!=null){
+        if (internal_isDestroyOnRemove() && factoryToDelete.internal().isCatalogItem() && this.root!=null){
             for (FactoryBase<?, ?> factory: this.root.internal().collectChildrenDeep()) {
                 factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
                     if (attribute instanceof FactoryBaseAttribute){

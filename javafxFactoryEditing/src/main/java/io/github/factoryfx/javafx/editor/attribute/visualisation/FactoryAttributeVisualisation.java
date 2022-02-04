@@ -5,16 +5,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
-import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
-import io.github.factoryfx.javafx.widget.select.SelectFactoryDialog;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -22,20 +21,25 @@ import javafx.stage.Window;
 
 import org.controlsfx.glyphfont.FontAwesome;
 
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.metadata.AttributeMetadata;
 import io.github.factoryfx.factory.util.LanguageText;
+import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.editor.attribute.ValueAttributeVisualisation;
 import io.github.factoryfx.javafx.util.UniformDesign;
+import io.github.factoryfx.javafx.widget.select.SelectFactoryDialog;
 
 public class FactoryAttributeVisualisation<F extends FactoryBase<?,?>, A extends FactoryBaseAttribute<?, F,A>> extends ValueAttributeVisualisation<F,A> {
 
-    private LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
-    private LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
-    private LanguageText editText= new LanguageText("edit").de("Editieren");
+    private final LanguageText addText= new LanguageText().en("add").de("Hinzufügen");
+    private final LanguageText deleteText= new LanguageText().en("delete").de("Löschen");
+    private final LanguageText editText= new LanguageText("edit").de("Editieren");
 
 
-    private LanguageText selectFactoryText= new LanguageText("select factory").de("Factory auswählen");
-    private LanguageText selectFactoryCopyText = new LanguageText("select factory copy").de("Factory-Kopie auswählen");
-    private LanguageText addNewFactoryText = new LanguageText("add new factory").de("neue Factory hinzufügen");
+    private final LanguageText selectFactoryText= new LanguageText("select factory").de("Factory auswählen");
+    private final LanguageText selectFactoryCopyText = new LanguageText("select factory copy").de("Factory-Kopie auswählen");
+    private final LanguageText addNewFactoryText = new LanguageText("add new factory").de("neue Factory hinzufügen");
 
     private final UniformDesign uniformDesign;
     private final Consumer<FactoryBase<?,?>> navigateToData;
