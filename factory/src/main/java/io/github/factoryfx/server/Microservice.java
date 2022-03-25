@@ -142,12 +142,12 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
                             dataStorage.updateCurrentData(dataUpdate,new UpdateSummary(mergeDiffInfo.mergeInfos));
                         }
                     } else {
-                        logger.warn("can't apply changes from FactoryTreeBuilder");
+                        logger.warn("can't apply changes from FactoryTreeBuilder to current storage Data");
 
                         Map<UUID, FactoryBase<?, R>> oldMap = currentFactoryRoot.internal().collectChildFactoryMap();
                         Map<UUID, FactoryBase<?, R>> newMap = currentFactoryRoot.internal().collectChildFactoryMap();
                         for (AttributeDiffInfo conflictInfo : mergeDiffInfo.conflictInfos) {
-                            logger.warn("Conflict "+ conflictInfo.getDiffDisplayText(oldMap,newMap));
+                            logger.warn("Conflict: "+ conflictInfo.getDiffDisplayText(oldMap,newMap));
                         }
                     }
                 }

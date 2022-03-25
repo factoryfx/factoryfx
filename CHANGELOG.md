@@ -1,4 +1,4 @@
-# 3
+# 3.0.0
 
 ### Features
 * **improved factory runtime**
@@ -8,7 +8,10 @@
   * http2 configuration added
 
 * **clean up javax.rs modules:**
-    * replace module java.ws.rs with jakarta.ws.rs, in our project and update used libraries
+  * replace module java.ws.rs with jakarta.ws.rs, in our project and update used libraries
+
+### BREAKING CHANGES
+* java 17 or higher is required
 
 # 2.2.24
 * Factories can be marked as catalog item to support semantic copy.
