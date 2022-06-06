@@ -1,12 +1,5 @@
 package io.github.factoryfx.factory.builder;
 
-
-import io.github.factoryfx.factory.BranchSelector;
-import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
-import io.github.factoryfx.factory.validation.ValidationError;
-import io.github.factoryfx.factory.FactoryBase;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +7,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import io.github.factoryfx.factory.BranchSelector;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.validation.ValidationError;
 
 /** utility class to build a factory hierarchy(dependency tree)
  *
@@ -281,6 +280,10 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
      */
     public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(Class<FO> factoryClazz){
         return factoryContext.get(factoryClazz);
+    }
+
+    public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(FactoryTemplateId<FO> factoryTemplateId){
+        return factoryContext.get(factoryTemplateId);
     }
 
     public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
