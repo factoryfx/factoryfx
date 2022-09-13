@@ -1,10 +1,27 @@
 package io.github.factoryfx.factory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.internal.util.MockUtil;
+
 import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
 import io.github.factoryfx.factory.attribute.AttributeGroup;
-import io.github.factoryfx.factory.attribute.CopySemantic;
-import io.github.factoryfx.factory.attribute.DefaultPossibleValueProvider;
-import io.github.factoryfx.factory.attribute.dependency.*;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -12,17 +29,11 @@ import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
-import io.github.factoryfx.factory.testfactories.*;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
+import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.util.LanguageText;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.mockito.internal.util.MockUtil;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class FactoryBaseTest {
     //@Test
@@ -54,7 +65,7 @@ public class FactoryBaseTest {
         });
     }
 
-    @Test
+    //@Test
     public void test_loop_double(){
         ExampleFactoryA root = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
