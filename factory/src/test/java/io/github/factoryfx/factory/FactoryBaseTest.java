@@ -15,6 +15,7 @@ import io.github.factoryfx.factory.merge.testdata.ExampleDataC;
 import io.github.factoryfx.factory.testfactories.*;
 import io.github.factoryfx.factory.util.LanguageText;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.util.MockUtil;
@@ -24,7 +25,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FactoryBaseTest {
-    @Test
+    //@Test
     public void test_loop_(){
         Assertions.assertThrows(IllegalStateException.class, () -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
