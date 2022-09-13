@@ -1,10 +1,44 @@
 package io.github.factoryfx.factory;
 
-import com.fasterxml.jackson.annotation.*;
+import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import io.github.factoryfx.factory.attribute.*;
+
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.AttributeAndMetadata;
+import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.attribute.AttributeCopy;
+import io.github.factoryfx.factory.attribute.AttributeGroup;
+import io.github.factoryfx.factory.attribute.AttributeMatch;
+import io.github.factoryfx.factory.attribute.AttributeMerger;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
@@ -20,13 +54,6 @@ import io.github.factoryfx.factory.validation.AttributeValidation;
 import io.github.factoryfx.factory.validation.Validation;
 import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.server.Microservice;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  *
@@ -1332,26 +1359,24 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
 
-    private long loopDetectorIterationRun;//this is used like a visited boolean flag, long is used to avoid the need for a reset
+    boolean visitedForLoop;
+
     private void loopDetector(){
-        this.ensureTreeIsFinalised();
-        long iterationRun=this.loopDetectorIterationRun+1;
-        try {
-            loopDetector(iterationRun);
-        } finally {
-            this.loopDetectorIterationRun=iterationRun;
-        }
+        this.collectChildrenDeep().forEach(f->f.visitedForLoop=false);
+        loopDetector(this,new ArrayDeque<>());
     }
 
-    private void loopDetector(final long iterationRun){
-        if (iterationRun==loopDetectorIterationRun){
-            throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
+    private void loopDetector(FactoryBase<?,?> factory, ArrayDeque<FactoryBase<?, ?>> stack){
+        if (visitedForLoop){
+            if (stack.contains(factory)){
+                throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
+            }
+        } else {
+            visitedForLoop=true;
+            stack.push(factory);
+            factory.finalisedChildrenFlat.forEach(child -> loopDetector(child,stack));
+            stack.pop();
         }
-        this.loopDetectorIterationRun=iterationRun;
-        for (FactoryBase<?, R> child : this.finalisedChildrenFlat) {
-            child.loopDetector(iterationRun);
-        }
-        this.loopDetectorIterationRun=-1;
     }
 
     private List<FactoryBase<?,R>> addedToGetFactoriesInDestroyOrder;

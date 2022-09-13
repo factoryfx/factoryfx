@@ -34,11 +34,16 @@ public class DataTreeWidget implements Widget {
         this.uniformDesign = uniformDesign;
     }
 
-    public void edit(FactoryBase<?,?> root){
-        this.root=root;
-        splitPane.getItems().setAll(dataEditor.createContent(),createTree());
-        splitPane.setDividerPosition(0,0.75);
+    public void edit(FactoryBase<?, ?> root) {
+        this.root = root;
+        splitPane.getItems().clear();
+        splitPane.getItems().add(dataEditor.createContent());
         dataEditor.edit(root);
+        if (root.internal().collectChildrenDeep().size() > 1000) {
+            return;
+        }
+        splitPane.getItems().add(createTree());
+        splitPane.setDividerPosition(0, 0.75);
     }
 
     @Override
