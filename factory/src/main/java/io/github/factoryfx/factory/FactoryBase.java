@@ -1363,18 +1363,18 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
     private void loopDetector(){
         this.collectChildrenDeep().forEach(f->f.visitedForLoop=false);
-        loopDetector(this,new ArrayDeque<>());
+        loopDetector(new ArrayDeque<>());
     }
 
-    private void loopDetector(FactoryBase<?,?> factory, ArrayDeque<FactoryBase<?, ?>> stack){
+    private void loopDetector(ArrayDeque<FactoryBase<?, ?>> stack){
         if (visitedForLoop){
-            if (stack.contains(factory)){
+            if (stack.contains(this)){
                 throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
             }
         } else {
             visitedForLoop=true;
-            stack.push(factory);
-            factory.finalisedChildrenFlat.forEach(child -> loopDetector(child,stack));
+            stack.push(this);
+            this.finalisedChildrenFlat.forEach(child -> child.loopDetector(stack));
             stack.pop();
         }
     }

@@ -1,3 +1,11 @@
+# 3.0.4
+
+### BREAKING CHANGES
+* **Default Creator**
+    * The DefaultCreator (used commonly for example in FactoryTreeBuilder.addSingleton(Class>) ) now no longer tries to fill FactoryListAttribute and FactoryPolymorphicListAttribute. 
+    * It also has convenience methods to allow manual filling of attributes, before it tries to fill the FactoryAttributes from the context.
+
+
 # 3.0.0
 
 ### Features

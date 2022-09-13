@@ -36,7 +36,7 @@ import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.util.LanguageText;
 
 public class FactoryBaseTest {
-    //@Test
+    @Test
     public void test_loop_(){
         Assertions.assertThrows(IllegalStateException.class, () -> {
             ExampleFactoryA exampleFactoryA = new ExampleFactoryA();
@@ -65,7 +65,7 @@ public class FactoryBaseTest {
         });
     }
 
-    //@Test
+    @Test
     public void test_loop_double(){
         ExampleFactoryA root = new ExampleFactoryA();
         ExampleFactoryB exampleFactoryB = new ExampleFactoryB();
