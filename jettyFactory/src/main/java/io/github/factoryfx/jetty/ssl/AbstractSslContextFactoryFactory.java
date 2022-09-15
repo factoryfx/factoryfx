@@ -17,7 +17,7 @@ import io.github.factoryfx.factory.attribute.types.FileContentAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.attribute.types.StringListAttribute;
 
-public abstract class SslContextFactoryFactory<L extends SslContextFactory, R extends FactoryBase<?, R>> extends SimpleFactoryBase<L, R> {
+public abstract class AbstractSslContextFactoryFactory<L extends SslContextFactory, R extends FactoryBase<?, R>> extends SimpleFactoryBase<L, R> {
     public final FileContentAttribute keyStore = new FileContentAttribute().en("keyStore").de("keyStore");
     public final EnumAttribute<KeyStoreType> keyStoreType = new EnumAttribute<KeyStoreType>().en("keyStoreType").de("keyStoreType");
     public final StringAttribute keyStorePassword = new StringAttribute().en("keyStorePassword").de("keyStorePassword");

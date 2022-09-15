@@ -5,7 +5,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 
-public class ServerSslContextFactoryFactory<R extends FactoryBase<?, R>> extends SslContextFactoryFactory<SslContextFactory.Server, R> {
+public class ServerSslContextFactoryFactory<R extends FactoryBase<?, R>> extends AbstractSslContextFactoryFactory<SslContextFactory.Server, R> {
 
     public final BooleanAttribute wantClientAuth = new BooleanAttribute().en("wantClientAuth").de("wantClientAuth").defaultValue(false);
     public final BooleanAttribute needClientAuth = new BooleanAttribute().en("needClientAuth").de("needClientAuth").defaultValue(false);

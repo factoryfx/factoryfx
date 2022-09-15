@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 
@@ -1369,7 +1370,10 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     private void loopDetector(ArrayDeque<FactoryBase<?, ?>> stack){
         if (visitedForLoop){
             if (stack.contains(this)){
-                throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw.");
+                throw new IllegalStateException("Factories contains a cycle, circular dependencies are not supported cause it indicates a design flaw. "
+                                                    + this.getClass().getSimpleName()
+                                                    + " <- "
+                                                    + stack.stream().map(c -> c.getClass().getSimpleName()).collect(Collectors.joining(" <- ")));
             }
         } else {
             visitedForLoop=true;
