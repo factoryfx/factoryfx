@@ -195,10 +195,10 @@ public class FactoryBaseAttribute<L, F extends FactoryBase<? extends L, ?>, A ex
     }
 
     public List<PossibleNewValue<F>> internal_createNewPossibleValues(AttributeMetadata attributeMetadata) {
-        return internal_createNewPossibleValuesFactories(attributeMetadata).stream().map(f -> new PossibleNewValue<>((newFactory) -> this.set(newFactory), f, this.root)).toList();
+        return internal_createNewPossibleValuesFactories(attributeMetadata).stream().map(f -> new PossibleNewValue<>(this::set, f, this.root)).toList();
     }
 
     public List<PossibleNewValue<F>> internal_possibleValues(AttributeMetadata attributeMetadata) {
-        return internal_possibleValuesFactories(attributeMetadata).stream().map(f -> new PossibleNewValue<>((newFactory) -> this.set(newFactory), f, this.root)).toList();
+        return internal_possibleValuesFactories(attributeMetadata).stream().map(f -> new PossibleNewValue<>(this::set, f, this.root)).toList();
     }
 }
