@@ -69,7 +69,7 @@ public class FactoryCreator<F extends FactoryBase<?,R>,R extends FactoryBase<?,R
     }
 
     public F createNew(FactoryContext<R> context) {
-        factory=creator.apply(context);
+        F factory = creator.apply(context);
         factory.internal().setTreeBuilderName(templateId.name);
         return factory;
     }
