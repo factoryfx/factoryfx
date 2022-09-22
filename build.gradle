@@ -88,7 +88,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.0.7'
+    version = '3.0.8'
 
     publishing {
 
@@ -214,7 +214,7 @@ subprojects {
     compileJava.options.encoding = StandardCharsets.UTF_8
 
     dependencies {
-        api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0-alpha5'
+        api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.1'
         api (group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'){
             exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
         }
@@ -293,9 +293,7 @@ project(':microserviceRestIntegrationTest') {
     dependencies {
         implementation project(":microserviceRestResource")
         implementation project(":microserviceRestClient")
-        implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: 'javax.activation'
-        }
+        implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
         implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.1'
     }
 }
@@ -309,9 +307,7 @@ project(':factory') {
         api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.1')
         api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.1'
         testImplementation project(":testfactories")
-        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: 'javax.activation'
-        }
+        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
         testImplementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.13.1'
     }
 }
@@ -356,9 +352,7 @@ project(':jettyFactory') {
         api  group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '2.0.0'
         api group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '3.0.4'
 
-        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: 'javax.activation'
-        }
+        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
     }
 
 }
@@ -374,9 +368,7 @@ project(':example') {
         implementation project(":factory")
         implementation project(":domFactoryEditing")
 
-        implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: 'javax.activation'
-        }
+        implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
         implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.1'
     }
 
@@ -399,9 +391,7 @@ project(':javafxFactoryEditing') {
         api project(":microserviceRestClient")
 
         testImplementation project(":testfactories")
-        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: "javax.activation"
-        }
+        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
         testImplementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.1'
 
     }
@@ -412,11 +402,9 @@ project(':javafxDistributionServer') {
     dependencies {
         api project(":jettyFactory")
         api project(":factory")
-        api group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
+        api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.1'
 
-        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: "javax.activation"
-        }
+        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
         testImplementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.1'
     }
 
@@ -425,7 +413,7 @@ project(':javafxDistributionServer') {
 project(':javafxDistributionClient') {
 
     dependencies {
-        api group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
+        api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.1'
         api (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'){
             exclude group: "javax.annotation"
         }
@@ -466,9 +454,7 @@ project(':docu') {
         
         implementation group: 'io.dropwizard.metrics', name: 'metrics-jetty9', version: '4.2.7'
         implementation 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
-        implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: 'javax.activation'
-        }
+        implementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
         implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.1'
 
         implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '3.0.1'
@@ -482,9 +468,7 @@ project(':typescriptGenerator') {
         testImplementation project(":testfactories")
         testImplementation project(":jettyFactory")
         testImplementation project(":domFactoryEditing")
-        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: 'javax.activation'
-        }
+        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
     }
 
     task generateTestCode(type: JavaExec) {
@@ -587,9 +571,7 @@ project(':domFactoryEditing') {
     dependencies {
         api project(":microserviceRestResource")
         api project(":typescriptGenerator")
-        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.0-alpha10'){
-            exclude group: 'javax.activation'
-        }
+        testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
     }
 }
     
