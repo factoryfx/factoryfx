@@ -88,7 +88,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.0.8'
+    version = '3.0.9'
 
     publishing {
 
@@ -336,11 +336,11 @@ project(':oracledbStorage') {
 project(':jettyFactory') {
     dependencies {
         api  project(":factory")
-        api  (group: 'org.eclipse.jetty', name: 'jetty-server', version: '11.0.8')
-        api  (group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '11.0.8')
-        api  (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.8')
-        api  (group: 'org.eclipse.jetty.http2', name: 'http2-server', version: '11.0.8')
-        api  (group: 'org.eclipse.jetty', name: 'jetty-alpn-java-server', version: '11.0.8')
+        api  (group: 'org.eclipse.jetty', name: 'jetty-server', version: '11.0.12')
+        api  (group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '11.0.12')
+        api  (group: 'org.eclipse.jetty', name: 'jetty-webapp', version: '11.0.12')
+        api  (group: 'org.eclipse.jetty.http2', name: 'http2-server', version: '11.0.12')
+        api  (group: 'org.eclipse.jetty', name: 'jetty-alpn-java-server', version: '11.0.12')
 
         api  group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '3.0.1'
 
