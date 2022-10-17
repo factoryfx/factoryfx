@@ -88,7 +88,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.0.9'
+    version = '3.0.10'
 
     publishing {
 
@@ -377,11 +377,11 @@ project(':example') {
 
 project(':javafxFactoryEditing') {
     dependencies {
-        api "org.openjfx:javafx-base:17.0.1:$platform"
-        api "org.openjfx:javafx-graphics:17.0.1:$platform"
-        api "org.openjfx:javafx-controls:17.0.1:$platform"
-        api "org.openjfx:javafx-web:17.0.1:$platform"
-        api "org.openjfx:javafx-fxml:17.0.1:$platform"
+        api "org.openjfx:javafx-base:19:$platform"
+        api "org.openjfx:javafx-graphics:19:$platform"
+        api "org.openjfx:javafx-controls:19:$platform"
+        api "org.openjfx:javafx-web:19:$platform"
+        api "org.openjfx:javafx-fxml:19:$platform"
         api "org.openjfx:javafx-media:11:$platform"
 
         api group: 'org.controlsfx', name: 'controlsfx', version: '11.1.1'
@@ -418,11 +418,11 @@ project(':javafxDistributionClient') {
             exclude group: "javax.annotation"
         }
 
-        api "org.openjfx:javafx-base:17.0.1:$platform"
-        api "org.openjfx:javafx-graphics:17.0.1:$platform"
-        api "org.openjfx:javafx-controls:17.0.1:$platform"
-        api "org.openjfx:javafx-web:17.0.1:$platform"
-        api "org.openjfx:javafx-fxml:17.0.1:$platform"
+        api "org.openjfx:javafx-base:19:$platform"
+        api "org.openjfx:javafx-graphics:19:$platform"
+        api "org.openjfx:javafx-controls:19:$platform"
+        api "org.openjfx:javafx-web:19:$platform"
+        api "org.openjfx:javafx-fxml:19:$platform"
 
         api (group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '3.0.4')
         api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.2'
