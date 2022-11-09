@@ -2,6 +2,8 @@ package io.github.factoryfx.server;
 
 import com.google.common.base.Throwables;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringListAttribute;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
@@ -15,6 +17,7 @@ import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -406,6 +409,48 @@ public class MicroserviceTest {
             microservice.updateCurrentFactory(update);
         }
         Assertions.assertEquals(1,ExampleFactoryBDestroyTracking.destroyCalled);
+
+    }
+
+    public static record LiveObjectWithList(List<String> stringList){
+    }
+    public static class ExampleFactoryAWithList extends SimpleFactoryBase<LiveObjectWithList,ExampleFactoryAWithList> {
+        public final StringListAttribute list= new StringListAttribute();
+
+        @Override
+        protected LiveObjectWithList createImpl() {
+            return new LiveObjectWithList(list.get());
+        }
+    }
+
+    @Test
+    public void testUpdateValueList() {
+        FactoryTreeBuilder<LiveObjectWithList,ExampleFactoryAWithList> builder = new FactoryTreeBuilder<>(ExampleFactoryAWithList.class, ctx -> {
+            return new ExampleFactoryAWithList();
+        });
+
+        Microservice<LiveObjectWithList,ExampleFactoryAWithList> microservice = builder.microservice().build();
+
+        microservice.start();
+
+        {//add
+            DataUpdate<ExampleFactoryAWithList> editableFactory = microservice.prepareNewFactory();
+            editableFactory = ObjectMapperBuilder.build().copy(editableFactory);//simulate network
+            editableFactory.root.list.add("222222");
+            FactoryUpdateLog<ExampleFactoryAWithList> log = microservice.updateCurrentFactory(editableFactory);
+            Assertions.assertEquals(1, log.mergeDiffInfo.mergeInfos.size());
+            Assertions.assertEquals(List.of("222222"), microservice.getRootLiveObject().stringList);
+        }
+
+
+        {//remove
+            DataUpdate<ExampleFactoryAWithList> editableFactory = microservice.prepareNewFactory();
+            editableFactory = ObjectMapperBuilder.build().copy(editableFactory);//simulate network
+            editableFactory.root.list.remove(0);
+            FactoryUpdateLog<ExampleFactoryAWithList> log = microservice.updateCurrentFactory(editableFactory);
+            Assertions.assertEquals(1, log.mergeDiffInfo.mergeInfos.size());
+            Assertions.assertEquals(List.of(), microservice.getRootLiveObject().stringList);
+        }
 
     }
 }

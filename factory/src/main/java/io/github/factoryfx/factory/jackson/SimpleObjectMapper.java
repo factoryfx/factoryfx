@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.factoryfx.factory.FactoryBase;
 
 
-/** the main task of SimpleObjectMapper is to get rid of the checked exceptions*/
+/** the main purpose of SimpleObjectMapper is to get rid of the checked exceptions*/
 public class SimpleObjectMapper {
     private final ObjectMapper objectMapper;
 
