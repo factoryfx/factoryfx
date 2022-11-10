@@ -28,7 +28,7 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
     @Override
     public void set(Set<T> value) {
         this.value.clear();
-        this.value.addAll(value);
+        this.addAll(value);
     }
 
 

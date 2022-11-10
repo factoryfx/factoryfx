@@ -37,15 +37,12 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         if (currentFactoryRoot==null) {
             throw new IllegalStateException("update on a not started manager");
         }
-
-
         return this.update((root, idToFactory) -> {
             Collection<FactoryBase<?,R>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
             previousFactories.forEach((f) -> f.internal().resetLog());
             RootFactoryWrapper.MergeResult<R> merge = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
             return merge.mergeDiffInfo;
         });
-
     }
 
     private FactoryUpdateLog<R> updateCurrentFactory(MergeDiffInfo<R> mergeDiffInfo) {
