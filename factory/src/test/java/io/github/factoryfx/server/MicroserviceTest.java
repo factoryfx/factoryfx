@@ -1,27 +1,35 @@
 package io.github.factoryfx.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import com.google.common.base.Throwables;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.attribute.types.StringListAttribute;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MicroserviceTest {
 
@@ -411,24 +419,25 @@ public class MicroserviceTest {
 
     }
 
-    public static record LiveObjectWithSet(Set<String> stringSet){
+    public static record LiveObjectWithList(List<String> stringList){
     }
-    public static class ExampleFactoryAWithList extends SimpleFactoryBase<LiveObjectWithSet,ExampleFactoryAWithList> {
+    public static class ExampleFactoryAWithList extends SimpleFactoryBase<LiveObjectWithList,ExampleFactoryAWithList> {
         public final StringListAttribute list= new StringListAttribute();
 
         @Override
-        protected LiveObjectWithSet createImpl() {
-            return new LiveObjectWithSet(new HashSet<>(list.get()));
+        protected LiveObjectWithList createImpl() {
+            return new LiveObjectWithList(new ArrayList<>(list.get()));
         }
     }
 
+    @Disabled
     @Test
     public void testUpdateValueList() {
-        FactoryTreeBuilder<LiveObjectWithSet,ExampleFactoryAWithList> builder = new FactoryTreeBuilder<>(ExampleFactoryAWithList.class, ctx -> {
+        FactoryTreeBuilder<LiveObjectWithList,ExampleFactoryAWithList> builder = new FactoryTreeBuilder<>(ExampleFactoryAWithList.class, ctx -> {
             return new ExampleFactoryAWithList();
         });
 
-        Microservice<LiveObjectWithSet,ExampleFactoryAWithList> microservice = builder.microservice().build();
+        Microservice<LiveObjectWithList,ExampleFactoryAWithList> microservice = builder.microservice().build();
 
         microservice.start();
 
@@ -438,7 +447,7 @@ public class MicroserviceTest {
             editableFactory.root.list.add("222222");
             FactoryUpdateLog<ExampleFactoryAWithList> log = microservice.updateCurrentFactory(editableFactory);
             Assertions.assertEquals(1, log.mergeDiffInfo.mergeInfos.size());
-            Assertions.assertEquals(Set.of("222222"), microservice.getRootLiveObject().stringSet);
+            Assertions.assertEquals(List.of("222222"), microservice.getRootLiveObject().stringList);
         }
 
 
@@ -448,7 +457,7 @@ public class MicroserviceTest {
             editableFactory.root.list.remove(0);
             FactoryUpdateLog<ExampleFactoryAWithList> log = microservice.updateCurrentFactory(editableFactory);
             Assertions.assertEquals(1, log.mergeDiffInfo.mergeInfos.size());
-            Assertions.assertEquals(Set.of(), microservice.getRootLiveObject().stringSet);
+            Assertions.assertEquals(List.of(), microservice.getRootLiveObject().stringList);
         }
 
     }
