@@ -51,7 +51,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
             this.value.clear();
         } else {
             this.value.clear();
-            this.value.addAll(value);
+            this.addAll(value);
         }
     }
 
