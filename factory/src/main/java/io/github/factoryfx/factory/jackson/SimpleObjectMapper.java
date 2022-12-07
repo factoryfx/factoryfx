@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import io.github.factoryfx.factory.FactoryBase;
 
 
@@ -18,11 +19,16 @@ public class SimpleObjectMapper {
         this.objectMapper = objectMapper;
     }
 
+
     @SuppressWarnings("unchecked")
-    public <T> T copy(T value) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writeValue(value, out);
-        return readValue(new ByteArrayInputStream(out.toByteArray()), (Class<T>) value.getClass());
+    public <T> T copy(T value){
+        TokenBuffer tokenBuffer = new TokenBuffer(objectMapper,false);
+        try {
+            objectMapper.writeValue(tokenBuffer, value);
+            return readInternal(() -> objectMapper.readValue(tokenBuffer.asParser(),(Class<T>)value.getClass()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @SuppressWarnings("unchecked")
