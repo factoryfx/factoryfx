@@ -41,7 +41,7 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
 
     @Override
     public List<T> get() {
-        return this;
+        return this.value;
     }
 
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/

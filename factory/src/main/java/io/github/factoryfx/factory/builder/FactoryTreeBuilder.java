@@ -302,6 +302,13 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         return new BranchSelector<>(this);
     }
 
+    /**
+     * select factory to mock there liveobject
+     * @return BranchSelector
+     */
+    public BranchSelector<R> mock(){
+        return new BranchSelector<>(this);
+    }
 
     public Scope getScope(FactoryTemplateId<?> factoryTemplateId){
         return factoryContext.getScope(factoryTemplateId);
