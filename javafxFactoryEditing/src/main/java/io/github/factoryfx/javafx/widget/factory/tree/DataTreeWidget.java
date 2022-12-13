@@ -29,9 +29,12 @@ public class DataTreeWidget implements Widget {
     private final UniformDesign uniformDesign;
     private final SplitPane splitPane = new SplitPane();
 
-    public DataTreeWidget(DataEditor dataEditor, UniformDesign uniformDesign) {
+    private final Integer maxTreeSize;
+
+    public DataTreeWidget(DataEditor dataEditor, UniformDesign uniformDesign, Integer maxTreeSize) {
         this.dataEditor=dataEditor;
         this.uniformDesign = uniformDesign;
+        this.maxTreeSize = maxTreeSize;
     }
 
     public void edit(FactoryBase<?, ?> root) {
@@ -39,7 +42,7 @@ public class DataTreeWidget implements Widget {
         splitPane.getItems().clear();
         splitPane.getItems().add(dataEditor.createContent());
         dataEditor.edit(root);
-        if (root.internal().collectChildrenDeep().size() > 1000) {
+        if (root.internal().collectChildrenDeep().size() > maxTreeSize) {
             return;
         }
         splitPane.getItems().add(createTree());

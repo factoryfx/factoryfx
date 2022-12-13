@@ -30,7 +30,7 @@ public class DataTreeWidgetTest extends Application {
         DataEditor dataEditor = new DataEditor(new AttributeVisualisationMappingBuilder(AttributeVisualisationMappingBuilder.createDefaultSingleAttributeEditorBuilders(UniformDesignBuilder.build())),uniformDesign);
         dataEditor.edit(exampleData1);
 
-        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,UniformDesignBuilder.build());
+        DataTreeWidget dataTreeWidget= new DataTreeWidget(dataEditor,UniformDesignBuilder.build(), 1000);
 
         BorderPane root = new BorderPane();
         CssUtil.addToNode(root);
