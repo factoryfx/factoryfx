@@ -302,13 +302,13 @@ project(':microserviceRestIntegrationTest') {
 
 project(':factory') {
     dependencies {
-        api  (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1')
-        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.13.1')
-        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.1')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.1'
+        api  (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.1')
+        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.14.1')
+        api  (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.14.1')
+        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.14.1'
         testImplementation project(":testfactories")
         testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
-        testImplementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.13.1'
+        testImplementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.14.1'
     }
 }
 
@@ -345,7 +345,7 @@ project(':jettyFactory') {
         api  group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '3.0.1'
 
         api  (group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '3.0.4')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.2'
+        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.14.1'
         api  ('org.glassfish.jersey.containers:jersey-container-servlet-core:3.0.4')
         api  ('org.glassfish.jersey.inject:jersey-hk2:3.0.4')
 
@@ -414,7 +414,7 @@ project(':javafxDistributionClient') {
 
     dependencies {
         api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.1'
-        api (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'){
+        api (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.1'){
             exclude group: "javax.annotation"
         }
 
@@ -425,7 +425,7 @@ project(':javafxDistributionClient') {
         api "org.openjfx:javafx-fxml:19:$platform"
 
         api (group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '3.0.4')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.13.2'
+        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.14.1'
         api ('org.glassfish.jersey.media:jersey-media-json-jackson:3.0.3')
         api ('org.glassfish.jersey.inject:jersey-hk2:3.0.4')
         api (group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '3.0.1')
