@@ -30,7 +30,7 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 public class ResourceBuilder<R extends FactoryBase<?,R>> {
 
     private String pathSpec="/*";
-    private Map<String,Boolean> jerseyProperties=new HashMap<>();
+    private Map<String,Object> jerseyProperties=new HashMap<>();
 
     FactoryBase<ObjectMapper,R> objectMapper= AttributelessFactory.create(DefaultObjectMapper.class);
     FactoryBase<LoggingFeature,R> loggingFeature = AttributelessFactory.create(Slf4LoggingFeature.class);
@@ -69,7 +69,7 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
      * @param jerseyProperties properties e.g (ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true)
      * @return builder
      */
-    public ResourceBuilder<R> withJerseyProperties(Map<String,Boolean> jerseyProperties){
+    public ResourceBuilder<R> withJerseyProperties(Map<String,Object> jerseyProperties){
         this.jerseyProperties=jerseyProperties;
         return this;
     }

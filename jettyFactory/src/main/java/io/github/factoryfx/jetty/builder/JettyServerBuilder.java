@@ -478,7 +478,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      * @param jerseyProperties jerseyProperties
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withJerseyProperties(Map<String,Boolean> jerseyProperties) {
+    public JettyServerBuilder<R, JR> withJerseyProperties(Map<String,Object> jerseyProperties) {
         getDefaultJersey().withJerseyProperties(jerseyProperties);
         return this;
     }
