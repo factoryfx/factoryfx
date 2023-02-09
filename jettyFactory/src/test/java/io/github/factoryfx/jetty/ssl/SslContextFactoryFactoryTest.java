@@ -3,11 +3,13 @@ package io.github.factoryfx.jetty.ssl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -226,7 +228,11 @@ public class SslContextFactoryFactoryTest {
 
         builder.addFactory(ServerIniFileSslContextFactoryFactory.class, Scope.SINGLETON, ctx->{
             ServerIniFileSslContextFactoryFactory<JettyServerRootFactory> ssl = new ServerIniFileSslContextFactoryFactory<>();
-            ssl.iniFile.set(Objects.requireNonNull(getClass().getResource("/server_ssl.ini")).getPath());
+            try {
+                ssl.iniFile.set(Paths.get(Objects.requireNonNull(getClass().getResource("/server_ssl.ini")).toURI()).toAbsolutePath().toString());
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
             ssl.section.set("section1");
             return ssl;
         });
