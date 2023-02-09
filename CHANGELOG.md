@@ -1,5 +1,9 @@
 # 3.0.15
 
+### Features
+* **Ini file SslContextFactoryFactory**
+  * Added support for configuration of SslContextFactoryFactory by ini file (ClientIniFileSslContextFactoryFactory and ServerIniFileSslContextFactoryFactory)
+
 ### BREAKING CHANGES
 
 * **ClientSslContextFactoryFactory and ServerSslContextFactoryFactory**
