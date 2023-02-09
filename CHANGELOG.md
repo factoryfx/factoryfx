@@ -1,3 +1,10 @@
+# 3.0.15
+
+### BREAKING CHANGES
+
+* **ClientSslContextFactoryFactory and ServerSslContextFactoryFactory**
+  * ClientSslContextFactoryFactory and ServerSslContextFactoryFactory saved before 3.0.15 are not deserialized. Newly created ClientSslContextFactoryFactory and ServerSslContextFactoryFactory should be saved and loaded without issue.
+
 # 3.0.4
 
 ### BREAKING CHANGES
