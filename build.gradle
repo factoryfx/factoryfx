@@ -88,7 +88,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.0.14'
+    version = '3.0.15'
 
     publishing {
 
@@ -351,6 +351,8 @@ project(':jettyFactory') {
 
         api  group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '2.0.0'
         api group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '3.0.4'
+
+        api group: "org.ini4j", name: "ini4j", version: "0.5.4"
 
         testImplementation (group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.1')
     }

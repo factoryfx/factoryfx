@@ -1,40 +1,25 @@
 package io.github.factoryfx.jetty.builder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.builder.*;
+import io.github.factoryfx.jetty.*;
+import io.github.factoryfx.jetty.ssl.ServerSslContextFactoryFactory;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.RequestLog;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.glassfish.jersey.logging.LoggingFeature;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.RequestLog;
-import org.glassfish.jersey.logging.LoggingFeature;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.builder.FactoryContext;
-import io.github.factoryfx.factory.builder.FactoryTemplateId;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.NestedBuilder;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.GzipHandlerFactory;
-import io.github.factoryfx.jetty.HandlerCollectionFactory;
-import io.github.factoryfx.jetty.HttpConfigurationFactory;
-import io.github.factoryfx.jetty.HttpServerConnectorFactory;
-import io.github.factoryfx.jetty.JettyServerFactory;
-import io.github.factoryfx.jetty.ServletAndPathFactory;
-import io.github.factoryfx.jetty.ServletContextHandlerFactory;
-import io.github.factoryfx.jetty.ServletFilterAndPathFactory;
-import io.github.factoryfx.jetty.Slf4jRequestLogFactory;
-import io.github.factoryfx.jetty.ThreadPoolFactory;
-import io.github.factoryfx.jetty.UpdateableServletFactory;
-import io.github.factoryfx.jetty.ssl.ServerSslContextFactoryFactory;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.Filter;
-import jakarta.servlet.Servlet;
-import jakarta.ws.rs.ext.ExceptionMapper;
 
 /**
  * The builder builds the factory structure for a jetty server not the jetty liveobject<br>
@@ -378,7 +363,7 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
      * @param ssl ssl
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withSsl(ServerSslContextFactoryFactory<R> ssl) {
+    public JettyServerBuilder<R, JR> withSsl(FactoryBase<SslContextFactory.Server, R> ssl) {
         getDefaultServerConnector().withSsl(ssl);
         return this;
     }

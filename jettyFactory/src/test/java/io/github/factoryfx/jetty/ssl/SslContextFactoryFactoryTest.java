@@ -12,6 +12,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -215,4 +216,36 @@ public class SslContextFactoryFactoryTest {
         }
 
     }
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test_with_ssl_from_file() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty
+                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(ServerIniFileSslContextFactoryFactory.class)));
+
+        builder.addFactory(ServerIniFileSslContextFactoryFactory.class, Scope.SINGLETON, ctx->{
+            ServerIniFileSslContextFactoryFactory<JettyServerRootFactory> ssl = new ServerIniFileSslContextFactoryFactory<>();
+            ssl.iniFile.set(Objects.requireNonNull(getClass().getResource("/server_ssl.ini")).getPath());
+            ssl.section.set("section1");
+            return ssl;
+        });
+        builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
+
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        try {
+            microservice.start();
+            fixUntrustCertificate();
+            URL url = new URL("https://localhost:8009/test");
+            URLConnection conn = url.openConnection();
+            InputStream is = conn.getInputStream();
+            Assertions.assertEquals("Hello World", convertStreamToString(is));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            microservice.stop();
+        }
+
+    }
+
 }

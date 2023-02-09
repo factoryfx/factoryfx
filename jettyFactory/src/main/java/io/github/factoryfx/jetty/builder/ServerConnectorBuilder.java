@@ -6,7 +6,7 @@ import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.HttpConfigurationFactory;
 import io.github.factoryfx.jetty.HttpServerConnectorFactory;
-import io.github.factoryfx.jetty.ssl.ServerSslContextFactoryFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * builder for jetty server connector.
@@ -16,7 +16,7 @@ import io.github.factoryfx.jetty.ssl.ServerSslContextFactoryFactory;
 public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
     String host="localhost";
     int port=8080;
-    ServerSslContextFactoryFactory<R> ssl;
+    FactoryBase<SslContextFactory.Server, R> ssl;
     HttpConfigurationFactory<R> httpConfiguration;
     boolean useHttp2=false;
 
@@ -59,7 +59,7 @@ public class ServerConnectorBuilder<R extends FactoryBase<?,R>> {
      * @param ssl ssl factory
      * @return builder
      */
-    public ServerConnectorBuilder<R> withSsl(ServerSslContextFactoryFactory<R> ssl) {
+    public ServerConnectorBuilder<R> withSsl(FactoryBase<SslContextFactory.Server, R> ssl) {
         this.ssl=ssl;
         return this;
     }

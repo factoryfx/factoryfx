@@ -18,6 +18,7 @@ module io.github.factoryfx.jettyFactory {
     requires java.logging;
     requires transitive io.github.factoryfx.factory;
     requires com.fasterxml.jackson.databind;
+    requires ini4j;
 
     exports io.github.factoryfx.jetty;
     exports io.github.factoryfx.jetty.ssl;
