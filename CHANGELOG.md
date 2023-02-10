@@ -6,8 +6,29 @@
 
 ### BREAKING CHANGES
 
-* **ClientSslContextFactoryFactory and ServerSslContextFactoryFactory**
-  * ClientSslContextFactoryFactory and ServerSslContextFactoryFactory saved before 3.0.15 are not deserialized. Newly created ClientSslContextFactoryFactory and ServerSslContextFactoryFactory should be saved and loaded without issue.
+* **HttpServerConnectorFactory**
+  * HttpServerConnectorFactory#ssl attribute will not be loaded from a stored configuration.
+
+It can be fixed by patching the factoryMetadata: change referenceClass of the ssl attribute for className "io.github.factoryfx.jetty.HttpServerConnectorFactory" to "io.github.factoryfx.factory.FactoryBase".
+
+The following DataStorage#patchAll does it:
+```java
+dataStorage.patchAll((root, metaData, objectMapper) -> {
+    ArrayNode dataListJsonNode = (ArrayNode) metaData.get("dataStorageMetadataDictionary").get("dataList");
+    for (JsonNode childNode : dataListJsonNode) {
+        String className = childNode.get("className").asText();
+        if ("io.github.factoryfx.jetty.HttpServerConnectorFactory".equals(className)) {
+            ArrayNode attributes = (ArrayNode) childNode.get("attributes");
+            for (JsonNode attributeMetadata : attributes) {
+                final String variableName = Optional.ofNullable(attributeMetadata.get("variableName")).map(JsonNode::asText).orElse(null);
+                if("ssl".equals(variableName)) {
+                    ((ObjectNode) attributeMetadata).set("referenceClass", new TextNode(FactoryBase.class.getName()));
+                }
+            }
+        }
+    }
+});
+```
 
 # 3.0.4
 

@@ -16,6 +16,37 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Factory to create org.eclipse.jetty.util.ssl.SslContextFactory based on an INI file.
+ *
+ * Attributes are the path to the ini file on the server's filesystem, and the name of the ini file section.
+ *
+ * <pre>
+ * [SectionName]
+ *
+ * KEYSTORE = path/to/keystore
+ * KEYSTORE_PASSWORD = password
+ * KEYSTORE_TYPE = pkcs12
+ *
+ * TRUSTSTORE = path/to/keystore
+ * TRUSTSTORE_PASSWORD = password
+ * TRUSTSTORE_TYPE = pkcs12
+ * CERT_ALIAS = lotus
+ *
+ * #Optional fields
+ * ALLOWED_CIPHER_SUITES = TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA
+ * KEY_PASSWORD = key_password
+ *
+ * #Specific to io.github.factoryfx.jetty.ssl.ServerIniFileSslContextFactoryFactory
+ * NEED_CLIENT_AUTH = true
+ * WANT_CLIENT_AUTH = false
+ *
+ * </pre>
+ *
+ * KEYSTORE and TRUSTSTORE are either absolute paths, or paths relative to the ini file
+ *
+ *
+ */
 public abstract class AbstractIniFileSslContextFactoryFactory<L extends SslContextFactory, R extends FactoryBase<?, R>> extends SimpleFactoryBase<L, R> {
 
     public StringAttribute iniFile = new StringAttribute().en("INI file path").de("INI file path");
