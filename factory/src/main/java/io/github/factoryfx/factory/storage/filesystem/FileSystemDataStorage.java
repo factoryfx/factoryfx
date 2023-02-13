@@ -16,7 +16,7 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.*;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
-public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataStorage<R> {
+public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataStorage<R> {
     private final FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory;
 
     private final R initialData;
@@ -25,29 +25,27 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
     private final MigrationManager<R> migrationManager;
     private final SimpleObjectMapper objectMapper;
 
-    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper){
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper) {
         this.initialData = initialData;
 
-        if (!Files.exists(basePath)){
-            throw new IllegalArgumentException("path don't exists:"+basePath);
+        if (!Files.exists(basePath)) {
+            throw new IllegalArgumentException("path don't exists:" + basePath);
         }
-        currentFactoryPath= Paths.get(basePath.toString()+"/currentFactory.json");
-        currentFactoryPathMetadata= Paths.get(basePath.toString()+"/currentFactory_metadata.json");
-        this.fileSystemFactoryStorageHistory=fileSystemFactoryStorageHistory;
+        currentFactoryPath = Paths.get(basePath.toString() + "/currentFactory.json");
+        currentFactoryPathMetadata = Paths.get(basePath.toString() + "/currentFactory_metadata.json");
+        this.fileSystemFactoryStorageHistory = fileSystemFactoryStorageHistory;
         this.migrationManager = migrationManager;
         this.objectMapper = objectMapper;
 
     }
 
-    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper){
-        this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager),objectMapper);
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper) {
+        this(basePath, initialData, migrationManager, new FileSystemFactoryStorageHistory<>(basePath, migrationManager), objectMapper);
     }
 
-    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, int maxConfigurationHistory){
-        this(basePath, initialData, migrationManager,new FileSystemFactoryStorageHistory<>(basePath, migrationManager, maxConfigurationHistory),objectMapper);
+    public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, int maxConfigurationHistory) {
+        this(basePath, initialData, migrationManager, new FileSystemFactoryStorageHistory<>(basePath, migrationManager, maxConfigurationHistory), objectMapper);
     }
-
-
 
 
     @Override
@@ -84,7 +82,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
     public DataAndId<R> getCurrentData() {
         loadInitialFactory();
         StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
-        return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath),storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
+        return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
     }
 
     @Override
@@ -100,7 +98,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
                 update.comment,
                 update.baseVersionId,
                 changeSummary,
-                update.root.internal().createDataStorageMetadataDictionaryFromRoot(),getCurrentDataId());
+                update.root.internal().createDataStorageMetadataDictionaryFromRoot(), getCurrentDataId());
         update(update.root, metadata);
     }
 
@@ -114,9 +112,11 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
     public void patchCurrentData(DataStoragePatcher consumer) {
         JsonNode data = objectMapper.readTree(currentFactoryPath);
         JsonNode metadata = objectMapper.readTree(currentFactoryPathMetadata);
-        consumer.patch((ObjectNode)data,metadata,objectMapper);
+        consumer.patch((ObjectNode) data, metadata, objectMapper);
         writeFile(currentFactoryPath, objectMapper.writeTree(data));
         writeFile(currentFactoryPathMetadata, objectMapper.writeTree(metadata));
+
+        fileSystemFactoryStorageHistory.patchForId(consumer, objectMapper, getCurrentDataId());
     }
 
     private void update(R update, StoredDataMetadata metadata) {
@@ -126,7 +126,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
     }
 
     private void loadInitialFactory() {
-        if (!Files.exists(currentFactoryPath)){
+        if (!Files.exists(currentFactoryPath)) {
             StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
                     UUID.randomUUID().toString(),
                     "System",
@@ -141,7 +141,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
         }
     }
 
-    private String readFile(Path path){
+    private String readFile(Path path) {
         try {
             return Files.readString(path);
         } catch (IOException e) {
@@ -149,7 +149,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?,R>> implements DataSt
         }
     }
 
-    private void writeFile(Path path, String content){
+    private void writeFile(Path path, String content) {
         try {
             Files.writeString(path, content);
         } catch (IOException e) {

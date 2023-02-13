@@ -1,5 +1,14 @@
 package io.github.factoryfx.factory.storage.filesystem;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.storage.DataStoragePatcher;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,16 +17,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
-import io.github.factoryfx.factory.storage.DataStoragePatcher;
-import io.github.factoryfx.factory.storage.migration.MigrationManager;
-import io.github.factoryfx.factory.storage.StoredDataMetadata;
-import org.slf4j.LoggerFactory;
 
 public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>> {
 
@@ -110,6 +109,19 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>> {
     public void patchAll(DataStoragePatcher consumer, SimpleObjectMapper simpleObjectMapper) {
         visitHistoryFiles(path -> {
             if (!path.toString().endsWith("_metadata.json")){
+                JsonNode data = simpleObjectMapper.readTree(path);
+                Path metadataPath = path.resolveSibling(path.getParent().resolve(path.getFileName().toString().replace(".json", "_metadata.json")));
+                JsonNode metadata = simpleObjectMapper.readTree(metadataPath);
+                consumer.patch((ObjectNode) data,metadata,simpleObjectMapper);
+                writeFile(path,simpleObjectMapper.writeTree(data));
+                writeFile(metadataPath,simpleObjectMapper.writeTree(metadata));
+            }
+        });
+    }
+
+    public void patchForId(DataStoragePatcher consumer, SimpleObjectMapper simpleObjectMapper, String id) {
+        visitHistoryFiles(path -> {
+            if (!path.toString().endsWith("_metadata.json") && (id + ".json").equals(path.getFileName().toString())){
                 JsonNode data = simpleObjectMapper.readTree(path);
                 Path metadataPath = path.resolveSibling(path.getParent().resolve(path.getFileName().toString().replace(".json", "_metadata.json")));
                 JsonNode metadata = simpleObjectMapper.readTree(metadataPath);

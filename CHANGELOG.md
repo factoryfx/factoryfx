@@ -1,3 +1,10 @@
+# 3.0.16
+
+### Bug Fixes
+
+* **DataStorage#patchCurrentData**
+  * DataStorage#patchCurrentData now also patches the related history entry
+
 # 3.0.15
 
 ### Features

@@ -160,7 +160,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
     public void patchCurrentData(DataStoragePatcher consumer) {
         String dataString=null;
         String metadataString=null;
-        getCurrentData();//ensure initial data populated
+        String currentId = getCurrentData().id;//ensure initial data populated
         try {
             try (Connection connection = dataSource.getConnection()){
 
@@ -180,6 +180,21 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
                              connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
                     pstmt.setString(1, objectMapper.writeTree(data));
                     pstmt.setString(2, objectMapper.writeTree(metadata));
+                    pstmt.execute();
+                }
+
+                try (PreparedStatement pstmt =
+                             connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
+                    pstmt.setString(1, objectMapper.writeTree(data));
+                    pstmt.setString(2, objectMapper.writeTree(metadata));
+                    pstmt.setString(3, currentId);
+                    pstmt.execute();
+                }
+
+                try (PreparedStatement pstmt =
+                             connection.prepareStatement("update configurationmetadata set metadata = cast (? as json) where id = ?")) {
+                    pstmt.setString(1, objectMapper.writeTree(metadata));
+                    pstmt.setString(2, currentId);
                     pstmt.execute();
                 }
                 connection.commit();

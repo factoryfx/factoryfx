@@ -1,13 +1,12 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
-import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -97,6 +96,43 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
                 String sql = "SELECT * FROM FACTORY_HISTORY";
 
                 try (ResultSet resultSet = statement.executeQuery(sql)) {
+                    while (resultSet.next()) {
+                        String dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
+                        String metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+
+                        JsonNode data = objectMapper.readTree(dataString);
+                        JsonNode metadata = objectMapper.readTree(metadataString);
+                        consumer.patch((ObjectNode) data,metadata,objectMapper);
+                        String metadataId=metadata.get("id").asText();
+
+                        try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
+                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(data),updateStatement,1);
+                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(metadata),updateStatement,2);
+                            updateStatement.setString(3, metadataId);
+                            updateStatement.executeUpdate();
+                        } catch (SQLException e1) {
+                            throw new RuntimeException(e1);
+                        }
+                    }
+                }
+                connection.commit();
+            } finally {
+                connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void patchForId(DataStoragePatcher consumer, SimpleObjectMapper objectMapper, String id) {
+
+        try (Connection connection= connectionSupplier.get()){
+            boolean initialAutoCommit=connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM FACTORY_HISTORY WHERE ID=?")) {
+                statement.setString(1, id);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
                         String dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
                         String metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");

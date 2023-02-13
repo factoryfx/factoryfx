@@ -284,6 +284,7 @@ public class PostgresDataStorageTest {
             ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",postgresFactoryStorage.getCurrentData().root.stringAttribute.get());
+        Assertions.assertEquals("qqq",postgresFactoryStorage.getHistoryData(postgresFactoryStorage.getCurrentDataId()).stringAttribute.get());
     }
 
     @Test

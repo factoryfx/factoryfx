@@ -68,6 +68,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
             ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",oracleStorage.getCurrentData().root.stringAttribute.get());
+        Assertions.assertEquals("qqq",oracleStorage.getHistoryData(oracleStorage.getCurrentData().id).stringAttribute.get());
     }
 
 

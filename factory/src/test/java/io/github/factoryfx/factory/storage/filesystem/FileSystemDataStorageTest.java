@@ -88,6 +88,7 @@ public class FileSystemDataStorageTest {
             ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
         });
         Assertions.assertEquals("qqq",fileSystemFactoryStorage.getCurrentData().root.stringAttribute.get());
+        Assertions.assertEquals("qqq",fileSystemFactoryStorage.getHistoryData(fileSystemFactoryStorage.getCurrentDataId()).stringAttribute.get());
     }
 
     @Test
