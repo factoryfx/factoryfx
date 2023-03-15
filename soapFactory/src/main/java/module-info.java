@@ -9,7 +9,6 @@ module io.github.factoryfx.soapFactory {
 
     requires jakarta.xml.bind;
     requires jakarta.xml.ws;
-    requires jakarta.jws;
 
     requires jakarta.annotation;
 
