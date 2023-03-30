@@ -139,4 +139,9 @@ public abstract class ValueSetAttribute<T,A extends Attribute<Set<T>,A>> extends
         this.value.clear();
         afterModify();
     }
+
+    //** use to get the set for the liveobject. Unlike get() this method returns the delegate list which is faster in the liveobject because it does not have changedetection. */
+    public Set<T> instance() {
+        return this.value;
+    }
 }

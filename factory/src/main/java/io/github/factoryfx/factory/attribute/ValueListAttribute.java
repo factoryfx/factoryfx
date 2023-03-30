@@ -38,10 +38,14 @@ public class ValueListAttribute<T, A extends Attribute<List<T>,A>> extends Immut
         return new CollectionAttributeUtil<>(this.value, Object::toString).getDisplayText();
     }
 
+    //** use to get the list for the liveobject. Unlike get() this method returns the delegate list which is faster in the liveobject because it does not have changedetection. */
+    public List<T> instance() {
+        return this.value;
+    }
 
     @Override
     public List<T> get() {
-        return this.value;
+        return this;
     }
 
     //** set list only take the list items not the list itself, (to simplify ChangeListeners)*/

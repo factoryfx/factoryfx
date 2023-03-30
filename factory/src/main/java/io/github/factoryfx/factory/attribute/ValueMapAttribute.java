@@ -135,4 +135,9 @@ public abstract class ValueMapAttribute<K, V, A extends ValueMapAttribute<K,V,A>
     public Set<Entry<K, V>> entrySet() {
         return this.value.entrySet();
     }
+
+    //** use to get the list for the liveobject. */
+    public Map<K,V> instance() {
+        return this.value;
+    }
 }
