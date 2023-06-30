@@ -8,6 +8,8 @@ import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.typescript.generator.data.*;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,13 +40,27 @@ public class TsGeneratorTest {
         }
     }
 
+    public static class TestResourceFactory extends SimpleFactoryBase<TestResource, TestHttpServer> {
+
+        @Override
+        protected TestResource createImpl() {
+            return new TestResource();
+        }
+    }
+
+    public static class TestResource  {
+
+
+    }
+
 
     @Test
     @SuppressWarnings("unchecked")
     public void smoketest_jettyServer(@TempDir Path targetDir)  {
         FactoryTreeBuilder<Server, TestHttpServer> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
         builder.addBuilder(ctx-> new SimpleJettyServerBuilder<TestHttpServer>()
-                .withHost("localhost").withPort(8005));
+                .withHost("localhost").withPort(8005).withResource(ctx.get(TestResourceFactory.class)));
+        builder.addSingleton(TestResourceFactory.class);
 
 
         HashSet<Class<? extends FactoryBase<?,TestHttpServer>>> factoryClasses = new HashSet<>();

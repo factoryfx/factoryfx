@@ -61,6 +61,7 @@ public class AttributeToTsMapperManager {
 
             Set<Class<?>> ignoredAttributes = new HashSet<>();
             ignoredAttributes.add(ObjectValueAttribute.class);
+            ignoredAttributes.add(ObjectMapAttribute.class);
 
             return new AttributeToTsMapperManager(classToInfo,ignoredAttributes);
 
