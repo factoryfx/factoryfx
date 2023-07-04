@@ -12,7 +12,7 @@ export class HttpClientStatusReporter {
         if (!this.rootModel){
             return;
         }
-        this.timer = setTimeout(()=> { //delay wait animation to avoid flicker
+        this.timer = window.setTimeout(()=> { //delay wait animation to avoid flicker
             this.rootModel!.showWaitAnimation();
         }, 1000);
     }
