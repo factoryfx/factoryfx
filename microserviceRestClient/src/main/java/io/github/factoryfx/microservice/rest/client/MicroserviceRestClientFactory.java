@@ -41,7 +41,7 @@ public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extend
 
     public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
 
-    public final IntegerAttribute maxStringLength = new IntegerAttribute().defaultValue(20_000_000);
+    public final IntegerAttribute maxStringLength = new IntegerAttribute().labelText("ObjectMapper max String length").defaultValue(20_000_000);
 
     public MicroserviceRestClientFactory(){
         config().setDisplayTextProvider(this::getUrl);
