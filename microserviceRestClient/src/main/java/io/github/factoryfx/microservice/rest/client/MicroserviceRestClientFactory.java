@@ -1,5 +1,7 @@
 package io.github.factoryfx.microservice.rest.client;
 
+import com.fasterxml.jackson.core.StreamReadConstraints;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -39,6 +41,7 @@ public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extend
 
     public final ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS>> factoryTreeBuilderBasedAttributeSetup=new ObjectValueAttribute<FactoryTreeBuilderBasedAttributeSetup<RS>>().labelText("factoryTreeBuilderBasedAttributeSetup").nullable();
 
+    public final IntegerAttribute maxStringLength = new IntegerAttribute().defaultValue(20_000_000);
 
     public MicroserviceRestClientFactory(){
         config().setDisplayTextProvider(this::getUrl);
@@ -65,7 +68,17 @@ public class MicroserviceRestClientFactory<R extends FactoryBase<?,R>, RS extend
     @SuppressWarnings("unchecked")
     public MicroserviceRestClient<RS> createClient() {
         JacksonJaxbJsonProvider jacksonProvider = new JacksonJaxbJsonProvider();
-        jacksonProvider.setMapper(ObjectMapperBuilder.buildNewObjectMapper());
+        ObjectMapper objectMapper = ObjectMapperBuilder.buildNewObjectMapper();
+
+        StreamReadConstraints streamReadConstraints = StreamReadConstraints
+                .builder()
+                .maxStringLength(maxStringLength.get())
+                .build();
+
+        objectMapper.getFactory().setStreamReadConstraints(streamReadConstraints);
+
+
+        jacksonProvider.setMapper(objectMapper);
         ClientConfig configuration = new ClientConfig(new ClientConfig());
         configuration.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
         configuration.register(jacksonProvider);
