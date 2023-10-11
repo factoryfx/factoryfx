@@ -1,3 +1,15 @@
+# 3.1.6
+
+* **Slf4LoggingFeature add Verbosity parameter**
+  * Makes it possible to log for example [RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807)'s application/problem+json, by choosing Verbosity.PAYLOAD_ANY
+
+# 3.1.5
+
+### Features
+
+* **UniqueNestedListBy validation**
+  * New validation to check uniqueness in nested lists
+
 # 3.0.16
 
 ### Bug Fixes
