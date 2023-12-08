@@ -221,20 +221,17 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
     }
 
     @SuppressWarnings("unchecked")
-    private <R extends FactoryBase<?,R>> Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree(){
+    private Set<FactoryBase<?, R>> collectionChildrenDeepFromNonFinalizedTree() {
         HashSet<FactoryBase<?, R>> result = new HashSet<>();
-        ArrayDeque<FactoryBase<?,R>> stack = new ArrayDeque<>();
-        stack.push((FactoryBase<?,R>)this);
+        ArrayDeque<FactoryBase<?, R>> stack = new ArrayDeque<>();
+        stack.push(this);
         while (!stack.isEmpty()) {
-            FactoryBase<?,R> factory = stack.pop();
-            if (result.add(factory)){
-                factory.collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(e -> stack.push((FactoryBase<?,R>)e));
+            FactoryBase<?, R> factory = stack.pop();
+            if (result.add(factory)) {
+                factory.getFactoryMetadata().visitChildFactoriesAndViewsFlat(factory, e -> stack.push((FactoryBase<?, R>) e), false);
             }
         }
         return result;
-    }
-    private void collectionChildrenDeepFromNonFinalizedTreeGenericWorkaround(Consumer<FactoryBase<?,?>> consumer){
-        getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, consumer, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -890,10 +887,9 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
 
         /**
          * can be used inside a view
-         * @param <R> root factory
          * @return all data including root and no duplicates
          */
-        public <R extends FactoryBase<?,R>> Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree() {
+        public Set<FactoryBase<?,R>> collectionChildrenDeepFromNonFinalizedTree() {
             return factory.collectionChildrenDeepFromNonFinalizedTree();
         }
 
@@ -1430,12 +1426,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         result.add(factory);
     }
 
-
-
-
-
-
-    @JsonIgnore()
+    @JsonIgnore
     List<FactoryBase<?,R>> finalisedChildrenFlat;
     List<FactoryBase<?,R>> addedTo;
     @SuppressWarnings("unchecked")
