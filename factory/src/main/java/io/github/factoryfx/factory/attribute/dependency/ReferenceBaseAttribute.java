@@ -19,7 +19,7 @@ import io.github.factoryfx.factory.metadata.FactoryMetadataManager;
 /** Base for Reference attributes, with common api  */
 public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A extends ReferenceBaseAttribute<F,U,A>> extends Attribute<U,A> implements FactoryChildrenEnclosingAttribute {
 
-    FactoryBase<?,?> root;
+    protected FactoryBase<?,?> root;
     protected FactoryBase<?,?> parent;//data that contains this attribute
 //    protected Class<T> containingFactoryClass;
 

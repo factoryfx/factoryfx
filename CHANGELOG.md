@@ -1,3 +1,12 @@
+# 3.2.0
+
+* **ReferenceBaseAttribute**
+    * Change visibility of root attribute
+
+* **UniqueListBy**
+    * Add convenience constructors 
+
+
 # 3.1.6
 
 * **Slf4LoggingFeature add Verbosity parameter**

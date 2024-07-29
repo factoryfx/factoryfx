@@ -31,7 +31,7 @@ allprojects {
 
 
 wrapper {
-    gradleVersion = '8.0.2'
+    gradleVersion = '8.6'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -90,7 +90,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.1.6'
+    version = '3.2.0'
 
     publishing {
 

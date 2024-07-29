@@ -6,6 +6,9 @@ import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.util.LanguageText;
 
 public class ValidationResult {
+
+    public static final ValidationResult OK = new ValidationResult(false, new LanguageText());
+
     private final LanguageText languageText;
     private final boolean error;
 

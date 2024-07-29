@@ -9,27 +9,29 @@ import io.github.factoryfx.factory.util.LanguageText;
 public class UniqueListBy<T, V> implements Validation<List<T>> {
 
     private final Function<T, V> mapper;
-    private final LanguageText errorMessage;
+    private final Function<List<T>, LanguageText> errorMessageFunction;
 
     public UniqueListBy(Function<T, V> mapper) {
-        this(mapper, new LanguageText().en("List contains duplicate entries").de("Liste enthält doppelte Einträge"));
+        this(mapper, l -> new LanguageText().en("List contains duplicate entries").de("Liste enthält doppelte Einträge"));
     }
 
     public UniqueListBy(Function<T, V> mapper, LanguageText errorMessage) {
-        this.mapper = mapper;
-        this.errorMessage = errorMessage;
+        this(mapper, l -> errorMessage);
     }
 
+    public UniqueListBy(Function<T, V> mapper, Function<List<T>, LanguageText> errorMessageFunction) {
+        this.mapper = mapper;
+        this.errorMessageFunction = errorMessageFunction;
+    }
 
     @Override
     public ValidationResult validate(List<T> list) {
-        boolean error = false;
         HashSet<V> set = new HashSet<>();
         for (T item : list) {
             if (!set.add(mapper.apply(item))) {
-                error = true;
+                return new ValidationResult(true, errorMessageFunction.apply(list));
             }
         }
-        return new ValidationResult(error, errorMessage);
+        return ValidationResult.OK;
     }
 }

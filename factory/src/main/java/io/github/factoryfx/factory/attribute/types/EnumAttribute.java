@@ -55,8 +55,4 @@ public class EnumAttribute<E extends Enum<E>> extends ImmutableValueAttribute<E,
         }
         return enumValue.name();
     }
-
-
-
-
 }
