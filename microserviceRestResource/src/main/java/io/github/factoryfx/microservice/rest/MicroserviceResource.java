@@ -1,32 +1,40 @@
 package io.github.factoryfx.microservice.rest;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
-import io.github.factoryfx.factory.log.FactoryUpdateLog;
+import io.github.factoryfx.microservice.common.CheckUserResponse;
+import io.github.factoryfx.microservice.common.MicroserviceResourceApi;
+import io.github.factoryfx.microservice.common.ResponseWorkaround;
+import io.github.factoryfx.microservice.common.UserAwareRequest;
+import io.github.factoryfx.microservice.common.UserLocaleResponse;
+import io.github.factoryfx.microservice.common.VoidUserAwareRequest;
 import io.github.factoryfx.server.Microservice;
 import io.github.factoryfx.server.user.AuthorizedUser;
 import io.github.factoryfx.server.user.UserManagement;
-import io.github.factoryfx.microservice.common.*;
 
-public class MicroserviceResource<R extends FactoryBase<?,R>> implements MicroserviceResourceApi<R> {
+public class MicroserviceResource<R extends FactoryBase<?, R>> implements MicroserviceResourceApi<R> {
 
-    protected final Microservice<?,R> microservice;
+    protected final Microservice<?, R> microservice;
     private final UserManagement userManagement;
 
-    public MicroserviceResource(Microservice<?,R> microservice, UserManagement userManagement) {
+    public MicroserviceResource(Microservice<?, R> microservice, UserManagement userManagement) {
         this.microservice = microservice;
         this.userManagement = userManagement;
     }
 
-    private Optional<AuthorizedUser> authenticate(UserAwareRequest<?> request){
-        if (userManagement.authorisationRequired()){
+    private Optional<AuthorizedUser> authenticate(UserAwareRequest<?> request) {
+        if (userManagement.authorisationRequired()) {
             final Optional<AuthorizedUser> authorizedUser = userManagement.authenticate(request.user, request.passwordHash);
-            if (authorizedUser.isEmpty()){
+            if (authorizedUser.isEmpty()) {
                 throw new IllegalStateException("invalid user");
             }
             return authorizedUser;
@@ -44,21 +52,21 @@ public class MicroserviceResource<R extends FactoryBase<?,R>> implements Microse
     @Override
     public FactoryUpdateLog<R> revert(UserAwareRequest<StoredDataMetadata> historyFactory) {
         authenticate(historyFactory);
-        return microservice.revertTo(historyFactory.request,historyFactory.user);
+        return microservice.revertTo(historyFactory.request, historyFactory.user);
     }
 
     private Function<String, Boolean> authenticateAndGetPermissionChecker(UserAwareRequest<?> request) {
         final Optional<AuthorizedUser> authenticate = authenticate(request);
-        Function<String,Boolean> permissionChecker = (permission)->true;
-        if (authenticate.isPresent()){
-            permissionChecker = (permission)->authenticate.get().checkPermissionValid(permission);
+        Function<String, Boolean> permissionChecker = (permission) -> true;
+        if (authenticate.isPresent()) {
+            permissionChecker = (permission) -> authenticate.get().checkPermissionValid(permission);
         }
         return permissionChecker;
     }
 
     @Override
     public MergeDiffInfo<R> simulateUpdateCurrentFactory(UserAwareRequest<DataUpdate<R>> request) {
-        request.request.permissionChecker= authenticateAndGetPermissionChecker(request);
+        request.request.permissionChecker = authenticateAndGetPermissionChecker(request);
         request.request.root.internal().finalise();
         return microservice.simulateUpdateCurrentFactory(request.request);
     }
@@ -88,12 +96,14 @@ public class MicroserviceResource<R extends FactoryBase<?,R>> implements Microse
     }
 
     @Override
-    public CheckUserResponse checkUser(VoidUserAwareRequest request){
-        return new CheckUserResponse(userManagement.authenticate(request.user,request.passwordHash).isPresent());
+    public CheckUserResponse checkUser(VoidUserAwareRequest request) {
+        return userManagement.authenticate(request.user, request.passwordHash)
+                             .map(s -> new CheckUserResponse(true, s.getPermissions()))
+                             .orElseGet(() -> new CheckUserResponse(false, Collections.emptyList()));
     }
 
     @Override
-    public UserLocaleResponse getUserLocale(VoidUserAwareRequest request){
+    public UserLocaleResponse getUserLocale(VoidUserAwareRequest request) {
         final Optional<AuthorizedUser> authenticate = authenticate(request);
         return authenticate.map(authorizedUser -> new UserLocaleResponse(authorizedUser.getLocale())).orElseGet(() -> new UserLocaleResponse(Locale.ENGLISH));
     }

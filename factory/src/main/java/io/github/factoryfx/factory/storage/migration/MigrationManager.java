@@ -1,5 +1,11 @@
 package io.github.factoryfx.factory.storage.migration;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Throwables;
@@ -11,14 +17,18 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.RawFactoryDataAndMetadata;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributeFiller;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributePathTarget;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributeRename;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributeRetype;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributeValueListParser;
+import io.github.factoryfx.factory.storage.migration.datamigration.AttributeValueParser;
+import io.github.factoryfx.factory.storage.migration.datamigration.ClassRename;
+import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
+import io.github.factoryfx.factory.storage.migration.datamigration.DataMigration;
+import io.github.factoryfx.factory.storage.migration.datamigration.PathDataRestore;
+import io.github.factoryfx.factory.storage.migration.datamigration.SingletonDataRestore;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
-import io.github.factoryfx.factory.storage.migration.datamigration.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * @param <R> root
@@ -40,9 +50,6 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
 
     List<SingletonDataRestore<R,?>> singletonBasedRestorations = new ArrayList<>();
     List<PathDataRestore<R,?>> pathBasedRestorations = new ArrayList<>();
-
-
-
 
 
     public <L,F extends FactoryBase<L,R>> void renameAttribute(Class<F> dataClass, String previousAttributeName, Function<F, Attribute<?,?>> attributeNameProvider){

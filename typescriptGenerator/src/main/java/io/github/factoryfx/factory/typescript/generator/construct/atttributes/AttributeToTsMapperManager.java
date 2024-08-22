@@ -1,16 +1,60 @@
 package io.github.factoryfx.factory.typescript.generator.construct.atttributes;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.attribute.dependency.*;
-import io.github.factoryfx.factory.attribute.primitive.*;
-import io.github.factoryfx.factory.attribute.primitive.list.*;
-import io.github.factoryfx.factory.attribute.time.*;
-import io.github.factoryfx.factory.attribute.types.*;
+import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryViewListAttribute;
+import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
+import io.github.factoryfx.factory.attribute.primitive.ByteAttribute;
+import io.github.factoryfx.factory.attribute.primitive.CharAttribute;
+import io.github.factoryfx.factory.attribute.primitive.DoubleAttribute;
+import io.github.factoryfx.factory.attribute.primitive.FloatAttribute;
+import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
+import io.github.factoryfx.factory.attribute.primitive.LongAttribute;
+import io.github.factoryfx.factory.attribute.primitive.ShortAttribute;
+import io.github.factoryfx.factory.attribute.primitive.list.ByteListAttribute;
+import io.github.factoryfx.factory.attribute.primitive.list.CharListAttribute;
+import io.github.factoryfx.factory.attribute.primitive.list.DoubleListAttribute;
+import io.github.factoryfx.factory.attribute.primitive.list.FloatListAttribute;
+import io.github.factoryfx.factory.attribute.primitive.list.IntegerListAttribute;
+import io.github.factoryfx.factory.attribute.primitive.list.LongListAttribute;
+import io.github.factoryfx.factory.attribute.primitive.list.ShortListAttribute;
+import io.github.factoryfx.factory.attribute.time.DurationAttribute;
+import io.github.factoryfx.factory.attribute.time.InstantAttribute;
+import io.github.factoryfx.factory.attribute.time.LocalDateAttribute;
+import io.github.factoryfx.factory.attribute.time.LocalDateTimeAttribute;
+import io.github.factoryfx.factory.attribute.time.LocalTimeAttribute;
+import io.github.factoryfx.factory.attribute.types.BigDecimalAttribute;
+import io.github.factoryfx.factory.attribute.types.BigIntegerAttribute;
+import io.github.factoryfx.factory.attribute.types.ByteArrayAttribute;
+import io.github.factoryfx.factory.attribute.types.ChoiceAttribute;
+import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
+import io.github.factoryfx.factory.attribute.types.FileContentAttribute;
+import io.github.factoryfx.factory.attribute.types.I18nAttribute;
+import io.github.factoryfx.factory.attribute.types.LocaleAttribute;
+import io.github.factoryfx.factory.attribute.types.ObjectMapAttribute;
+import io.github.factoryfx.factory.attribute.types.ObjectValueAttribute;
+import io.github.factoryfx.factory.attribute.types.PasswordAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringListAttribute;
+import io.github.factoryfx.factory.attribute.types.URIAttribute;
+import io.github.factoryfx.factory.attribute.types.URIListAttribute;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
-import io.github.factoryfx.factory.typescript.generator.ts.*;
-
-import java.util.*;
+import io.github.factoryfx.factory.typescript.generator.ts.TsClassConstructed;
+import io.github.factoryfx.factory.typescript.generator.ts.TsEnumConstructed;
+import io.github.factoryfx.factory.typescript.generator.ts.TsFile;
+import io.github.factoryfx.factory.typescript.generator.ts.TsType;
+import io.github.factoryfx.factory.typescript.generator.ts.TsTypePrimitive;
 
 public class AttributeToTsMapperManager {
 
@@ -23,6 +67,7 @@ public class AttributeToTsMapperManager {
             classToInfo.put(FactoryViewAttribute.class, new ViewAttributeToTsMapper(dataType));
             classToInfo.put(FactoryViewListAttribute.class, new ViewListAttributeToTsMapper(dataType));
 
+            classToInfo.put(ChoiceAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
             classToInfo.put(ByteArrayAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
             classToInfo.put(I18nAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));
             classToInfo.put(EncryptedStringAttribute.class, new ValueAttributeToTsMapper(TsTypePrimitive.STRING));

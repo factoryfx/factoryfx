@@ -1,3 +1,14 @@
+# 3.2.1
+
+* **MicroserviceRestClient**
+    * Transport permissions to client
+
+* **ChoiceAttribute**
+    * Add attribute that selects a String from a List of Strings
+
+* **LocalDateTimeAttributeVisualisation**
+    * Fix Localdate updating
+
 # 3.2.0
 
 * **ReferenceBaseAttribute**

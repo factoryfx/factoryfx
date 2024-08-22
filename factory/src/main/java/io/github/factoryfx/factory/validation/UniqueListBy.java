@@ -6,30 +6,30 @@ import java.util.function.Function;
 
 import io.github.factoryfx.factory.util.LanguageText;
 
-public class UniqueListBy<T, V> implements Validation<List<T>> {
+public class UniqueListBy<T, U> implements Validation<List<T>> {
 
-    private final Function<T, V> mapper;
-    private final Function<List<T>, LanguageText> errorMessageFunction;
+    private final Function<T, U> mapper;
+    private final Function<U, LanguageText> errorMessageFunction;
 
-    public UniqueListBy(Function<T, V> mapper) {
-        this(mapper, l -> new LanguageText().en("List contains duplicate entries").de("Liste enthält doppelte Einträge"));
+    public UniqueListBy(Function<T, U> mapper) {
+        this(mapper, u -> new LanguageText().en("List contains duplicate entry: " + u).de("Liste enthält doppelten Eintrag: " + u));
     }
 
-    public UniqueListBy(Function<T, V> mapper, LanguageText errorMessage) {
+    public UniqueListBy(Function<T, U> mapper, LanguageText errorMessage) {
         this(mapper, l -> errorMessage);
     }
 
-    public UniqueListBy(Function<T, V> mapper, Function<List<T>, LanguageText> errorMessageFunction) {
+    public UniqueListBy(Function<T, U> mapper, Function<U, LanguageText> errorMessageFunction) {
         this.mapper = mapper;
         this.errorMessageFunction = errorMessageFunction;
     }
 
     @Override
     public ValidationResult validate(List<T> list) {
-        HashSet<V> set = new HashSet<>();
+        HashSet<U> set = new HashSet<>();
         for (T item : list) {
             if (!set.add(mapper.apply(item))) {
-                return new ValidationResult(true, errorMessageFunction.apply(list));
+                return new ValidationResult(true, errorMessageFunction.apply(mapper.apply(item)));
             }
         }
         return ValidationResult.OK;

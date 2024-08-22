@@ -14,7 +14,7 @@ public class AuthorizedUser {
     public AuthorizedUser(String user, Locale locale, Set<String> permissions) {
         this.user = user;
         this.locale = locale;
-        this.permissions=permissions;
+        this.permissions = permissions;
     }
 
     public AuthorizedUser(String user, Locale locale, String... permissions) {
@@ -24,13 +24,13 @@ public class AuthorizedUser {
         this.permissions.addAll(Arrays.asList(permissions));
     }
 
-    public void checkPermission(String permission){
-        if (permission!=null && !permissions.contains(permission)){
-            throw new IllegalStateException("permission required: "+permission);
+    public void checkPermission(String permission) {
+        if (permission != null && !permissions.contains(permission)) {
+            throw new IllegalStateException("permission required: " + permission);
         }
     }
 
-    public boolean checkPermissionValid(String permission){
+    public boolean checkPermissionValid(String permission) {
         return permission == null || permissions.contains(permission);
     }
 
@@ -40,5 +40,9 @@ public class AuthorizedUser {
 
     public String getUserName() {
         return user;
+    }
+
+    public Collection<String> getPermissions() {
+        return permissions;
     }
 }

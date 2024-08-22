@@ -1,5 +1,7 @@
 package io.github.factoryfx.javafx.util;
 
+import java.util.concurrent.Executor;
+
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -12,7 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
-public class LongRunningActionExecutor {
+public class LongRunningActionExecutor implements Executor {
     private final StackPane target=new StackPane();
 
     public LongRunningActionExecutor() {
@@ -64,6 +66,7 @@ public class LongRunningActionExecutor {
         backgroundThread.start();
     }
 
+    @Override
     public void execute(final Runnable runnable) {
         this.execute(runnable,"");
     }

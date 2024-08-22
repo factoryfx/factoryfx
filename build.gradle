@@ -90,7 +90,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '3.2.0'
+    version = '3.2.1_SNAPSHOT'
 
     publishing {
 
@@ -274,9 +274,9 @@ project(':microserviceRestClient') {
     dependencies {
         api project(":factory")
         api project(":microserviceRestCommon")
-        api(group: 'org.glassfish.jersey.ext', name: 'jersey-proxy-client', version: '3.1.1')
-        api('org.glassfish.jersey.core:jersey-client:3.1.1')
-        api group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '3.1.1'
+        api(group: 'org.glassfish.jersey.ext', name: 'jersey-proxy-client', version: '3.1.8')
+        api('org.glassfish.jersey.core:jersey-client:3.1.8')
+        api group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '3.1.8'
     }
 
 }

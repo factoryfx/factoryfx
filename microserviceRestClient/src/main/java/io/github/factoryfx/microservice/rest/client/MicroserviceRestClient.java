@@ -96,9 +96,8 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
         return executeWithServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
     }
 
-    public boolean checkUser() {
-        CheckUserResponse response = executeWithServerExceptionReporting(()-> microserviceResourceApi.checkUser(new VoidUserAwareRequest(user,passwordHash)));
-        return response.valid;
+    public CheckUserResponse checkUser() {
+        return executeWithServerExceptionReporting(()-> microserviceResourceApi.checkUser(new VoidUserAwareRequest(user,passwordHash)));
     }
 
     public Locale getLocale() {
