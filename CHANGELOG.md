@@ -1,3 +1,9 @@
+# 3.2.2
+
+* **AttributeEditorBuilderFactoryBuilder**
+    * Fix order of AttributeEditorBuilders
+
+
 # 3.2.1
 
 * **MicroserviceRestClient**

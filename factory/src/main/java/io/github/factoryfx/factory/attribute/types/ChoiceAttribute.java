@@ -15,8 +15,9 @@ public class ChoiceAttribute extends ImmutableValueAttribute<String, ChoiceAttri
     private Supplier<Collection<String>> possibleValues = Collections::emptyList;
 
     public ChoiceAttribute() {
-        validation(s -> new ValidationResult(!getPossibleValues().contains(s), new LanguageText().en("Value not allowed '" + s + "', only " + String.join(", ", getPossibleValues()))
-                                                                                                 .de("Ungültiger Wert '" + s + "', erlaubt ist " + String.join(", ", getPossibleValues()))));
+        validation(s -> new ValidationResult(s != null && !getPossibleValues().contains(s),
+                                             new LanguageText().en("Value not allowed '" + s + "', only " + String.join(", ", getPossibleValues()))
+                                                               .de("Ungültiger Wert '" + s + "', erlaubt ist " + String.join(", ", getPossibleValues()))));
     }
 
     public ChoiceAttribute withPossibleValues(Supplier<Collection<String>> possibleValues) {
