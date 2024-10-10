@@ -6,27 +6,34 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.sql.DataSource;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
-import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.storage.migration.MigrationManager;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.factory.storage.ScheduledUpdate;
-import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
-import io.github.factoryfx.factory.storage.StoredDataMetadata;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectB;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.postgresql.jdbc.AutoSave;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.ScheduledUpdate;
+import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
 import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
 import ru.yandex.qatools.embed.postgresql.PostgresProcess;
 import ru.yandex.qatools.embed.postgresql.PostgresStarter;
@@ -80,7 +87,6 @@ public class PostgresDataStorageTest {
         postgresFactoryStorage.getCurrentData();
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("select * from currentconfiguration"
-                    ,"select * from configurationmetadata"
                     ,"select * from configuration")) {
                 PreparedStatement pstmt = con.prepareStatement(sql);
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -100,7 +106,6 @@ public class PostgresDataStorageTest {
 
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("select * from currentconfiguration"
-                    ,"select * from configurationmetadata"
                     ,"select * from configuration")) {
                 PreparedStatement pstmt = con.prepareStatement(sql);
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -148,8 +153,6 @@ public class PostgresDataStorageTest {
     public void truncate() {
         try (Connection con = postgresDatasource.getConnection()) {
             for (String sql : Arrays.asList("drop table currentconfiguration"
-                    ,"drop table configurationmetadata"
-                    ,"drop table futureconfigurationmetadata"
                     ,"drop table futureconfiguration"
                     ,"drop table configuration")) {
                 PreparedStatement pstmt = con.prepareStatement(sql);
