@@ -937,7 +937,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
             return (T)factory;
         }
 
-        public void serFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R> setup) {
+        public void setFactoryTreeBuilderBasedAttributeSetupForRoot(FactoryTreeBuilderBasedAttributeSetup<R> setup) {
             this.factory.serFactoryTreeBuilderBasedAttributeSetupForRoot(setup);
         }
 

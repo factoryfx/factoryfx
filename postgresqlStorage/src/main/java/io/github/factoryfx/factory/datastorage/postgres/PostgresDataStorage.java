@@ -22,8 +22,16 @@ import com.google.common.io.CharStreams;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.storage.DataAndId;
+import io.github.factoryfx.factory.storage.DataAndStoredMetadata;
+import io.github.factoryfx.factory.storage.DataStorage;
+import io.github.factoryfx.factory.storage.DataStoragePatcher;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.ScheduledUpdate;
+import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
+import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.UpdateSummary;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
-import io.github.factoryfx.factory.storage.*;
 
 public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStorage<R> {
 
@@ -191,12 +199,6 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
                     pstmt.execute();
                 }
 
-                try (PreparedStatement pstmt =
-                             connection.prepareStatement("update configurationmetadata set metadata = cast (? as json) where id = ?")) {
-                    pstmt.setString(1, objectMapper.writeTree(metadata));
-                    pstmt.setString(2, currentId);
-                    pstmt.execute();
-                }
                 connection.commit();
             }
         } catch (SQLException e) {
@@ -235,12 +237,6 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
                 }
         }
         Timestamp createdAtTimestamp = new Timestamp(createdAt);
-        try (PreparedStatement pstmtInsertConfigurationMetadata = connection.prepareStatement("insert into configurationmetadata (metadata, createdAt, id) values (cast (? as json), ?, ?)")) {
-            pstmtInsertConfigurationMetadata.setString(1, migrationManager.writeStorageMetadata(update.metadata));
-            pstmtInsertConfigurationMetadata.setTimestamp(2, createdAtTimestamp);
-            pstmtInsertConfigurationMetadata.setString(3,update.metadata.id);
-            pstmtInsertConfigurationMetadata.execute();
-        }
 
         try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into configuration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
             setValues(update,createdAtTimestamp,pstmtInsertConfiguration);
@@ -287,7 +283,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
     @Override
     public Collection<ScheduledUpdateMetadata> getFutureDataList() {
         try {
-            try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfigurationmetadata")) {
+            try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfiguration")) {
                     ArrayList<ScheduledUpdateMetadata> ret = new ArrayList<>();
                     try (ResultSet rs = pstmt.executeQuery()) {
                         while (rs.next()) {
@@ -304,12 +300,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
     @Override
     public void deleteFutureData(String id) {
         try (Connection connection = this.dataSource.getConnection();
-             PreparedStatement pstmtDeleteMetadata =
-                         connection.prepareStatement("delete from futureconfigurationmetadata where id = ?");
-              PreparedStatement pstmtDeleteConfiguration = connection.prepareStatement("delete from futureconfiguration where id = ?")
-            ) {
-            pstmtDeleteMetadata.setString(1,id);
-            pstmtDeleteMetadata.executeUpdate();
+              PreparedStatement pstmtDeleteConfiguration = connection.prepareStatement("delete from futureconfiguration where id = ?")) {
             pstmtDeleteConfiguration.setString(1,id);
             pstmtDeleteConfiguration.executeUpdate();
             connection.commit();
@@ -345,7 +336,8 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
     @Override
     public void addFutureData(ScheduledUpdate<R> futureFactory) {
 
-        ScheduledUpdateMetadata scheduledUpdateMetadata =new ScheduledUpdateMetadata(
+        ScheduledUpdateMetadata scheduledUpdateMetadata =
+            new ScheduledUpdateMetadata(
                 UUID.randomUUID().toString(),
                 futureFactory.user,
                 futureFactory.comment,
@@ -358,12 +350,6 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
             ensureTablesAreAvailable(connection);
             long createdAt = System.currentTimeMillis();
             Timestamp createdAtTimestamp = new Timestamp(createdAt);
-            try (PreparedStatement pstmtInsertConfigurationMetadata = connection.prepareStatement("insert into futureconfigurationmetadata (metadata, createdAt, id) values (cast (? as json), ?, ?)")) {
-                pstmtInsertConfigurationMetadata.setString(1, migrationManager.writeScheduledUpdateMetadata(scheduledUpdateMetadata));
-                pstmtInsertConfigurationMetadata.setTimestamp(2, createdAtTimestamp);
-                pstmtInsertConfigurationMetadata.setString(3,scheduledUpdateMetadata.id);
-                pstmtInsertConfigurationMetadata.execute();
-            }
 
             try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into futureconfiguration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
                 pstmtInsertConfiguration.setString(1, migrationManager.write(futureFactory.root));

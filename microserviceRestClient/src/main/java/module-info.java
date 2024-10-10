@@ -7,5 +7,7 @@ module io.github.factoryfx.microserviceRestClient {
     requires jersey.common;
     requires jersey.media.json.jackson;
     requires com.google.common;
+
+    requires com.fasterxml.jackson.databind;
     exports io.github.factoryfx.microservice.rest.client;
 }

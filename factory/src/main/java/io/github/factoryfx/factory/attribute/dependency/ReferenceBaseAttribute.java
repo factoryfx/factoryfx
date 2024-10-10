@@ -75,7 +75,7 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
      * Deprecated use newValuesProvider(BiFunction... ) instead
      */
     @SuppressWarnings("unchecked")
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public A newValuesProvider(Function<FactoryBase<?,?>,List<F>> newValuesProvider){
         this.newValuesProviderFromRootAndAttribute = (root, attribute)->{
             return newValuesProvider.apply(root);

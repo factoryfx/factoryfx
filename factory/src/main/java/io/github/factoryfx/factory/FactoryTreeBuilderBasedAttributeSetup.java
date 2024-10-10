@@ -1,5 +1,8 @@
 package io.github.factoryfx.factory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.factoryfx.factory.attribute.Attribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
@@ -7,9 +10,6 @@ import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.metadata.AttributeMetadata;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *  provides additional setup for attributes based on the FactoryTreeBuilder
@@ -67,7 +67,7 @@ public class FactoryTreeBuilderBasedAttributeSetup<R extends FactoryBase<?,R>> {
     }
 
     public void applyToRootFactoryDeep(R root) {
-        root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(this);
+        root.internal().setFactoryTreeBuilderBasedAttributeSetupForRoot(this);
         root.internal().setFactoryTreeBuilder(this.factoryTreeBuilder);
         factoryTreeBuilder.fillFromExistingFactoryTree(root);
 

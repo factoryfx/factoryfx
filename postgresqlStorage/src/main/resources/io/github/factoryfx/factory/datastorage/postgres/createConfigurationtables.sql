@@ -5,18 +5,6 @@ CREATE TABLE currentconfiguration (
     id varchar(1024) NOT NULL
 );
 
-CREATE TABLE configurationmetadata (
-    metadata JSON NOT NULL,
-    createdAt TIMESTAMP NOT NULL,
-    id varchar(1024) PRIMARY KEY
-);
-
-CREATE TABLE futureconfigurationmetadata (
-    metadata JSON NOT NULL,
-    createdAt TIMESTAMP NOT NULL,
-    id varchar(1024) PRIMARY KEY
-);
-
 CREATE TABLE configuration (
     root JSON NOT NULL,
     metadata JSON NOT NULL,

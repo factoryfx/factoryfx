@@ -1,3 +1,12 @@
+# 3.2.3
+
+* **PostgresDataStorage**
+    * Remove redundant storage of metadata. After the update you can delete the tables futureconfigurationmetadata and configurationmetadata
+
+* **FactoryBase**
+    * fixed typo 'serFactoryTreeBuilderBasedAttributeSetupForRoot' to 'setFactoryTreeBuilderBasedAttributeSetupForRoot'
+
+
 # 3.2.2
 
 * **AttributeEditorBuilderFactoryBuilder**

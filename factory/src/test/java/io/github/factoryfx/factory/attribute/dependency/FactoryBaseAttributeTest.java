@@ -1,24 +1,22 @@
 package io.github.factoryfx.factory.attribute.dependency;
 
-import io.github.factoryfx.factory.AttributeVisitor;
-import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
-import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.attribute.AttributeChangeListener;
-import io.github.factoryfx.factory.builder.FactoryTemplateId;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.factory.metadata.AttributeMetadata;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
-import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
-import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import io.github.factoryfx.factory.FactoryTreeBuilderBasedAttributeSetup;
+import io.github.factoryfx.factory.attribute.AttributeChangeListener;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
+import io.github.factoryfx.factory.testfactories.ExampleLiveObjectA;
 
 class FactoryBaseAttributeTest {
 
@@ -96,7 +94,7 @@ class FactoryBaseAttributeTest {
         });
         ExampleFactoryA root = builder.buildTreeUnvalidated();
         root.referenceAttribute.set(null);
-        root.internal().serFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
+        root.internal().setFactoryTreeBuilderBasedAttributeSetupForRoot(new FactoryTreeBuilderBasedAttributeSetup<>(builder));
 
         ExampleFactoryB possibleValue = root.referenceAttribute.internal_createNewPossibleValues(root.internal().getAttributeMetadata(root.referenceAttribute)).get(0).newValue;
         Assertions.assertEquals("bla",possibleValue.stringAttribute.get());
