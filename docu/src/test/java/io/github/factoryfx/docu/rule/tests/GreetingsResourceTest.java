@@ -14,23 +14,23 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class GreetingsResourceTest {
 
-    private Server simulator;
-    private GreetingsResource greetingsResource;
+    private static Server simulator;
+    private static GreetingsResource greetingsResource;
 
     @SuppressWarnings("unchecked")
     @RegisterExtension
     @Order(1)
-    public final FactoryTreeBuilderRule<Server, SimulatorRootFactory> simulatorCtx = new FactoryTreeBuilderRule<>(new SimulatorBuilder().builder(), rule -> {
+    public static final FactoryTreeBuilderRule<Server, SimulatorRootFactory> simulatorCtx = new FactoryTreeBuilderRule<>(new SimulatorBuilder().builder(), rule -> {
 
         HttpServerConnectorFactory<SimulatorRootFactory> factoryBase = (HttpServerConnectorFactory<SimulatorRootFactory>) rule.getFactory(JettyServerFactory.class).connectors.get(0);
         factoryBase.port.set(0);
 
-        simulator = (Server)rule.get(JettyServerFactory.class);
+        simulator = rule.get(JettyServerFactory.class);
     });
 
     @RegisterExtension
     @Order(2)
-    public final FactoryTreeBuilderRule<Server, ServerRootFactory> serverCtx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
+    public static final FactoryTreeBuilderRule<Server, ServerRootFactory> serverCtx = new FactoryTreeBuilderRule<>(new ServerBuilder().builder(), rule -> {
 
         int simPort = ((ServerConnector)(simulator.getConnectors()[0])).getLocalPort();
         rule.getFactory(BackendClientFactory.class).backendPort.set(simPort);
