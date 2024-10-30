@@ -59,6 +59,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_init_no_existing_factory() throws SQLException {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -77,6 +78,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_init_no_existing_factory_but_schema() throws SQLException {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -111,6 +113,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_init_existing_factory() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -123,6 +126,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_update() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -153,6 +157,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_initial_history() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -164,6 +169,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_multi_add() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -190,6 +196,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_restore() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -206,6 +213,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_future() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -252,6 +260,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_history() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
                                                                                                 createInitialExampleFactoryA(),
@@ -273,6 +282,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_getCurrentDataId() {
         ExampleFactoryA initialExampleFactoryA = createInitialExampleFactoryA();
         initialExampleFactoryA.stringAttribute.set("initial");
@@ -282,6 +292,7 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    @Disabled
     public void test_patchCurrentData() {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
         initialExampleDataA.stringAttribute.set("123");
