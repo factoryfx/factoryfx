@@ -47,19 +47,17 @@ public class PostgresDataStorageTest {
         } catch (Exception ignore) {}
     }
 
-    @Disabled
     @AfterAll
     public static void stopPostgres() {
         try {
             postgresProcess.close();
-        } catch (IOException ignore) {}
+        } catch (Exception ignore) {}
     }
 
     private MigrationManager<ExampleFactoryA> createDataMigrationManager() {
         return new MigrationManager<>(ExampleFactoryA.class, ObjectMapperBuilder.build(), (root, d) -> {});
     }
 
-    @Disabled
     @Test
     public void test_init_no_existing_factory() throws SQLException {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -78,7 +76,6 @@ public class PostgresDataStorageTest {
         }
     }
 
-    @Disabled
     @Test
     public void test_init_no_existing_factory_but_schema() throws SQLException {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -113,7 +110,6 @@ public class PostgresDataStorageTest {
         return new DataUpdate<>(exampleDataA, "user", "comment", "13213");
     }
 
-    @Disabled
     @Test
     public void test_init_existing_factory() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -126,7 +122,6 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(id, restored.getCurrentData().id);
     }
 
-    @Disabled
     @Test
     public void test_update() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -157,7 +152,6 @@ public class PostgresDataStorageTest {
         }
     }
 
-    @Disabled
     @Test
     public void test_initial_history() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -169,7 +163,6 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(1, postgresFactoryStorage.getHistoryDataList().size());
     }
 
-    @Disabled
     @Test
     public void test_multi_add() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -196,7 +189,6 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(4, postgresFactoryStorage.getHistoryDataList().size());
     }
 
-    @Disabled
     @Test
     public void test_restore() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -213,7 +205,6 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(2, restored.getHistoryDataList().size());
     }
 
-    @Disabled
     @Test
     public void test_future() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -260,7 +251,6 @@ public class PostgresDataStorageTest {
         Assertions.assertNotNull(postgresFactoryStorage.getFutureData(new ArrayList<>(list).get(0).id));
     }
 
-    @Disabled
     @Test
     public void test_history() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -282,7 +272,6 @@ public class PostgresDataStorageTest {
 
     }
 
-    @Disabled
     @Test
     public void test_getCurrentDataId() {
         ExampleFactoryA initialExampleFactoryA = createInitialExampleFactoryA();
@@ -292,7 +281,6 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals("initial", postgresFactoryStorage.getHistoryData(postgresFactoryStorage.getCurrentDataId()).stringAttribute.get());
     }
 
-    @Disabled
     @Test
     public void test_patchCurrentData() {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
