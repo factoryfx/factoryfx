@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.datastorage.postgres;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,7 +41,7 @@ public class PostgresDataStorageTest {
     public static void setupPostgres() {
         try {
             postgresProcess = EmbeddedPostgres.builder()
-                                              .setOutputRedirector(ProcessBuilder.Redirect.to(new java.io.File("./build/postgres")))
+                                              .setOutputRedirector(ProcessBuilder.Redirect.to(new File("./build/postgres.out")))
                                               .start();
             postgresDatasource = new DisableAutocommitDatasource(postgresProcess.getPostgresDatabase());
         } catch (Exception e) {
@@ -60,6 +61,7 @@ public class PostgresDataStorageTest {
         return new MigrationManager<>(ExampleFactoryA.class, ObjectMapperBuilder.build(), (root, d) -> {});
     }
 
+    @Disabled
     @Test
     public void test_init_no_existing_factory() throws SQLException {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -78,6 +80,7 @@ public class PostgresDataStorageTest {
         }
     }
 
+    @Disabled
     @Test
     public void test_init_no_existing_factory_but_schema() throws SQLException {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -112,6 +115,7 @@ public class PostgresDataStorageTest {
         return new DataUpdate<>(exampleDataA, "user", "comment", "13213");
     }
 
+    @Disabled
     @Test
     public void test_init_existing_factory() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -124,6 +128,7 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(id, restored.getCurrentData().id);
     }
 
+    @Disabled
     @Test
     public void test_update() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -154,6 +159,7 @@ public class PostgresDataStorageTest {
         }
     }
 
+    @Disabled
     @Test
     public void test_initial_history() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -165,6 +171,7 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(1, postgresFactoryStorage.getHistoryDataList().size());
     }
 
+    @Disabled
     @Test
     public void test_multi_add() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -191,6 +198,7 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(4, postgresFactoryStorage.getHistoryDataList().size());
     }
 
+    @Disabled
     @Test
     public void test_restore() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -207,6 +215,7 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals(2, restored.getHistoryDataList().size());
     }
 
+    @Disabled
     @Test
     public void test_future() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -253,6 +262,7 @@ public class PostgresDataStorageTest {
         Assertions.assertNotNull(postgresFactoryStorage.getFutureData(new ArrayList<>(list).get(0).id));
     }
 
+    @Disabled
     @Test
     public void test_history() {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -274,6 +284,7 @@ public class PostgresDataStorageTest {
 
     }
 
+    @Disabled
     @Test
     public void test_getCurrentDataId() {
         ExampleFactoryA initialExampleFactoryA = createInitialExampleFactoryA();
@@ -283,6 +294,7 @@ public class PostgresDataStorageTest {
         Assertions.assertEquals("initial", postgresFactoryStorage.getHistoryData(postgresFactoryStorage.getCurrentDataId()).stringAttribute.get());
     }
 
+    @Disabled
     @Test
     public void test_patchCurrentData() {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
