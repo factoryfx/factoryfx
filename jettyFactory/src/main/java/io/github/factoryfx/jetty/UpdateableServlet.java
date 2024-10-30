@@ -3,13 +3,8 @@ package io.github.factoryfx.jetty;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.eclipse.jetty.http.pathmap.ServletPathSpec;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.ServletPathMapping;
 
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletConfig;
@@ -32,17 +27,17 @@ public class UpdateableServlet implements Servlet {
         this.servlets = newServlets;
     }
 
-    public void update(Collection<ServletAndPath> newServlets){
-        update(this.servlets,newServlets);
+    public void update(Collection<ServletAndPath> newServlets) {
+        update(this.servlets, newServlets);
         this.servlets = newServlets;
     }
 
-    private void update(Collection<ServletAndPath> previousServlets, Collection<ServletAndPath> newServlets){
-        Set<Servlet> previousServletsMapped = previousServlets.stream().map((s)->s.servlet).collect(Collectors.toSet());
+    private void update(Collection<ServletAndPath> previousServlets, Collection<ServletAndPath> newServlets) {
+        Set<Servlet> previousServletsMapped = previousServlets.stream().map((s) -> s.servlet).collect(Collectors.toSet());
 
         newServlets.forEach(servletAndPath -> {
             try {
-                if (!previousServletsMapped.contains(servletAndPath.servlet)){
+                if (!previousServletsMapped.contains(servletAndPath.servlet)) {
                     servletAndPath.servlet.init(servletConfig);
                 }
             } catch (ServletException e) {
@@ -51,11 +46,10 @@ public class UpdateableServlet implements Servlet {
         });
     }
 
-
     @Override
     public void init(ServletConfig config) {
         this.servletConfig = config;
-        update(List.of(),this.servlets);
+        update(List.of(), this.servlets);
     }
 
     @Override
@@ -65,7 +59,7 @@ public class UpdateableServlet implements Servlet {
 
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-        HttpServletRequest httpReq = (HttpServletRequest)req;
+        HttpServletRequest httpReq = (HttpServletRequest) req;
         String pathMatch = null;
         String pathInfo = null;
         Servlet bestMatch = null;
@@ -82,13 +76,9 @@ public class UpdateableServlet implements Servlet {
             }
         }
         if (bestMatch != null) {
-            Request baseRequest = null;
-            if (httpReq instanceof Request) {
-                baseRequest = (Request)httpReq;
-            }
-            dispatch(bestMatch,pathMatch,pathInfo,baseRequest,httpReq, (HttpServletResponse) res);
+            dispatch(bestMatch, pathMatch, pathInfo, httpReq, res);
         } else {
-            HttpServletResponse response =(HttpServletResponse) res;
+            HttpServletResponse response = (HttpServletResponse) res;
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
@@ -102,44 +92,17 @@ public class UpdateableServlet implements Servlet {
     public void destroy() {
     }
 
-
-    public void dispatch(Servlet servlet, String servletPath, String pathInfo, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
-    {
-        final String oldPath = request.getServletPath();
-        final String oldInfo = request.getPathInfo();
-
-        try
-        {
-            //We will presumably always run under a jetty environment, yet we support other environments as well
-            if (baseRequest != null) {
-                baseRequest.setServletPathMapping(new ServletPathMapping(new ServletPathSpec(servletPath),
-                                                                         null,
-                                                                         Optional.ofNullable(pathInfo).orElse("")));
-                //baseRequest.setServletPath(servletPath);
-                //baseRequest.setPathInfo(pathInfo);
-            } else {
-                request = new HttpServletRequestWrapper(request) {
-                    @Override
-                    public String getPathInfo() {
-                        return pathInfo;
-                    }
-
-                    @Override
-                    public String getServletPath() {
-                        return servletPath;
-                    }
-                };
+    public void dispatch(Servlet bestMatch, String servletPath, String pathInfo, HttpServletRequest request, ServletResponse response) throws IOException, ServletException {
+        bestMatch.service(new HttpServletRequestWrapper(request) {
+            @Override
+            public String getPathInfo() {
+                return pathInfo;
             }
-            servlet.service(request,response);
-        }
-        finally
-        {
-            if (baseRequest != null) {
-                baseRequest.setServletPathMapping(new ServletPathMapping(new ServletPathSpec(oldPath), null, oldInfo));
-                //baseRequest.setServletPath(oldPath);
-                //baseRequest.setPathInfo(oldInfo);
+
+            @Override
+            public String getServletPath() {
+                return servletPath;
             }
-        }
+        }, response);
     }
-
 }

@@ -11,6 +11,7 @@ module io.github.factoryfx.soapFactory {
     requires jakarta.xml.ws;
 
     requires jakarta.annotation;
+    requires jakarta.servlet;
 
     exports io.github.factoryfx.soap;
 }

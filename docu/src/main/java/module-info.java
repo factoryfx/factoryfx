@@ -3,8 +3,8 @@ open module io.github.factoryfx.docu {
     requires jakarta.ws.rs;
     requires com.codahale.metrics;
     requires io.github.factoryfx.jettyFactory;
-    requires com.codahale.metrics.jetty9;
-//    requires jersey.common;
+    requires io.dropwizard.metrics.jetty12;
+    //    requires jersey.common;
     requires com.google.common;
     requires ch.qos.logback.classic;
 
@@ -27,6 +27,6 @@ open module io.github.factoryfx.docu {
     requires io.github.factoryfx.domFactoryEditing;
     requires java.desktop;
     requires org.postgresql.jdbc;
-    requires postgresql.embedded;
+    requires embedded.postgres;
 
 }

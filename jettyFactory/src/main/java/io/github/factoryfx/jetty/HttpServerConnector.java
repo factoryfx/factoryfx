@@ -1,5 +1,7 @@
 package io.github.factoryfx.jetty;
 
+import java.util.Objects;
+
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -17,32 +19,25 @@ public class HttpServerConnector {
     private final SslContextFactory.Server sslContextFactory;
     private final HttpConfiguration httpConfiguration;
 
-
-    private ServerConnector connector;
-    private boolean useHttp2;
+    private final boolean useHttp2;
 
     public HttpServerConnector(String host, int port, SslContextFactory.Server sslContextFactory, HttpConfiguration httpConfiguration, boolean useHttp2) {
         this.host = host;
         this.port = port;
         this.sslContextFactory= sslContextFactory;
-        if (httpConfiguration==null){
-            this.httpConfiguration=new HttpConfiguration();
-        } else {
-            this.httpConfiguration = httpConfiguration;
-        }
+        this.httpConfiguration = Objects.requireNonNullElseGet(httpConfiguration, HttpConfiguration::new);
         this.useHttp2=useHttp2;
     }
 
     public void addToServer(Server server) {
 
-
+        ServerConnector connector;
         if (useHttp2) {
             HttpConfiguration httpConfiguration = new HttpConfiguration();
             HttpConnectionFactory h1 = new HttpConnectionFactory(httpConfiguration);
             HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpConfiguration);
             ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
             alpn.setDefaultProtocol(h1.getProtocol());
-            connector = new ServerConnector(server,sslContextFactory,alpn,h1,h2);
             if (sslContextFactory!=null){
                 connector = new ServerConnector(server, sslContextFactory, alpn, h2, new HttpConnectionFactory(httpConfiguration));
             } else {
@@ -50,9 +45,9 @@ public class HttpServerConnector {
             }
         } else {
             if (sslContextFactory!=null){
-                connector = new NetworkTrafficServerConnector(server,new HttpConnectionFactory(httpConfiguration),sslContextFactory);
+                connector = new NetworkTrafficServerConnector(server, new HttpConnectionFactory(httpConfiguration), sslContextFactory);
             } else {
-                connector = new NetworkTrafficServerConnector(server,new HttpConnectionFactory(httpConfiguration));
+                connector = new NetworkTrafficServerConnector(server, new HttpConnectionFactory(httpConfiguration));
             }
         }
 

@@ -8,8 +8,6 @@ import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.typescript.generator.data.*;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

@@ -18,11 +18,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.postgresql.ds.PGSimpleDataSource;
-import org.postgresql.jdbc.AutoSave;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -34,46 +29,29 @@ import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
-import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
-import ru.yandex.qatools.embed.postgresql.PostgresProcess;
-import ru.yandex.qatools.embed.postgresql.PostgresStarter;
-import ru.yandex.qatools.embed.postgresql.config.PostgresConfig;
+import io.zonky.test.db.postgres.embedded.EmbeddedPostgres;
 
 public class PostgresDataStorageTest {
 
-    static PostgresProcess postgresProcess;
+    static EmbeddedPostgres postgresProcess;
     static DataSource postgresDatasource;
     @BeforeAll
     public static void setupPostgres() {
         try {
-            PostgresStarter<PostgresExecutable, PostgresProcess> runtime = PostgresStarter.getDefaultInstance();
-            final PostgresConfig config = PostgresConfig.defaultWithDbName("test","testuser","testpw");
-            PostgresExecutable exec = runtime.prepare(config);
-            postgresProcess = exec.start();
-            PGSimpleDataSource postgresDatasource = new PGSimpleDataSource();
-            postgresDatasource.setServerName(config.net().host());
-            postgresDatasource.setPortNumber(config.net().port());
-            postgresDatasource.setDatabaseName(config.storage().dbName());
-            postgresDatasource.setUser(config.credentials().username());
-            postgresDatasource.setPassword(config.credentials().password());
-            postgresDatasource.setAutosave(AutoSave.NEVER);
-            PostgresDataStorageTest.postgresDatasource = Mockito.spy(postgresDatasource);
-            Mockito.when(PostgresDataStorageTest.postgresDatasource.getConnection()).thenAnswer(new Answer<Connection>() {
-                @Override
-                public Connection answer(InvocationOnMock invocation) throws Throwable {
-                    Connection connection = postgresDatasource.getConnection();
-                    connection.setAutoCommit(false);
-                    return connection;
-                }
-            });
-        } catch (IOException | SQLException e) {
+            postgresProcess = EmbeddedPostgres.start();
+            postgresDatasource = new DisableAutocommitDatasource(postgresProcess.getPostgresDatabase());
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @AfterAll
     public static void stopPostgres() {
-        postgresProcess.stop();
+        try {
+            postgresProcess.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -304,7 +282,7 @@ public class PostgresDataStorageTest {
         }
 
         root.internal().finalise();
-        DataUpdate<ExampleFactoryA> update = new DataUpdate<>(root,"user","comment","13213");;
+        DataUpdate<ExampleFactoryA> update = new DataUpdate<>(root,"user","comment","13213");
         long start = System.currentTimeMillis();
         postgresFactoryStorage.updateCurrentData(update,null);
         System.out.println(System.currentTimeMillis()-start);

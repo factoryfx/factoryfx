@@ -1,5 +1,7 @@
 package io.github.factoryfx.jetty.builder;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -7,9 +9,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.Callback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,8 +29,6 @@ import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.jetty.JerseyServletFactoryTest;
 import io.github.factoryfx.server.Microservice;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -78,12 +81,16 @@ public class JettyServerBuilderTest {
     }
 
 
-    public static class HelloWorldHandler extends AbstractHandler {
-        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            response.setContentType("text/html;charset=utf-8");
+    public static class HelloWorldHandler extends Handler.Abstract {
+
+        @Override
+        public boolean handle(Request request, Response response, Callback callback) throws Exception {
+            response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/html; charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
-            response.getWriter().print("HelloWorld");
+
+            response.write(true, UTF_8.encode("Hello World"), callback);
+
+            return true;
         }
     }
     @Test
@@ -102,7 +109,7 @@ public class JettyServerBuilderTest {
             HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087/test")).build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            Assertions.assertEquals("HelloWorld", response.body());
+            Assertions.assertEquals("Hello World", response.body());
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         } finally {

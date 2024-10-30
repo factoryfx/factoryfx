@@ -33,14 +33,13 @@ import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.storage.UpdateSummary;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
-public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStorage<R> {
-
+public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataStorage<R> {
     private final R initialData;
     private final DataSource dataSource;
     private final MigrationManager<R> migrationManager;
     private final SimpleObjectMapper objectMapper;
 
-    public PostgresDataStorage(DataSource dataSource, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper){
+    public PostgresDataStorage(DataSource dataSource, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper) {
         this.dataSource = dataSource;
         this.initialData = initialDataParam;
         this.migrationManager = migrationManager;
@@ -49,172 +48,175 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
 
     @Override
     public R getHistoryData(String id) {
-        StoredDataMetadata metaData=null;
-        for(StoredDataMetadata historyMetaData: getHistoryDataList()){
-            if (historyMetaData.id.equals(id)){
-                metaData=historyMetaData;
-
+        try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection());
+             PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root,  cast (metadata as text) as metadata from configuration where id = ?")) {
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
+                StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(rs.getString(2));
+                return migrationManager.read(rs.getString(1),
+                                             storedDataMetadata.dataStorageMetadataDictionary);
             }
-        }
-        if (metaData==null) {
-            throw new IllegalStateException("cant find id: "+id+" in history");
-        }
-
-        try {
-            try (Connection connection = dataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root from configuration where id = ?")) {
-                    pstmt.setString(1,id);
-                    ensureTablesAreAvailable(connection);
-                    try (ResultSet rs = pstmt.executeQuery()) {
-                        if (!rs.next())
-                            throw new IllegalArgumentException("No factory with id '"+id+"' found");
-                        return migrationManager.read(rs.getString(1),metaData.dataStorageMetadataDictionary);
-                    }
-                }
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot read current factory",e);
+            throw new RuntimeException("Cannot read current factory", e);
         }
     }
 
     @Override
     public Collection<StoredDataMetadata> getHistoryDataList() {
-        try {
-            try (Connection connection = dataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration")) {
-                ArrayList<StoredDataMetadata> ret = new ArrayList<>();
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    ensureTablesAreAvailable(connection);
-                    while (rs.next()) {
-                       ret.add(migrationManager.readStoredFactoryMetadata(rs.getString(1)));
-                    }
-                }
-                 return ret;
+        try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection());
+             PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration");
+             ResultSet rs = pstmt.executeQuery()) {
+            ArrayList<StoredDataMetadata> ret = new ArrayList<>();
+            while (rs.next()) {
+                ret.add(migrationManager.readStoredFactoryMetadata(rs.getString(1)));
             }
+            return ret;
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot read current factory",e);
+            throw new RuntimeException("Cannot read current factory", e);
         }
     }
 
-
     @Override
     public DataAndId<R> getCurrentData() {
-        try {
-            try (Connection connection = dataSource.getConnection()){
-                ensureTablesAreAvailable(connection);
-                try (
-                    PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
-                    ResultSet rs = pstmt.executeQuery()) {
+        try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection());
+             PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
+             ResultSet rs = pstmt.executeQuery()) {
 
-                    if (!rs.next()) {//"No current factory found
-                        StoredDataMetadata metadata = initCurrentData(connection);
-                        return new DataAndId<>(initialData, metadata.id);
-                    } else {
-                        StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
-                        return new DataAndId<>(migrationManager.read(rs.getString(1),metaData.dataStorageMetadataDictionary), metaData.id);
-                    }
-
-                }
+            if (!rs.next()) {//"No current factory found
+                StoredDataMetadata metadata = initCurrentData(connection);
+                return new DataAndId<>(initialData, metadata.id);
+            } else {
+                StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
+                return new DataAndId<>(migrationManager.read(rs.getString(1), metaData.dataStorageMetadataDictionary), metaData.id);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot read current factory",e);
+            throw new RuntimeException("Cannot read current factory", e);
         }
     }
 
     @Override
     public String getCurrentDataId() {
-        try {
-            try (Connection connection = dataSource.getConnection()){
-                ensureTablesAreAvailable(connection);
-                try (
-                        PreparedStatement pstmt = connection.prepareStatement("select id from currentconfiguration");
-                        ResultSet rs = pstmt.executeQuery()) {
+        try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection());
+             PreparedStatement pstmt = connection.prepareStatement("select id from currentconfiguration");
+             ResultSet rs = pstmt.executeQuery()) {
 
-                    if (!rs.next()) {//"No current factory found
-                        StoredDataMetadata metadata = initCurrentData(connection);
-                        return metadata.id;
-                    } else {
-                        return rs.getString("id");
-                    }
-
-                }
+            if (!rs.next()) {//"No current factory found
+                StoredDataMetadata metadata = initCurrentData(connection);
+                return metadata.id;
+            } else {
+                return rs.getString("id");
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot read current factory",e);
+            throw new RuntimeException("Cannot read current factory", e);
         }
     }
 
     private StoredDataMetadata initCurrentData(Connection connection) throws SQLException {
-        StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(), UUID.randomUUID().toString(), "System", "initial factory", UUID.randomUUID().toString(), null, initialData.internal().createDataStorageMetadataDictionaryFromRoot(), null);
+        StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
+                                                             UUID.randomUUID().toString(),
+                                                             "System",
+                                                             "initial factory",
+                                                             UUID.randomUUID().toString(),
+                                                             null,
+                                                             initialData.internal().createDataStorageMetadataDictionaryFromRoot(),
+                                                             null);
 
         updateCurrentFactory(connection, new DataAndStoredMetadata<>(initialData, metadata));
         connection.commit();
         return metadata;
     }
 
-
     @Override
     public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
-        StoredDataMetadata metadata =update.createUpdateStoredDataMetadata(changeSummary,getCurrentDataId());
+        StoredDataMetadata metadata = update.createUpdateStoredDataMetadata(changeSummary, getCurrentDataId());
         update(update.root, metadata);
     }
 
     @Override
     public void patchAll(DataStoragePatcher consumer) {
-//        patchCurrentData(consumer);
-        throw new UnsupportedOperationException();
+        String currentId = getCurrentDataId();//ensure initial data populated
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedSelect = connection.prepareStatement("select id, cast (root as text) as root, cast (metadata as text) as metadata from configuration order by createdat asc");
+             ResultSet rs = preparedSelect.executeQuery()) {
+            int counter = 0;
+            while (rs.next()) {
+                String id = rs.getString(1);
+                JsonNode data = objectMapper.readTree(rs.getString(2));
+                JsonNode metadata = objectMapper.readTree(rs.getString(3));
+
+                consumer.patch((ObjectNode) data, metadata, objectMapper);
+
+                try (PreparedStatement preparedUpdate = connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
+                    preparedUpdate.setString(1, objectMapper.writeTree(data));
+                    preparedUpdate.setString(2, objectMapper.writeTree(metadata));
+                    preparedUpdate.setString(3, id);
+                    preparedUpdate.execute();
+                    if (++counter % 10 == 0) {
+                        connection.commit();
+                    }
+                }
+                if(id.equals(currentId)){
+                    try (PreparedStatement pstmt = connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
+                        pstmt.setString(1, objectMapper.writeTree(data));
+                        pstmt.setString(2, objectMapper.writeTree(metadata));
+                        pstmt.execute();
+                    }
+                }
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot patch configuration", e);
+        }
     }
 
     @Override
     public void patchCurrentData(DataStoragePatcher consumer) {
-        String dataString=null;
-        String metadataString=null;
-        String currentId = getCurrentData().id;//ensure initial data populated
-        try {
-            try (Connection connection = dataSource.getConnection()){
+        String dataString = null;
+        String metadataString = null;
+        String currentId = getCurrentDataId();//ensure initial data populated
 
-                try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
-                     ResultSet rs = pstmt.executeQuery()) {
-                    if (rs.next()) {
-                        dataString=rs.getString(1);
-                        metadataString=rs.getString(2);
-                    }
+        try (Connection connection = dataSource.getConnection()) {
+
+            try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
+                 ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    dataString = rs.getString(1);
+                    metadataString = rs.getString(2);
                 }
-
-                JsonNode data = objectMapper.readTree(dataString);
-                JsonNode metadata = objectMapper.readTree(metadataString);
-                consumer.patch((ObjectNode) data,metadata,objectMapper);
-
-                try (PreparedStatement pstmt =
-                             connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
-                    pstmt.setString(1, objectMapper.writeTree(data));
-                    pstmt.setString(2, objectMapper.writeTree(metadata));
-                    pstmt.execute();
-                }
-
-                try (PreparedStatement pstmt =
-                             connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
-                    pstmt.setString(1, objectMapper.writeTree(data));
-                    pstmt.setString(2, objectMapper.writeTree(metadata));
-                    pstmt.setString(3, currentId);
-                    pstmt.execute();
-                }
-
-                connection.commit();
             }
+
+            JsonNode data = objectMapper.readTree(dataString);
+            JsonNode metadata = objectMapper.readTree(metadataString);
+            consumer.patch((ObjectNode) data, metadata, objectMapper);
+
+            try (PreparedStatement pstmt =
+                     connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
+                pstmt.setString(1, objectMapper.writeTree(data));
+                pstmt.setString(2, objectMapper.writeTree(metadata));
+                pstmt.execute();
+            }
+
+            try (PreparedStatement pstmt =
+                     connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
+                pstmt.setString(1, objectMapper.writeTree(data));
+                pstmt.setString(2, objectMapper.writeTree(metadata));
+                pstmt.setString(3, currentId);
+                pstmt.execute();
+            }
+
+            connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot read current factory",e);
+            throw new RuntimeException("Cannot read current factory", e);
         }
     }
 
     private void update(R update, StoredDataMetadata metadata) {
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                ensureTablesAreAvailable(connection);
-                updateCurrentFactory(connection, new DataAndStoredMetadata<>(update,metadata));
-                connection.commit();
-            }
+        try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection())) {
+            updateCurrentFactory(connection, new DataAndStoredMetadata<>(update, metadata));
+            connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot update current factory",e);
+            throw new RuntimeException("Cannot update current factory", e);
         }
     }
 
@@ -225,30 +227,30 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
         long createdAt = System.currentTimeMillis();
         boolean firstEntry = false;
         try (PreparedStatement selectMaxCreatedAt = connection.prepareStatement("select max(createdAt) as ts from currentconfiguration");
-            ResultSet maxCreatedAtRs = selectMaxCreatedAt.executeQuery()) {
-                Timestamp timestamp = null;
-                if (maxCreatedAtRs.next()) {
-                    timestamp = maxCreatedAtRs.getTimestamp(1);
-                }
-                if (timestamp != null) {
-                    createdAt = Math.max(createdAt, timestamp.getTime()+1);
-                } else {
-                    firstEntry = true;
-                }
+             ResultSet maxCreatedAtRs = selectMaxCreatedAt.executeQuery()) {
+            Timestamp timestamp = null;
+            if (maxCreatedAtRs.next()) {
+                timestamp = maxCreatedAtRs.getTimestamp(1);
+            }
+            if (timestamp != null) {
+                createdAt = Math.max(createdAt, timestamp.getTime() + 1);
+            } else {
+                firstEntry = true;
+            }
         }
         Timestamp createdAtTimestamp = new Timestamp(createdAt);
 
         try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into configuration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
-            setValues(update,createdAtTimestamp,pstmtInsertConfiguration);
+            setValuesAndExecute(update, createdAtTimestamp, pstmtInsertConfiguration);
         }
         try (PreparedStatement pstmtUpdateCurrentConfiguraion =
-                     firstEntry?connection.prepareStatement("insert into currentconfiguration (root,metadata,createdAt,id) values (cast (? as json), cast (? as json), ?, ?)")
-                             :connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json), createdAt = ?, id = ?")) {
-            setValues(update,createdAtTimestamp,pstmtUpdateCurrentConfiguraion);
+                 firstEntry ? connection.prepareStatement("insert into currentconfiguration (root,metadata,createdAt,id) values (cast (? as json), cast (? as json), ?, ?)")
+                     : connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json), createdAt = ?, id = ?")) {
+            setValuesAndExecute(update, createdAtTimestamp, pstmtUpdateCurrentConfiguraion);
         }
     }
 
-    private void setValues(DataAndStoredMetadata<R> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
+    private void setValuesAndExecute(DataAndStoredMetadata<R> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
         pstmt.setString(1, migrationManager.write(update.root));
         pstmt.setString(2, migrationManager.writeStorageMetadata(update.metadata));
         pstmt.setTimestamp(3, createdAtTimestamp);
@@ -257,19 +259,20 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
     }
 
     private boolean tablesAreAvailable;
-    private void ensureTablesAreAvailable(Connection connection) {
-        if (!tablesAreAvailable){
+
+    private Connection ensureTablesAreAvailable(Connection connection) {
+        if (!tablesAreAvailable) {
             try (ResultSet checkTablesExist = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), "currentconfiguration", null)) {
                 if (!checkTablesExist.next()) {
                     createTables(connection);
                     connection.commit();
-                    tablesAreAvailable=true;
+                    tablesAreAvailable = true;
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
-
+        return connection;
     }
 
     void createTables(Connection connection) {
@@ -282,54 +285,51 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
 
     @Override
     public Collection<ScheduledUpdateMetadata> getFutureDataList() {
-        try {
-            try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfiguration")) {
-                    ArrayList<ScheduledUpdateMetadata> ret = new ArrayList<>();
-                    try (ResultSet rs = pstmt.executeQuery()) {
-                        while (rs.next()) {
-                            ret.add(migrationManager.readScheduledFactoryMetadata(rs.getString(1)));
-                        }
-                    }
-                    return ret;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from futureconfiguration");
+             ResultSet rs = pstmt.executeQuery()) {
+            ArrayList<ScheduledUpdateMetadata> ret = new ArrayList<>();
+            while (rs.next()) {
+                ret.add(migrationManager.readScheduledFactoryMetadata(rs.getString(1)));
             }
+            return ret;
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot read future factories",e);
+            throw new RuntimeException("Cannot read future factories", e);
         }
     }
 
     @Override
     public void deleteFutureData(String id) {
         try (Connection connection = this.dataSource.getConnection();
-              PreparedStatement pstmtDeleteConfiguration = connection.prepareStatement("delete from futureconfiguration where id = ?")) {
-            pstmtDeleteConfiguration.setString(1,id);
+             PreparedStatement pstmtDeleteConfiguration = connection.prepareStatement("delete from futureconfiguration where id = ?")) {
+            pstmtDeleteConfiguration.setString(1, id);
             pstmtDeleteConfiguration.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot delete future factory",e);
+            throw new RuntimeException("Cannot delete future factory", e);
         }
     }
 
     public R getFutureData(String id) {
-        ScheduledUpdateMetadata metaData=null;
-        for(ScheduledUpdateMetadata historyMetaData: getFutureDataList()){
-            if (historyMetaData.id.equals(id)){
-                metaData=historyMetaData;
+        ScheduledUpdateMetadata metaData = null;
+        for (ScheduledUpdateMetadata historyMetaData : getFutureDataList()) {
+            if (historyMetaData.id.equals(id)) {
+                metaData = historyMetaData;
             }
         }
-        if (metaData==null) {
-            throw new IllegalStateException("cant find id: "+id+" in history");
+        if (metaData == null) {
+            throw new IllegalStateException("cant find id: " + id + " in history");
         }
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root from futureconfiguration where id = ?")) {
-                pstmt.setString(1,id);
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    if (!rs.next())
-                        throw new IllegalArgumentException("No factory with id '"+id+"' found");
-                    return migrationManager.read(rs.getString(1), metaData.dataStorageMetadataDictionary);
-                }
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
+                return migrationManager.read(rs.getString(1), metaData.dataStorageMetadataDictionary);
+            }
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot read future factory",e);
+            throw new RuntimeException("Cannot read future factory", e);
         }
     }
 
@@ -343,15 +343,15 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
                 futureFactory.comment,
                 futureFactory.scheduled,
                 futureFactory.root.internal().createDataStorageMetadataDictionaryFromRoot()
-        );
-
+            );
 
         try (Connection connection = this.dataSource.getConnection()) {
             ensureTablesAreAvailable(connection);
             long createdAt = System.currentTimeMillis();
             Timestamp createdAtTimestamp = new Timestamp(createdAt);
 
-            try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into futureconfiguration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
+            try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement(
+                "insert into futureconfiguration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
                 pstmtInsertConfiguration.setString(1, migrationManager.write(futureFactory.root));
                 pstmtInsertConfiguration.setString(2, migrationManager.writeScheduledUpdateMetadata(scheduledUpdateMetadata));
                 pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
@@ -361,7 +361,7 @@ public class PostgresDataStorage<R extends FactoryBase<?,R>> implements DataStor
 
             connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException("Cannot add future factory",e);
+            throw new RuntimeException("Cannot add future factory", e);
         }
     }
 }

@@ -2,11 +2,11 @@ package io.github.factoryfx.jetty;
 
 import java.util.EnumSet;
 
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
@@ -29,7 +29,7 @@ public class ServletContextHandlerFactory<R extends FactoryBase<?,R>> extends Si
         errorHandler.setShowStacks(true);
         contextHandler.setErrorHandler(errorHandler);
         for (ServletFilterAndPath servletFilterAndPath : servletFilters.instances()) {
-            contextHandler.addFilter(new FilterHolder(servletFilterAndPath.filter),servletFilterAndPath.pathSpec, EnumSet.allOf(DispatcherType.class));
+            contextHandler.addFilter(new FilterHolder(servletFilterAndPath.filter), servletFilterAndPath.pathSpec, EnumSet.allOf(DispatcherType.class));
         }
         return contextHandler;
     }

@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.glassfish.jersey.logging.LoggingFeature;
 
@@ -31,7 +32,6 @@ import io.github.factoryfx.jetty.ServletFilterAndPathFactory;
 import io.github.factoryfx.jetty.Slf4jRequestLogFactory;
 import io.github.factoryfx.jetty.ThreadPoolFactory;
 import io.github.factoryfx.jetty.UpdateableServletFactory;
-import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -56,9 +56,9 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
 
     private final FactoryTemplateId<JR> rootTemplateId;
     private ServerConnectorBuilder<R> defaultServerConnector;
-    private List<ServerConnectorBuilder<R>> serverConnectorBuilders =new ArrayList<>();
+    private final List<ServerConnectorBuilder<R>> serverConnectorBuilders =new ArrayList<>();
     private ResourceBuilder<R> resourceBuilder;
-    private List<ResourceBuilder<R>> resourceBuilders =new ArrayList<>();
+    private final List<ResourceBuilder<R>> resourceBuilders =new ArrayList<>();
     private Consumer<JR> additionalConfiguration = jr-> {};
 
     private final FactoryTemplateId<ThreadPoolFactory<R>> threadPoolFactoryTemplateId;
@@ -281,7 +281,6 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         addFactory(builder,gzipHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             GzipHandlerFactory<R> gzipHandler = new GzipHandlerFactory<>();
             gzipHandler.minGzipSize.set(23);
-            gzipHandler.dispatcherTypes.add(DispatcherType.REQUEST);
             gzipHandler.inflateBufferSize.set(-1);
             gzipHandler.syncFlush.set(false);
             gzipHandler.handler.set(ctx.get(servletContextHandlerFactoryTemplateId));

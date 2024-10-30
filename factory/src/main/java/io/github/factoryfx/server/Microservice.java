@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import io.github.factoryfx.factory.FactoryUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
@@ -125,6 +124,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
     public synchronized L start() {
         final DataAndId<R> currentFactory = dataStorage.getCurrentData();
         R currentFactoryRoot = currentFactory.root.internal().finalise();
+        currentFactoryRoot.internal().setFactoryTreeBuilder(factoryTreeBuilder);
 
         if (factoryTreeBuilder.isPersistentFactoryBuilder()){
             R initialData = dataStorage.getInitialData();
@@ -156,7 +156,6 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
 
 
         currentFactoryRoot.internal().setMicroservice(this);//also mind ExceptionResponseAction#reset
-        currentFactoryRoot.internal().setFactoryTreeBuilder(factoryTreeBuilder);
         return factoryManager.start(new RootFactoryWrapper<>(currentFactoryRoot));
     }
 

@@ -8,14 +8,11 @@ import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.primitive.BooleanAttribute;
 import io.github.factoryfx.factory.attribute.primitive.IntegerAttribute;
-import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
 import io.github.factoryfx.factory.attribute.types.StringListAttribute;
-import jakarta.servlet.DispatcherType;
 
 public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
     public final FactoryPolymorphicAttribute<Handler> handler = new FactoryPolymorphicAttribute<Handler>().labelText("Handler");
     public final IntegerAttribute minGzipSize = new IntegerAttribute().labelText("minGzipSize");
-    public final EnumListAttribute<DispatcherType> dispatcherTypes = new EnumListAttribute<DispatcherType>().labelText("dispatcherTypes");
     public final StringListAttribute excludedMethods = new StringListAttribute().labelText("excludedMethods");
     public final StringListAttribute excludedMimeTypes = new StringListAttribute().labelText("excludedMimeTypes");
     public final StringListAttribute excludedPaths = new StringListAttribute().labelText("excludedPaths");
@@ -30,7 +27,6 @@ public class GzipHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactor
     protected Handler createImpl() {
         GzipHandler gzipHandler = new GzipHandler();
         gzipHandler.setMinGzipSize(minGzipSize.get());
-        gzipHandler.setDispatcherTypes(dispatcherTypes.get().toArray(new DispatcherType[0]));
         gzipHandler.setExcludedMethods(excludedMethods.get().toArray(new String[0]));
         gzipHandler.setExcludedMimeTypes(excludedMimeTypes.get().toArray(new String[0]));
         gzipHandler.setExcludedPaths(excludedPaths.get().toArray(new String[0]));

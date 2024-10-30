@@ -1,4 +1,13 @@
-# 3.2.3
+# 4.0.0
+
+* **Update Java version**
+    * jetty12 requires jdk 17 or higher
+* **Update dependencies**
+    * Mainly updated to jetty12, but also other libraries
+* **PostgresDataStorage**
+    * implement patchAll, performance improvements
+
+* # 3.2.3
 
 * **PostgresDataStorage**
     * Remove redundant storage of metadata. After the update you can delete the tables futureconfigurationmetadata and configurationmetadata

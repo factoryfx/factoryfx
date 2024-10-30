@@ -9,7 +9,7 @@ import java.net.http.HttpResponse;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.Callback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,9 +23,6 @@ import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
@@ -64,10 +61,10 @@ public class HandlerCollectionFactoryTest {
     public static class CustomHandlerFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Handler,R> {
         @Override
         protected Handler createImpl() {
-            return new AbstractHandler() {
+            return new Handler.Abstract() {
                 @Override
-                public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+                public boolean handle(Request request, org.eclipse.jetty.server.Response response, Callback callback) {
+                    return true;
                 }
             };
         }

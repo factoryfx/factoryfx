@@ -1,17 +1,18 @@
 package io.github.factoryfx.docu.monitoring;
 
-import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
-import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
-import io.github.factoryfx.server.Microservice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
+import io.github.factoryfx.server.Microservice;
 
 public class Main {
 
