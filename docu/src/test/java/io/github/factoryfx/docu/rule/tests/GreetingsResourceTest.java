@@ -25,7 +25,7 @@ public class GreetingsResourceTest {
         HttpServerConnectorFactory<SimulatorRootFactory> factoryBase = (HttpServerConnectorFactory<SimulatorRootFactory>) rule.getFactory(JettyServerFactory.class).connectors.get(0);
         factoryBase.port.set(0);
 
-        simulator = rule.get(JettyServerFactory.class);
+        simulator = (Server)rule.get(JettyServerFactory.class);
     });
 
     @RegisterExtension
