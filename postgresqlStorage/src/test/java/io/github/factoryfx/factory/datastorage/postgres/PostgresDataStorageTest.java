@@ -49,8 +49,7 @@ public class PostgresDataStorageTest {
     public static void stopPostgres() {
         try {
             postgresProcess.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignore) {
         }
     }
 
