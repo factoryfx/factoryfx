@@ -16,6 +16,6 @@ public class HandlerCollectionFactory<R extends FactoryBase<?,R>> extends Simple
     }
 
     public HandlerCollectionFactory(){
-        this.configLifeCycle().setUpdater(handlerCollection -> handlerCollection.setHandlers(handlers.instances().toArray(new Handler[0])));
+        this.configLifeCycle().setUpdater(handlerCollection -> handlerCollection.setHandlers(handlers.instances().stream().map(ContextHandler::new).toList().toArray(new ContextHandler[0])));
     }
 }
