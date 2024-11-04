@@ -120,24 +120,29 @@ subprojects {
         }
     }
 
-    if (project.hasProperty('secretKeyRingFileSourceURL')) {
+    if (project.hasProperty('secretKeyRingFileSourceURL') || project.hasProperty('SECRING_PATH')) {
         signing {
             sign publishing.publications.mavenJava
         }
         //workaround  to get key  file to the plugin
-
-        // task to fetch the GPG key to sign the JAR archives
-        // we put the key to build/secring.gpg where it will be picked up by the uploadArchives task of the nexus plugin
-
         tasks.register('fetchSecretKeyRingFile') {
             doLast {
                 def fileTarget = "build/secring.gpg"
-                def secretKeyRingFileSourceURL = project.getProperty("secretKeyRingFileSourceURL")
-                def secretKeyRingFileSourceURLAuthUsername = project.getProperty("secretKeyRingFileSourceURLAuthUsername")
-                def secretKeyRingFileSourceURLAuthPassword = project.getProperty("secretKeyRingFileSourceURLAuthPassword")
-                project.setProperty("signing.secretKeyRingFile", fileTarget)
                 file(fileTarget).getParentFile().mkdirs()
-                ant.get(src: secretKeyRingFileSourceURL, dest: fileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
+
+                if (project.hasProperty('SECRING_PATH')) {
+                    Files.copy(Paths.get(project.getProperty("SECRING_PATH")), Paths.get(fileTarget))
+                } else {
+                    // task to fetch the GPG key to sign the JAR archives
+                    // we put the key to build/secring.gpg where it will be picked up by the uploadArchives task of the nexus plugin
+                    def secretKeyRingFileSourceURL = project.getProperty("secretKeyRingFileSourceURL")
+                    def secretKeyRingFileSourceURLAuthUsername = project.getProperty("secretKeyRingFileSourceURLAuthUsername")
+                    def secretKeyRingFileSourceURLAuthPassword = project.getProperty("secretKeyRingFileSourceURLAuthPassword")
+                    ant.get(src: secretKeyRingFileSourceURL, dest: fileTarget, username: secretKeyRingFileSourceURLAuthUsername, password: secretKeyRingFileSourceURLAuthPassword)
+                }
+
+                project.setProperty("signing.secretKeyRingFile", fileTarget)
+
             }
         }
         afterEvaluate {
