@@ -3,7 +3,7 @@ package io.github.factoryfx.copperbridge;
 import org.copperengine.core.batcher.impl.BatcherImpl;
 import org.copperengine.core.persistent.PersistentScottyEngine;
 
-class PersistentEngineContainer {
+public class PersistentEngineContainer {
 
     final PersistentScottyEngine persistentProcessingEngine;
     private final BatcherImpl batcher;
