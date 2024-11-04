@@ -127,10 +127,10 @@ subprojects {
 
         //workaround  to get key  file to the plugin
         tasks.register('copySecretKeyRingFile', Copy) {
-            def fileTarget = "build/secring.gpg"
+            def fileTarget = "build/"
             doFirst {
                 file(fileTarget).getParentFile().mkdirs()
-                project.setProperty("signing.secretKeyRingFile", fileTarget)
+                project.setProperty("signing.secretKeyRingFile", fileTarget + "secring.gpg")
             }
             into fileTarget
             from System.getenv("SECRING_PATH")
