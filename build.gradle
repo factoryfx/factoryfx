@@ -129,7 +129,7 @@ subprojects {
         tasks.register('copySecretKeyRingFile', Copy) {
             def fileTarget = "build/"
             doFirst {
-                file(fileTarget).getParentFile().mkdirs()
+                file(fileTarget).mkdirs()
                 project.setProperty("signing.secretKeyRingFile", fileTarget + "secring.gpg")
             }
             into fileTarget
