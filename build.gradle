@@ -138,7 +138,7 @@ subprojects {
 
         afterEvaluate {
             // always fetch the GPG key before signing archives
-            tasks.signMavenJavaPublication.dependsOn fetchSecretKeyRingFile
+            tasks.signMavenJavaPublication.dependsOn copySecretKeyRingFile
         }
     }
 
