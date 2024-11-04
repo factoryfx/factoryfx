@@ -124,22 +124,7 @@ subprojects {
         signing {
             sign publishing.publications.mavenJava
         }
-
-        //workaround  to get key  file to the plugin
-        tasks.register('copySecretKeyRingFile', Copy) {
-            def fileTarget = "build/"
-            doFirst {
-                file(fileTarget).mkdirs()
-                project.setProperty("signing.secretKeyRingFile", fileTarget + "secring.gpg")
-            }
-            into fileTarget
-            from System.getenv("SECRING_PATH")
-        }
-
-        afterEvaluate {
-            // always fetch the GPG key before signing archives
-            tasks.signMavenJavaPublication.dependsOn copySecretKeyRingFile
-        }
+        project.setProperty("signing.secretKeyRingFile", System.getenv("SECRING_PATH"))
     }
 
 
