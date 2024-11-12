@@ -9,11 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -40,7 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -67,7 +70,7 @@ public class UserInterfaceDistributionClientController {
     private VBox rootPane;
 
     private final String initialUrl;
-    private final String  httpAuthenticationUser;
+    private final String httpAuthenticationUser;
     private final String httpAuthenticationPassword;
     private final String exeName;
     private final Supplier<Client> clientBuilder;
@@ -80,7 +83,7 @@ public class UserInterfaceDistributionClientController {
      * @param httpAuthenticationPassword password
      * @param clientBuilder could be used to enable ssl see https://stackoverflow.com/questions/2145431/https-using-jersey-client
      */
-    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String  httpAuthenticationUser, String httpAuthenticationPassword, Supplier<Client> clientBuilder) {
+    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String httpAuthenticationUser, String httpAuthenticationPassword, Supplier<Client> clientBuilder) {
         this.initialUrl = initialUrl;
         this.httpAuthenticationUser = httpAuthenticationUser;
         this.httpAuthenticationPassword = httpAuthenticationPassword;
@@ -88,8 +91,8 @@ public class UserInterfaceDistributionClientController {
         this.clientBuilder = clientBuilder;
     }
 
-    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String  httpAuthenticationUser, String httpAuthenticationPassword) {
-        this(initialUrl,exeName,httpAuthenticationUser,httpAuthenticationPassword,()->{
+    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String httpAuthenticationUser, String httpAuthenticationPassword) {
+        this(initialUrl, exeName, httpAuthenticationUser, httpAuthenticationPassword, () -> {
             JacksonFeature jacksonFeature = new JacksonFeature();
             ClientConfig cc = new ClientConfig().register(jacksonFeature);
             return ClientBuilder.newClient(cc);
@@ -102,7 +105,7 @@ public class UserInterfaceDistributionClientController {
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             e.printStackTrace();
-            Platform.runLater(()->{
+            Platform.runLater(() -> {
                 progress.setProgress(0);
                 Alert alter = new Alert(Alert.AlertType.ERROR);
                 alter.setContentText("Error");
@@ -125,7 +128,7 @@ public class UserInterfaceDistributionClientController {
             serverUrlInput.setText(newValue);
         });
 
-        if (serverUrlList.getItems().isEmpty()){
+        if (serverUrlList.getItems().isEmpty()) {
             serverUrlInput.setText(initialUrl);
         } else {
             serverUrlInput.setText(serverUrlList.getItems().get(0));
@@ -135,8 +138,7 @@ public class UserInterfaceDistributionClientController {
 
     @SuppressWarnings("deprecation")
     private void startGui() {
-        String serverUrl=serverUrlInput.getText();
-
+        String serverUrl = serverUrlInput.getText().endsWith("/") ? serverUrlInput.getText().substring(0, serverUrlInput.getText().length() - 1) : serverUrlInput.getText();
 
         Client client = clientBuilder.get();
 
@@ -146,7 +148,7 @@ public class UserInterfaceDistributionClientController {
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(new ObjectMapper());
         client.register(provider);
-        if (!Strings.isNullOrEmpty(httpAuthenticationUser) && !Strings.isNullOrEmpty(httpAuthenticationPassword) ){
+        if (!Strings.isNullOrEmpty(httpAuthenticationUser) && !Strings.isNullOrEmpty(httpAuthenticationPassword)) {
             client.register(HttpAuthenticationFeature.basic(httpAuthenticationUser, httpAuthenticationPassword));
         }
 
@@ -156,7 +158,7 @@ public class UserInterfaceDistributionClientController {
         String fileHash = "";
         if (guiFolder.exists()) {
             try {
-                fileHash = Files.asByteSource(new File(guiFolder, GUI_ZIP)).hash(Hashing.md5()).toString();
+                fileHash = com.google.common.io.Files.asByteSource(new File(guiFolder, GUI_ZIP)).hash(Hashing.md5()).toString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -166,12 +168,12 @@ public class UserInterfaceDistributionClientController {
         WebTarget webResource = client.target(checkVersionUri);
         Response response = webResource.request(MediaType.TEXT_PLAIN).get();
         if (response.getStatus() != 200) {
-            throw new RuntimeException(""+response.getStatus()+"\nReceived http status code " + response.getStatus() + "\n" +checkVersionUri+"\n" + response.readEntity(String.class));
+            throw new RuntimeException(response.getStatus() + "\nReceived http status code " + response.getStatus() + "\n" + checkVersionUri + "\n" + response.readEntity(String.class));
         }
         boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
         rootPane.setDisable(true);
 
-        new Thread("User Interface Download Thread"){
+        new Thread("User Interface Download Thread") {
             @Override
             public void run() {
                 try {
@@ -183,32 +185,41 @@ public class UserInterfaceDistributionClientController {
                         mkdir(guiFolder);
 
                         try (InputStream in = responseDownload.readEntity(InputStream.class)) {
-                            java.nio.file.Files.copy(in, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            Files.copy(in, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         }
 
                         unzip(newFile.getAbsolutePath(), newFile.getParent());
                     }
-                    String executable = Stream.of("", ".exe", ".bat")
-                                              .map(ending -> new File(guiFolder, exeName + ending))
-                                              .filter(File::exists)
-                                              .findFirst()
-                                              .orElseThrow(() -> new FileNotFoundException(exeName + " not found"))
-                                              .getAbsolutePath();
+
+                    Set<String> executableCandidates = Set.of(exeName, exeName + ".exe", exeName + ".bat");
+                    var exec = new Object() { String s = null;};
+                    Files.walkFileTree(guiFolder.toPath(), new SimpleFileVisitor<>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            if(executableCandidates.contains(file.getFileName().toString())){
+                                exec.s = file.toAbsolutePath().toString();
+                            }
+                            return super.visitFile(file, attrs);
+                        }
+                    });
+                    if(exec.s == null) {
+                        throw new FileNotFoundException(exeName + " not found.");
+                    }
 
                     URL distributionServerURL = new URL(serverUrl);
-                    new ProcessBuilder(executable, distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(), "./")).inheritIO().start();
+                    new ProcessBuilder(exec.s, distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(), "./")).inheritIO().start();
 
                     if (!serverUrlList.getItems().contains(serverUrl)) {
-                        serverUrlList.getItems().add(0,serverUrl);
+                        serverUrlList.getItems().add(0, serverUrl);
                     }
                     writeServerList();
 
-                    Platform.runLater(()->{
+                    Platform.runLater(() -> {
                         progress.setProgress(1);
                         rootPane.setDisable(false);
                     });
                 } catch (IOException e) {
-                    Platform.runLater(()-> rootPane.setDisable(false));
+                    Platform.runLater(() -> rootPane.setDisable(false));
                     throw new RuntimeException(e);
                 }
 
@@ -219,7 +230,7 @@ public class UserInterfaceDistributionClientController {
 
     private void mkdir(File folder) throws IOException {
         if (!folder.exists() && !folder.mkdirs()) {
-            throw new IOException("Could not create directory "+ folder.getAbsolutePath());
+            throw new IOException("Could not create directory " + folder.getAbsolutePath());
         }
     }
 
@@ -244,7 +255,9 @@ public class UserInterfaceDistributionClientController {
         }
         zipIn.close();
     }
+
     private static final int BUFFER_SIZE = 4096;
+
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
         byte[] bytesIn = new byte[BUFFER_SIZE];
@@ -257,7 +270,7 @@ public class UserInterfaceDistributionClientController {
 
     private void readServerList() {
         File file = new File("./serverList.txt");
-        if (file.exists()){
+        if (file.exists()) {
             Path path = Paths.get(file.toURI());
             try {
                 serverUrlList.getItems().addAll(java.nio.file.Files.readAllLines(path, StandardCharsets.UTF_8));
@@ -267,7 +280,6 @@ public class UserInterfaceDistributionClientController {
         }
     }
 
-
     private void writeServerList() {
         Path path = Paths.get(new File("./serverList.txt").toURI());
         try {
@@ -276,6 +288,5 @@ public class UserInterfaceDistributionClientController {
             throw new RuntimeException(e);
         }
     }
-
 
 }
