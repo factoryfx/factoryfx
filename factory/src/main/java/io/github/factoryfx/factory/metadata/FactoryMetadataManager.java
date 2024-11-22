@@ -6,15 +6,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FactoryMetadataManager {
-    private static final Map<Class<?>, FactoryMetadata<?,?>> dataReferences = new ConcurrentHashMap<>();
-
+    private static final Map<Class<?>, FactoryMetadata<?, ?>> dataReferences = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public static <R extends FactoryBase<?,R>,F extends FactoryBase<?,R>> FactoryMetadata<R,F> getMetadata(Class<F> clazz){
-        FactoryMetadata<R,F> result=(FactoryMetadata<R,F>)dataReferences.get(clazz);
-        if (result==null){
-            result=new FactoryMetadata<>(clazz);
-            dataReferences.put(clazz,result);
+    public static <R extends FactoryBase<?, R>, F extends FactoryBase<?, R>> FactoryMetadata<R, F> getMetadata(Class<F> clazz) {
+        FactoryMetadata<R, F> result = (FactoryMetadata<R, F>) dataReferences.get(clazz);
+        if (result == null) {
+            result = new FactoryMetadata<>(clazz);
+            dataReferences.put(clazz, result);
         }
         return result;
     }
@@ -28,6 +27,4 @@ public class FactoryMetadataManager {
         }
         return result;
     }
-
-
 }

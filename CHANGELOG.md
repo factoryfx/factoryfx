@@ -1,8 +1,12 @@
+# 4.0.2
+
+* **DataEditor**
+    * Make display of usages optional
+
 # 4.0.1
 
 * **UserInterfaceDistributionClientController**
     * Make finding of executable more flexible
-
 
 # 4.0.0
 
