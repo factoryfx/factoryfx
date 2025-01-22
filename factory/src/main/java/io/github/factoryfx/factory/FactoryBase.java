@@ -1435,6 +1435,7 @@ public class FactoryBase<L,R extends FactoryBase<?,R>> {
         getFactoryMetadata().visitChildFactoriesAndViewsFlat(this, childUntyped->{
             FactoryBase<?,R> child = (FactoryBase<?,R>)childUntyped;
             if (child!=null){
+                child.addParent(this);
                 if (child.addedTo!= finalisedChildrenFlat){
                     finalisedChildrenFlat.add(child);
                     child.addedTo= finalisedChildrenFlat;

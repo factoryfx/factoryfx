@@ -1,3 +1,11 @@
+# 4.0.3
+
+* **UserAwareRequest**
+    * remove Json serialization hint that breaks serializing/deserializing the object
+
+* **FactoryBase**
+    * Fix specific scenario where finalizeChildren() fails
+
 # 4.0.2
 
 * **DataEditor**
