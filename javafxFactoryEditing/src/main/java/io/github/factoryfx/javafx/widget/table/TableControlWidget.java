@@ -1,21 +1,12 @@
 package io.github.factoryfx.javafx.widget.table;
 
-import java.text.DecimalFormat;
-
-import com.google.common.base.Strings;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.javafx.util.UniformDesign;
-import io.github.factoryfx.javafx.widget.Widget;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -28,26 +19,27 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.Duration;
 
+import com.google.common.base.Strings;
+
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.javafx.util.UniformDesign;
+import io.github.factoryfx.javafx.widget.Widget;
+
 public class TableControlWidget<T> implements Widget {
     private final HBox target = new HBox();
     private final TableView<T> tableView;
-    TextField filterField;
-    private final UniformDesign uniformDesign;
-    private final TableMenu<T> tableMenu;
+    private final TextField filterField;
 
-    public TableControlWidget(TableView<T> tableView, TableMenu<T> tableMenu,  UniformDesign uniformDesign) {
-        this.tableMenu=tableMenu;
+    public TableControlWidget(TableView<T> tableView, TableMenu<T> tableMenu) {
         this.tableView = tableView;
-        this.uniformDesign = uniformDesign;
-
+        this.filterField = new TextField();
         setupTableControls();
         tableMenu.addMenu(tableView);
     }
 
     public TableControlWidget(TableView<T> tableView, UniformDesign uniformDesign) {
-        this(tableView,new TableMenu<>(uniformDesign),uniformDesign);
+        this(tableView, new TableMenu<>(uniformDesign));
     }
-
 
     public void clearFilter() {
         filterField.clear();
@@ -68,43 +60,18 @@ public class TableControlWidget<T> implements Widget {
     }
 
     private void setupTableControls() {
-        filterField = new TextField();//(CustomTextField) TextFields.createClearableTextField();
-
-//        filterField.leftProperty().set(uniformDesign.createIcon(FontAwesome.Glyph.FILTER));
         filterField.disableProperty().bind(tableView.disabledProperty().or(tableView.itemsProperty().isNull()));
         filterField.setMinWidth(50);
 
         HBox.setHgrow(filterField, Priority.ALWAYS);
+
+        FilteredList<T> filteredList = new FilteredList<>(tableView.getItems() == null ? FXCollections.emptyObservableList() : tableView.getItems(), null);
+        tableView.setItems(filteredList);
+
+        filterField.textProperty().addListener(new FilterTextFieldListener<>(filteredList));
+
         final Label count = new Label("");
-        FilterTextFieldListener<T> filterTextFieldListener = new FilterTextFieldListener<>();
-        filterField.textProperty().addListener(filterTextFieldListener);
-
-        InvalidationListener listener = (observableItems) -> {
-            @SuppressWarnings("unchecked") ObservableList<T> list = ((SimpleObjectProperty<ObservableList<T>>) observableItems).get();
-            if (!(list instanceof SortedList) && list != null) {
-                FilteredList<T> filteredData = new FilteredList<>(list, p -> true);
-                SortedList<T> sortedData = new SortedList<>(filteredData);
-                tableView.setItems(sortedData);
-                sortedData.comparatorProperty().bind(tableView.comparatorProperty());
-
-                filterTextFieldListener.setFilteredData(filteredData);
-
-                count.setText("" + filteredData.size());
-                tableView.getItems().addListener((ListChangeListener<T>) c -> {
-                    if (c != null) {
-                        String format = "0".repeat(String.valueOf(filteredData.getSource().size()).length());
-                        DecimalFormat decimalFormat = new DecimalFormat(format);
-                        count.setText(decimalFormat.format(filteredData.size()));
-                    }
-                });
-            }
-            if (list == null) {
-                count.setText("0");
-            }
-        };
-        tableView.itemsProperty().addListener(listener);
-        listener.invalidated(tableView.itemsProperty());
-
+        filteredList.addListener((ListChangeListener.Change<? extends T> observable) -> count.setText(String.valueOf(observable.getList().size())));
         target.getChildren().add(filterField);
         target.getChildren().add(new Separator(Orientation.VERTICAL));
         target.getChildren().add(count);
@@ -112,7 +79,6 @@ public class TableControlWidget<T> implements Widget {
         target.setSpacing(3);
         target.setAlignment(Pos.CENTER_LEFT);
         target.setPadding(new Insets(2));
-
 
         int fadeTransitionDuration = 350;
         double minFadeValue = 0.20;
@@ -146,39 +112,25 @@ public class TableControlWidget<T> implements Widget {
 
     }
 
-    private static class FilterTextFieldListener<T> implements ChangeListener<String> {
-        FilteredList<T> filteredData;
-
-        public FilterTextFieldListener() {
-        }
-
+    private record FilterTextFieldListener<T>(FilteredList<T> filteredList) implements ChangeListener<String> {
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            filteredData.setPredicate(data -> {
+            filteredList.setPredicate(data -> {
                 // If filter text is empty, display all.
-                if (newValue==null || newValue.isEmpty()) {
+                if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
-                if (data instanceof FactoryBase<?,?>){
-                    return ((FactoryBase<?,?>)data).internal().matchSearchText(newValue);
+                if (data instanceof FactoryBase<?, ?> fb) {
+                    return fb.internal().matchSearchText(newValue);
                 }
-                if (data instanceof String){
-                    return ((String) data).toLowerCase().contains(newValue.toLowerCase());
+                if (data instanceof String s) {
+                    return s.toLowerCase().contains(newValue.toLowerCase());
                 }
-                if (data instanceof SearchTextMatchable) {
-                    return ((SearchTextMatchable)data).matchSearchText(newValue);
+                if (data instanceof SearchTextMatchable stm) {
+                    return stm.matchSearchText(newValue);
                 }
-
                 return true;
             });
-        }
-
-        public FilteredList<T> getFilteredData() {
-            return filteredData;
-        }
-
-        public void setFilteredData(FilteredList<T> filteredData) {
-            this.filteredData = filteredData;
         }
     }
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
+import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
@@ -151,6 +152,45 @@ public class FileSystemDataStorageTest {
 
         Assertions.assertEquals("123",fileSystemFactoryStorage.getInitialData().stringAttribute.get());
     }
+    @Test
+    public void test_patchAll2_value_to_null()  {
+        ExampleDataA initialExampleDataA = createInitialExampleDataA();
+        initialExampleDataA.stringAttribute.set("123");
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
+        String id=fileSystemFactoryStorage.getCurrentData().id;
+        fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
 
+        fileSystemFactoryStorage.patchAll((root, metadata, objectMapper) -> {
+            DataJsonNode rootNode = new DataJsonNode(root);
+            for (DataJsonNode dataJsonNode : rootNode.collectChildrenFromRoot()) {
+                if (dataJsonNode.getDataClassName().equals(ExampleDataA.class.getName())) {
+                    dataJsonNode.setAttributeValue("stringAttribute",null);
+                }
+            }
+        });
+
+        Assertions.assertEquals(null,fileSystemFactoryStorage.getHistoryData(id).stringAttribute.get());
+    }
+
+    @Test
+    public void test_patchAll2_list_to_null()  {
+        ExampleDataA initialExampleDataA = createInitialExampleDataA();
+        initialExampleDataA.referenceListAttribute.add(new ExampleDataB());
+        FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
+        String id=fileSystemFactoryStorage.getCurrentData().id;
+        fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
+
+        fileSystemFactoryStorage.patchAll((root, metadata, objectMapper) -> {
+            DataJsonNode rootNode = new DataJsonNode(root);
+            for (DataJsonNode dataJsonNode : rootNode.collectChildrenFromRoot()) {
+                if (dataJsonNode.getDataClassName().equals(ExampleDataA.class.getName())) {
+                    //                    ArrayNode arrayNode = ObjectMapperBuilder.buildNewObjectMapper().createArrayNode();
+                    dataJsonNode.setAttributeValue("referenceListAttribute", null);
+                }
+            }
+        });
+
+        Assertions.assertEquals(0,fileSystemFactoryStorage.getHistoryData(id).referenceListAttribute.get().size());
+    }
 }
 

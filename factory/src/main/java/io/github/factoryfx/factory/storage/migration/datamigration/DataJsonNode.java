@@ -70,12 +70,18 @@ public class DataJsonNode {
 
     public void setAttributeValue(String attribute, JsonNode jsonNode) {
         try {
-            if (jsonNode==null) {
-                ((ObjectNode)this.jsonNode.get(attribute)).remove("v");
+            if (jsonNode == null) {
+                if (this.jsonNode.get(attribute) instanceof ObjectNode) {
+                    ((ObjectNode) this.jsonNode.get(attribute)).remove("v");
+                }
             }
-            ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-            this.jsonNode.set(attribute, objectNode);
-            objectNode.set("v",jsonNode);
+            if (this.jsonNode.get(attribute) instanceof ObjectNode) {
+                ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+                this.jsonNode.set(attribute, objectNode);
+                objectNode.set("v", jsonNode);
+            } else if (this.jsonNode.get(attribute) instanceof ArrayNode) {
+                this.jsonNode.set(attribute, jsonNode);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

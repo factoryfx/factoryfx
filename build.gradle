@@ -3,7 +3,7 @@ import java.nio.charset.StandardCharsets
 buildscript {
     repositories {
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url = "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
@@ -17,7 +17,7 @@ plugins {
 ext.platform = "win"
 
 wrapper {
-    gradleVersion = '8.10.2'
+    gradleVersion = '8.12.1'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -74,7 +74,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '4.0.3'
+    version = '4.0.4'
 
     publishing {
 
@@ -85,7 +85,7 @@ subprojects {
                 artifact javadocJar
                 pom {
                     name = 'factoryfx'
-                    packaging 'jar'
+                    packaging = 'jar'
                     description = 'factoryfx dependency injection framework'
                     url = 'http://factoryfx.github.io/factoryfx'
                     licenses {
@@ -111,7 +111,7 @@ subprojects {
 
         repositories {
             maven {
-                url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword

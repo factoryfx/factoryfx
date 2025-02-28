@@ -1,3 +1,11 @@
+# 4.0.4
+
+* **TableControlWidget**
+    * fix NPE when list for table is already sortedList, simplify code
+
+* **DataJsonNode**
+    * fix ClassCastException for renamed ListAttributes
+
 # 4.0.3
 
 * **UserAwareRequest**
