@@ -1,3 +1,8 @@
+# 4.0.5
+
+* **MicroserviceRestClient**
+    * fix user not showing up in configuration history
+ 
 # 4.0.4
 
 * **TableControlWidget**

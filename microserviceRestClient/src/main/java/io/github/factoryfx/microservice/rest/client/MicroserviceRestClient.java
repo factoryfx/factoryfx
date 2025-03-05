@@ -24,12 +24,11 @@ import io.github.factoryfx.microservice.common.VoidUserAwareRequest;
 import io.github.factoryfx.server.Microservice;
 import jakarta.ws.rs.InternalServerErrorException;
 
-
 /**
- *
- * @param <R> Root factory
+ * @param <R>
+ *     Root factory
  */
-public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
+public class MicroserviceRestClient<R extends FactoryBase<?, R>> {
 
     private final MicroserviceResourceApi<R> microserviceResourceApi;
     private final String user;
@@ -38,18 +37,18 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
 
     public MicroserviceRestClient(MicroserviceResourceApi<R> microserviceResourceApi, String user, String passwordHash, FactoryTreeBuilderBasedAttributeSetup<R> factoryTreeBuilderBasedAttributeSetup) {
         this.microserviceResourceApi = microserviceResourceApi;
-        this.user=user;
-        this.passwordHash=passwordHash;
+        this.user = user;
+        this.passwordHash = passwordHash;
         this.factoryTreeBuilderBasedAttributeSetup = factoryTreeBuilderBasedAttributeSetup;
     }
 
     public FactoryUpdateLog<R> updateCurrentFactory(DataUpdate<R> update, String comment) {
         try {
             DataUpdate<R> updateMetadata = new DataUpdate<>(
-                    update.root,
-                    update.user,
-                    comment,
-                    update.baseVersionId
+                update.root,
+                this.user,
+                comment,
+                update.baseVersionId
             );
 
             return microserviceResourceApi.updateCurrentFactory(new UserAwareRequest<>(user, passwordHash, updateMetadata));
@@ -60,21 +59,20 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
     }
 
     public MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> update) {
-        return executeWithServerExceptionReporting(()-> microserviceResourceApi.simulateUpdateCurrentFactory(new UserAwareRequest<>(user,passwordHash,update)));
+        return executeWithServerExceptionReporting(() -> microserviceResourceApi.simulateUpdateCurrentFactory(new UserAwareRequest<>(user, passwordHash, update)));
     }
 
     /**
-     * @see Microservice#prepareNewFactory()
-     *
      * @return new factory for editing, server assign new id for the update
+     * @see Microservice#prepareNewFactory()
      */
     public DataUpdate<R> prepareNewFactory() {
-        DataUpdate<R> update = executeWithServerExceptionReporting(()-> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user,passwordHash)));
+        DataUpdate<R> update = executeWithServerExceptionReporting(() -> microserviceResourceApi.prepareNewFactory(new VoidUserAwareRequest(user, passwordHash)));
         update.root.internal().finalise();
-        if (factoryTreeBuilderBasedAttributeSetup!=null){
+        if (factoryTreeBuilderBasedAttributeSetup != null) {
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(update.root);
         }
-        if (factoryTreeBuilderBasedAttributeSetup!=null){
+        if (factoryTreeBuilderBasedAttributeSetup != null) {
             factoryTreeBuilderBasedAttributeSetup.applyToRootFactoryDeep(update.root);
         }
 
@@ -82,50 +80,48 @@ public class MicroserviceRestClient<R extends FactoryBase<?,R>> {
     }
 
     public MergeDiffInfo<R> getDiff(StoredDataMetadata historyEntry) {
-        return executeWithServerExceptionReporting(()-> microserviceResourceApi.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry)));
+        return executeWithServerExceptionReporting(() -> microserviceResourceApi.getDiff(new UserAwareRequest<>(user, passwordHash, historyEntry)));
     }
 
-
     public R getHistoryFactory(String id) {
-        R historyFactory = executeWithServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
+        R historyFactory = executeWithServerExceptionReporting(() -> microserviceResourceApi.getHistoryFactory(new UserAwareRequest<>(user, passwordHash, id))).value;
         historyFactory.internal().finalise();
         return historyFactory;
     }
 
     public Collection<StoredDataMetadata> getHistoryFactoryList() {
-        return executeWithServerExceptionReporting(()-> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
+        return executeWithServerExceptionReporting(() -> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
     }
 
     public CheckUserResponse checkUser() {
-        return executeWithServerExceptionReporting(()-> microserviceResourceApi.checkUser(new VoidUserAwareRequest(user,passwordHash)));
+        return executeWithServerExceptionReporting(() -> microserviceResourceApi.checkUser(new VoidUserAwareRequest(user, passwordHash)));
     }
 
     public Locale getLocale() {
-        UserLocaleResponse response = executeWithServerExceptionReporting(()-> microserviceResourceApi.getUserLocale(new VoidUserAwareRequest(user,passwordHash)));
+        UserLocaleResponse response = executeWithServerExceptionReporting(() -> microserviceResourceApi.getUserLocale(new VoidUserAwareRequest(user, passwordHash)));
         return response.locale;
     }
 
     public FactoryUpdateLog<R> revert(StoredDataMetadata historyFactory) {
-        return executeWithServerExceptionReporting(()-> microserviceResourceApi.revert(new UserAwareRequest<>(user,passwordHash,historyFactory)));
+        return executeWithServerExceptionReporting(() -> microserviceResourceApi.revert(new UserAwareRequest<>(user, passwordHash, historyFactory)));
     }
 
-    /**execute a jersey proxy client action and get server error  */
-    private <T> T executeWithServerExceptionReporting(Supplier<T> action){
+    /** execute a jersey proxy client action and get server error */
+    private <T> T executeWithServerExceptionReporting(Supplier<T> action) {
         try {
             return action.get();
         } catch (InternalServerErrorException e) {
 
-            String respString= null;
-            if (e.getResponse().getEntity() instanceof ByteArrayInputStream ){
+            String respString = null;
+            if (e.getResponse().getEntity() instanceof ByteArrayInputStream) {
                 try {
-                    respString = CharStreams.toString(new InputStreamReader(((ByteArrayInputStream)e.getResponse().getEntity()), Charsets.UTF_8));
+                    respString = CharStreams.toString(new InputStreamReader(((ByteArrayInputStream) e.getResponse().getEntity()), Charsets.UTF_8));
                 } catch (IOException e1) {
                     throw new RuntimeException(e1);
                 }
             }
-            throw new RuntimeException("Server exception:\n----------------"+respString+"\n----------------",e);
+            throw new RuntimeException("Server exception:\n----------------" + respString + "\n----------------", e);
         }
     }
-
 
 }
