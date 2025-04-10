@@ -266,8 +266,8 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
                 if (!checkTablesExist.next()) {
                     createTables(connection);
                     connection.commit();
-                    tablesAreAvailable = true;
                 }
+                tablesAreAvailable = true;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

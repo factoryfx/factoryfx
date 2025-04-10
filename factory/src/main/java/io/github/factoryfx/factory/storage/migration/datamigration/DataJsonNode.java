@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 import java.util.*;
@@ -247,7 +248,8 @@ public class DataJsonNode {
     public void applyRemovedClasses(DataStorageMetadataDictionary dataStorageMetadataDictionary) {
         this.visitAttributes((jsonNode, jsonNodeConsumer) -> {
             if (isData(jsonNode)) {
-                if (dataStorageMetadataDictionary.getDataStorageMetadata(new DataJsonNode((ObjectNode) jsonNode).getDataClassName()).isRemovedClass()){
+                DataStorageMetadata dataStorageMetadata = dataStorageMetadataDictionary.getDataStorageMetadata(new DataJsonNode((ObjectNode) jsonNode).getDataClassName());
+                if (dataStorageMetadata != null && dataStorageMetadata.isRemovedClass()) {
                     jsonNodeConsumer.accept(null);
                 }
             }

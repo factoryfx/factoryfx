@@ -1,3 +1,8 @@
+# 4.0.6
+
+* **DataJsonNode**
+    * fix NPE in certain scenarios
+
 # 4.0.5
 
 * **MicroserviceRestClient**

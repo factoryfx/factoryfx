@@ -3,12 +3,9 @@ package io.github.factoryfx.factory.metadata;
 import io.github.factoryfx.factory.*;
 import io.github.factoryfx.factory.attribute.types.EnumAttribute;
 import io.github.factoryfx.factory.attribute.types.EnumListAttribute;
-import io.github.factoryfx.factory.fastfactory.FastFactoryUtility;
 import io.github.factoryfx.factory.attribute.dependency.*;
 import io.github.factoryfx.factory.attribute.*;
 import io.github.factoryfx.factory.fastfactory.FastFactoryUtilityInterface;
-import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
-import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
@@ -293,8 +290,8 @@ public class FactoryMetadata<R extends FactoryBase<?,R>,F extends FactoryBase<?,
 
     public F newCopyInstance(F data) {
         F result;
-        if (newCopyInstanceSupplier !=null && data!=null){
-            result= newCopyInstanceSupplier.apply(data);
+        if (newCopyInstanceSupplier != null && data != null) {
+            result = newCopyInstanceSupplier.apply(data);
         } else {
             if (constructor==null){
                 try {

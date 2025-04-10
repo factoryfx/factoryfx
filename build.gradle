@@ -59,8 +59,9 @@ subprojects {
     javadoc {
         failOnError = false
         doFirst {
-            options.modulePath new ArrayList<>(classpath.files)
+            options.modulePath = new ArrayList<>(classpath.files)
             options.encoding = StandardCharsets.UTF_8
+            ((CoreJavadocOptions) options).addStringOption('Xdoclint:none', '-quiet')
         }
     }
 
@@ -74,7 +75,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '4.0.5'
+    version = '4.0.6'
 
     publishing {
 

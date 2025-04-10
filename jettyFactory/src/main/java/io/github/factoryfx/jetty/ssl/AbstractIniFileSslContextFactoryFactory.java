@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractIniFileSslContextFactoryFactory<L extends SslContextFactory, R extends FactoryBase<?, R>> extends SimpleFactoryBase<L, R> {
 
-    public StringAttribute iniFile = new StringAttribute().en("INI file path").de("INI file path");
-    public StringAttribute section = new StringAttribute().en("Section").de("Section");
+    public final StringAttribute iniFile = new StringAttribute().en("INI file path").de("INI file path");
+    public final StringAttribute section = new StringAttribute().en("Section").de("Section");
 
     abstract AbstractSslContextFactoryFactory<L, R> createFactoryFactory();
 
