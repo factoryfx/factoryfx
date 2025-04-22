@@ -138,19 +138,16 @@ public class FactoryListBaseAttribute<L, F extends FactoryBase<? extends L, ?>, 
     public void internal_deleteFactory(F factoryToDelete) {
         remove(factoryToDelete);
         if (internal_isDestroyOnRemove() && factoryToDelete.internal().isCatalogItem() && this.root != null) {
-            for (FactoryBase<?, ?> factory : this.root.internal().collectChildrenDeep()) {
-                factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
-                    if (attribute instanceof FactoryBaseAttribute) {
-                        if (((FactoryBaseAttribute) attribute).get() == factoryToDelete) {
-                            attribute.set(null);
-                        }
-                    }
-                    if (attribute instanceof FactoryListBaseAttribute) {
-                        ((FactoryListBaseAttribute) attribute).remove(factoryToDelete);
-                    }
-                });
-            }
+            internal_deleteFactoryDeep(factoryToDelete);
         }
+        if (additionalDeleteAction != null) {
+            additionalDeleteAction.accept(factoryToDelete, root);
+        }
+    }
+
+    public void internal_deleteFactoryDeep(F factoryToDelete) {
+        remove(factoryToDelete);
+        super.internal_deleteFactoryDeep(factoryToDelete);
         if (additionalDeleteAction != null) {
             additionalDeleteAction.accept(factoryToDelete, root);
         }

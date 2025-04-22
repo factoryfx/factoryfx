@@ -1,3 +1,8 @@
+# 4.0.7
+
+* **FactorybaseAttribute** and **FactorybaseListAttribute**
+    * add convenience method 'internal_deleteFactoryDeep'
+
 # 4.0.6
 
 * **DataJsonNode**

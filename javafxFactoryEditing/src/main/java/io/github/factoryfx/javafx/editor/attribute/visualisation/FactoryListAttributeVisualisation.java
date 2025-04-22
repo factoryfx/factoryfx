@@ -6,7 +6,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.javafx.editor.attribute.ValidationDecoration;
 import io.github.factoryfx.javafx.editor.attribute.ListAttributeVisualisation;
-import io.github.factoryfx.javafx.widget.factory.listedit.FactoryListAttributeEditWidget;
+import io.github.factoryfx.javafx.widget.Widget;
 import io.github.factoryfx.javafx.widget.table.TableControlWidget;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -26,11 +26,11 @@ public class FactoryListAttributeVisualisation<T extends FactoryBase<?,?>, A ext
 
     private final UniformDesign uniformDesign;
     private final Consumer<FactoryBase<?,?>> navigateToData;
-    private final FactoryListAttributeEditWidget<?,?,FactoryBase<?,?>> dataListEditWidget;
+    private final Widget dataListEditWidget;
     private final TableView<T> tableView;
     private DoubleBinding heightBinding;
 
-    public FactoryListAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData, TableView<T> tableView, FactoryListAttributeEditWidget<?,?,FactoryBase<?,?>> dataListEditWidget) {
+    public FactoryListAttributeVisualisation(A attribute, ValidationDecoration validationDecoration, UniformDesign uniformDesign, Consumer<FactoryBase<?,?>> navigateToData, TableView<T> tableView, Widget dataListEditWidget) {
         super(attribute,validationDecoration);
         this.uniformDesign = uniformDesign;
         this.navigateToData = navigateToData;
@@ -65,7 +65,7 @@ public class FactoryListAttributeVisualisation<T extends FactoryBase<?,?>, A ext
         HBox.setHgrow(tableControlWidgetContent, Priority.ALWAYS);
         HBox.setMargin(tableControlWidgetContent, new Insets(0,1,0,0));
 
-        HBox buttons = dataListEditWidget.createContent();
+        HBox buttons =(HBox) dataListEditWidget.createContent();
         buttons.getChildren().add(tableControlWidgetContent);
         buttons.disableProperty().bind(readOnly);
 

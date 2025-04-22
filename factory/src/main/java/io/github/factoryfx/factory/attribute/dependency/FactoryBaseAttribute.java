@@ -139,11 +139,26 @@ public class FactoryBaseAttribute<L, F extends FactoryBase<? extends L, ?>, A ex
 
     public void internal_deleteFactory() {
         F removedFactory = get();
+        if (removedFactory != null && internal_isDestroyOnRemove() && removedFactory.internal().isCatalogItem() && this.root != null) {
+            internal_deleteFactoryDeep(removedFactory);
+        }
         set(null);
         if (additionalDeleteAction != null) {
             additionalDeleteAction.accept(removedFactory, root);
         }
     }
+
+    public void internal_deleteFactoryDeep() {
+        F removedFactory = get();
+        if(removedFactory != null) {
+            internal_deleteFactoryDeep(removedFactory);
+        }
+        set(null);
+        if (additionalDeleteAction != null) {
+            additionalDeleteAction.accept(removedFactory, root);
+        }
+    }
+
 
     public L instance() {
         if (get() == null) {

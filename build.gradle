@@ -75,7 +75,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '4.0.6'
+    version = '4.0.7_SNAPSHOT'
 
     publishing {
 

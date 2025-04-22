@@ -200,6 +200,21 @@ public abstract class ReferenceBaseAttribute<F extends FactoryBase<?,?>, U, A ex
         return FactoryMetadataManager.getMetadata(parent.getClass()).getAttributeMetadata(parent,this);
     }
 
+    protected void internal_deleteFactoryDeep(F removedFactory) {
+        for (FactoryBase<?, ?> factory : this.root.internal().collectChildrenDeep()) {
+            factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
+                if (attribute instanceof FactoryBaseAttribute<?,?,?> fba) {
+                    if (fba.get() == removedFactory) {
+                        attribute.set(null);
+                    }
+                }
+                if (attribute instanceof FactoryListBaseAttribute<?,?,?> fblba) {
+                    fblba.remove(removedFactory);
+                }
+            });
+        }
+    }
+
     protected boolean isFinalised(){
         return root!=null;
     }
