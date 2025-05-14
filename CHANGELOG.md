@@ -1,3 +1,8 @@
+# 4.0.8
+
+* **AttributeVisualisationMappingBuilder**
+    * Fix StringListAttribute having ChoiceAttribute visualisation
+
 # 4.0.7
 
 * **FactorybaseAttribute** and **FactorybaseListAttribute**

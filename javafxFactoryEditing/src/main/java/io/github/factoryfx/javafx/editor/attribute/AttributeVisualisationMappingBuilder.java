@@ -200,11 +200,6 @@ public class AttributeVisualisationMappingBuilder {
                                                                              (attribute) -> new LongAttributeVisualisation(attribute, new ValidationDecoration(uniformDesign)),
                                                                              LongAttribute::new));
         result.add(uniformDesign -> new ValueAttributeVisualisationBuilder<>(uniformDesign,
-                                                                             ChoiceAttribute.class,
-                                                                             String.class,
-                                                                             (ChoiceAttribute attribute) -> new ChoiceAttributeVisualisation(attribute, uniformDesign),
-                                                                             ChoiceAttribute::new));
-        result.add(uniformDesign -> new ValueAttributeVisualisationBuilder<>(uniformDesign,
                                                                              DurationAttribute.class,
                                                                              Duration.class,
                                                                              (attribute) -> new DurationAttributeVisualisation(attribute, new ValidationDecoration(uniformDesign)),
@@ -237,6 +232,10 @@ public class AttributeVisualisationMappingBuilder {
                                                                              URI.class,
                                                                              (attribute) -> new URIAttributeVisualisation(attribute, new ValidationDecoration(uniformDesign)),
                                                                              URIAttribute::new));
+
+        result.add(uniformDesign -> new SimpleAttributeVisualisationBuilder<>(attribute -> attribute instanceof ChoiceAttribute,
+                                                                              (attribute, attributeMetadata, navigateToData, previousData) -> new ChoiceAttributeVisualisation((ChoiceAttribute) attribute,
+                                                                                                                                                                               uniformDesign)));
 
         result.add(uniformDesign -> new SimpleAttributeVisualisationBuilder<>(
             (a) -> a instanceof FactoryViewAttribute,
