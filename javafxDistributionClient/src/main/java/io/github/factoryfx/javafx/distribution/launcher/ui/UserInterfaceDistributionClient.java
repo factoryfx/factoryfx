@@ -93,6 +93,10 @@ public class UserInterfaceDistributionClient {
                                             serverUrlList.getItems().add(0, serverUrlInput.getText());
                                         }
                                         writeServerList();
+                                    },
+                                    () -> {
+                                        progress.setProgress(0);
+                                        rootPane.setDisable(false);
                                     });
             } catch (Exception e) {
                 Platform.runLater(() -> {

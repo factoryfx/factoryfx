@@ -71,7 +71,7 @@ public class UserInterfaceDistributionClientController {
 
 
     @SuppressWarnings("deprecated")
-    public void startGui(String url, Runnable onSuccess) {
+    public void startGui(String url, Runnable onSuccess, Runnable onError) {
         String serverUrl = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
 
         Client client = clientBuilder.get();
@@ -143,6 +143,7 @@ public class UserInterfaceDistributionClientController {
                     new ProcessBuilder(exec.s, distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(), "./")).inheritIO().start();
                     Platform.runLater(onSuccess);
                 } catch (IOException e) {
+                    Platform.runLater(onError);
                     throw new RuntimeException(e);
                 }
             }
