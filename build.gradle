@@ -17,7 +17,7 @@ plugins {
 ext.platform = "win"
 
 wrapper {
-    gradleVersion = '8.12.1'
+    gradleVersion = '8.14.2'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -75,7 +75,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '4.0.8'
+    version = '4.0.9'
 
     publishing {
 
@@ -179,9 +179,8 @@ subprojects {
 
     dependencies {
         api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
-        api(group: 'com.google.guava', name: 'guava', version: '33.3.1-jre') {
-            exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
-        }
+        api(group: 'com.google.guava', name: 'guava', version: '33.4.8-jre')
+
         testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.14.2'
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.11.3'
     }

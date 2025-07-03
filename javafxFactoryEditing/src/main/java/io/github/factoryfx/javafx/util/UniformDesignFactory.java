@@ -22,7 +22,7 @@ public class UniformDesignFactory extends SimpleFactoryBase<UniformDesign,RichCl
     public final BooleanAttribute askBeforeDelete = new BooleanAttribute().en("askBeforeDelete").defaultValue(false);
 
     @Override
-    protected UniformDesign createImpl() {
+    public UniformDesign createImpl() {
         return new UniformDesign(
                 locale.get(),
                 dangerColor.get(),
