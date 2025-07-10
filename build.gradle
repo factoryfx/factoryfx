@@ -30,6 +30,7 @@ nmcpAggregation {
         password = System.getenv('OSSRH_PASSWORD') ?: ossrhPassword
         publishingType = "AUTOMATIC"
     }
+    publishAllProjectsProbablyBreakingProjectIsolation()
 }
 
 subprojects {
