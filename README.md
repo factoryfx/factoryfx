@@ -122,6 +122,8 @@ Configuration via web application
 Factory with generic RootFactory
 * [Encrypted attributes](docu/src/main/java/io/github/factoryfx/docu/encryptedattributes)  
 Hiding information from the client like passwords
+* [Publishing to Maven Central](.github/README.md)  
+Publishing artifacts to Maven Central directly from GitHub Actions
 
 ## Example
 

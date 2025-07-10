@@ -11,9 +11,11 @@ buildscript {
     }
 }
 plugins {
-    id("com.github.spotbugs") version "6.0.26"
+    id "com.github.spotbugs" version "6.0.26"
     id "com.github.ben-manes.versions" version "0.51.0"
+    id "com.gradleup.nmcp.aggregation" version "1.0.1"
 }
+
 ext.platform = "win"
 
 wrapper {
@@ -21,21 +23,18 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-apply plugin: 'io.codearte.nexus-staging'
-nexusStaging {//https://github.com/Codearte/gradle-nexus-staging-plugin
-    username = ossrhUsername
-    password = ossrhPassword
-    packageGroup = 'io.github.factoryfx'
-    stagingProfileId = '78e9b0494c64ba'
-//    stagingRepositoryId = ??? requires external mechanism
-    numberOfRetries = 50
+apply plugin: 'maven-publish'
+nmcpAggregation {
+    centralPortal {
+        username = System.getenv('OSSRH_USERNAME') ?: ossrhUsername
+        password = System.getenv('OSSRH_PASSWORD') ?: ossrhPassword
+        publishingType = "AUTOMATIC"
+    }
 }
 
 subprojects {
     apply plugin: "com.github.spotbugs"
     apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
 
     java {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -77,101 +76,50 @@ subprojects {
     group = 'io.github.factoryfx'
     version = '4.0.9'
 
-    publishing {
+    if (!project.hasProperty("dontPublish")) {
+        apply plugin: 'maven-publish'
+        apply plugin: 'signing'
+        publishing {
 
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-                artifact sourcesJar
-                artifact javadocJar
-                pom {
-                    name = 'factoryfx'
-                    packaging = 'jar'
-                    description = 'factoryfx dependency injection framework'
-                    url = 'http://factoryfx.github.io/factoryfx'
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            publications {
+                mavenJava(MavenPublication) {
+                    from components.java
+                    artifact sourcesJar
+                    artifact javadocJar
+                    pom {
+                        name = 'factoryfx'
+                        packaging = 'jar'
+                        description = 'factoryfx dependency injection framework'
+                        url = 'http://factoryfx.github.io/factoryfx'
+                        licenses {
+                            license {
+                                name = 'The Apache License, Version 2.0'
+                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            }
                         }
-                    }
-                    developers {
-                        developer {
-                            id = 'SCOOP Software'
-                            name = 'SCOOP Software'
+                        developers {
+                            developer {
+                                id = 'SCOOP Software'
+                                name = 'SCOOP Software'
+                            }
                         }
-                    }
-                    scm {
-                        connection = 'scm:git@github.com:factoryfx/factoryfx.git'
-                        developerConnection = 'scm:git@github.com:factoryfx/factoryfx.git'
-                        url = 'scm:git@github.com:factoryfx/factoryfx.git'
+                        scm {
+                            connection = 'scm:git@github.com:factoryfx/factoryfx.git'
+                            developerConnection = 'scm:git@github.com:factoryfx/factoryfx.git'
+                            url = 'scm:git@github.com:factoryfx/factoryfx.git'
+                        }
                     }
                 }
             }
         }
 
-        repositories {
-            maven {
-                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-                credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
-                }
+        if (System.getenv('SECRING_PATH') != null) {
+            signing {
+                sign publishing.publications.mavenJava
             }
+            project.setProperty("signing.secretKeyRingFile", System.getenv("SECRING_PATH"))
         }
     }
-
-    if (System.getenv('SECRING_PATH') != null) {
-        signing {
-            sign publishing.publications.mavenJava
-        }
-        project.setProperty("signing.secretKeyRingFile", System.getenv("SECRING_PATH"))
-    }
-
-
-//    uploadArchives {
-//        repositories {
-//            mavenDeployer {
-//                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-//
-//                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//                    authentication(userName: ossrhUsername, password: ossrhPassword)
-//                }
-//
-//                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-//                    authentication(userName: ossrhUsername, password: ossrhPassword)
-//                }
-//
-//                pom.project {
-//                    name 'factoryfx'
-//                    packaging 'jar'
-//                    // optionally artifactId can be defined here
-//                    description 'factoryfx dependency injection framework'
-//                    url 'http://factoryfx.github.io/factoryfx'
-//
-//                    scm {
-//                        connection 'scm:git@github.com:factoryfx/factoryfx.git'
-//                        developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
-//                        url 'scm:git@github.com:factoryfx/factoryfx.git'
-//                    }
-//
-//                    licenses {
-//                        license {
-//                            name 'The Apache License, Version 2.0'
-//                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//                        }
-//                    }
-//                    developers {
-//                        developer {
-//                            id 'SCOOP Software'
-//                            name 'SCOOP Software'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
 
     repositories {
         mavenCentral()
@@ -246,7 +194,7 @@ project(':microserviceRestCommon') {
 }
 
 project(':microserviceRestIntegrationTest') {
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+    ext.dontPublish = true
     dependencies {
         implementation project(":microserviceRestResource")
         implementation project(":microserviceRestClient")
@@ -318,8 +266,7 @@ project(':jettyFactory') {
 
 
 project(':example') {
-
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+    ext.dontPublish = true
     dependencies {
         implementation project(":javafxFactoryEditing")
         implementation project(":jettyFactory")
@@ -394,14 +341,14 @@ project(':javafxDistributionClient') {
 }
 
 project(':testfactories') {
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+    ext.dontPublish = true
     dependencies {
         implementation project(":factory")
     }
 }
 
 project(':docu') {
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+    ext.dontPublish = true
     dependencies {
         implementation project(":factory")
         implementation project(":jettyFactory")
@@ -500,8 +447,7 @@ project(':initializr') {
 }
 
 project(':benchmark') {
-
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+    ext.dontPublish = true
     dependencies {
         implementation project(":factory")
         implementation project(":testfactories")
@@ -518,5 +464,3 @@ project(':domFactoryEditing') {
         testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
     }
 }
-    
-

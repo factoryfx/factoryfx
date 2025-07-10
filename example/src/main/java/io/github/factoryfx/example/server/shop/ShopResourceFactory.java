@@ -23,7 +23,7 @@ public class ShopResourceFactory extends ServerBaseFactory<ShopResource> {
 
     public ShopResourceFactory(){
         this.config().setDisplayTextProvider(()->"Shop Resource");
-        this.products.newValuesProvider(root->
+        this.products.newValuesProvider((root, a)->
                 root.internal().collectChildrenDeep().stream().
                     filter(f->f.getClass()==ProductFactory.class).map(f->(ProductFactory)f).collect(Collectors.toList())
         );
