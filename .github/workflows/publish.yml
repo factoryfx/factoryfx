@@ -30,11 +30,6 @@ jobs:
         run: |
           sed -i "s/version = '.*'/version = '${{ github.event.inputs.version }}'/g" build.gradle
 
-      - name: Get signing key
-        env:
-          SECRING: ${{ secrets.SECRING }}
-        run: echo ${SECRING} | base64 -di > ./secring.gpg
-
       - name: Build with Gradle
         run: ./gradlew build
 
@@ -42,7 +37,8 @@ jobs:
         env:
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SECRING_PATH: './secring.gpg'
+          SECRING_PASS: ${{ secrets.SECRING_PASS }}
+          SECRING: ${{ secrets.SECRING }}
           CI: true
         run: |
           ./gradlew publishAggregationToCentralPortal

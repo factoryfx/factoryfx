@@ -116,9 +116,11 @@ subprojects {
 
         if (System.getenv('SECRING_PATH') != null) {
             signing {
+                def signingKey = System.getenv("SECRING")
+                def signingPassword = System.getenv("SECRING_PASS")
+                useInMemoryPgpKeys(signingKey, signingPassword)
                 sign publishing.publications.mavenJava
             }
-            project.setProperty("signing.secretKeyRingFile", System.getenv("SECRING_PATH"))
         }
     }
 
