@@ -26,8 +26,8 @@ wrapper {
 apply plugin: 'maven-publish'
 nmcpAggregation {
     centralPortal {
-        username = System.getenv('OSSRH_USERNAME') ?: ossrhUsername
-        password = System.getenv('OSSRH_PASSWORD') ?: ossrhPassword
+        username = System.getenv('SONATYPE_USER')
+        password = System.getenv('SONATYPE_PASSWORD')
         publishingType = "AUTOMATIC"
     }
     publishAllProjectsProbablyBreakingProjectIsolation()
