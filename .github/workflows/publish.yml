@@ -31,7 +31,9 @@ jobs:
           sed -i "s/version = '.*'/version = '${{ github.event.inputs.version }}'/g" build.gradle
 
       - name: Get signing key
-        run: echo ${{ secrets.SECRING }} | base64 -d > ./secring.gpg
+        env:
+          SECRING: ${{ secrets.SECRING }}
+        run: echo ${SECRING} | base64 -d > ./secring.gpg
 
       - name: Build with Gradle
         run: ./gradlew build
