@@ -114,7 +114,7 @@ subprojects {
             }
         }
 
-        if (System.getenv('SECRING_PATH') != null) {
+        if (System.getenv('SECRING') != null) {
             signing {
                 def signingKey = System.getenv("SECRING")
                 def signingPassword = System.getenv("SECRING_PASS")
