@@ -122,6 +122,8 @@ Configuration via web application
 Factory with generic RootFactory
 * [Encrypted attributes](docu/src/main/java/io/github/factoryfx/docu/encryptedattributes)  
 Hiding information from the client like passwords
+* [Publishing to Maven Central](.github/README.md)  
+Publishing artifacts to Maven Central directly from GitHub Actions
 
 ## Example
 
@@ -133,6 +135,6 @@ Released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2
 
 ## Professional support 
 
-FactoryFX is the long-time development effort of the german company [**SCOOP Software GmbH**](https://www.scoop-software.de/en/). We are a consulting and software company with a constant direction towards state-of-the-art technologies and methods. Our high performance systems are used in multiple medium sized and large enterprises in branches such as online retail, telecommunications, financial services, logistics and local government.
+FactoryFX is the long-time development effort of the German company [**SCOOP Software GmbH**](https://www.scoop-software.de/en/). We are a consulting and software company with a constant direction towards state-of-the-art technologies and methods. Our high performance systems are used in multiple medium sized and large enterprises in branches such as online retail, telecommunications, financial services, logistics and local government.
 
 If you are thinking about using FactoryFX in your own project and need more help, **SCOOP Software** is willing to offer **professional support** on a commercial basis. We offer workshops, coaching, or any other help to get your FactoryFx project up and running.
