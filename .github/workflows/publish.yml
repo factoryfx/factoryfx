@@ -33,7 +33,7 @@ jobs:
       - name: Get signing key
         env:
           SECRING: ${{ secrets.SECRING }}
-        run: echo ${SECRING} | base64 -d > ./secring.gpg
+        run: echo ${SECRING} | base64 -di > ./secring.gpg
 
       - name: Build with Gradle
         run: ./gradlew build
