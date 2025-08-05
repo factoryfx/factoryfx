@@ -1,3 +1,10 @@
+# 4.0.9
+
+* **UserInterfaceDistributionClient**
+    * Split classes into logic and visualization
+* **SimpleObjectMapper**
+    * Add more delegate methods for convenience
+
 # 4.0.8
 
 * **AttributeVisualisationMappingBuilder**

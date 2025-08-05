@@ -2,33 +2,29 @@ import java.nio.charset.StandardCharsets
 
 buildscript {
     repositories {
-        maven {
-            url = "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
+        mavenCentral()
     }
 }
 plugins {
-    id("com.github.spotbugs") version "6.0.26"
+    id "com.github.spotbugs" version "6.0.26"
     id "com.github.ben-manes.versions" version "0.51.0"
+    id "com.gradleup.nmcp.aggregation" version "1.0.1"
+    id "org.openjfx.javafxplugin" version "0.1.0" apply false
 }
-ext.platform = "win"
 
 wrapper {
-    gradleVersion = '8.12.1'
+    gradleVersion = '8.14.2'
     distributionType = Wrapper.DistributionType.ALL
 }
 
-apply plugin: 'io.codearte.nexus-staging'
-nexusStaging {//https://github.com/Codearte/gradle-nexus-staging-plugin
-    username = ossrhUsername
-    password = ossrhPassword
-    packageGroup = 'io.github.factoryfx'
-    stagingProfileId = '78e9b0494c64ba'
-//    stagingRepositoryId = ??? requires external mechanism
-    numberOfRetries = 50
+apply plugin: 'maven-publish'
+nmcpAggregation {
+    centralPortal {
+        username = System.getenv('SONATYPE_USER')
+        password = System.getenv('SONATYPE_PASSWORD')
+        publishingType = "AUTOMATIC"
+    }
+    publishAllProjectsProbablyBreakingProjectIsolation()
 }
 
 subprojects {
@@ -75,7 +71,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '4.0.8'
+    version = '4.0.9'
 
     publishing {
 
@@ -109,69 +105,16 @@ subprojects {
                 }
             }
         }
-
-        repositories {
-            maven {
-                url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-                credentials {
-                    username = ossrhUsername
-                    password = ossrhPassword
-                }
-            }
-        }
     }
 
-    if (System.getenv('SECRING_PATH') != null) {
+    if (System.getenv('SECRING') != null) {
         signing {
+            def signingKey = System.getenv("SECRING")
+            def signingPassword = System.getenv("SECRING_PASS")
+            useInMemoryPgpKeys(signingKey, signingPassword)
             sign publishing.publications.mavenJava
         }
-        project.setProperty("signing.secretKeyRingFile", System.getenv("SECRING_PATH"))
     }
-
-
-//    uploadArchives {
-//        repositories {
-//            mavenDeployer {
-//                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-//
-//                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//                    authentication(userName: ossrhUsername, password: ossrhPassword)
-//                }
-//
-//                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-//                    authentication(userName: ossrhUsername, password: ossrhPassword)
-//                }
-//
-//                pom.project {
-//                    name 'factoryfx'
-//                    packaging 'jar'
-//                    // optionally artifactId can be defined here
-//                    description 'factoryfx dependency injection framework'
-//                    url 'http://factoryfx.github.io/factoryfx'
-//
-//                    scm {
-//                        connection 'scm:git@github.com:factoryfx/factoryfx.git'
-//                        developerConnection 'scm:git@github.com:factoryfx/factoryfx.git'
-//                        url 'scm:git@github.com:factoryfx/factoryfx.git'
-//                    }
-//
-//                    licenses {
-//                        license {
-//                            name 'The Apache License, Version 2.0'
-//                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//                        }
-//                    }
-//                    developers {
-//                        developer {
-//                            id 'SCOOP Software'
-//                            name 'SCOOP Software'
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
 
     repositories {
         mavenCentral()
@@ -179,9 +122,8 @@ subprojects {
 
     dependencies {
         api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
-        api(group: 'com.google.guava', name: 'guava', version: '33.3.1-jre') {
-            exclude module: "jsr305" // module conflict: https://blog.codefx.org/java/jsr-305-java-9/, https://github.com/google/guava/issues/2960
-        }
+        api(group: 'com.google.guava', name: 'guava', version: '33.4.8-jre')
+
         testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.14.2'
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.11.3'
     }
@@ -247,7 +189,7 @@ project(':microserviceRestCommon') {
 }
 
 project(':microserviceRestIntegrationTest') {
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
     dependencies {
         implementation project(":microserviceRestResource")
         implementation project(":microserviceRestClient")
@@ -319,8 +261,13 @@ project(':jettyFactory') {
 
 
 project(':example') {
-
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+    apply plugin: 'org.openjfx.javafxplugin'
+    javafx {
+        version = "17.0.15"
+        modules = ['javafx.controls', 'javafx.web', 'javafx.graphics', 'javafx.fxml', 'javafx.media']
+        configuration = 'api'
+    }
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
     dependencies {
         implementation project(":javafxFactoryEditing")
         implementation project(":jettyFactory")
@@ -336,13 +283,13 @@ project(':example') {
 
 
 project(':javafxFactoryEditing') {
+    apply plugin: 'org.openjfx.javafxplugin'
+    javafx {
+        version = "17.0.15"
+        modules = ['javafx.controls', 'javafx.web', 'javafx.graphics', 'javafx.fxml', 'javafx.media']
+        configuration = 'api'
+    }
     dependencies {
-        api "org.openjfx:javafx-base:19:$platform"
-        api "org.openjfx:javafx-graphics:19:$platform"
-        api "org.openjfx:javafx-controls:19:$platform"
-        api "org.openjfx:javafx-web:19:$platform"
-        api "org.openjfx:javafx-fxml:19:$platform"
-        api "org.openjfx:javafx-media:19:$platform"
 
         api group: 'org.controlsfx', name: 'controlsfx', version: '11.2.1'
         api group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.11.3'
@@ -371,18 +318,18 @@ project(':javafxDistributionServer') {
 }
 
 project(':javafxDistributionClient') {
+    apply plugin: 'org.openjfx.javafxplugin'
+    javafx {
+        version = "17.0.15"
+        modules = ['javafx.controls', 'javafx.web', 'javafx.graphics', 'javafx.fxml', 'javafx.media']
+        configuration = 'api'
+    }
 
     dependencies {
         api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
         api(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1') {
             exclude group: "javax.annotation"
         }
-
-        api "org.openjfx:javafx-base:19:$platform"
-        api "org.openjfx:javafx-graphics:19:$platform"
-        api "org.openjfx:javafx-controls:19:$platform"
-        api "org.openjfx:javafx-web:19:$platform"
-        api "org.openjfx:javafx-fxml:19:$platform"
 
         api group: 'org.glassfish.jersey.core', name: 'jersey-common', version: '3.1.9'
         api(group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '3.1.9')
@@ -395,14 +342,14 @@ project(':javafxDistributionClient') {
 }
 
 project(':testfactories') {
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
     dependencies {
         implementation project(":factory")
     }
 }
 
 project(':docu') {
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
     dependencies {
         implementation project(":factory")
         implementation project(":jettyFactory")
@@ -501,8 +448,7 @@ project(':initializr') {
 }
 
 project(':benchmark') {
-
-    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
     dependencies {
         implementation project(":factory")
         implementation project(":testfactories")
@@ -519,5 +465,3 @@ project(':domFactoryEditing') {
         testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
     }
 }
-    
-

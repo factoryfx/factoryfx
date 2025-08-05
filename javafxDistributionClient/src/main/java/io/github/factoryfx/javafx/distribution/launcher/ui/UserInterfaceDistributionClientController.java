@@ -8,11 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -22,15 +20,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -42,7 +31,6 @@ import org.glassfish.jersey.message.GZipEncoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 
 import jakarta.ws.rs.client.Client;
@@ -54,22 +42,6 @@ import jakarta.ws.rs.core.Response;
 public class UserInterfaceDistributionClientController {
 
     public static final String GUI_ZIP = "gui.zip";
-    @FXML
-    private ComboBox<String> serverUrlList;
-
-    @FXML
-    private Button startButton;
-
-    @FXML
-    private ProgressBar progress;
-
-    @FXML
-    private TextField serverUrlInput;
-
-    @FXML
-    private VBox rootPane;
-
-    private final String initialUrl;
     private final String httpAuthenticationUser;
     private final String httpAuthenticationPassword;
     private final String exeName;
@@ -77,68 +49,30 @@ public class UserInterfaceDistributionClientController {
 
     /**
      *
-     * @param initialUrl initialUrl
      * @param exeName  e.g 'project', optional include '.exe' or '.bat'
      * @param httpAuthenticationUser user
      * @param httpAuthenticationPassword password
-     * @param clientBuilder could be used to enable ssl see https://stackoverflow.com/questions/2145431/https-using-jersey-client
+     * @param clientBuilder could be used to enable ssl see <a href="https://stackoverflow.com/questions/2145431/https-using-jersey-client">stackoverflow.</a>
      */
-    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String httpAuthenticationUser, String httpAuthenticationPassword, Supplier<Client> clientBuilder) {
-        this.initialUrl = initialUrl;
+    public UserInterfaceDistributionClientController(String exeName, String httpAuthenticationUser, String httpAuthenticationPassword, Supplier<Client> clientBuilder) {
         this.httpAuthenticationUser = httpAuthenticationUser;
         this.httpAuthenticationPassword = httpAuthenticationPassword;
         this.exeName = exeName;
         this.clientBuilder = clientBuilder;
     }
 
-    public UserInterfaceDistributionClientController(String initialUrl, String exeName, String httpAuthenticationUser, String httpAuthenticationPassword) {
-        this(initialUrl, exeName, httpAuthenticationUser, httpAuthenticationPassword, () -> {
+    public UserInterfaceDistributionClientController(String exeName, String httpAuthenticationUser, String httpAuthenticationPassword) {
+        this(exeName, httpAuthenticationUser, httpAuthenticationPassword, () -> {
             JacksonFeature jacksonFeature = new JacksonFeature();
             ClientConfig cc = new ClientConfig().register(jacksonFeature);
             return ClientBuilder.newClient(cc);
         });
     }
 
-    @FXML
-    void initialize() {
-        serverUrlList.disableProperty().bind(Bindings.size(serverUrlList.getItems()).isEqualTo(0));
 
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            e.printStackTrace();
-            Platform.runLater(() -> {
-                progress.setProgress(0);
-                Alert alter = new Alert(Alert.AlertType.ERROR);
-                alter.setContentText("Error");
-                TextArea textArea = new TextArea();
-                textArea.setText(Throwables.getStackTraceAsString(e));
-                alter.setGraphic(textArea);
-                alter.show();
-            });
-        });
-
-        readServerList();
-
-        startButton.setOnAction(event -> {
-            startGui();
-        });
-
-        startButton.disableProperty().bind(serverUrlInput.textProperty().isEmpty());
-
-        serverUrlList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            serverUrlInput.setText(newValue);
-        });
-
-        if (serverUrlList.getItems().isEmpty()) {
-            serverUrlInput.setText(initialUrl);
-        } else {
-            serverUrlInput.setText(serverUrlList.getItems().get(0));
-        }
-
-    }
-
-    @SuppressWarnings("deprecation")
-    private void startGui() {
-        String serverUrl = serverUrlInput.getText().endsWith("/") ? serverUrlInput.getText().substring(0, serverUrlInput.getText().length() - 1) : serverUrlInput.getText();
+    @SuppressWarnings("deprecated")
+    public void startGui(String url, Runnable onSuccess, Runnable onError) {
+        String serverUrl = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
 
         Client client = clientBuilder.get();
 
@@ -152,7 +86,6 @@ public class UserInterfaceDistributionClientController {
             client.register(HttpAuthenticationFeature.basic(httpAuthenticationUser, httpAuthenticationPassword));
         }
 
-        progress.setProgress(-1);
 
         File guiFolder = new File("./" + serverUrl.hashCode());
         String fileHash = "";
@@ -164,14 +97,14 @@ public class UserInterfaceDistributionClientController {
             }
         }
 
-        String checkVersionUri = serverUrl + "/download/checkVersion?" + "fileHash=" + fileHash;
+        String checkVersionUri = serverUrl + "/download/checkVersion?fileHash=" + fileHash;
         WebTarget webResource = client.target(checkVersionUri);
         Response response = webResource.request(MediaType.TEXT_PLAIN).get();
         if (response.getStatus() != 200) {
             throw new RuntimeException(response.getStatus() + "\nReceived http status code " + response.getStatus() + "\n" + checkVersionUri + "\n" + response.readEntity(String.class));
         }
         boolean needUpdate = Boolean.parseBoolean(response.readEntity(String.class));
-        rootPane.setDisable(true);
+
 
         new Thread("User Interface Download Thread") {
             @Override
@@ -208,21 +141,11 @@ public class UserInterfaceDistributionClientController {
 
                     URL distributionServerURL = new URL(serverUrl);
                     new ProcessBuilder(exec.s, distributionServerURL.toExternalForm()).directory(new File(guiFolder.getAbsolutePath(), "./")).inheritIO().start();
-
-                    if (!serverUrlList.getItems().contains(serverUrl)) {
-                        serverUrlList.getItems().add(0, serverUrl);
-                    }
-                    writeServerList();
-
-                    Platform.runLater(() -> {
-                        progress.setProgress(1);
-                        rootPane.setDisable(false);
-                    });
+                    Platform.runLater(onSuccess);
                 } catch (IOException e) {
-                    Platform.runLater(() -> rootPane.setDisable(false));
+                    Platform.runLater(onError);
                     throw new RuntimeException(e);
                 }
-
             }
         }.start();
 
@@ -267,26 +190,4 @@ public class UserInterfaceDistributionClientController {
         }
         bos.close();
     }
-
-    private void readServerList() {
-        File file = new File("./serverList.txt");
-        if (file.exists()) {
-            Path path = Paths.get(file.toURI());
-            try {
-                serverUrlList.getItems().addAll(java.nio.file.Files.readAllLines(path, StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private void writeServerList() {
-        Path path = Paths.get(new File("./serverList.txt").toURI());
-        try {
-            java.nio.file.Files.write(path, serverUrlList.getItems(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
