@@ -14,7 +14,7 @@ import io.github.factoryfx.server.Microservice;
  * {@link SimplifiedMicroserviceResource}: it triggers {@link Microservice#updateCurrentFactory} on a boolean attribute to which {@link SomeOtherResourceFactory} depends on through {@link NestedObjectFactory}
  *
  * In {@link FactoryUpdateLogLeak#leakySetup()}, both resources are under the same servlet -> leak
- * In {@link FactoryUpdateLogLeak#leakySetup()}, each resource has their own servlet -> no leak
+ * In {@link FactoryUpdateLogLeak#correctSetup()}, each resource has their own servlet -> no leak
  *
  * */
 public class FactoryUpdateLogLeak {
