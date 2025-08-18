@@ -45,6 +45,12 @@ public class FactoryTemplateId<F extends FactoryBase<?, ?>> {
     }
 
     @SuppressWarnings("unchecked")
+    public FactoryTemplateId(Class<?> clazz) {
+        this((Class<F>) clazz,  null);
+    }
+
+
+    @SuppressWarnings("unchecked")
     public FactoryTemplateId(F factory) {
         this.clazz = factory.internal().isTreeBuilderClassUsed() ? (Class<F>) factory.getClass() : null;
         this.name = factory.internal().getTreeBuilderName();

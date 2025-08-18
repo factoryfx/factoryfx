@@ -39,6 +39,8 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
     List<FactoryBase<?,R>> resources= new ArrayList<>();
     List<FactoryBase<?,R>> jaxrsComponents= new ArrayList<>();
 
+    private List<FactoryTemplateId<? extends FactoryBase<?, R>>> resourceTemplateIds = new ArrayList<>();
+
     private FactoryTemplateId<ServletAndPathFactory<R>> servletAndPathFactoryTemplateId;
     private FactoryTemplateId<JerseyServletFactory<R>> jerseyServletFactoryTemplateId;
     private FactoryTemplateId<FactoryBase<ExceptionMapper<Throwable>,R>> exceptionMapperTemplateId;
@@ -81,6 +83,16 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
      */
     public ResourceBuilder<R> withResource(FactoryBase<?,R> resource){
         resources.add(resource);
+        return this;
+    }
+
+    /**
+     * add resource {@link FactoryTemplateId}, so that the resource factory can be resolved using the FactoryTreeBuilder. resource is a class with jaxrs annotations
+     * @param resourceTemplateId resource {@link FactoryTemplateId}
+     * @return builder
+     */
+    public <F extends FactoryBase<?, R>> ResourceBuilder<R> withResource(FactoryTemplateId<F> resourceTemplateId){
+        resourceTemplateIds.add(resourceTemplateId);
         return this;
     }
 
@@ -153,7 +165,10 @@ public class ResourceBuilder<R extends FactoryBase<?,R>> {
             jerseyServlet.restLogging.set(ctx.get(loggingFeatureTemplateId));
             jerseyServlet.jerseyProperties.set(jerseyProperties);
 
+
             jerseyServlet.resources.addAll(resources);
+            resourceTemplateIds.forEach(ftid -> jerseyServlet.resources.add(ctx.get(ftid)));
+
             jerseyServlet.additionalJaxrsComponents.addAll(jaxrsComponents);
             return jerseyServlet;
         });

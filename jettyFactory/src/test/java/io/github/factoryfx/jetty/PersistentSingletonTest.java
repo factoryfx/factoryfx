@@ -17,7 +17,7 @@ import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerBuilder;
 import io.github.factoryfx.server.Microservice;
 
-public class PersistentSingletonTest {
+public class  PersistentSingletonTest {
 
     public static class RootFactory extends SimpleFactoryBase<Void, RootFactory> {
         public final FactoryAttribute<Server, JettyServerFactory<RootFactory>> jettyServer = new FactoryAttribute<>();
