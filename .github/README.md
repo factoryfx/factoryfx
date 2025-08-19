@@ -26,7 +26,7 @@ To manually publish a new version:
 
 1. Change the version in build.gradle
 2. Create a [new Release](https://github.com/factoryfx/factoryfx/releases/new)
-3. Create a new Tag with the version
-5. Click "Publish release" to start the publishing process
+3. Create a new Tag with the version (format: vX.Y.Z). Hint: Enter the tag name, and then click on "Create tag on publish"
+4. Click "Publish release" to start the publishing process
 
 The workflow will build the project, sign the artifacts, and publish them to Maven Central using the GradleUp/nmcp plugin's `publishAggregationToCentralPortal` task.
