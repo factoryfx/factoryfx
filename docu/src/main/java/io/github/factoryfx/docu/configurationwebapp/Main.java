@@ -2,6 +2,7 @@ package io.github.factoryfx.docu.configurationwebapp;
 
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.dom.rest.MicroserviceDomResourceFactory;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class Main {
         root.setLevel(Level.INFO);
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
-                .withHost("localhost").withPort(8005).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class)));
+                .withHost("localhost").withPort(8005).withResource(new FactoryTemplateId<>(MicroserviceDomResourceFactory.class)));
         builder.addFactoryUnsafe(MicroserviceDomResourceFactory.class,Scope.SINGLETON);
 
         builder.microservice().build().start();

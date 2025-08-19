@@ -1,6 +1,7 @@
 package io.github.factoryfx.docu.restserver;
 
 import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.jetty.HttpServerConnectorFactory;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
@@ -25,7 +26,7 @@ public class Main {
         root.setLevel(Level.INFO);
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder(
-                (jetty,ctx)-> jetty.withHost("localhost").withPort(8005).withResource(ctx.get(WebResourceFactory.class))
+                (jetty,ctx)-> jetty.withHost("localhost").withPort(8005).withResource(new FactoryTemplateId<>(WebResourceFactory.class))
         );
         builder.addSingleton(WebResourceFactory.class, ctx->{
             String time = new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy HH:mm:ss.SSS").toFormatter().format(LocalDateTime.now());

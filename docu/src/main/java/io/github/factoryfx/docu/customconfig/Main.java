@@ -1,6 +1,7 @@
 package io.github.factoryfx.docu.customconfig;
 
 import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
 import io.github.factoryfx.server.Microservice;
@@ -23,7 +24,7 @@ public class Main {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) ->
                 jetty
                 .withHost("localhost").withPort(8005)
-                .withResource(ctx.get(CustomConfigurationResourceFactory.class))
+                .withResource(new FactoryTemplateId<>(CustomConfigurationResourceFactory.class))
         );
         builder.addSingleton(CustomConfigurationResourceFactory.class);
 

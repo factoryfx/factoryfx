@@ -1,6 +1,7 @@
 package io.github.factoryfx.dom.rest;
 
 import ch.qos.logback.classic.Level;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.DataUpdate;
@@ -28,7 +29,7 @@ class MicroserviceDomResourceTest {
 
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->
-                jetty.withHost("localhost").withPort(8015).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
+                jetty.withHost("localhost").withPort(8015).withResource(new FactoryTemplateId<>(MicroserviceDomResourceFactory.class))
         );
         builder.addFactory(MicroserviceDomResourceFactory.class, Scope.SINGLETON);
 

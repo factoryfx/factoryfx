@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class GzipHandlerFactoryTest {
     @Test
     public void test_client_disabled_gzip() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)-> jetty.
-                withHost("localhost").withPort(8087).withResource(ctx.get(JerseyServletTestGZipResourceFactory.class))
+                withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(JerseyServletTestGZipResourceFactory.class))
         );
         builder.addFactory(JerseyServletTestGZipResourceFactory.class, Scope.SINGLETON);
 
@@ -67,7 +68,7 @@ class GzipHandlerFactoryTest {
     @Test
     public void test_client_enabled_gzip() { // header Accept-Encoding: gzip
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)-> jetty.
-                withHost("localhost").withPort(8087).withResource(ctx.get(JerseyServletTestGZipResourceFactory.class))
+                withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(JerseyServletTestGZipResourceFactory.class))
         );
         builder.addFactory(JerseyServletTestGZipResourceFactory.class, Scope.SINGLETON);
 

@@ -46,7 +46,7 @@ public class  PersistentSingletonTest {
         });
         factoryTreeBuilder.addBuilder(ctx -> new JettyServerBuilder<>(new FactoryTemplateId<>(null, JettyServerFactory.class),
                 (Supplier<JettyServerFactory<RootFactory>>) JettyServerFactory::new)
-                .withResource(ctx.get(Fact1.class)));
+                .withResource(new FactoryTemplateId<>(Fact1.class)));
         factoryTreeBuilder.addSingleton(Fact1.class);
 
         RootFactory root1 = factoryTreeBuilder.buildTreeUnvalidated();
@@ -66,7 +66,7 @@ public class  PersistentSingletonTest {
         });
         factoryTreeBuilder.addBuilder(ctx -> new JettyServerBuilder<>(new FactoryTemplateId<>(null, JettyServerFactory.class),
                                                                       (Supplier<JettyServerFactory<RootFactory>>) JettyServerFactory::new)
-            .withResource(ctx.get(Fact1.class)));
+            .withResource(new FactoryTemplateId<>(Fact1.class)));
 
         factoryTreeBuilder.addSingleton(Fact1.class);
 
@@ -94,7 +94,7 @@ public class  PersistentSingletonTest {
         FactoryTreeBuilder<Void, RootFactory2> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory2.class);
         factoryTreeBuilder.addBuilder(ctx -> new JettyServerBuilder<>(new FactoryTemplateId<>(null, JettyServerFactory.class),
                                                                       (Supplier<JettyServerFactory<RootFactory2>>) JettyServerFactory::new)
-            .withResource(ctx.get(Fact1.class)));
+            .withResource(new FactoryTemplateId<>(Fact1.class)));
 
         factoryTreeBuilder.addSingleton(Fact1.class);
         Microservice<Void, RootFactory2> microservice = factoryTreeBuilder.microservice().build();
@@ -111,7 +111,7 @@ public class  PersistentSingletonTest {
         FactoryTreeBuilder<Void, RootFactory> factoryTreeBuilder = new FactoryTreeBuilder<>(RootFactory.class);
         factoryTreeBuilder.addBuilder(ctx -> new JettyServerBuilder<>(new FactoryTemplateId<>(null, JettyServerFactory.class),
                                                                       (Supplier<JettyServerFactory<RootFactory>>) JettyServerFactory::new)
-            .withResource(ctx.get(Fact1.class)));
+            .withResource(new FactoryTemplateId<>(Fact1.class)));
 
         factoryTreeBuilder.addSingleton(Fact1.class);
         factoryTreeBuilder.markAsNonPersistentFactoryBuilder();

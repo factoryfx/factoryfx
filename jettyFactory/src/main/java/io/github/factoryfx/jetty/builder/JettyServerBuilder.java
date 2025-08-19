@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.glassfish.jersey.logging.LoggingFeature;
 
@@ -423,22 +422,44 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
 
     /**
      * add a new Resource to the default jersey servlet
-     * @see ResourceBuilder#withResource(FactoryBase)
-     * @param resource resource
+     * @see ResourceBuilder#withResource(FactoryTemplateId)
+     * @param resourceFactoryTemplateId resource {@link FactoryTemplateId}
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withResource(FactoryBase<?,R> resource){
-        getDefaultJersey().withResource(resource);
+    public <F extends FactoryBase<?, R>> JettyServerBuilder<R, JR> withResource(FactoryTemplateId<F> resourceFactoryTemplateId){
+        getDefaultJersey().withResource(resourceFactoryTemplateId);
+        return this;
+    }
+
+
+    /**
+     * add a new Resource to the default jersey servlet
+     * @see ResourceBuilder#withResourceLiveObjectClass(Class)
+     * @param resourceLiveObjectClass resource class
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withResourceLiveObjectClass(Class<?> resourceLiveObjectClass){
+        getDefaultJersey().withResourceLiveObjectClass(resourceLiveObjectClass);
         return this;
     }
 
     /**
-     * @see ResourceBuilder#withJaxrsComponent(FactoryBase)
-     * @param jaxrsComponent jaxrsComponent
+     * @see ResourceBuilder#withJaxrsComponent(FactoryTemplateId)
+     * @param jaxrsComponentFactoryTemplateId jaxrsComponent {@link FactoryTemplateId}
      * @return builder
      */
-    public JettyServerBuilder<R, JR> withJaxrsComponent(FactoryBase<?,R> jaxrsComponent){
-        getDefaultJersey().withJaxrsComponent(jaxrsComponent);
+    public <F extends FactoryBase<?, R>> JettyServerBuilder<R, JR> withJaxrsComponent(FactoryTemplateId<F> jaxrsComponentFactoryTemplateId){
+        getDefaultJersey().withJaxrsComponent(jaxrsComponentFactoryTemplateId);
+        return this;
+    }
+
+    /**
+     * @see ResourceBuilder#withJaxrsComponentLiveObjectClass(Class)
+     * @param jaxrsComponentLiveObjectClass jaxrs component class
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withJaxrsComponentLiveObjectClass(Class<?> jaxrsComponentLiveObjectClass){
+        getDefaultJersey().withJaxrsComponentLiveObjectClass(jaxrsComponentLiveObjectClass);
         return this;
     }
 

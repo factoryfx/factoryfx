@@ -3,9 +3,9 @@ package io.github.factoryfx.factory.typescript.generator.testserver;
 import io.github.factoryfx.dom.rest.FilesystemStaticFileAccessFactory;
 import io.github.factoryfx.dom.rest.MicroserviceDomResourceFactory;
 import io.github.factoryfx.factory.attribute.types.EncryptedString;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.jetty.GzipHandlerFactory;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
@@ -26,7 +26,7 @@ public class TestServerBuilder {
             return testServerFactory;
         });
         builder.addBuilder(ctx-> new SimpleJettyServerBuilder<TestServerFactory>()
-                .withHost("localhost").withPort(8005).withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
+                .withHost("localhost").withPort(8005).withResource(new FactoryTemplateId<>(MicroserviceDomResourceFactory.class))
         );
         builder.addSingleton(ExampleFactory.class, ctx-> new ExampleFactory());
 

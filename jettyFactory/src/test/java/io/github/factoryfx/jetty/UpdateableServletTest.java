@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -75,7 +76,7 @@ public class UpdateableServletTest {
     public void test_jersey_after_update() throws IOException, InterruptedException {
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(UpdateableTestResourceFactory.class));
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(UpdateableTestResourceFactory.class));
         });
 
         builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {
@@ -113,7 +114,7 @@ public class UpdateableServletTest {
     @Test
     public void test_remove_resource() throws IOException, InterruptedException {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(UpdateableTestResourceFactory.class));
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(UpdateableTestResourceFactory.class));
         });
 
         builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {
@@ -144,7 +145,7 @@ public class UpdateableServletTest {
     @Test
     public void test_add_resource() throws IOException, InterruptedException {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(DummyResourceFactory.class));
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(DummyResourceFactory.class));
         });
         builder.addFactory(DummyResourceFactory.class,Scope.SINGLETON);
 
@@ -175,7 +176,7 @@ public class UpdateableServletTest {
     public void test_add_jerseyServlet() throws IOException, InterruptedException {
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(DummyResourceFactory.class));
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(DummyResourceFactory.class));
         });
         builder.addFactory(DummyResourceFactory.class,Scope.SINGLETON);
 
@@ -217,7 +218,7 @@ public class UpdateableServletTest {
 
     public static void main(String[] args) {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(UpdateableTestResourceFactory.class));
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(UpdateableTestResourceFactory.class));
         });
 
         builder.addFactory(UpdateableTestResourceFactory.class, Scope.SINGLETON, ctx -> {

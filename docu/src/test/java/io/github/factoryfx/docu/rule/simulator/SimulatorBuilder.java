@@ -1,5 +1,6 @@
 package io.github.factoryfx.docu.rule.simulator;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
@@ -11,7 +12,7 @@ public class SimulatorBuilder {
         builder.addBuilder(ctx->
             new SimpleJettyServerBuilder<SimulatorRootFactory>()
                     .withHost("localhost").withPort(18089)
-                    .withResource(ctx.get(HelloResourceFactory.class))
+                    .withResource(new FactoryTemplateId<>(HelloResourceFactory.class))
         );
         builder.addFactory(HelloResourceFactory.class, Scope.SINGLETON);
         return builder;

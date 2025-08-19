@@ -1,14 +1,18 @@
 package io.github.factoryfx.jetty.builder;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.List;
-
+import ch.qos.logback.classic.Level;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.factoryfx.factory.AttributelessFactory;
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
+import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.jetty.JerseyServletFactoryTest;
+import io.github.factoryfx.server.Microservice;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -19,23 +23,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
 
-import ch.qos.logback.classic.Level;
-import io.github.factoryfx.factory.AttributelessFactory;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.types.StringAttribute;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.jetty.JerseyServletFactoryTest;
-import io.github.factoryfx.server.Microservice;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class JettyServerBuilderTest {
 
-    public static class DummyResource extends SimpleFactoryBase<Void, JettyServerRootFactory> {
+    public static class DummyResourceFactory extends SimpleFactoryBase<Void, JettyServerRootFactory> {
 
         @Override
         protected Void createImpl() {
@@ -54,8 +53,10 @@ public class JettyServerBuilderTest {
     public void test_json(){
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty.
-                withHost("localhost").withPort(123).withResource(new DummyResource())
+                withHost("localhost").withPort(123).withResource(new FactoryTemplateId<>(DummyResourceFactory.class))
         );
+
+        builder.addSingleton(DummyResourceFactory.class);
 
         System.out.println(ObjectMapperBuilder.build().writeValueAsString(builder.buildTree()));
 
@@ -74,7 +75,7 @@ public class JettyServerBuilderTest {
     @Test
     public void test_ObjectMapper(){
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)-> jetty.
-                withHost("localhost").withPort(8087).withResource(ctx.get(DummyResource.class)).withObjectMapper(new SpecialObjectMapperFactory())
+                withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(DummyResourceFactory.class)).withObjectMapper(new SpecialObjectMapperFactory())
         );
 
 //        ObjectMapperBuilder.build().copy(serverFactory);
@@ -142,10 +143,10 @@ public class JettyServerBuilderTest {
     public void test_multiple_server() {
         MultiJettyFactoryTreeBuilder builder = new MultiJettyFactoryTreeBuilder();
         builder.addJetty("Jetty1",(jetty, ctx)-> jetty.
-                withHost("localhost").withPort(8087).withResource(ctx.get(TestResourceFactory.class,"1"))
+                withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(TestResourceFactory.class,"1"))
         );
         builder.addJetty("Jetty2",(jetty, ctx)-> jetty.
-                withHost("localhost").withPort(8088).withResource(ctx.get(TestResourceFactory.class,"2"))
+                withHost("localhost").withPort(8088).withResource(new FactoryTemplateId<>(TestResourceFactory.class,"2"))
         );
 
         builder.addFactory(TestResourceFactory.class,"1", Scope.SINGLETON, ctx->{
@@ -188,8 +189,8 @@ public class JettyServerBuilderTest {
         MultiJettyFactoryTreeBuilder builder = new MultiJettyFactoryTreeBuilder();
         builder.addJetty("Jetty1",(jetty, ctx)-> jetty.
                 withHost("localhost").withPort(8087)
-                .withJersey(rb->rb.withPathSpec("/test").withResource(ctx.get(TestResourceFactory.class,"1")),new FactoryTemplateName("1"))
-                .withJersey(rb->rb.withPathSpec("/test").withResource(ctx.get(TestResourceFactory.class,"2")),new FactoryTemplateName("2"))
+                .withJersey(rb->rb.withPathSpec("/test").withResource(new FactoryTemplateId<>(TestResourceFactory.class,"1")),new FactoryTemplateName("1"))
+                .withJersey(rb->rb.withPathSpec("/test").withResource(new FactoryTemplateId<>(TestResourceFactory.class,"2")),new FactoryTemplateName("2"))
         );
 
         builder.addFactory(TestResourceFactory.class,"1", Scope.SINGLETON, ctx->{
@@ -222,7 +223,7 @@ public class JettyServerBuilderTest {
     public void test_multiple_connectors() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty,ctx)->{
             jetty
-            .withResource(ctx.get(Test2ResourceFactory.class))
+            .withResource(new FactoryTemplateId<>(Test2ResourceFactory.class))
             .withAdditionalConnector(connector-> connector.withHost("localhost").withPort(8087),new FactoryTemplateName("connector1"))
             .withAdditionalConnector(connector-> connector.withHost("localhost").withPort(8088),new FactoryTemplateName("connector2"));
 
@@ -258,7 +259,7 @@ public class JettyServerBuilderTest {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty,ctx)->{
             jetty.withPort(8087).withHost("localhost").
             withJersey(resourceBuilder ->
-                    resourceBuilder.withResource(ctx.get(Test2ResourceFactory.class)).withPathSpec("/test123/*")
+                    resourceBuilder.withResource(new FactoryTemplateId<>(Test2ResourceFactory.class)).withPathSpec("/test123/*")
                     , new FactoryTemplateName("Test123"));
         });
         builder.addFactory(Test2ResourceFactory.class,Scope.SINGLETON);

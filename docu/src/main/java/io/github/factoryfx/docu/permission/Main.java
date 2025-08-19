@@ -2,6 +2,7 @@ package io.github.factoryfx.docu.permission;
 
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
@@ -34,7 +35,7 @@ public class Main {
         builder.addBuilder(ctx->
             new SimpleJettyServerBuilder<PrinterFactory>()
                     .withHost("localhost").withPort(8005)
-                    .withResource(ctx.get(PrinterMicroserviceResourceFactory.class))
+                    .withResource(new FactoryTemplateId<>(PrinterMicroserviceResourceFactory.class))
         );
         builder.addSingleton(PrinterMicroserviceResourceFactory.class, ctx->{
             PrinterMicroserviceResourceFactory resource = new PrinterMicroserviceResourceFactory();

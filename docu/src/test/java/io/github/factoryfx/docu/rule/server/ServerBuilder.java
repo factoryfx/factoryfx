@@ -1,5 +1,6 @@
 package io.github.factoryfx.docu.rule.server;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import org.eclipse.jetty.server.Server;
@@ -10,7 +11,7 @@ public class ServerBuilder {
         factoryTreeBuilder.addBuilder(ctx->
                 new SimpleJettyServerBuilder<ServerRootFactory>()
                         .withHost("localhost").withPort(8089)
-                        .withResource(ctx.get(GreetingsResourceFactory.class)));
+                        .withResource(new FactoryTemplateId<>(GreetingsResourceFactory.class)));
 
         factoryTreeBuilder.addSingleton(GreetingsResourceFactory.class, context -> {
             GreetingsResourceFactory greetingsResourceFactory = new GreetingsResourceFactory();

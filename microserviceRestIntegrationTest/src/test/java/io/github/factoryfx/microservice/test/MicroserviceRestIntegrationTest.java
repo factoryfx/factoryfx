@@ -2,6 +2,7 @@ package io.github.factoryfx.microservice.test;
 
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.SimpleFactoryBase;
@@ -52,7 +53,7 @@ public class MicroserviceRestIntegrationTest {
 
         FactoryTreeBuilder<Server, TestJettyServer> builder = new FactoryTreeBuilder<>(TestJettyServer.class);
         builder.addBuilder(ctx -> new SimpleJettyServerBuilder<TestJettyServer>()
-                .withHost("localhost").withPort(34579).withResource(ctx.getUnsafe(MicroserviceResourceFactory.class)));
+                .withHost("localhost").withPort(34579).withResource(new FactoryTemplateId<>(MicroserviceResourceFactory.class)));
 
 
         builder.addFactoryUnsafe(MicroserviceResourceFactory.class, Scope.SINGLETON, ctx->{

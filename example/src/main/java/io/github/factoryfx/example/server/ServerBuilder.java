@@ -3,6 +3,7 @@ package io.github.factoryfx.example.server;
 import io.github.factoryfx.dom.rest.MicroserviceDomResourceFactory;
 import io.github.factoryfx.example.server.shop.*;
 import io.github.factoryfx.example.server.shop.netherlands.NetherlandsCarProductFactory;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
@@ -16,9 +17,9 @@ public class ServerBuilder {
     public static FactoryTreeBuilder<Server, JettyServerRootFactory> build(){
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
                     .withHost("localhost").withPort(8089)
-                    .withResource(ctx.getUnsafe(MicroserviceDomResourceFactory.class))
-                    .withResource(ctx.get(OrderMonitoringResourceFactory.class))
-                    .withResource(ctx.get(ShopResourceFactory.class))
+                    .withResource(new FactoryTemplateId<>(MicroserviceDomResourceFactory.class))
+                    .withResource(new FactoryTemplateId<>(OrderMonitoringResourceFactory.class))
+                    .withResource(new FactoryTemplateId<>(ShopResourceFactory.class))
         );
 
         builder.addFactoryUnsafe(MicroserviceDomResourceFactory.class, Scope.SINGLETON);

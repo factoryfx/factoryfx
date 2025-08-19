@@ -1,5 +1,37 @@
 package io.github.factoryfx.jetty;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import com.google.common.io.ByteStreams;
+import io.github.factoryfx.factory.SimpleFactoryBase;
+import io.github.factoryfx.factory.attribute.types.EnumAttribute;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
+import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.merge.DataMerger;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.jetty.builder.FactoryTemplateName;
+import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
+import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
+import io.github.factoryfx.server.Microservice;
+import jakarta.servlet.*;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.*;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import org.eclipse.jetty.server.Server;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.server.ServerProperties;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,54 +48,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.server.ServerProperties;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.io.ByteStreams;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
-import io.github.factoryfx.factory.AttributelessFactory;
-import io.github.factoryfx.factory.SimpleFactoryBase;
-import io.github.factoryfx.factory.attribute.types.EnumAttribute;
-import io.github.factoryfx.factory.builder.Scope;
-import io.github.factoryfx.factory.merge.DataMerger;
-import io.github.factoryfx.factory.merge.MergeDiffInfo;
-import io.github.factoryfx.factory.storage.DataUpdate;
-import io.github.factoryfx.jetty.builder.FactoryTemplateName;
-import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
-import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
-import io.github.factoryfx.server.Microservice;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.Configuration;
-import jakarta.ws.rs.core.Feature;
-import jakarta.ws.rs.core.FeatureContext;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.MessageBodyReader;
-import jakarta.ws.rs.ext.MessageBodyWriter;
 
 public class JettyServerTest {
     @Path("/Resource1")
@@ -91,7 +75,7 @@ public class JettyServerTest {
     @Test
     public void test_change_port() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)-> jetty.
-                withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+                withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(Resource1Factory.class))
         );
 
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
@@ -141,7 +125,7 @@ public class JettyServerTest {
     @Test
     public void test_remove_connector() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class)
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(Resource1Factory.class)
             );
         });
 
@@ -206,7 +190,7 @@ public class JettyServerTest {
     @Test
     public void test_lateResponse() throws InterruptedException, ExecutionException, TimeoutException {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8015).withResource(ctx.get(LateResponseTestResourceFactory.class)
+            jetty.withHost("localhost").withPort(8015).withResource(new FactoryTemplateId<>(LateResponseTestResourceFactory.class)
             );
         });
         builder.addFactory(LateResponseTestResourceFactory.class, Scope.SINGLETON, ctx -> {
@@ -299,9 +283,8 @@ public class JettyServerTest {
     @Test
     public void testMessageBodyReader() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8015).withResource(ctx.get(MessageBodyReaderWriterEchoFactory.class))
-                        .withJaxrsComponent(AttributelessFactory.create(SomeMessageBodyReaderWriter.class)
-                    );
+            jetty.withHost("localhost").withPort(8015).withResource(new FactoryTemplateId<>(MessageBodyReaderWriterEchoFactory.class))
+                        .withJaxrsComponentLiveObjectClass(SomeMessageBodyReaderWriter.class);
         });
 
         builder.addFactory(MessageBodyReaderWriterEchoFactory.class, Scope.SINGLETON);
@@ -324,7 +307,7 @@ public class JettyServerTest {
     @Test
     public void test_custom_jersey() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(new FactoryTemplateId<>(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
@@ -334,7 +317,7 @@ public class JettyServerTest {
     @Test
     public void test_double_build() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(new FactoryTemplateId<>(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
@@ -347,7 +330,7 @@ public class JettyServerTest {
     @Test
     public void test_rebuild() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(ctx.get(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
+            jetty.withHost("localhost").withPort(8087).withJersey(rb->rb.withResource(new FactoryTemplateId<>(Resource1Factory.class)),new FactoryTemplateName("/new/*"));
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
             return new Resource1Factory();
@@ -384,7 +367,7 @@ public class JettyServerTest {
 
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(Resource1Factory.class))
                     .withLoggingFeature(ctx.getUnsafe(Slf4LoggingFeatureTestFactory.class));
         });
         builder.addFactory(Resource1Factory.class, Scope.SINGLETON, ctx -> {
@@ -417,7 +400,7 @@ public class JettyServerTest {
     @Test
     public void test_httpConfiguration_sendServerVersion() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(Resource1Factory.class))
                     .withHttpConfiguration(ctx.getUnsafe(HttpConfigurationFactory.class));
         });
         builder.addFactoryUnsafe(HttpConfigurationFactory.class, Scope.SINGLETON,ctx -> {
@@ -447,7 +430,7 @@ public class JettyServerTest {
     @Test
     public void test_httpConfiguration_notServerVersion() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8087).withResource(ctx.get(Resource1Factory.class))
+            jetty.withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(Resource1Factory.class))
                     .withHttpConfiguration(ctx.getUnsafe(HttpConfigurationFactory.class));
         });
         builder.addFactoryUnsafe(HttpConfigurationFactory.class, Scope.SINGLETON,ctx -> {
@@ -529,7 +512,7 @@ public class JettyServerTest {
     @Test
     public void test_jersey_property(){
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8015).withJerseyProperties(Map.of(ServerProperties.BV_SEND_ERROR_IN_RESPONSE,true)).withJaxrsComponent(ctx.get(TestFeatureFactory.class));
+            jetty.withHost("localhost").withPort(8015).withJerseyProperties(Map.of(ServerProperties.BV_SEND_ERROR_IN_RESPONSE,true)).withJaxrsComponent(new FactoryTemplateId<>(TestFeatureFactory.class));
         });
         builder.addSingleton(TestFeatureFactory.class);
         Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
@@ -544,7 +527,7 @@ public class JettyServerTest {
     @Test
     public void test_jersey_property_false(){
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
-            jetty.withHost("localhost").withPort(8015).withJerseyProperties(Map.of(ServerProperties.BV_SEND_ERROR_IN_RESPONSE,false)).withJaxrsComponent(ctx.get(TestFeatureFactory.class));
+            jetty.withHost("localhost").withPort(8015).withJerseyProperties(Map.of(ServerProperties.BV_SEND_ERROR_IN_RESPONSE,false)).withJaxrsComponent(new FactoryTemplateId<>(TestFeatureFactory.class));
         });
         builder.addSingleton(TestFeatureFactory.class);
         Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();

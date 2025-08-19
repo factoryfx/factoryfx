@@ -1,5 +1,6 @@
 package io.github.factoryfx.docu.configurationdata;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
 import io.github.factoryfx.jetty.builder.JettyServerRootFactory;
@@ -15,8 +16,8 @@ public class Main {
     public static void main(String[] args) {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->jetty
                     .withHost("localhost").withPort(8005)
-                    .withResource(ctx.get(SpecificMicroserviceResource.class))
-                    .withResource(ctx.get(DatabaseResourceFactory.class))
+                    .withResource(new FactoryTemplateId<>(SpecificMicroserviceResource.class))
+                    .withResource(new FactoryTemplateId<>(DatabaseResourceFactory.class))
                 );
 
         builder.addSingleton(SpecificMicroserviceResource.class);

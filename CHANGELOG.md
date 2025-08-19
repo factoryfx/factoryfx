@@ -1,3 +1,58 @@
+# 4.0.11
+
+## Breaking changes
+* **ResourceBuilder** (and **JettyServerBuilder** by delegation)
+  * Removed _withResource(ResourceFactory)_ and _withJaxrsComponent(JaxrsComponentFactory)_
+  * Replaced with _withResource(FactoryTemplateId)_ and _withJaxrsComponent(FactoryTemplateId)_. The reason is to make sure that when the factory is created by the FactoryTreeBuilder, the FactoryContext is fully initialized (including persisted factories)
+  * Added _withResourceLiveObjectClass(Class)_ and _withJaxrsComponentLiveObjectClass(Class)_ to support Resource or Jaxrs Component without a factory
+
+
+### Migration
+
+-> FactoryTemplateId
+
+**old**
+```java
+    JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+        jetty.withHost("localhost").withPort(8015).withResource(ctx.get(SomeResourceFactory.class))
+                    .withJaxrsComponent(ctx.get(SomeJaxrsComponentFactory.class));
+    });
+```
+
+**new**
+```java
+    JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+        jetty.withHost("localhost").withPort(8015).withResource(new FactoryTemplateId<>(SomeResourceFactory.class))
+                    .withJaxrsComponent(new FactoryTemplateId<>(SomeJaxrsComponentFactory.class));
+    });
+```
+
+
+-> AttributelessFactory
+
+**old**
+```java
+    JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+        jetty.withHost("localhost").withPort(8015).withResource(AttributelessFactory.create(SomeResource.class))
+                    .withJaxrsComponent(AttributelessFactory.create(SomeJaxrsComponent.class));
+    });
+```
+
+**new**
+```java
+    JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->{
+        jetty.withHost("localhost").withPort(8015).withResourceLiveObjectClass(SomeResource.class)
+                    .withJaxrsComponentLiveObjectClass(SomeJaxrsComponent.class);
+    });
+```
+
+See [JettyServerBuilderWithFactoryTemplateIdTest.java](jettyFactory/src/test/java/io/github/factoryfx/jetty/JettyServerBuilderWithFactoryTemplateIdTest.java) for examples
+
+# 4.0.10
+
+* **ResourceBuilder**
+    * Added ResourceBuilder#withResource(FactoryTemplateId)
+
 # 4.0.9
 
 * **UserInterfaceDistributionClient**

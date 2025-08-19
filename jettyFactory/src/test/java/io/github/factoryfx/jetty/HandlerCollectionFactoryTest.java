@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -98,7 +99,7 @@ public class HandlerCollectionFactoryTest {
     public void test_remove_handler() {
         FactoryTreeBuilder<Server, HandlerCollectionRootFactory> builder = new FactoryTreeBuilder<>(HandlerCollectionRootFactory.class);
         builder.addBuilder(ctx->new SimpleJettyServerBuilder<HandlerCollectionRootFactory>()
-                .withHost("localhost").withPort(8087).withResource(ctx.get(HandlerCollectionResourceFactory.class))
+                .withHost("localhost").withPort(8087).withResource(new FactoryTemplateId<>(HandlerCollectionResourceFactory.class))
         );
 
 

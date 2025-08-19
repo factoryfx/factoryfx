@@ -4,6 +4,7 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryListAttribute;
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.typescript.generator.data.*;
 import io.github.factoryfx.jetty.JettyServerFactory;
@@ -57,7 +58,7 @@ public class TsGeneratorTest {
     public void smoketest_jettyServer(@TempDir Path targetDir)  {
         FactoryTreeBuilder<Server, TestHttpServer> builder = new FactoryTreeBuilder<>(TestHttpServer.class);
         builder.addBuilder(ctx-> new SimpleJettyServerBuilder<TestHttpServer>()
-                .withHost("localhost").withPort(8005).withResource(ctx.get(TestResourceFactory.class)));
+                .withHost("localhost").withPort(8005).withResource(new FactoryTemplateId<>(TestResourceFactory.class)));
         builder.addSingleton(TestResourceFactory.class);
 
 

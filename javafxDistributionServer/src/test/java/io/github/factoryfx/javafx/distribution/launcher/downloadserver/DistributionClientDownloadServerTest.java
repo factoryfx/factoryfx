@@ -1,5 +1,6 @@
 package io.github.factoryfx.javafx.distribution.launcher.downloadserver;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.builder.Scope;
 import io.github.factoryfx.javafx.distribution.launcher.rest.DistributionClientDownloadResourceFactory;
 import io.github.factoryfx.jetty.builder.JettyFactoryTreeBuilder;
@@ -16,7 +17,7 @@ public class DistributionClientDownloadServerTest {
     public static void main(String[] args) {
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)->
-                jetty.withHost("localhost").withPort(43654).withResource(ctx.get(SpecificDistributionClientDownloadResourceFactory.class))
+                jetty.withHost("localhost").withPort(43654).withResource(new FactoryTemplateId<>(SpecificDistributionClientDownloadResourceFactory.class))
         );
         builder.addFactory(DistributionClientDownloadResourceFactory.class, Scope.SINGLETON, ctx -> {
             DistributionClientDownloadResourceFactory<JettyServerRootFactory> resource = new DistributionClientDownloadResourceFactory<>();

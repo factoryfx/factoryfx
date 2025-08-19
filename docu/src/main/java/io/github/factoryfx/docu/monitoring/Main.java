@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public class Main {
 
         FactoryTreeBuilder<Root,RootFactory> builder = new FactoryTreeBuilder<>(RootFactory.class);
         builder.addBuilder(ctx->new SimpleJettyServerBuilder<RootFactory>().withHost("localhost").withPort(34576)
-                .withResource(ctx.get(SimpleResourceFactory.class))
+                .withResource(new FactoryTemplateId<>(SimpleResourceFactory.class))
                 .withHandlerFirst(ctx.get(InstrumentedHandlerFactory.class)));
 
         builder.addSingleton(SimpleResourceFactory.class);

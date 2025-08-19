@@ -22,6 +22,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -59,7 +60,7 @@ public class SslContextFactoryFactoryTest {
     @Test
     public void test_without_ssl() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty
-                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)));
+                .withHost("localhost").withPort(8009).withResource(new FactoryTemplateId<>(TestResourceFactory.class)));
 
         builder.addFactory(TestResourceFactory.class, Scope.SINGLETON);
 
@@ -83,7 +84,7 @@ public class SslContextFactoryFactoryTest {
     @Test
     public void test_with_ssl() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty
-                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(ServerSslContextFactoryFactory.class)));
+                .withHost("localhost").withPort(8009).withResource(new FactoryTemplateId<>(TestResourceFactory.class)).withSsl(ctx.get(ServerSslContextFactoryFactory.class)));
 
         builder.addFactory(ServerSslContextFactoryFactory.class, Scope.SINGLETON, ctx->{
             ServerSslContextFactoryFactory<JettyServerRootFactory> ssl = new ServerSslContextFactoryFactory<>();
@@ -155,7 +156,7 @@ public class SslContextFactoryFactoryTest {
     @Test
     public void test_http2() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty.
-                withHttp2().withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(ServerSslContextFactoryFactory.class)));
+                withHttp2().withHost("localhost").withPort(8009).withResource(new FactoryTemplateId<>(TestResourceFactory.class)).withSsl(ctx.get(ServerSslContextFactoryFactory.class)));
 
 
         builder.addFactory(ServerSslContextFactoryFactory.class, Scope.SINGLETON, ctx->{
@@ -224,7 +225,7 @@ public class SslContextFactoryFactoryTest {
     @Test
     public void test_with_ssl_from_file() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty
-                .withHost("localhost").withPort(8009).withResource(ctx.get(TestResourceFactory.class)).withSsl(ctx.get(ServerIniFileSslContextFactoryFactory.class)));
+                .withHost("localhost").withPort(8009).withResource(new FactoryTemplateId<>(TestResourceFactory.class)).withSsl(ctx.get(ServerIniFileSslContextFactoryFactory.class)));
 
         builder.addFactory(ServerIniFileSslContextFactoryFactory.class, Scope.SINGLETON, ctx->{
             ServerIniFileSslContextFactoryFactory<JettyServerRootFactory> ssl = new ServerIniFileSslContextFactoryFactory<>();

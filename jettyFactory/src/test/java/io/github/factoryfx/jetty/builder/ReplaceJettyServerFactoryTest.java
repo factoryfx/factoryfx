@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class ResourceBuilderBreaksResourceFactoryScopeTest {
+public class ReplaceJettyServerFactoryTest {
 
     static class Root {
     }
@@ -68,8 +67,7 @@ public class ResourceBuilderBreaksResourceFactoryScopeTest {
 
     enum ServerBuilder {
         OLD_BUILDER,
-        NEW_BUILDER_WITH_FACTORY_REFERENCE,
-        NEW_BUILDER_WITH_FACTORY_TEMPLATE_ID,
+        NEW_BUILDER,
     }
 
 
@@ -99,15 +97,7 @@ public class ResourceBuilderBreaksResourceFactoryScopeTest {
                             .withServlet(ctx.get(MyServletFactory.class), "/myresource/*", new FactoryTemplateName("myServlet"))
             );
 
-        } else if (serverBuilder == ServerBuilder.NEW_BUILDER_WITH_FACTORY_REFERENCE) {
-            // This builder passes the MyResourceFactory instance from the context
-            builder.addBuilder(ctx ->
-                    new JettyServerBuilder<>(newServerBuilderFactoryTemplateId,
-                            JettyServerFactory::new)
-                            .withJersey(rb -> rb.withResource(ctx.get(MyResourceFactory.class)).withPathSpec("/myresource/*"), new FactoryTemplateName("myresource"))
-            );
-
-        } else if (serverBuilder == ServerBuilder.NEW_BUILDER_WITH_FACTORY_TEMPLATE_ID) {
+        }  else if (serverBuilder == ServerBuilder.NEW_BUILDER) {
 
             // This builder passes the FactoryTemplateId of the resource, so that it can be instantiated later, when the FactoryContext is aware of the stored factory instance
             builder.addBuilder(ctx ->
@@ -146,35 +136,10 @@ public class ResourceBuilderBreaksResourceFactoryScopeTest {
 
 
     @Test
-    void legacy_with_factory_test() {
-        System.out.printf("with_factory_test: %s%n", folder.toAbsolutePath());
-
-        Microservice<Root, RootFactory> microservice = createMicroservice(ServerBuilder.NEW_BUILDER_WITH_FACTORY_REFERENCE);
-
-        microservice.start();
-
-        DataUpdate<RootFactory> update = microservice.prepareNewFactory();
-        FactoryTreeBuilder<Root, RootFactory> builder = (FactoryTreeBuilder<Root, RootFactory>) update.root.utility().getFactoryTreeBuilder();
-
-        List<MyResourceFactory> list = update.root.internal().collectChildrenDeep().stream().filter(f -> f instanceof MyResourceFactory).map(f -> (MyResourceFactory) f).toList();
-        assertEquals(1, list.size());
-
-        UUID originalMyResourceFactoryId = list.get(0).getId();
-
-        System.out.printf("originalMyResourceFactoryId=%s%n", originalMyResourceFactoryId);
-        JettyServerFactory<RootFactory> newServer = builder.buildSubTree(newServerBuilderFactoryTemplateId);
-
-        MyResourceFactory newMyResourceFactory = findMyResource(newServer);
-
-        assertNotEquals(originalMyResourceFactoryId, newMyResourceFactory.getId(), "Legacy solution: the new MyResourceFactory instance does not respect the Scope.SIMPLETON scope");
-
-    }
-
-    @Test
     void new_with_factory_template_id_test() {
         System.out.printf("with_factory_template_id_test: %s%n", folder.toAbsolutePath());
 
-        Microservice<Root, RootFactory> microservice = createMicroservice(ServerBuilder.NEW_BUILDER_WITH_FACTORY_TEMPLATE_ID);
+        Microservice<Root, RootFactory> microservice = createMicroservice(ServerBuilder.NEW_BUILDER);
 
         microservice.start();
 

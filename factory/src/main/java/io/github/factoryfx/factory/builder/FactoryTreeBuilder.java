@@ -1,5 +1,11 @@
 package io.github.factoryfx.factory.builder;
 
+import io.github.factoryfx.factory.BranchSelector;
+import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.validation.ValidationError;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,12 +13,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import io.github.factoryfx.factory.BranchSelector;
-import io.github.factoryfx.factory.FactoryBase;
-import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
-import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
-import io.github.factoryfx.factory.validation.ValidationError;
 
 /** utility class to build a factory hierarchy(dependency tree)
  *
@@ -73,7 +73,6 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     public <F extends FactoryBase<?,R>> void addFactory(Class<F> clazz, Scope scope){
         addFactory(clazz,scope,new DefaultCreator<>(clazz));
     }
-
 
     public <F extends FactoryBase<?,R>> void addSingleton(FactoryTemplateId<F> templateId, Function<FactoryContext<R>, F> creator){
         factoryContext.addFactoryCreator(new FactoryCreator<>(templateId,Scope.SINGLETON,creator));

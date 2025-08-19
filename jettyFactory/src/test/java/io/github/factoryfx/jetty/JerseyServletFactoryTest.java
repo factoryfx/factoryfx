@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ public class JerseyServletFactoryTest {
     @Test
     public void test_exception_mapper() {
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx)-> jetty.
-                    withHost("localhost").withPort(8087).withExceptionMapper(AttributelessFactory.create(TestExceptionMapper.class)).withResource(ctx.get(JerseyServletTestErrorResourceFactory.class))
+                    withHost("localhost").withPort(8087).withExceptionMapper(AttributelessFactory.create(TestExceptionMapper.class)).withResource(new FactoryTemplateId<>(JerseyServletTestErrorResourceFactory.class))
                 );
 
 
