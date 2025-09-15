@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/download")
 public class ApplicationClientDownloadResource {
 
-    final File guiZipFile;
+    protected final File guiZipFile;
 
     public ApplicationClientDownloadResource(File guiZipFile) {
         this.guiZipFile = guiZipFile;
@@ -29,7 +29,7 @@ public class ApplicationClientDownloadResource {
     @SuppressWarnings("deprecation")// can't easily change Hashing function
     public boolean needUpdate(String fileHash) {
         try {
-            String md5FileHash = Files.asByteSource(guiZipFile).hash(Hashing.md5()).toString();
+            String md5FileHash = Files.asByteSource(getGuiFile()).hash(Hashing.md5()).toString();
             return !md5FileHash.equals(fileHash);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -46,6 +46,6 @@ public class ApplicationClientDownloadResource {
     @GET
     @Produces("application/zip")
     public Response getConfiguration() {
-        return Response.ok(guiZipFile, "application/zip").build();
+        return Response.ok(getGuiFile(), "application/zip").build();
     }
 }
