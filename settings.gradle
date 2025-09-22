@@ -15,7 +15,6 @@ include 'benchmark',
         'microserviceRestResource',
         'oracledbStorage',
         'postgresqlStorage',
-        'record',
         'soapFactory',
         'testfactories',
         'typescriptGenerator'
