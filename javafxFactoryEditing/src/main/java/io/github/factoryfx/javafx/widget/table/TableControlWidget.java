@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -66,7 +67,9 @@ public class TableControlWidget<T> implements Widget {
         HBox.setHgrow(filterField, Priority.ALWAYS);
 
         FilteredList<T> filteredList = new FilteredList<>(tableView.getItems() == null ? FXCollections.emptyObservableList() : tableView.getItems(), null);
-        tableView.setItems(filteredList);
+        SortedList<T> sortedList = new SortedList<>(filteredList);
+        tableView.setItems(sortedList);
+        sortedList.comparatorProperty().bind(tableView.comparatorProperty());
 
         filterField.textProperty().addListener(new FilterTextFieldListener<>(filteredList));
 

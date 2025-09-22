@@ -1,3 +1,11 @@
+# 4.0.14
+
+* **TableControlWidget**
+    * fix sorting in table
+* **Validators**
+    * enhance Regex validator, add ValidationByException
+
+
 # 4.0.11
 
 ## Breaking changes

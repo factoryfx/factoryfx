@@ -34,17 +34,17 @@ public class ResourceBuilder<R extends FactoryBase<?, R>> {
     FactoryBase<LoggingFeature, R> loggingFeature = AttributelessFactory.create(Slf4LoggingFeature.class);
     FactoryBase<ExceptionMapper<Throwable>, R> exceptionMapper = AttributelessFactory.create(AllExceptionMapper.class);
 
-    private List<FactoryTemplateId<? extends FactoryBase<?, R>>> resourceFactoryTemplateIds = new ArrayList<>();
-    private List<FactoryTemplateId<? extends FactoryBase<?, R>>> jaxrsComponentsFactoryTemplateIds = new ArrayList<>();
+    private final List<FactoryTemplateId<? extends FactoryBase<?, R>>> resourceFactoryTemplateIds = new ArrayList<>();
+    private final List<FactoryTemplateId<? extends FactoryBase<?, R>>> jaxrsComponentsFactoryTemplateIds = new ArrayList<>();
 
-    private List<Class<?>> resourceLiveObjectClassList = new ArrayList<>();
-    private List<Class<?>> jaxrsComponentLiveObjectClassList = new ArrayList<>();
+    private final List<Class<?>> resourceLiveObjectClassList = new ArrayList<>();
+    private final List<Class<?>> jaxrsComponentLiveObjectClassList = new ArrayList<>();
 
-    private FactoryTemplateId<ServletAndPathFactory<R>> servletAndPathFactoryTemplateId;
-    private FactoryTemplateId<JerseyServletFactory<R>> jerseyServletFactoryTemplateId;
-    private FactoryTemplateId<FactoryBase<ExceptionMapper<Throwable>, R>> exceptionMapperTemplateId;
-    private FactoryTemplateId<FactoryBase<ObjectMapper, R>> objectMapperTemplateId;
-    private FactoryTemplateId<FactoryBase<LoggingFeature, R>> loggingFeatureTemplateId;
+    private final FactoryTemplateId<ServletAndPathFactory<R>> servletAndPathFactoryTemplateId;
+    private final FactoryTemplateId<JerseyServletFactory<R>> jerseyServletFactoryTemplateId;
+    private final FactoryTemplateId<FactoryBase<ExceptionMapper<Throwable>, R>> exceptionMapperTemplateId;
+    private final FactoryTemplateId<FactoryBase<ObjectMapper, R>> objectMapperTemplateId;
+    private final FactoryTemplateId<FactoryBase<LoggingFeature, R>> loggingFeatureTemplateId;
 
     public ResourceBuilder(FactoryTemplateId<ServletAndPathFactory<R>> factoryTemplateId) {
         this.servletAndPathFactoryTemplateId = factoryTemplateId;

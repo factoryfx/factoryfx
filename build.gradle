@@ -13,7 +13,7 @@ plugins {
 }
 
 wrapper {
-    gradleVersion = '8.14.2'
+    gradleVersion = '9.1.0'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -71,7 +71,7 @@ subprojects {
     }
 
     group = 'io.github.factoryfx'
-    version = '4.0.13'
+    version = '4.0.14'
 
     publishing {
 
