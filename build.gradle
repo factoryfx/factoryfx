@@ -126,10 +126,12 @@ subprojects {
 
         testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.14.2'
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.11.3'
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     }
 
     test {
         useJUnitPlatform()
+        failOnNoDiscoveredTests = false
     }
 
     spotbugs {
