@@ -1,3 +1,8 @@
+# 4.0.15
+
+* **JettyServerBuilder**
+    * add the option to register "first handler" with FactoryTemplateId
+
 # 4.0.14
 
 * **TableControlWidget**
