@@ -31,17 +31,22 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
-            String sql = "CREATE TABLE FACTORY_CURRENT " +
-                    "(id VARCHAR(255) not NULL, " +
-                    " factory BLOB, " +
-                    " factoryMetadata BLOB, " +
-                    " PRIMARY KEY ( id ))";
 
-            statement.executeUpdate(sql);
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            try (ResultSet rs = metaData.getTables(null, null, "FACTORY_CURRENT", new String[]{"TABLE"})) {
+                if (!rs.next()) {
+                    String sql = "CREATE TABLE FACTORY_CURRENT " +
+                            "(id VARCHAR(255) not NULL, " +
+                            " factory BLOB, " +
+                            " factoryMetadata BLOB, " +
+                            " PRIMARY KEY ( id ))";
+
+                    statement.executeUpdate(sql);
+                }
+            }
         } catch (SQLException e) {
-            //oracle don't know IF NOT EXISTS
-            //workaround ignore exception
-//            throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 

@@ -22,20 +22,25 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
 
-        try (Connection connection= connectionSupplier.get();
-             Statement statement = connection.createStatement()){
-             String sql = "CREATE TABLE FACTORY_HISTORY " +
-                        "(id VARCHAR(255) not NULL, " +
-                        " factory BLOB, " +
-                        " factoryMetadata BLOB, " +
-                        " PRIMARY KEY ( id ))";
+        try (Connection connection = connectionSupplier.get();
+             Statement statement = connection.createStatement()) {
 
-             statement.executeUpdate(sql);
+            DatabaseMetaData metaData = connection.getMetaData();
 
+            try (ResultSet rs = metaData.getTables(null, null, "FACTORY_HISTORY", new String[]{"TABLE"})) {
+                if (!rs.next()) {
+                    String sql = "CREATE TABLE FACTORY_HISTORY " +
+                            "(id VARCHAR(255) not NULL, " +
+                            " factory BLOB, " +
+                            " factoryMetadata BLOB, " +
+                            " PRIMARY KEY ( id ))";
+
+                    statement.executeUpdate(sql);
+
+                }
+            }
         } catch (SQLException e) {
-            //oracle don't know "IF NOT EXISTS"
-            //workaround ignore exception
-//            throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
