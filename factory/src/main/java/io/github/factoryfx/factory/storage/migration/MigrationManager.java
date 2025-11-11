@@ -13,6 +13,7 @@ import com.google.common.base.Throwables;
 import io.github.factoryfx.factory.DataObjectIdResolver;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.RawFactoryDataAndMetadata;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
@@ -149,6 +150,10 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
 
     public String write(R root) {
         return objectMapper.writeValueAsString(root);
+    }
+
+    public String write(R root, OutputStyle outputStyle) {
+        return objectMapper.writeValueAsString(root, outputStyle);
     }
 
     public String writeStorageMetadata(StoredDataMetadata metadata) {

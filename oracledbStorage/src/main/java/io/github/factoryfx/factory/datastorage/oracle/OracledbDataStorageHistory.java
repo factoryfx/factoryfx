@@ -3,6 +3,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
@@ -17,10 +18,12 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
 
     private final MigrationManager<R> migrationManager;
     private final Supplier<Connection> connectionSupplier;
+    private final boolean withHistoryCompression;
 
     public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager, boolean withHistoryCompression) {
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
+        this.withHistoryCompression = withHistoryCompression;
 
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
@@ -95,7 +98,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_HISTORY(id,factory,factoryMetadata) VALUES (?,?,? )")) {
              preparedStatement.setString(1, id);
-             JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot),preparedStatement,2);
+             JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot, withHistoryCompression ? OutputStyle.COMPACT : OutputStyle.DEFAULT),preparedStatement,2);
              JdbcUtil.writeStringToBlob(migrationManager.writeStorageMetadata(metadata),preparedStatement,3);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
