@@ -18,7 +18,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
     private final MigrationManager<R> migrationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager){
+    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager, boolean withHistoryCompression) {
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
 
@@ -29,14 +29,26 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
 
             try (ResultSet rs = metaData.getTables(null, null, "FACTORY_HISTORY", new String[]{"TABLE"})) {
                 if (!rs.next()) {
-                    String sql = "CREATE TABLE FACTORY_HISTORY " +
+
+                    statement.executeUpdate("CREATE TABLE FACTORY_HISTORY " +
                             "(id VARCHAR(255) not NULL, " +
                             " factory BLOB, " +
-                            " factoryMetadata BLOB, " +
-                            " PRIMARY KEY ( id ))";
+                            " factoryMetadata BLOB)");
 
-                    statement.executeUpdate(sql);
+                        SQLException compressHistoryException = null;
+                        if (withHistoryCompression) {
+                            try {
+                                statement.executeUpdate("ALTER TABLE FACTORY_HISTORY MOVE LOB(FACTORY) STORE AS SECUREFILE (COMPRESS HIGH)");
+                            }  catch (SQLException e) {
+                                compressHistoryException = e;
+                            }
+                        }
 
+                    statement.executeUpdate("ALTER TABLE FACTORY_HISTORY ADD CONSTRAINT PK_FACTORY_HISTORY PRIMARY KEY (id)");
+
+                    if (compressHistoryException != null) {
+                        throw compressHistoryException;
+                    }
                 }
             }
         } catch (SQLException e) {

@@ -51,7 +51,11 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
     }
 
     public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper) {
-        this(connectionSupplier, initialDataParam, migrationManager, new OracledbDataStorageHistory<>(connectionSupplier, migrationManager),
+        this(connectionSupplier, initialDataParam, migrationManager, objectMapper, false);
+    }
+
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, boolean withHistoryCompression) {
+        this(connectionSupplier, initialDataParam, migrationManager, new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, withHistoryCompression),
                 new OracledbDataStorageFuture<>(connectionSupplier, migrationManager), objectMapper);
     }
 

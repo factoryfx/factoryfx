@@ -1,3 +1,8 @@
+# 4.0.16
+
+* **OracledbDataStorage**
+    * add the option to compress the history
+
 # 4.0.15
 
 * **JettyServerBuilder**
