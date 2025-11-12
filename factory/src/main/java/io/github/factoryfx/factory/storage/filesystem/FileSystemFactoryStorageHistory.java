@@ -3,6 +3,7 @@ package io.github.factoryfx.factory.storage.filesystem;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
@@ -82,7 +83,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?,R>> {
     public void updateHistory(R factoryRoot, StoredDataMetadata metadata) {
         String id=metadata.id;
 
-        writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"), migrationManager.write(factoryRoot));
+        writeFile(Paths.get(historyDirectory.toString()+"/"+id+".json"), migrationManager.write(factoryRoot, OutputStyle.COMPACT));
         writeFile(Paths.get(historyDirectory.toString()+"/"+id+"_metadata.json"), migrationManager.writeStorageMetadata(metadata));
         cache.put(id,metadata);
 

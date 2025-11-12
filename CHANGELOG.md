@@ -2,6 +2,10 @@
 
 * **OracledbDataStorage**
     * add the option to compress the history
+* **SimpleObjectMapper#writeValueAsString**
+    * choose PRETTY/COMPACT/DEFAULT output style
+* **Save history**
+    * always save history with COMPACT output style
 
 # 4.0.15
 
