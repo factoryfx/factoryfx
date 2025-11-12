@@ -1,11 +1,11 @@
 # 4.0.16
 
 * **OracledbDataStorage**
-    * add the option to compress the history
+    * add an option to compress the history, the compression/decompression is also applied to existing records
 * **SimpleObjectMapper#writeValueAsString**
-    * choose PRETTY/COMPACT/DEFAULT output style
+    * introduce PRETTY/COMPACT/DEFAULT output style
 * **Save history**
-    * always save history with COMPACT output style
+    * always save history using the COMPACT output style
 
 # 4.0.15
 
