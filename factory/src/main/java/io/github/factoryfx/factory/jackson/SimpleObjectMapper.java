@@ -166,7 +166,7 @@ public class SimpleObjectMapper {
     @SuppressWarnings("unchecked")
     private <T> T readInternal(ResultFunction<T> function) {
         try {
-            T value = function.read();
+            T value = function.apply();
             if (value instanceof FactoryBase<?, ?>) {
                 return (T) ((FactoryBase<?, ?>) value).internal().finalise();
             }
@@ -178,7 +178,7 @@ public class SimpleObjectMapper {
 
     private void writeInternal(VoidFunction function) {
         try {
-            function.write();
+            function.apply();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -186,17 +186,17 @@ public class SimpleObjectMapper {
 
     private <T> T writeInternal(ResultFunction<T> function) {
         try {
-            return function.read();
+            return function.apply();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private interface VoidFunction {
-        void write() throws IOException;
+        void apply() throws IOException;
     }
 
     private interface ResultFunction<T> {
-        T read() throws IOException;
+        T apply() throws IOException;
     }
 }
