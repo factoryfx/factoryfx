@@ -41,26 +41,24 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
                 }
             }
 
-            String historyCompressionSql = withHistoryCompression ?
-                    """
-                            begin
-                            for cur in (SELECT 1 FROM user_lobs WHERE table_name = 'FACTORY_HISTORY' and column_name = 'FACTORY' and COMPRESSION = 'NO' and rownum = 1) loop
-                            execute immediate 'ALTER TABLE FACTORY_HISTORY MOVE LOB(FACTORY) STORE AS SECUREFILE (COMPRESS HIGH)';
-                            for cur1 in (SELECT index_name FROM user_indexes WHERE table_name = 'FACTORY_HISTORY' and status != 'VALID') loop
-                                    execute immediate 'ALTER INDEX ' || cur1.INDEX_NAME || ' REBUILD';
-                            end loop;
-                            end loop;
-                            end; """ :
-                    """
-                            begin
-                            for cur in (SELECT 1 FROM user_lobs WHERE table_name = 'FACTORY_HISTORY' and column_name = 'FACTORY' and COMPRESSION != 'NO' and rownum = 1) loop
-                            execute immediate 'ALTER TABLE FACTORY_HISTORY MOVE LOB(FACTORY) STORE AS SECUREFILE (NOCOMPRESS)';
-                            for cur1 in (SELECT index_name FROM user_indexes WHERE table_name = 'FACTORY_HISTORY' and status != 'VALID') loop
-                                    execute immediate 'ALTER INDEX ' || cur1.INDEX_NAME || ' REBUILD';
-                            end loop;
-                            end loop;
-                            end;""";
-            statement.execute(historyCompressionSql);
+            if (metaData.getDatabaseProductName().toLowerCase().contains("oracle")) {
+                String historyCompressionSql = withHistoryCompression ?
+                        """
+                                begin 
+                                for cur in (SELECT 1 FROM user_lobs WHERE table_name = 'FACTORY_HISTORY' and column_name = 'FACTORY' and COMPRESSION = 'NO' and rownum = 1) loop
+                                execute immediate 'ALTER TABLE FACTORY_HISTORY MOVE LOB(FACTORY) STORE AS SECUREFILE (COMPRESS HIGH)';
+                                for cur in (SELECT index_name FROM user_indexes WHERE table_name = 'FACTORY_HISTORY' and status != 'VALID') loop
+                                execute immediate 'ALTER INDEX ' || cur.INDEX_NAME || ' REBUILD';
+                                end loop; end loop; end;""" :
+                        """
+                                begin for cur in (SELECT 1 FROM user_tab_columns WHERE table_name = 'USER_LOBS' AND column_name = 'COMPRESSION' and rownum = 1) loop
+                                for cur in (SELECT 1 FROM user_lobs WHERE table_name = 'FACTORY_HISTORY' and column_name = 'FACTORY' and COMPRESSION != 'NO' and rownum = 1) loop
+                                execute immediate 'ALTER TABLE FACTORY_HISTORY MOVE LOB(FACTORY) STORE AS SECUREFILE (NOCOMPRESS)';
+                                for cur in (SELECT index_name FROM user_indexes WHERE table_name = 'FACTORY_HISTORY' and status != 'VALID') loop
+                                execute immediate 'ALTER INDEX ' || cur.INDEX_NAME || ' REBUILD';
+                                end loop; end loop; end loop; end;""";
+                statement.execute(historyCompressionSql);
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
