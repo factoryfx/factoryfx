@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 
 public class JdbcUtil {
-    public static void writeStringToBlob(String value, PreparedStatement preparedStatement, int index){
+    public static void writeStringToBlob(String value, PreparedStatement preparedStatement, int index) {
         try {
             final byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
             preparedStatement.setBinaryStream(index, new ByteArrayInputStream(bytes), bytes.length);
@@ -14,9 +14,9 @@ public class JdbcUtil {
         }
     }
 
-    public static String readStringFromBlob(ResultSet resultSet, String columnLabel){
+    public static String readStringFromBlob(ResultSet resultSet, String columnLabel) {
         try {
-            Blob factoryBlob  = resultSet.getBlob(columnLabel);
+            Blob factoryBlob = resultSet.getBlob(columnLabel);
             return new String(factoryBlob.getBytes(1L, (int) factoryBlob.length()), StandardCharsets.UTF_8);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -29,15 +29,30 @@ public class JdbcUtil {
                 return false;
             }
 
-            String sql = "SELECT 1 FROM all_tab_columns WHERE table_name = 'USER_LOBS' AND column_name = 'COMPRESSION'";
+            String sql1 = """
+                    SELECT COUNT(*) AS cnt
+                    FROM all_tab_columns
+                    WHERE table_name = 'USER_LOBS'
+                      AND column_name IN ('COMPRESSION', 'SECUREFILE')""";
+
+            String sql2 = """
+                    SELECT 1 
+                    FROM user_lobs 
+                    WHERE table_name = 'FACTORY_HISTORY' and column_name = 'FACTORY' and securefile = 'YES'""";
 
             try (Statement stmt = connection.createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
-                return rs.next();
+                 ResultSet rs = stmt.executeQuery(sql1)) {
+
+                if (rs.next() && rs.getInt("cnt") >= 2) {
+                    try (Statement stmt2 = connection.createStatement();
+                         ResultSet rs2 = stmt2.executeQuery(sql2)) {
+                        return rs2.next();
+                    }
+                }
             }
 
-        } catch (SQLException e) {
-            return false;
+        } catch (SQLException ignored) {
         }
+        return false;
     }
 }
