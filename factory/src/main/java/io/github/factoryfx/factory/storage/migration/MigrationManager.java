@@ -149,7 +149,7 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
     }
 
     public String write(R root) {
-        return objectMapper.writeValueAsString(root);
+        return write(root, OutputStyle.DEFAULT);
     }
 
     public String write(R root, OutputStyle outputStyle) {
