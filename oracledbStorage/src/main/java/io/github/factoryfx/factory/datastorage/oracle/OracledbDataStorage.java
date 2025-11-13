@@ -31,22 +31,31 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
-            String sql = "CREATE TABLE FACTORY_CURRENT " +
-                    "(id VARCHAR(255) not NULL, " +
-                    " factory BLOB, " +
-                    " factoryMetadata BLOB, " +
-                    " PRIMARY KEY ( id ))";
 
-            statement.executeUpdate(sql);
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            try (ResultSet rs = metaData.getTables(null, null, "FACTORY_CURRENT", new String[]{"TABLE"})) {
+                if (!rs.next()) {
+                    String sql = "CREATE TABLE FACTORY_CURRENT " +
+                            "(id VARCHAR(255) not NULL, " +
+                            " factory BLOB, " +
+                            " factoryMetadata BLOB, " +
+                            " PRIMARY KEY ( id ))";
+
+                    statement.executeUpdate(sql);
+                }
+            }
         } catch (SQLException e) {
-            //oracle don't know IF NOT EXISTS
-            //workaround ignore exception
-//            throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
     public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper) {
-        this(connectionSupplier, initialDataParam, migrationManager, new OracledbDataStorageHistory<>(connectionSupplier, migrationManager),
+        this(connectionSupplier, initialDataParam, migrationManager, objectMapper, false);
+    }
+
+    public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, boolean withHistoryCompression) {
+        this(connectionSupplier, initialDataParam, migrationManager, new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, withHistoryCompression),
                 new OracledbDataStorageFuture<>(connectionSupplier, migrationManager), objectMapper);
     }
 

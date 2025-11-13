@@ -1,3 +1,12 @@
+# 4.0.16
+
+* **OracledbDataStorage**
+    * add an option to compress the history, the compression/decompression is also applied to existing records
+* **SimpleObjectMapper#writeValueAsString**
+    * introduce PRETTY/COMPACT/DEFAULT output style
+* **Save history**
+    * always save history using the COMPACT output style
+
 # 4.0.15
 
 * **JettyServerBuilder**

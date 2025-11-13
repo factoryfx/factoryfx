@@ -1,14 +1,5 @@
 package io.github.factoryfx.factory.jackson;
 
-import java.io.DataOutput;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.nio.file.Path;
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
@@ -16,10 +7,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
-
 import io.github.factoryfx.factory.FactoryBase;
 
-/** the main purpose of SimpleObjectMapper is to get rid of the checked exceptions */
+import java.io.*;
+import java.nio.file.Path;
+import java.util.List;
+
+/**
+ * the main purpose of SimpleObjectMapper is to get rid of the checked exceptions
+ */
 public class SimpleObjectMapper {
     private final ObjectMapper objectMapper;
 
@@ -148,11 +144,11 @@ public class SimpleObjectMapper {
     }
 
     public String writeValueAsString(Object value) {
-        return writeInternal(() -> objectMapper.writeValueAsString(value));
+        return writeValueAsString(value, OutputStyle.DEFAULT);
     }
 
-    public String writeValueAsString(Object value, boolean pretty) {
-        return writeInternal(() -> pretty ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(value) : objectMapper.writeValueAsString(value));
+    public String writeValueAsString(Object value, OutputStyle outputStyle) {
+        return writeInternal(() -> outputStyle.getWriter(objectMapper).writeValueAsString(value));
     }
 
     public JsonNode writeValueAsTree(Object object) {
@@ -170,7 +166,7 @@ public class SimpleObjectMapper {
     @SuppressWarnings("unchecked")
     private <T> T readInternal(ResultFunction<T> function) {
         try {
-            T value = function.read();
+            T value = function.apply();
             if (value instanceof FactoryBase<?, ?>) {
                 return (T) ((FactoryBase<?, ?>) value).internal().finalise();
             }
@@ -182,7 +178,7 @@ public class SimpleObjectMapper {
 
     private void writeInternal(VoidFunction function) {
         try {
-            function.write();
+            function.apply();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -190,17 +186,17 @@ public class SimpleObjectMapper {
 
     private <T> T writeInternal(ResultFunction<T> function) {
         try {
-            return function.read();
+            return function.apply();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private interface VoidFunction {
-        void write() throws IOException;
+        void apply() throws IOException;
     }
 
     private interface ResultFunction<T> {
-        T read() throws IOException;
+        T apply() throws IOException;
     }
 }

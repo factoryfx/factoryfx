@@ -3,6 +3,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataStoragePatcher;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
@@ -18,24 +19,68 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
     private final MigrationManager<R> migrationManager;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager){
+    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager, boolean withHistoryCompression) {
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
 
-        try (Connection connection= connectionSupplier.get();
-             Statement statement = connection.createStatement()){
-             String sql = "CREATE TABLE FACTORY_HISTORY " +
-                        "(id VARCHAR(255) not NULL, " +
-                        " factory BLOB, " +
-                        " factoryMetadata BLOB, " +
-                        " PRIMARY KEY ( id ))";
+        try (Connection connection = connectionSupplier.get();
+             Statement statement = connection.createStatement()) {
 
-             statement.executeUpdate(sql);
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            try (ResultSet rs = metaData.getTables(null, null, "FACTORY_HISTORY", new String[]{"TABLE"})) {
+                if (!rs.next()) {
+                    String sql = "CREATE TABLE FACTORY_HISTORY " +
+                            "(id VARCHAR(255) not NULL, " +
+                            " factory BLOB, " +
+                            " factoryMetadata BLOB, " +
+                            " PRIMARY KEY ( id ))";
+
+                    statement.executeUpdate(sql);
+
+                }
+            }
+
+            if (JdbcUtil.isOracleWithCompressionSupport(connection)) {
+                if (withHistoryCompression != isHistoryCompressionAlreadyActivated(connection)) {
+
+                    String sql = withHistoryCompression
+                            ? "ALTER TABLE FACTORY_HISTORY MOVE LOB(FACTORY) STORE AS SECUREFILE (COMPRESS HIGH)"
+                            : "ALTER TABLE FACTORY_HISTORY MOVE LOB(FACTORY) STORE AS SECUREFILE (NOCOMPRESS)";
+
+                    statement.executeUpdate(sql);
+                    rebuildIndexes(connection);
+                }
+
+            } else if (withHistoryCompression) {
+                throw new RuntimeException("cannot use withHistoryCompression flag for this database");
+            }
 
         } catch (SQLException e) {
-            //oracle don't know "IF NOT EXISTS"
-            //workaround ignore exception
-//            throw new RuntimeException(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static boolean isHistoryCompressionAlreadyActivated(Connection connection) throws SQLException {
+        String sql = "SELECT 1 FROM user_lobs WHERE table_name = 'FACTORY_HISTORY' and column_name = 'FACTORY' and COMPRESSION != 'NO'";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            return rs.next();
+        }
+    }
+
+    private static void rebuildIndexes(Connection connection) throws SQLException {
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT index_name FROM user_indexes WHERE table_name = 'FACTORY_HISTORY' AND status != 'VALID'")) {
+
+            while (rs.next()) {
+                String indexName = rs.getString("index_name");
+                try (Statement rebuildStmt = connection.createStatement()) {
+                    rebuildStmt.execute("ALTER INDEX " + indexName + " REBUILD");
+                }
+            }
         }
     }
 
@@ -78,7 +123,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_HISTORY(id,factory,factoryMetadata) VALUES (?,?,? )")) {
              preparedStatement.setString(1, id);
-             JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot),preparedStatement,2);
+             JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot, OutputStyle.COMPACT),preparedStatement,2);
              JdbcUtil.writeStringToBlob(migrationManager.writeStorageMetadata(metadata),preparedStatement,3);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {

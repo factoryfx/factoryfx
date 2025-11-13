@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.CharStreams;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataAndId;
 import io.github.factoryfx.factory.storage.DataAndStoredMetadata;
@@ -241,21 +242,21 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
         Timestamp createdAtTimestamp = new Timestamp(createdAt);
 
         try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into configuration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
-            setValuesAndExecute(update, createdAtTimestamp, pstmtInsertConfiguration);
+            pstmtInsertConfiguration.setString(1, migrationManager.write(update.root, OutputStyle.COMPACT));
+            pstmtInsertConfiguration.setString(2, migrationManager.writeStorageMetadata(update.metadata));
+            pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
+            pstmtInsertConfiguration.setString(4, update.metadata.id);
+            pstmtInsertConfiguration.execute();
         }
         try (PreparedStatement pstmtUpdateCurrentConfiguraion =
                  firstEntry ? connection.prepareStatement("insert into currentconfiguration (root,metadata,createdAt,id) values (cast (? as json), cast (? as json), ?, ?)")
                      : connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json), createdAt = ?, id = ?")) {
-            setValuesAndExecute(update, createdAtTimestamp, pstmtUpdateCurrentConfiguraion);
+            pstmtUpdateCurrentConfiguraion.setString(1, migrationManager.write(update.root));
+            pstmtUpdateCurrentConfiguraion.setString(2, migrationManager.writeStorageMetadata(update.metadata));
+            pstmtUpdateCurrentConfiguraion.setTimestamp(3, createdAtTimestamp);
+            pstmtUpdateCurrentConfiguraion.setString(4, update.metadata.id);
+            pstmtUpdateCurrentConfiguraion.execute();
         }
-    }
-
-    private void setValuesAndExecute(DataAndStoredMetadata<R> update, Timestamp createdAtTimestamp, PreparedStatement pstmt) throws SQLException {
-        pstmt.setString(1, migrationManager.write(update.root));
-        pstmt.setString(2, migrationManager.writeStorageMetadata(update.metadata));
-        pstmt.setTimestamp(3, createdAtTimestamp);
-        pstmt.setString(4, update.metadata.id);
-        pstmt.execute();
     }
 
     private boolean tablesAreAvailable;
