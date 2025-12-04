@@ -24,7 +24,24 @@ nmcpAggregation {
         password = System.getenv("SONATYPE_PASSWORD")
         publishingType = "AUTOMATIC"
     }
-    publishAllProjectsProbablyBreakingProjectIsolation()
+}
+
+dependencies {
+    nmcpAggregation(project(":copperBridge"))
+    nmcpAggregation(project(":domFactoryEditing"))
+    nmcpAggregation(project(":factory"))
+    nmcpAggregation(project(":initializr"))
+    nmcpAggregation(project(":javafxDistributionClient"))
+    nmcpAggregation(project(":javafxDistributionServer"))
+    nmcpAggregation(project(":javafxFactoryEditing"))
+    nmcpAggregation(project(":jettyFactory"))
+    nmcpAggregation(project(":microserviceRestClient"))
+    nmcpAggregation(project(":microserviceRestCommon"))
+    nmcpAggregation(project(":microserviceRestResource"))
+    nmcpAggregation(project(":oracledbStorage"))
+    nmcpAggregation(project(":postgresqlStorage"))
+    nmcpAggregation(project(":soapFactory"))
+    nmcpAggregation(project(":typescriptGenerator"))
 }
 
 subprojects {
@@ -193,7 +210,6 @@ project(":microserviceRestCommon") {
 }
 
 project(":microserviceRestIntegrationTest") {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":microserviceRestResource")
         implementation project(":microserviceRestClient")
@@ -273,7 +289,7 @@ project(":example") {
         modules = ["javafx.controls", "javafx.web", "javafx.graphics", "javafx.fxml", "javafx.media"]
         configuration = "api"
     }
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
+
     dependencies {
         implementation project(":javafxFactoryEditing")
         implementation project(":jettyFactory")
@@ -348,14 +364,12 @@ project(":javafxDistributionClient") {
 }
 
 project(":testfactories") {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":factory")
     }
 }
 
 project(":docu") {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":factory")
         implementation project(":jettyFactory")
@@ -454,7 +468,6 @@ project(":initializr") {
 }
 
 project(":benchmark") {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":factory")
         implementation project(":testfactories")
