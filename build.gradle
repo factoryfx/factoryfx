@@ -27,6 +27,10 @@ nmcpAggregation {
     }
 }
 
+tasks.named("nmcpZipAggregation"){
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 dependencies {
     nmcpAggregation(project(":copperBridge"))
     nmcpAggregation(project(":domFactoryEditing"))
@@ -93,7 +97,6 @@ subprojects {
     version = "4.1.0"
 
     publishing {
-
         publications {
             mavenJava(MavenPublication) {
                 from components.java
