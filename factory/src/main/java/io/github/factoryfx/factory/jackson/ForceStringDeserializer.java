@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 
 /**
- * https://github.com/FasterXML/jackson-databind/issues/796
+ * <a href="https://github.com/FasterXML/jackson-databind/issues/796">...</a>
  * don't implicit cast non String value like true/false,1 to string
  *
  */

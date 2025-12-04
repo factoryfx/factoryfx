@@ -1,3 +1,10 @@
+# 4.1.0
+
+* **FactoryListAttributeEditWidget**
+    * select the newly added item
+* **Maintenance**
+    * update dependency versions
+
 # 4.0.16
 
 * **OracledbDataStorage**

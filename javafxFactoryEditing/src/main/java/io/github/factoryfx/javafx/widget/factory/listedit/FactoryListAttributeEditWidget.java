@@ -205,12 +205,17 @@ public class FactoryListAttributeEditWidget<RS extends FactoryBase<?,RS>,L, F ex
         List<PossibleNewValue<F>> newDataList = newValueProvider.get();
         if (!newDataList.isEmpty()){
             if (newDataList.size()==1){
-                newDataList.get(0).add();
-                navigateToData.accept(newDataList.get(0).newValue);
+                PossibleNewValue<F> first = newDataList.get(0);
+                tableView.getSelectionModel().clearSelection();
+                first.add();
+                tableView.getSelectionModel().select(first.newValue);
+                navigateToData.accept(first.newValue);
             } else {
                 List<PossibleNewValue<F>> newDataListData = new ArrayList<>(newDataList);
                 new SelectFactoryDialog<>(newDataListData,uniformDesign).show(owner, possibleNewValue -> {
+                    tableView.getSelectionModel().clearSelection();
                     possibleNewValue.add();
+                    tableView.getSelectionModel().select(possibleNewValue.newValue);
                     navigateToData.accept(possibleNewValue.newValue);
                 });
             }

@@ -278,9 +278,6 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
 
         addFactory(builder,gzipHandlerFactoryTemplateId, Scope.SINGLETON, (ctx)->{
             GzipHandlerFactory<R> gzipHandler = new GzipHandlerFactory<>();
-            gzipHandler.minGzipSize.set(23);
-            gzipHandler.inflateBufferSize.set(-1);
-            gzipHandler.syncFlush.set(false);
             gzipHandler.handler.set(ctx.get(servletContextHandlerFactoryTemplateId));
             gzipHandlerCustomizer.accept(gzipHandler);
             return gzipHandler;

@@ -5,9 +5,10 @@ module io.github.factoryfx.javafxDistributionClient {
     requires com.fasterxml.jackson.databind;
     requires com.google.common;
     requires javafx.controls;
-    requires jersey.client;
-    requires jersey.media.json.jackson;
-    requires jersey.common;
+    requires org.glassfish.jersey.media.json.jackson;
+    requires org.glassfish.jersey.core.client;
+    requires org.glassfish.jersey.core.common;
+
 
     exports io.github.factoryfx.javafx.distribution.launcher.ui;
 }

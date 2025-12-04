@@ -6,22 +6,22 @@ buildscript {
     }
 }
 plugins {
-    id "com.github.spotbugs" version "6.0.26"
-    id "com.github.ben-manes.versions" version "0.51.0"
-    id "com.gradleup.nmcp.aggregation" version "1.0.1"
+    id "com.github.spotbugs" version "6.4.7"
+    id "com.github.ben-manes.versions" version "0.53.0"
+    id "com.gradleup.nmcp.aggregation" version "1.3.0"
     id "org.openjfx.javafxplugin" version "0.1.0" apply false
 }
 
 wrapper {
-    gradleVersion = '9.1.0'
+    gradleVersion = "9.2.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 
-apply plugin: 'maven-publish'
+apply plugin: "maven-publish"
 nmcpAggregation {
     centralPortal {
-        username = System.getenv('SONATYPE_USER')
-        password = System.getenv('SONATYPE_PASSWORD')
+        username = System.getenv("SONATYPE_USER")
+        password = System.getenv("SONATYPE_PASSWORD")
         publishingType = "AUTOMATIC"
     }
     publishAllProjectsProbablyBreakingProjectIsolation()
@@ -29,27 +29,32 @@ nmcpAggregation {
 
 subprojects {
     apply plugin: "com.github.spotbugs"
-    apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
+    apply plugin: "java-library"
+    apply plugin: "maven-publish"
+    apply plugin: "signing"
 
     java {
         sourceCompatibility = JavaVersion.VERSION_17
     }
 
-    if (!'benchmark'.equals(project.name)) {//jmh does not work with module-info
+    if (!"benchmark".equals(project.name)) {//jmh does not work with module-info
         compileJava {
 
             inputs.property("moduleName", "io.github.factoryfx.$project.name")
             doFirst {
-                options.compilerArgs = ['--module-path', classpath.asPath]
+                options.compilerArgs = ["--module-path", classpath.asPath]
                 classpath = files()
             }
         }
     }
 
-    tasks.register('javadocJar', Jar) {
-        archiveClassifier = 'javadoc'
+    tasks.register("sourcesJar", Jar) {
+        archiveClassifier = "sources"
+        from sourceSets.main.allSource
+    }
+
+    tasks.register("javadocJar", Jar) {
+        archiveClassifier = "javadoc"
         from javadoc
     }
     javadoc {
@@ -57,21 +62,17 @@ subprojects {
         doFirst {
             options.modulePath = new ArrayList<>(classpath.files)
             options.encoding = StandardCharsets.UTF_8
-            ((CoreJavadocOptions) options).addStringOption('Xdoclint:none', '-quiet')
+            ((CoreJavadocOptions) options).addStringOption("Xdoclint:none", "-quiet")
         }
     }
 
-    tasks.register('sourcesJar', Jar) {
-        archiveClassifier = 'sources'
-        from sourceSets.main.allSource
+    tasks.named("assemble") {
+        dependsOn(sourcesJar)
+        dependsOn(javadocJar)
     }
 
-    artifacts {
-        archives javadocJar, sourcesJar
-    }
-
-    group = 'io.github.factoryfx'
-    version = '4.0.16'
+    group = "io.github.factoryfx"
+    version = "4.1.0"
 
     publishing {
 
@@ -81,33 +82,33 @@ subprojects {
                 artifact sourcesJar
                 artifact javadocJar
                 pom {
-                    name = 'factoryfx'
-                    packaging = 'jar'
-                    description = 'factoryfx dependency injection framework'
-                    url = 'http://factoryfx.github.io/factoryfx'
+                    name = "factoryfx"
+                    packaging = "jar"
+                    description = "factoryfx dependency injection framework"
+                    url = "http://factoryfx.github.io/factoryfx"
                     licenses {
                         license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name = "The Apache License, Version 2.0"
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
                         }
                     }
                     developers {
                         developer {
-                            id = 'SCOOP Software'
-                            name = 'SCOOP Software'
+                            id = "SCOOP Software"
+                            name = "SCOOP Software"
                         }
                     }
                     scm {
-                        connection = 'scm:git@github.com:factoryfx/factoryfx.git'
-                        developerConnection = 'scm:git@github.com:factoryfx/factoryfx.git'
-                        url = 'scm:git@github.com:factoryfx/factoryfx.git'
+                        connection = "scm:git@github.com:factoryfx/factoryfx.git"
+                        developerConnection = "scm:git@github.com:factoryfx/factoryfx.git"
+                        url = "scm:git@github.com:factoryfx/factoryfx.git"
                     }
                 }
             }
         }
     }
 
-    if (System.getenv('SECRING') != null) {
+    if (System.getenv("SECRING") != null) {
         signing {
             def signingKey = System.getenv("SECRING")
             def signingPassword = System.getenv("SECRING_PASS")
@@ -121,12 +122,12 @@ subprojects {
     }
 
     dependencies {
-        api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
-        api(group: 'com.google.guava', name: 'guava', version: '33.4.8-jre')
+        api("org.slf4j:slf4j-api:2.0.17")
+        api("com.google.guava:guava:33.5.0-jre")
 
-        testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.14.2'
-        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.11.3'
-        testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+        testImplementation("org.mockito:mockito-core:5.20.0")
+        testImplementation("org.junit.jupiter:junit-jupiter:6.1.0-M1")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.0-M1")
     }
 
     test {
@@ -135,7 +136,7 @@ subprojects {
     }
 
     spotbugs {
-        toolVersion = '4.8.6'
+        toolVersion = "4.9.8"
         ignoreFailures = true
         excludeFilter = file("$rootProject.projectDir/findbugs/findbugs-exclude-filter.xml")
     }
@@ -146,22 +147,22 @@ subprojects {
 
 }
 
-project(':copperBridge') {
+project(":copperBridge") {
     dependencies {
         api project(":factory")
-        api(group: 'org.copper-engine', name: 'copper-coreengine', version: '5.5.2')
-        api(group: 'org.copper-engine', name: 'copper-ext', version: '5.5.2')
+        api("org.copper-engine:copper-coreengine:6.0.0")
+        api("org.copper-engine:copper-ext:6.0.0")
 
-        api group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.3'
-        api group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
+        api("jakarta.activation:jakarta.activation-api:2.1.4")
+        api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
 
-        api group: 'org.ow2.asm', name: 'asm', version: '9.7.1'
-        api group: 'org.ow2.asm', name: 'asm-tree', version: '9.7.1'
-        api group: 'org.yaml', name: 'snakeyaml', version: '2.3'
+        api("org.ow2.asm:asm:9.9")
+        api("org.ow2.asm:asm-tree:9.9")
+        api("org.yaml:snakeyaml:2.5")
     }
 }
 
-project(':microserviceRestResource') {
+project(":microserviceRestResource") {
     dependencies {
         api project(":jettyFactory")
         api project(":microserviceRestCommon")
@@ -169,107 +170,110 @@ project(':microserviceRestResource') {
     }
 }
 
-project(':microserviceRestClient') {
+project(":microserviceRestClient") {
     dependencies {
         api project(":factory")
         api project(":microserviceRestCommon")
-        api(group: 'org.glassfish.jersey.ext', name: 'jersey-proxy-client', version: '3.1.9')
-        api('org.glassfish.jersey.core:jersey-client:3.1.9')
-        api group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '3.1.9'
-        api group: 'org.glassfish.jersey.core', name: 'jersey-common', version: '3.1.9'
+        api("org.glassfish.jersey.ext:jersey-proxy-client:4.0.0")
+        api("org.glassfish.jersey.core:jersey-client:4.0.0")
+        api("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0")
+        api("org.glassfish.jersey.core:jersey-common:4.0.0")
+        api("org.glassfish.jersey.containers:jersey-container-servlet:4.0.0")
     }
 
 }
 
-project(':microserviceRestCommon') {
+project(":microserviceRestCommon") {
     dependencies {
         api project(":factory")
-        api group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: '4.0.0'
-        api group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.3'
-        api group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
+        api("jakarta.ws.rs:jakarta.ws.rs-api:4.0.0")
+        api("jakarta.activation:jakarta.activation-api:2.1.4")
+        api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
     }
 }
 
-project(':microserviceRestIntegrationTest') {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+project(":microserviceRestIntegrationTest") {
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":microserviceRestResource")
         implementation project(":microserviceRestClient")
-        implementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
-        implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.3'
+        implementation("ch.qos.logback:logback-classic:1.5.21")
+        implementation("jakarta.activation:jakarta.activation-api:2.1.4")
     }
 }
 
 
-project(':factory') {
+project(":factory") {
     dependencies {
-        api(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1')
-        api(group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.18.1')
-        api(group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.18.1')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.18.1'
+        api("com.fasterxml.jackson.core:jackson-databind:2.20.1")
+        api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.20.1")
+        api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
         testImplementation project(":testfactories")
-        testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
-        testImplementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.18.1'
+        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
     }
 }
 
-project(':postgresqlStorage') {
+project(":postgresqlStorage") {
 
     dependencies {
         api project(":factory")
-        api group: 'org.postgresql', name: 'postgresql', version: '42.7.4'
-        testImplementation 'io.zonky.test:embedded-postgres:2.0.7'
+        api("org.postgresql:postgresql:42.7.8")
+        testImplementation("io.zonky.test:embedded-postgres:2.2.0")
         testImplementation project(":testfactories")
     }
 
 }
 
-project(':oracledbStorage') {
+project(":oracledbStorage") {
     dependencies {
         implementation project(":factory")
-        implementation(group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "23.5.0.24.07")
-        testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
+        implementation("com.oracle.database.jdbc:ojdbc8:23.26.0.0.0")
+        testImplementation("com.h2database:h2:2.4.240")
         testImplementation project(":testfactories")
     }
 
 }
 
-project(':jettyFactory') {
+project(":jettyFactory") {
     dependencies {
         api project(":factory")
-        api(group: 'org.eclipse.jetty', name: 'jetty-server', version: '12.0.14')
-        api(group: 'org.eclipse.jetty', name: 'jetty-alpn-java-server', version: '12.0.14')
-        implementation(group: 'org.eclipse.jetty.ee10', name: 'jetty-ee10-servlet', version: '12.0.14')
-        implementation(group: 'org.eclipse.jetty.ee10', name: 'jetty-ee10-webapp', version: '12.0.14')
-        implementation(group: 'org.eclipse.jetty.http2', name: 'jetty-http2-server', version: '12.0.14')
+        api("org.eclipse.jetty:jetty-server:12.1.4")
+        api("org.eclipse.jetty:jetty-alpn-java-server:12.1.4")
+        api("org.eclipse.jetty.ee10:jetty-ee10-servlet:12.1.4")
+        api("org.eclipse.jetty.ee10:jetty-ee10-webapp:12.1.4")
+        api("org.eclipse.jetty.http2:jetty-http2-server:12.1.4")
+        api("org.eclipse.jetty.compression:jetty-compression-server:12.1.4")
+        api("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.4")
 
-        api group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
+        api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
 
-        api group: 'org.glassfish.jersey.core', name: 'jersey-common', version: '3.1.9'
-        api(group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '3.1.9')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.18.1'
-        api('org.glassfish.jersey.containers:jersey-container-servlet-core:3.1.9')
-        api('org.glassfish.jersey.inject:jersey-hk2:3.1.9')
+        api "org.glassfish.jersey.core:jersey-common:4.0.0"
+        api("org.glassfish.jersey.core:jersey-server:4.0.0")
+        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
+        api("org.glassfish.jersey.containers:jersey-container-servlet:4.0.0")
+        api("org.glassfish.jersey.inject:jersey-hk2:4.0.0")
 
-        api group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0'
-        api group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '3.1.9'
+        api "jakarta.annotation:jakarta.annotation-api:3.0.0"
+        api "org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0"
 
-        api group: "org.ini4j", name: "ini4j", version: "0.5.4"
+        api("org.ini4j:ini4j:0.5.4")
 
-        testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
+        testImplementation("ch.qos.logback:logback-classic:1.5.21")
     }
 
 }
 
 
-project(':example') {
-    apply plugin: 'org.openjfx.javafxplugin'
+project(":example") {
+    apply plugin: "org.openjfx.javafxplugin"
     javafx {
-        version = "17.0.15"
-        modules = ['javafx.controls', 'javafx.web', 'javafx.graphics', 'javafx.fxml', 'javafx.media']
-        configuration = 'api'
+        version = "17.0.17"
+        modules = ["javafx.controls", "javafx.web", "javafx.graphics", "javafx.fxml", "javafx.media"]
+        configuration = "api"
     }
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":javafxFactoryEditing")
         implementation project(":jettyFactory")
@@ -277,117 +281,117 @@ project(':example') {
         implementation project(":factory")
         implementation project(":domFactoryEditing")
 
-        implementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
-        implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.3'
+        implementation("ch.qos.logback:logback-classic:1.5.21")
+        implementation("jakarta.activation:jakarta.activation-api:2.1.4")
     }
 
 }
 
 
-project(':javafxFactoryEditing') {
-    apply plugin: 'org.openjfx.javafxplugin'
+project(":javafxFactoryEditing") {
+    apply plugin: "org.openjfx.javafxplugin"
     javafx {
-        version = "17.0.15"
-        modules = ['javafx.controls', 'javafx.web', 'javafx.graphics', 'javafx.fxml', 'javafx.media']
-        configuration = 'api'
+        version = "17.0.17"
+        modules = ["javafx.controls", "javafx.web", "javafx.graphics", "javafx.fxml", "javafx.media"]
+        configuration = "api"
     }
     dependencies {
 
-        api group: 'org.controlsfx', name: 'controlsfx', version: '11.2.1'
-        api group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.11.3'
+        api("org.controlsfx:controlsfx:11.2.2")
+        api("org.fxmisc.richtext:richtextfx:0.11.7")
 
         api project(":factory")
         api project(":microserviceRestClient")
 
         testImplementation project(":testfactories")
-        testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
-        testImplementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.3'
+        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation "jakarta.activation:jakarta.activation-api:2.1.4"
 
     }
 
 }
 
-project(':javafxDistributionServer') {
+project(":javafxDistributionServer") {
     dependencies {
         api project(":jettyFactory")
         api project(":factory")
-        api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
+        api("org.slf4j:slf4j-api:2.0.17")
 
-        testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
-        testImplementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.3'
+        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation("jakarta.activation:jakarta.activation-api:2.1.4")
     }
 
 }
 
-project(':javafxDistributionClient') {
-    apply plugin: 'org.openjfx.javafxplugin'
+project(":javafxDistributionClient") {
+    apply plugin: "org.openjfx.javafxplugin"
     javafx {
-        version = "17.0.15"
-        modules = ['javafx.controls', 'javafx.web', 'javafx.graphics', 'javafx.fxml', 'javafx.media']
-        configuration = 'api'
+        version = "17.0.17"
+        modules = ["javafx.controls", "javafx.web", "javafx.graphics", "javafx.fxml", "javafx.media"]
+        configuration = "api"
     }
 
     dependencies {
-        api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
-        api(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1') {
+        api("org.slf4j:slf4j-api:2.0.17")
+        api("com.fasterxml.jackson.core:jackson-databind:2.20.1") {
             exclude group: "javax.annotation"
         }
 
-        api group: 'org.glassfish.jersey.core', name: 'jersey-common', version: '3.1.9'
-        api(group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '3.1.9')
-        api group: 'com.fasterxml.jackson.jakarta.rs', name: 'jackson-jakarta-rs-json-provider', version: '2.18.1'
-        api('org.glassfish.jersey.media:jersey-media-json-jackson:3.1.9')
-        api('org.glassfish.jersey.inject:jersey-hk2:3.1.9')
-        api(group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2')
+        api("org.glassfish.jersey.core:jersey-common:4.0.0")
+        api("org.glassfish.jersey.core:jersey-client:4.0.0")
+        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
+        api("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0")
+        api("org.glassfish.jersey.inject:jersey-hk2:4.0.0")
+        api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
     }
 
 }
 
-project(':testfactories') {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+project(":testfactories") {
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":factory")
     }
 }
 
-project(':docu') {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+project(":docu") {
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":factory")
         implementation project(":jettyFactory")
-        implementation project(':postgresqlStorage')
+        implementation project(":postgresqlStorage")
 
-        implementation project(':microserviceRestResource')
-        implementation project(':microserviceRestClient')
-        implementation project(':initializr')
+        implementation project(":microserviceRestResource")
+        implementation project(":microserviceRestClient")
+        implementation project(":initializr")
         implementation project(":domFactoryEditing")
 
-        implementation group: 'io.dropwizard.metrics', name: 'metrics-jetty12', version: '4.2.28'
-        implementation 'io.zonky.test:embedded-postgres:2.0.7'
-        implementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
-        implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.1.3'
+        implementation("io.dropwizard.metrics:metrics-jetty12:4.2.37")
+        implementation("io.zonky.test:embedded-postgres:2.2.0")
+        implementation("ch.qos.logback:logback-classic:1.5.21")
+        implementation("jakarta.activation:jakarta.activation-api:2.1.4")
 
-        implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
+        implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
     }
 
 }
 
-project(':typescriptGenerator') {
+project(":typescriptGenerator") {
     dependencies {
         api project(":factory")
         testImplementation project(":testfactories")
         testImplementation project(":jettyFactory")
         testImplementation project(":domFactoryEditing")
-        testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
+        testImplementation("ch.qos.logback:logback-classic:1.5.21")
     }
 
-    tasks.register('generateTestCode', JavaExec) {
+    tasks.register("generateTestCode", JavaExec) {
         classpath = sourceSets.test.runtimeClasspath
-        mainClass = 'io.github.factoryfx.factory.typescript.generator.data.TestGenerator'
+        mainClass = "io.github.factoryfx.factory.typescript.generator.data.TestGenerator"
     }
 
-    tasks.register('installNpm', Exec) {
-        dependsOn ':typescriptGenerator:generateTestCode'
+    tasks.register("installNpm", Exec) {
+        dependsOn ":typescriptGenerator:generateTestCode"
         workingDir "$projectDir/src/test/ts/"
 
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
@@ -397,8 +401,8 @@ project(':typescriptGenerator') {
         }
     }
 
-    tasks.register('typescriptTest', Exec) {
-        dependsOn ':typescriptGenerator:installNpm'
+    tasks.register("typescriptTest", Exec) {
+        dependsOn ":typescriptGenerator:installNpm"
         workingDir "$projectDir/src/test/ts/"
 
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
@@ -409,7 +413,7 @@ project(':typescriptGenerator') {
     }
 }
 
-project(':soapFactory') {
+project(":soapFactory") {
 
     repositories {
         mavenCentral()
@@ -420,50 +424,52 @@ project(':soapFactory') {
         api project(":factory")
         api project(":jettyFactory")
 
-        api(group: 'org.eclipse.jetty', name: 'jetty-server', version: '11.0.24') {
+        api("org.eclipse.jetty:jetty-server:12.1.4") {
             exclude group: "javax.annotation"
         }
-        api group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
-        api(group: 'com.sun.istack', name: 'istack-commons-runtime', version: '4.2.0') {
-            exclude group: 'javax.annotation'
+        api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
+        api("com.sun.istack:istack-commons-runtime:4.2.0") {
+            exclude group: "javax.annotation"
         }
 
-        api group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.5'
+        api("org.glassfish.jaxb:jaxb-runtime:4.0.6")
 
-        api(group: 'com.sun.xml.messaging.saaj', name: 'saaj-impl', version: '3.0.4')
+        api("com.sun.xml.messaging.saaj:saaj-impl:3.0.4")
 
-        api group: 'jakarta.xml.ws', name: 'jakarta.xml.ws-api', version: '4.0.2'
-        api group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: '3.0.0'
-        api group: 'jakarta.xml.soap', name: 'jakarta.xml.soap-api', version: '3.0.2'
-        api group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
+        api("jakarta.xml.ws:jakarta.xml.ws-api:4.0.2")
+        api("jakarta.annotation:jakarta.annotation-api:3.0.0")
+        api("jakarta.xml.soap:jakarta.xml.soap-api:3.0.2")
+        api("jakarta.servlet:jakarta.servlet-api:6.1.0")
     }
 }
 
 
-project(':initializr') {
+project(":initializr") {
 
     dependencies {
         api project(":factory")
         api project(":jettyFactory")
-        api group: 'com.squareup', name: 'javapoet', version: '1.13.0'
+        api("com.squareup:javapoet:1.13.0")
     }
 }
 
-project(':benchmark') {
-//    publishMavenJavaPublicationToMavenRepository.enabled = false//don't publish
+project(":benchmark") {
+//    publishMavenJavaPublicationToMavenRepository.enabled = false//don"t publish
     dependencies {
         implementation project(":factory")
         implementation project(":testfactories")
 
-        implementation group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.37'
-        implementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.37'
+        implementation("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+        implementation("org.openjdk.jmh:jmh-core:1.37")
     }
 }
 
-project(':domFactoryEditing') {
+project(":domFactoryEditing") {
     dependencies {
         api project(":microserviceRestResource")
         api project(":typescriptGenerator")
-        testImplementation(group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12')
+        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation("org.eclipse.jetty.compression:jetty-compression-server:12.1.4")
+        testImplementation("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.4")
     }
 }

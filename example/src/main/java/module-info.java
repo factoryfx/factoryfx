@@ -10,10 +10,10 @@ open module io.github.factoryfx.example {
 
     requires javafx.base;
     requires javafx.graphics;
-    requires jersey.media.json.jackson;
-    requires jersey.client;
-    requires jersey.common;
     requires io.github.factoryfx.domFactoryEditing;
+    requires org.glassfish.jersey.core.common;
+    requires org.glassfish.jersey.core.client;
+    requires org.glassfish.jersey.media.json.jackson;
 
     exports io.github.factoryfx.example.client.view;
     exports io.github.factoryfx.example.server;

@@ -1,26 +1,23 @@
 package io.github.factoryfx.jetty;
 
-import java.util.List;
-import java.util.Map;
-
-import io.github.factoryfx.factory.attribute.ValueMapAttribute;
-import io.github.factoryfx.factory.attribute.types.ObjectMapAttribute;
-import org.glassfish.jersey.CommonProperties;
-import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import org.glassfish.jersey.logging.LoggingFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
-import org.glassfish.jersey.servlet.ServletContainer;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicAttribute;
 import io.github.factoryfx.factory.attribute.dependency.FactoryPolymorphicListAttribute;
-import io.github.factoryfx.factory.attribute.types.BooleanMapAttribute;
+import io.github.factoryfx.factory.attribute.types.ObjectMapAttribute;
 import jakarta.servlet.Servlet;
 import jakarta.ws.rs.ext.ExceptionMapper;
+import org.eclipse.jetty.ee10.servlet.ResourceServlet;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import org.glassfish.jersey.logging.LoggingFeature;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
+
+import java.util.List;
+import java.util.Map;
 
 public class JerseyServletFactory<R extends FactoryBase<?,R>> extends SimpleFactoryBase<Servlet,R> {
 
