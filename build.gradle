@@ -53,6 +53,7 @@ subprojects {
     apply plugin: "com.github.spotbugs"
     apply plugin: "java-library"
     apply plugin: "maven-publish"
+    apply plugin: "com.gradleup.nmcp"
     apply plugin: "signing"
 
     java {
