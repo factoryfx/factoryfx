@@ -71,7 +71,7 @@ class PathDataRestoreTest {
     }
 
     private DataJsonNode createDataJsonNode(FactoryBase<?,?> factory){
-        return new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(factory));
+        return new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().valueToTree(factory));
 
     }
 

@@ -18,10 +18,12 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
 
     private final MigrationManager<R> migrationManager;
     private final Supplier<Connection> connectionSupplier;
+    private final SimpleObjectMapper objectMapper;
 
-    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager, boolean withHistoryCompression) {
+    public OracledbDataStorageHistory(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, boolean withHistoryCompression) {
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
+        this.objectMapper = objectMapper;
 
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
@@ -123,8 +125,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_HISTORY(id,factory,factoryMetadata) VALUES (?,?,? )")) {
              preparedStatement.setString(1, id);
-             JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot, OutputStyle.COMPACT),preparedStatement,2);
-             JdbcUtil.writeStringToBlob(migrationManager.writeStorageMetadata(metadata),preparedStatement,3);
+            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(factoryRoot, OutputStyle.COMPACT), preparedStatement, 2);
+            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), preparedStatement, 3);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -132,7 +134,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
     }
 
 
-    public void patchAll(DataStoragePatcher consumer, SimpleObjectMapper objectMapper) {
+    public void patchAll(DataStoragePatcher consumer) {
 
         try (Connection connection= connectionSupplier.get()){
             boolean initialAutoCommit=connection.getAutoCommit();
@@ -151,8 +153,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
                         String metadataId=metadata.get("id").asText();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(data),updateStatement,1);
-                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(metadata),updateStatement,2);
+                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data, OutputStyle.COMPACT),updateStatement,1);
+                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT),updateStatement,2);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {
@@ -169,7 +171,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
         }
     }
 
-    public void patchForId(DataStoragePatcher consumer, SimpleObjectMapper objectMapper, String id) {
+    public void patchForId(DataStoragePatcher consumer, String id) {
 
         try (Connection connection= connectionSupplier.get()){
             boolean initialAutoCommit=connection.getAutoCommit();
@@ -188,8 +190,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?,R>> {
                         String metadataId=metadata.get("id").asText();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(data),updateStatement,1);
-                            JdbcUtil.writeStringToBlob(objectMapper.writeTree(metadata),updateStatement,2);
+                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data, OutputStyle.COMPACT),updateStatement,1);
+                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT),updateStatement,2);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {

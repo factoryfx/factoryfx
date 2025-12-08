@@ -75,7 +75,7 @@ public class AttributePathTest {
         exampleDataB.referenceAttribute.set(exampleDataA);
 
 
-        DataJsonNode root = new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(exampleDataA));
+        DataJsonNode root = new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().valueToTree(exampleDataA));
 
 
         ExampleDataA referenceAttribute = PathBuilder.<ExampleDataA>value().pathElement("referenceAttribute").attribute("referenceAttribute").resolveAttributeValue(root,new AttributeValueParser<>(ObjectMapperBuilder.build(),ExampleDataA.class));
@@ -194,7 +194,7 @@ public class AttributePathTest {
     }
 
     private DataJsonNode createDataJsonNode(FactoryBase<?,?> factory){
-        return new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().writeValueAsTree(factory));
+        return new DataJsonNode((ObjectNode) ObjectMapperBuilder.build().valueToTree(factory));
 
     }
 

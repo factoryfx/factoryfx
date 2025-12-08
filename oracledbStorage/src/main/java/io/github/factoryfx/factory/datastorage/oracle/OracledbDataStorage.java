@@ -55,8 +55,12 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
     }
 
     public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, boolean withHistoryCompression) {
-        this(connectionSupplier, initialDataParam, migrationManager, new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, withHistoryCompression),
-                new OracledbDataStorageFuture<>(connectionSupplier, migrationManager), objectMapper);
+        this(connectionSupplier,
+             initialDataParam,
+             migrationManager,
+             new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, objectMapper, withHistoryCompression),
+             new OracledbDataStorageFuture<>(connectionSupplier, migrationManager, objectMapper),
+             objectMapper);
     }
 
     @Override
@@ -124,7 +128,7 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
     @Override
     public void patchAll(DataStoragePatcher consumer) {
         patchCurrentData(consumer);
-        oracledbDataStorageHistory.patchAll(consumer, objectMapper);
+        oracledbDataStorageHistory.patchAll(consumer);
     }
 
     @Override
@@ -157,14 +161,14 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadataId);
-            JdbcUtil.writeStringToBlob(objectMapper.writeTree(data), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(objectMapper.writeTree(metadata), preparedStatement, 3);
+            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data), preparedStatement, 2);
+            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata), preparedStatement, 3);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        oracledbDataStorageHistory.patchForId(consumer, objectMapper, metadataId);
+        oracledbDataStorageHistory.patchForId(consumer, metadataId);
     }
 
     private void update(R update, StoredDataMetadata metadata) {
@@ -174,8 +178,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadata.id);
-            JdbcUtil.writeStringToBlob(migrationManager.write(update), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(migrationManager.writeStorageMetadata(metadata), preparedStatement, 3);
+            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(update), preparedStatement, 2);
+            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata), preparedStatement, 3);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

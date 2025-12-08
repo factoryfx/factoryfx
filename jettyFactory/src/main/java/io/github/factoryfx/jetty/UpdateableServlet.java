@@ -33,12 +33,12 @@ public class UpdateableServlet implements Servlet {
     }
 
     private void update(Collection<ServletAndPath> previousServlets, Collection<ServletAndPath> newServlets) {
-        Set<Servlet> previousServletsMapped = previousServlets.stream().map((s) -> s.servlet).collect(Collectors.toSet());
+        Set<Servlet> previousServletsMapped = previousServlets.stream().map((s) -> s.servlet()).collect(Collectors.toSet());
 
         newServlets.forEach(servletAndPath -> {
             try {
-                if (!previousServletsMapped.contains(servletAndPath.servlet)) {
-                    servletAndPath.servlet.init(servletConfig);
+                if (!previousServletsMapped.contains(servletAndPath.servlet())) {
+                    servletAndPath.servlet().init(servletConfig);
                 }
             } catch (ServletException e) {
                 throw new RuntimeException(e);
@@ -65,7 +65,7 @@ public class UpdateableServlet implements Servlet {
         Servlet bestMatch = null;
         String servletPath = httpReq.getRequestURI().substring(httpReq.getServletPath().length());
         for (ServletAndPath servletAndPath : servlets) {
-            Servlet servlet = servletAndPath.servlet;
+            Servlet servlet = servletAndPath.servlet();
             String thisPathMatch = servletAndPath.getPathMatch(servletPath);
             if (thisPathMatch != null) {
                 if (pathMatch == null || thisPathMatch.length() > pathMatch.length()) {

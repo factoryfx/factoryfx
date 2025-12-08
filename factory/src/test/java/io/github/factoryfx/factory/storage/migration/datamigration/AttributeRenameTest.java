@@ -19,7 +19,7 @@ class AttributeRenameTest {
         dataMigrationManager.renameClass(ExampleDataAPrevious.class.getName(),ExampleDataA.class);
         dataMigrationManager.renameAttribute(ExampleDataA.class, "garbage", exampleDataA -> exampleDataA.stringAttribute);
 
-        ExampleDataA exampleDataA = dataMigrationManager.migrate(ObjectMapperBuilder.build().writeValueAsTree(exampleDataAPrevious),exampleDataAPrevious.internal().createDataStorageMetadataDictionaryFromRoot());
+        ExampleDataA exampleDataA = dataMigrationManager.migrate(ObjectMapperBuilder.build().valueToTree(exampleDataAPrevious), exampleDataAPrevious.internal().createDataStorageMetadataDictionaryFromRoot());
         Assertions.assertEquals("123",exampleDataA.stringAttribute.get());
     }
 
@@ -33,7 +33,7 @@ class AttributeRenameTest {
         dataMigrationManager.renameAttribute(ExampleDataA.class, "garbage", exampleDataA -> exampleDataA.stringAttribute);
         dataMigrationManager.renameClass(ExampleDataAPrevious.class.getName(),ExampleDataA.class);
 
-        ExampleDataA exampleDataA = dataMigrationManager.migrate(ObjectMapperBuilder.build().writeValueAsTree(exampleDataAPrevious),exampleDataAPrevious.internal().createDataStorageMetadataDictionaryFromRoot());
+        ExampleDataA exampleDataA = dataMigrationManager.migrate(ObjectMapperBuilder.build().valueToTree(exampleDataAPrevious), exampleDataAPrevious.internal().createDataStorageMetadataDictionaryFromRoot());
         Assertions.assertEquals("123",exampleDataA.stringAttribute.get());
     }
 

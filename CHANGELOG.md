@@ -1,3 +1,9 @@
+# 4.1.1
+* **SimpleObjectMapper**
+    * cleanup
+* **DataStorage**
+    * store history as compact json
+
 # 4.1.0
 
 * **FactoryListAttributeEditWidget**

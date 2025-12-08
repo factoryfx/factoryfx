@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
@@ -13,11 +14,13 @@ import java.util.function.Supplier;
 public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
 
     private final MigrationManager<R> migrationManager;
+    private final SimpleObjectMapper objectMapper;
     private final Supplier<Connection> connectionSupplier;
 
-    public OracledbDataStorageFuture(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager){
+    public OracledbDataStorageFuture(Supplier<Connection> connectionSupplier, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper){
         this.connectionSupplier = connectionSupplier;
         this.migrationManager = migrationManager;
+        this.objectMapper = objectMapper;
 
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
@@ -82,8 +85,8 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);
-             JdbcUtil.writeStringToBlob(migrationManager.write(factoryRoot),preparedStatement,2);
-             JdbcUtil.writeStringToBlob(migrationManager.writeScheduledUpdateMetadata(metadata),preparedStatement,3);
+             JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(factoryRoot),preparedStatement,2);
+             JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata),preparedStatement,3);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

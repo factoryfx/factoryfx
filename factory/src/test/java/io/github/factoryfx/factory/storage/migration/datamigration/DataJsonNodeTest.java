@@ -30,7 +30,7 @@ class DataJsonNodeTest {
         exampleDataA.referenceListAttribute.add(new ExampleDataB());
 
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -47,7 +47,7 @@ class DataJsonNodeTest {
         exampleDataA.referenceAttribute.set(value);
         value.referenceAttribute.set(exampleDataA);
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -66,7 +66,7 @@ class DataJsonNodeTest {
         exampleDataA.referenceListAttribute.add(value);
 
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -78,7 +78,7 @@ class DataJsonNodeTest {
     @Test
     public void test_getChildrenFromRoot_id() {
         ExampleDataA exampleDataA = new ExampleDataA();
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         Assertions.assertEquals(exampleDataA.getId().toString(), dataJsonNode.getId());
     }
@@ -150,7 +150,7 @@ class DataJsonNodeTest {
         root.referenceListAttribute.add(new ExampleDataB());
         root.internal().finalise();
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -164,7 +164,7 @@ class DataJsonNodeTest {
         root.referenceAttribute.set(null);
         root.internal().finalise();
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -250,7 +250,7 @@ class DataJsonNodeTest {
         root.referenceAttribute.set(null);
         root.internal().finalise();
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -263,7 +263,7 @@ class DataJsonNodeTest {
         root.getId();
         root.internal().setTreeBuilderName("12345");
         root.internal().finalise();
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         Assertions.assertEquals(3,dataJsonNode.getAttributes().size());
     }

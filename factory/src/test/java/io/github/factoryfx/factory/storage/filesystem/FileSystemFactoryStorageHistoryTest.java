@@ -33,7 +33,7 @@ public class FileSystemFactoryStorageHistoryTest {
 
         try {
             FileSystemFactoryStorageHistory<RootFactory> history = new FileSystemFactoryStorageHistory<>(tempDir,
-                    new MigrationManager<>(RootFactory.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { }),2);
+                    new MigrationManager<>(RootFactory.class, ObjectMapperBuilder.build(), (root1, oldDataStorageMetadataDictionary) -> { }),ObjectMapperBuilder.build(),2);
             RootFactory rf = new RootFactory().internal().finalise();
             LocalDateTime time = LocalDateTime.of(2000,1,1,0,0,0);
             StoredDataMetadata md1 = randomMetadata(time, rf,"dummy1");

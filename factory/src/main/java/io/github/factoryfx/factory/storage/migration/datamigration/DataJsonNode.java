@@ -199,13 +199,11 @@ public class DataJsonNode {
     public List<String> getAttributes(){
         ArrayList<String> result = new ArrayList<>();
 
-        Iterator<Map.Entry<String, JsonNode>> field = jsonNode.fields();
-        while (field.hasNext()) {
-            Map.Entry<String, JsonNode> element = field.next();
-            if (element.getValue().isObject()){
+        for (Map.Entry<String, JsonNode> element : jsonNode.properties()) {
+            if (element.getValue().isObject()) {
                 result.add(element.getKey());
             }
-            if (element.getValue().isArray()){
+            if (element.getValue().isArray()) {
                 result.add(element.getKey());
             }
         }

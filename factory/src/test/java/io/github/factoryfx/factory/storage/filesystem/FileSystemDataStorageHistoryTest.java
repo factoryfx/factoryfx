@@ -34,14 +34,14 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_empty() {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
 
         Assertions.assertTrue(fileSystemFactoryStorage.getHistoryFactoryList().isEmpty());
     }
 
     @Test
     public void test_add() {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
 
         StoredDataMetadata metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
@@ -51,7 +51,7 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_multi_add() {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
 
         {
             StoredDataMetadata metadata = createDummyStoredDataMetadata();
@@ -73,19 +73,19 @@ public class FileSystemDataStorageHistoryTest {
 
     @Test
     public void test_restore() {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
 
         StoredDataMetadata metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
         Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
 
-        FileSystemFactoryStorageHistory<ExampleDataA> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
         Assertions.assertEquals(1,restored.getHistoryFactoryList().size());
     }
 
     @Test
     public void test_getHistory() {
-        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation());
+        FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
 
         StoredDataMetadata metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);

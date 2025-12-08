@@ -31,8 +31,8 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
         if (!Files.exists(basePath)) {
             throw new IllegalArgumentException("path don't exists:" + basePath);
         }
-        currentFactoryPath = Paths.get(basePath.toString() + "/currentFactory.json");
-        currentFactoryPathMetadata = Paths.get(basePath.toString() + "/currentFactory_metadata.json");
+        this.currentFactoryPath = Paths.get(basePath + "/currentFactory.json");
+        this.currentFactoryPathMetadata = Paths.get(basePath + "/currentFactory_metadata.json");
         this.fileSystemFactoryStorageHistory = fileSystemFactoryStorageHistory;
         this.migrationManager = migrationManager;
         this.objectMapper = objectMapper;
@@ -40,11 +40,11 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
     }
 
     public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper) {
-        this(basePath, initialData, migrationManager, new FileSystemFactoryStorageHistory<>(basePath, migrationManager), objectMapper);
+        this(basePath, initialData, migrationManager, new FileSystemFactoryStorageHistory<>(basePath, migrationManager, objectMapper), objectMapper);
     }
 
     public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, int maxConfigurationHistory) {
-        this(basePath, initialData, migrationManager, new FileSystemFactoryStorageHistory<>(basePath, migrationManager, maxConfigurationHistory), objectMapper);
+        this(basePath, initialData, migrationManager, new FileSystemFactoryStorageHistory<>(basePath, migrationManager, objectMapper, maxConfigurationHistory), objectMapper);
     }
 
 
@@ -105,7 +105,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
     @Override
     public void patchAll(DataStoragePatcher consumer) {
         patchCurrentData(consumer);
-        fileSystemFactoryStorageHistory.patchAll(consumer, objectMapper);
+        fileSystemFactoryStorageHistory.patchAll(consumer);
     }
 
     @Override
@@ -113,15 +113,15 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
         JsonNode data = objectMapper.readTree(currentFactoryPath);
         JsonNode metadata = objectMapper.readTree(currentFactoryPathMetadata);
         consumer.patch((ObjectNode) data, metadata, objectMapper);
-        writeFile(currentFactoryPath, objectMapper.writeTree(data));
-        writeFile(currentFactoryPathMetadata, objectMapper.writeTree(metadata));
+        writeFile(currentFactoryPath, objectMapper.writeValueAsString(data));
+        writeFile(currentFactoryPathMetadata, objectMapper.writeValueAsString(metadata));
 
-        fileSystemFactoryStorageHistory.patchForId(consumer, objectMapper, getCurrentDataId());
+        fileSystemFactoryStorageHistory.patchForId(consumer, getCurrentDataId());
     }
 
     private void update(R update, StoredDataMetadata metadata) {
-        writeFile(currentFactoryPath, migrationManager.write(update));
-        writeFile(currentFactoryPathMetadata, migrationManager.writeStorageMetadata(metadata));
+        writeFile(currentFactoryPath, objectMapper.writeValueAsString(update));
+        writeFile(currentFactoryPathMetadata, objectMapper.writeValueAsString(metadata));
         fileSystemFactoryStorageHistory.updateHistory(update, metadata);
     }
 
