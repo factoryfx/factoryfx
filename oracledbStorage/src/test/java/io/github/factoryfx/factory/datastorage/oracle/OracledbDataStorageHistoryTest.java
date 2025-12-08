@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
+import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
@@ -16,14 +17,14 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     @Test
     public void test_empty() {
-        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), false);
+        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), ObjectMapperBuilder.build(), false);
 
         Assertions.assertTrue(oracledbDataStorageHistory.getHistoryFactoryList().isEmpty());
     }
 
     @Test
     public void test_add() {
-        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), false);
+        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), ObjectMapperBuilder.build(), false);
 
         StoredDataMetadata metadata = createDummyMetadata();
         oracledbDataStorageHistory.updateHistory(metadata,new ExampleFactoryA());
@@ -41,7 +42,7 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     @Test
     public void test_multi_add() {
-        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), false);
+        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), ObjectMapperBuilder.build(), false);
 
         {
             oracledbDataStorageHistory.updateHistory(createDummyMetadata(), new ExampleFactoryA());
@@ -60,23 +61,23 @@ public class OracledbDataStorageHistoryTest extends DatabaseTest {
 
     @Test
     public void test_restore() {
-        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), false);
+        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), ObjectMapperBuilder.build(), false);
 
         oracledbDataStorageHistory.updateHistory(createDummyMetadata(),new ExampleFactoryA());
         assertEquals(1, oracledbDataStorageHistory.getHistoryFactoryList().size());
 
-        OracledbDataStorageHistory<ExampleFactoryA> restored = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), false);
+        OracledbDataStorageHistory<ExampleFactoryA> restored = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), ObjectMapperBuilder.build(), false);
         assertEquals(1,restored.getHistoryFactoryList().size());
     }
 
     @Test
     public void test_getById() {
-        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), false);
+        OracledbDataStorageHistory<ExampleFactoryA> oracledbDataStorageHistory = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), ObjectMapperBuilder.build(), false);
 
         oracledbDataStorageHistory.updateHistory(createDummyMetadata(),new ExampleFactoryA());
         assertEquals(1, oracledbDataStorageHistory.getHistoryFactoryList().size());
 
-        OracledbDataStorageHistory<ExampleFactoryA> history = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), false);
+        OracledbDataStorageHistory<ExampleFactoryA> history = new OracledbDataStorageHistory<>(connectionSupplier, createMigrationManager(), ObjectMapperBuilder.build(), false);
 
         ExampleFactoryA reloaded = oracledbDataStorageHistory.getHistoryFactory(new ArrayList<>(history.getHistoryFactoryList()).get(0).id);
         Assertions.assertNotNull(reloaded);

@@ -138,9 +138,9 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
     public void patchAll(DataStoragePatcher consumer) {
         String currentId = getCurrentDataId();//ensure initial data populated
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedSelect = connection.prepareStatement("select id, cast (root as text) as root, cast (metadata as text) as metadata from configuration order by createdat asc");
+             PreparedStatement preparedSelect = connection.prepareStatement("select id, cast (root as text) as root, cast (metadata as text) as metadata from configuration order by createdat");
              ResultSet rs = preparedSelect.executeQuery()) {
-            int counter = 0;
+
             while (rs.next()) {
                 String id = rs.getString(1);
                 JsonNode data = objectMapper.readTree(rs.getString(2));
@@ -149,18 +149,15 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
                 consumer.patch((ObjectNode) data, metadata, objectMapper);
 
                 try (PreparedStatement preparedUpdate = connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
-                    preparedUpdate.setString(1, objectMapper.writeTree(data));
-                    preparedUpdate.setString(2, objectMapper.writeTree(metadata));
+                    preparedUpdate.setString(1, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
+                    preparedUpdate.setString(2, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
                     preparedUpdate.setString(3, id);
                     preparedUpdate.execute();
-                    if (++counter % 10 == 0) {
-                        connection.commit();
-                    }
                 }
                 if(id.equals(currentId)){
                     try (PreparedStatement pstmt = connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
-                        pstmt.setString(1, objectMapper.writeTree(data));
-                        pstmt.setString(2, objectMapper.writeTree(metadata));
+                        pstmt.setString(1, objectMapper.writeValueAsString(data));
+                        pstmt.setString(2, objectMapper.writeValueAsString(metadata));
                         pstmt.execute();
                     }
                 }
@@ -193,15 +190,15 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
             try (PreparedStatement pstmt =
                      connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
-                pstmt.setString(1, objectMapper.writeTree(data));
-                pstmt.setString(2, objectMapper.writeTree(metadata));
+                pstmt.setString(1, objectMapper.writeValueAsString(data));
+                pstmt.setString(2, objectMapper.writeValueAsString(metadata));
                 pstmt.execute();
             }
 
             try (PreparedStatement pstmt =
                      connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
-                pstmt.setString(1, objectMapper.writeTree(data));
-                pstmt.setString(2, objectMapper.writeTree(metadata));
+                pstmt.setString(1, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
+                pstmt.setString(2, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
                 pstmt.setString(3, currentId);
                 pstmt.execute();
             }
@@ -242,8 +239,8 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
         Timestamp createdAtTimestamp = new Timestamp(createdAt);
 
         try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into configuration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
-            pstmtInsertConfiguration.setString(1, migrationManager.write(update.root, OutputStyle.COMPACT));
-            pstmtInsertConfiguration.setString(2, migrationManager.writeStorageMetadata(update.metadata));
+            pstmtInsertConfiguration.setString(1, objectMapper.writeValueAsString(update.root, OutputStyle.COMPACT));
+            pstmtInsertConfiguration.setString(2, objectMapper.writeValueAsString(update.metadata, OutputStyle.COMPACT));
             pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
             pstmtInsertConfiguration.setString(4, update.metadata.id);
             pstmtInsertConfiguration.execute();
@@ -251,8 +248,8 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
         try (PreparedStatement pstmtUpdateCurrentConfiguraion =
                  firstEntry ? connection.prepareStatement("insert into currentconfiguration (root,metadata,createdAt,id) values (cast (? as json), cast (? as json), ?, ?)")
                      : connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json), createdAt = ?, id = ?")) {
-            pstmtUpdateCurrentConfiguraion.setString(1, migrationManager.write(update.root));
-            pstmtUpdateCurrentConfiguraion.setString(2, migrationManager.writeStorageMetadata(update.metadata));
+            pstmtUpdateCurrentConfiguraion.setString(1, objectMapper.writeValueAsString(update.root));
+            pstmtUpdateCurrentConfiguraion.setString(2, objectMapper.writeValueAsString(update.metadata));
             pstmtUpdateCurrentConfiguraion.setTimestamp(3, createdAtTimestamp);
             pstmtUpdateCurrentConfiguraion.setString(4, update.metadata.id);
             pstmtUpdateCurrentConfiguraion.execute();
@@ -353,8 +350,8 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
             try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement(
                 "insert into futureconfiguration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
-                pstmtInsertConfiguration.setString(1, migrationManager.write(futureFactory.root));
-                pstmtInsertConfiguration.setString(2, migrationManager.writeScheduledUpdateMetadata(scheduledUpdateMetadata));
+                pstmtInsertConfiguration.setString(1, objectMapper.writeValueAsString(futureFactory.root));
+                pstmtInsertConfiguration.setString(2, objectMapper.writeValueAsString(scheduledUpdateMetadata));
                 pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
                 pstmtInsertConfiguration.setString(4, scheduledUpdateMetadata.id);
                 pstmtInsertConfiguration.execute();

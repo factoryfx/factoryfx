@@ -30,7 +30,7 @@ class DataJsonNodeTest {
         exampleDataA.referenceListAttribute.add(new ExampleDataB());
 
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -47,7 +47,7 @@ class DataJsonNodeTest {
         exampleDataA.referenceAttribute.set(value);
         value.referenceAttribute.set(exampleDataA);
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -66,7 +66,7 @@ class DataJsonNodeTest {
         exampleDataA.referenceListAttribute.add(value);
 
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -78,7 +78,7 @@ class DataJsonNodeTest {
     @Test
     public void test_getChildrenFromRoot_id() {
         ExampleDataA exampleDataA = new ExampleDataA();
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(exampleDataA);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(exampleDataA);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         Assertions.assertEquals(exampleDataA.getId().toString(), dataJsonNode.getId());
     }
@@ -150,7 +150,7 @@ class DataJsonNodeTest {
         root.referenceListAttribute.add(new ExampleDataB());
         root.internal().finalise();
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -164,7 +164,7 @@ class DataJsonNodeTest {
         root.referenceAttribute.set(null);
         root.internal().finalise();
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -222,16 +222,20 @@ class DataJsonNodeTest {
 
 
         String json=
-                "{\n" + "  \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
-                "  \"id\" : \"a7697a9c-41f0-c839-1b9d-198d021a13b5\",\n" + "  \"stringAttribute\" : { },\n" +
-                "  \"referenceAttribute\" : { },\n" + "  \"referenceListAttribute\" : [ \"3502ce98-8011-81f9-f767-bf2903702b6e\", {\n" +
-                "    \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\",\n" +
-                "    \"id\" : \"3502ce98-8011-81f9-f767-bf2903702b6e\",\n" +
-                "    \"stringAttribute\" : { },\n" +
-                "    \"referenceAttribute\" : { },\n" +
-                "    \"referenceAttributeC\" : { }\n" +
-                "  } ]\n" +
-                "}";
+            """
+            {
+              "@class" : "io.github.factoryfx.factory.merge.testdata.ExampleDataA",
+              "id" : "a7697a9c-41f0-c839-1b9d-198d021a13b5",
+              "stringAttribute" : { },
+              "referenceAttribute" : { },
+              "referenceListAttribute" : [ "3502ce98-8011-81f9-f767-bf2903702b6e", {
+                "@class" : "io.github.factoryfx.factory.merge.testdata.ExampleDataB",
+                "id" : "3502ce98-8011-81f9-f767-bf2903702b6e",
+                "stringAttribute" : { },
+                "referenceAttribute" : { },
+                "referenceAttributeC" : { }
+              } ]
+            }""";
         Assertions.assertThrows(RuntimeException.class, () -> {
             ObjectMapperBuilder.build().readValue(json,ExampleDataA.class);
         });
@@ -250,7 +254,7 @@ class DataJsonNodeTest {
         root.referenceAttribute.set(null);
         root.internal().finalise();
 
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
 //        System.out.println(ObjectMapperBuilder.build().writeValueAsString(jsonNode));
 
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
@@ -263,7 +267,7 @@ class DataJsonNodeTest {
         root.getId();
         root.internal().setTreeBuilderName("12345");
         root.internal().finalise();
-        JsonNode jsonNode = ObjectMapperBuilder.build().writeValueAsTree(root);
+        JsonNode jsonNode = ObjectMapperBuilder.build().valueToTree(root);
         DataJsonNode dataJsonNode = new DataJsonNode((ObjectNode) jsonNode);
         Assertions.assertEquals(3,dataJsonNode.getAttributes().size());
     }
@@ -291,35 +295,36 @@ class DataJsonNodeTest {
 
         //referenceAttributeC is id bugged
         String json=
-                "{\n" +
-                        "  \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataA\",\n" +
-                        "  \"id\" : \"d864a939-5fc3-a38a-7d11-897bd6ce1c2d\",\n" +
-                        "  \"stringAttribute\" : { },\n" +
-                        "  \"referenceAttribute\" : {\n" +
-                        "    \"v\" : {\n" +
-                        "      \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\",\n" +
-                        "      \"id\" : \"f62b2346-43a6-2c5d-4246-580c4739eb89\",\n" +
-                        "      \"stringAttribute\" : { },\n" +
-                        "      \"referenceAttribute\" : { },\n" +
-                        "      \"referenceAttributeC\" : {\n" +
-                        "        \"v\" : \"608c45f0-6ad4-6e54-f9eb-726c29326a44\"\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"referenceListAttribute\" : [ {\n" +
-                        "    \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataB\",\n" +
-                        "    \"id\" : \"bbf51bf1-a35a-d23c-ddfc-4dabe8efcd03\",\n" +
-                        "    \"stringAttribute\" : { },\n" +
-                        "    \"referenceAttribute\" : { },\n" +
-                        "    \"referenceAttributeC\" : {\n" +
-                        "      \"v\" : {\n" +
-                        "        \"@class\" : \"io.github.factoryfx.factory.merge.testdata.ExampleDataC\",\n" +
-                        "        \"id\" : \"608c45f0-6ad4-6e54-f9eb-726c29326a44\",\n" +
-                        "        \"stringAttribute\" : { }\n" +
-                        "      }\n" +
-                        "    }\n" +
-                        "  } ]\n" +
-                        "}";
+            """
+            {
+              "@class" : "io.github.factoryfx.factory.merge.testdata.ExampleDataA",
+              "id" : "d864a939-5fc3-a38a-7d11-897bd6ce1c2d",
+              "stringAttribute" : { },
+              "referenceAttribute" : {
+                "v" : {
+                  "@class" : "io.github.factoryfx.factory.merge.testdata.ExampleDataB",
+                  "id" : "f62b2346-43a6-2c5d-4246-580c4739eb89",
+                  "stringAttribute" : { },
+                  "referenceAttribute" : { },
+                  "referenceAttributeC" : {
+                    "v" : "608c45f0-6ad4-6e54-f9eb-726c29326a44"
+                  }
+                }
+              },
+              "referenceListAttribute" : [ {
+                "@class" : "io.github.factoryfx.factory.merge.testdata.ExampleDataB",
+                "id" : "bbf51bf1-a35a-d23c-ddfc-4dabe8efcd03",
+                "stringAttribute" : { },
+                "referenceAttribute" : { },
+                "referenceAttributeC" : {
+                  "v" : {
+                    "@class" : "io.github.factoryfx.factory.merge.testdata.ExampleDataC",
+                    "id" : "608c45f0-6ad4-6e54-f9eb-726c29326a44",
+                    "stringAttribute" : { }
+                  }
+                }
+              } ]
+            }""";
         Assertions.assertThrows(RuntimeException.class, () -> {
             ObjectMapperBuilder.build().readValue(json,ExampleDataA.class);
         });

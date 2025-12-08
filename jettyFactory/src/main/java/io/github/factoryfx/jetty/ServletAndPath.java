@@ -1,26 +1,28 @@
 package io.github.factoryfx.jetty;
 
+import org.eclipse.jetty.http.pathmap.MatchedPath;
 import org.eclipse.jetty.http.pathmap.ServletPathSpec;
 
 import jakarta.servlet.Servlet;
 
-public class ServletAndPath {
+import java.util.Optional;
+import java.util.function.Function;
 
-    public final ServletPathSpec pathSpec;
-    public final Servlet servlet;
+public record ServletAndPath(ServletPathSpec pathSpec, Servlet servlet) {
 
     public ServletAndPath(String pathSpec, Servlet servlet) {
-        this.pathSpec = new ServletPathSpec(pathSpec);
-        this.servlet = servlet;
+        this(new ServletPathSpec(pathSpec), servlet);
     }
-
 
     public String getPathMatch(String servletPath) {
-        return pathSpec.getPathMatch(servletPath);
+        return getPathMatchOrNull(servletPath, MatchedPath::getPathMatch);
     }
 
-
     public String getPathInfo(String servletPath) {
-        return pathSpec.getPathInfo(servletPath);
+        return getPathMatchOrNull(servletPath, MatchedPath::getPathInfo);
+    }
+
+    private String getPathMatchOrNull(String servletPath, Function<MatchedPath, String> pathMatchFunction) {
+        return Optional.ofNullable(pathSpec.matched(servletPath)).map(pathMatchFunction).orElse(null);
     }
 }

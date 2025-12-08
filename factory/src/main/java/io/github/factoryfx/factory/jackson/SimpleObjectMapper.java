@@ -50,6 +50,10 @@ public class SimpleObjectMapper {
         return objectMapper.getTypeFactory();
     }
 
+    public JsonNode valueToTree(Object object) {
+        return objectMapper.valueToTree(object);
+    }
+
     public JsonNode readTree(byte[] content) {
         return readInternal(() -> objectMapper.readTree(content));
     }
@@ -127,10 +131,6 @@ public class SimpleObjectMapper {
         writeInternal(() -> objectMapper.writeValue(out, value));
     }
 
-    public void writeValue(OutputStream out, Object value, boolean closeOutput) {
-        writeInternal(() -> objectMapper.writeValue(out, value));
-    }
-
     public void writeValue(Path path, Object value) {
         writeInternal(() -> objectMapper.writeValue(path.toFile(), value));
     }
@@ -143,24 +143,20 @@ public class SimpleObjectMapper {
         return writeInternal(() -> objectMapper.writeValueAsBytes(value));
     }
 
+    public String writeValueAsString(JsonNode node) {
+        return writeInternal(() -> writeValueAsString(objectMapper.treeToValue(node, Object.class)));
+    }
+
+    public String writeValueAsString(JsonNode node, OutputStyle outputStyle) {
+        return writeInternal(() -> writeValueAsString(objectMapper.treeToValue(node, Object.class), outputStyle));
+    }
+
     public String writeValueAsString(Object value) {
         return writeValueAsString(value, OutputStyle.DEFAULT);
     }
 
     public String writeValueAsString(Object value, OutputStyle outputStyle) {
         return writeInternal(() -> outputStyle.getWriter(objectMapper).writeValueAsString(value));
-    }
-
-    public JsonNode writeValueAsTree(Object object) {
-        return objectMapper.valueToTree(object);
-    }
-
-    public String writeTree(JsonNode node) {
-        try {
-            return writeValueAsString(objectMapper.treeToValue(node, Object.class));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @SuppressWarnings("unchecked")

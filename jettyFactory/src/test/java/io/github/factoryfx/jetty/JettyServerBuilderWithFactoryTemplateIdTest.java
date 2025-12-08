@@ -78,9 +78,9 @@ public class JettyServerBuilderWithFactoryTemplateIdTest {
 
         JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> {
             jetty.withPort(port).withHost("localhost")
-                    .withJersey(rb -> rb.withPathSpec("/resource0/*").withResource(new FactoryTemplateId<>(SomeResourceFactory.class)), new FactoryTemplateName("resource0"))
-                    .withJersey(rb -> rb.withPathSpec("/resource1/*").withResource(new FactoryTemplateId<>(SomeResourceFactory.class, "resource1")), new FactoryTemplateName("resource1"))
-                    .withJersey(rb -> rb.withPathSpec("/resource2/*").withResource(new FactoryTemplateId<>(SomeResourceFactory.class, "resource2")), new FactoryTemplateName("resource2"));
+                    .withJersey(rb -> rb.withPathSpec("/resource0/*").withResource(new FactoryTemplateId<>(SomeResourceFactory.class)), new FactoryTemplateName("jersey0"))
+                    .withJersey(rb -> rb.withPathSpec("/resource1/*").withResource(new FactoryTemplateId<>(SomeResourceFactory.class, "resource1")), new FactoryTemplateName("jersey1"))
+                    .withJersey(rb -> rb.withPathSpec("/resource2/*").withResource(new FactoryTemplateId<>(SomeResourceFactory.class, "resource2")), new FactoryTemplateName("jersey2"));
         });
 
 

@@ -13,7 +13,6 @@ import com.google.common.base.Throwables;
 import io.github.factoryfx.factory.DataObjectIdResolver;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.attribute.Attribute;
-import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.RawFactoryDataAndMetadata;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
@@ -148,20 +147,8 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         return root;
     }
 
-    public String write(R root) {
-        return write(root, OutputStyle.DEFAULT);
-    }
-
-    public String write(R root, OutputStyle outputStyle) {
-        return objectMapper.writeValueAsString(root, outputStyle);
-    }
-
-    public String writeStorageMetadata(StoredDataMetadata metadata) {
-        return objectMapper.writeValueAsString(metadata);
-    }
-
     public R read(JsonNode data, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        return read(objectMapper.writeTree(data),dataStorageMetadataDictionary);
+        return read(objectMapper.writeValueAsString(data),dataStorageMetadataDictionary);
     }
 
     public R read(String data, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
@@ -177,20 +164,15 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         return objectMapper.readValue(data,ScheduledUpdateMetadata.class);
     }
 
-    public String writeScheduledUpdateMetadata(ScheduledUpdateMetadata metadata) {
-        return  objectMapper.writeValueAsString(metadata);
-    }
-
     public String writeRawFactoryDataAndMetadata(R root, StoredDataMetadata metadata) {
         RawFactoryDataAndMetadata rawFactoryDataAndMetadata = new RawFactoryDataAndMetadata();
         rawFactoryDataAndMetadata.metadata=metadata;
-        rawFactoryDataAndMetadata.root=objectMapper.writeValueAsTree(root);
+        rawFactoryDataAndMetadata.root=objectMapper.valueToTree(root);
         return objectMapper.writeValueAsString(rawFactoryDataAndMetadata);
     }
 
     public RawFactoryDataAndMetadata readRawFactoryDataAndMetadata(String data) {
         return objectMapper.readValue(data, RawFactoryDataAndMetadata.class);
     }
-
 }
 

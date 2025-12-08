@@ -3,11 +3,11 @@ package io.github.factoryfx.microservice.rest.client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
 import io.github.factoryfx.factory.FactoryBase;
@@ -115,7 +115,7 @@ public class MicroserviceRestClient<R extends FactoryBase<?, R>> {
             String respString = null;
             if (e.getResponse().getEntity() instanceof ByteArrayInputStream) {
                 try {
-                    respString = CharStreams.toString(new InputStreamReader(((ByteArrayInputStream) e.getResponse().getEntity()), Charsets.UTF_8));
+                    respString = CharStreams.toString(new InputStreamReader(((ByteArrayInputStream) e.getResponse().getEntity()), StandardCharsets.UTF_8));
                 } catch (IOException e1) {
                     throw new RuntimeException(e1);
                 }
