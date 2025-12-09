@@ -29,30 +29,18 @@ public class JdbcUtil {
                 return false;
             }
 
-            String sql1 = """
+            String sql = """
                     SELECT COUNT(*) AS cnt
                     FROM all_tab_columns
                     WHERE table_name = 'USER_LOBS'
                       AND column_name IN ('COMPRESSION', 'SECUREFILE')""";
 
-            String sql2 = """
-                    SELECT 1 
-                    FROM user_lobs 
-                    WHERE table_name = 'FACTORY_HISTORY' and column_name = 'FACTORY' and securefile = 'YES'""";
-
             try (Statement stmt = connection.createStatement();
-                 ResultSet rs = stmt.executeQuery(sql1)) {
-
-                if (rs.next() && rs.getInt("cnt") >= 2) {
-                    try (Statement stmt2 = connection.createStatement();
-                         ResultSet rs2 = stmt2.executeQuery(sql2)) {
-                        return rs2.next();
-                    }
-                }
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                return rs.next() && rs.getInt("cnt") >= 2;
             }
-
-        } catch (SQLException ignored) {
+        } catch (SQLException e) {
+            return false;
         }
-        return false;
     }
 }
