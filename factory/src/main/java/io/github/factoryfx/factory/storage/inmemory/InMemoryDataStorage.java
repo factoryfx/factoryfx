@@ -30,6 +30,9 @@ public class InMemoryDataStorage<R extends FactoryBase<?,R>> implements DataStor
     @Override
     public R getHistoryData(String id) {
         DataAndStoredMetadata<R> data = storage.get(id);
+        if (data == null) {
+            throw new RuntimeException("No history element found for id " + id);
+        }
         return data.root.utility().copy();
     }
 

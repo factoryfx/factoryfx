@@ -160,6 +160,15 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         return objectMapper.readValue(data,StoredDataMetadata.class);
     }
 
+    public StoredDataMetadata readStoredFactoryMetadataLight(String data) {
+        try {
+            JsonNode root = objectMapper.readTree(data);
+            return StoredDataMetadata.createLightStoredDataMetadata(root);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ScheduledUpdateMetadata readScheduledFactoryMetadata(String data) {
         return objectMapper.readValue(data,ScheduledUpdateMetadata.class);
     }

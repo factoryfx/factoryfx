@@ -70,7 +70,7 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
              ResultSet rs = pstmt.executeQuery()) {
             ArrayList<StoredDataMetadata> ret = new ArrayList<>();
             while (rs.next()) {
-                ret.add(migrationManager.readStoredFactoryMetadata(rs.getString(1)));
+                ret.add(migrationManager.readStoredFactoryMetadataLight(rs.getString(1)));
             }
             return ret;
         } catch (SQLException e) {
@@ -310,9 +310,9 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
     public R getFutureData(String id) {
         ScheduledUpdateMetadata metaData = null;
-        for (ScheduledUpdateMetadata historyMetaData : getFutureDataList()) {
-            if (historyMetaData.id.equals(id)) {
-                metaData = historyMetaData;
+        for (ScheduledUpdateMetadata futureMetaData : getFutureDataList()) {
+            if (futureMetaData.id.equals(id)) {
+                metaData = futureMetaData;
             }
         }
         if (metaData == null) {

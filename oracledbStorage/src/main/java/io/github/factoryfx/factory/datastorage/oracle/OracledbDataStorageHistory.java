@@ -112,17 +112,13 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM FACTORY_HISTORY WHERE id= ?")) {
             statement.setString(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.dataStorageMetadataDictionary);
-                }
+                if (!resultSet.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
+                StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
+                return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.dataStorageMetadataDictionary);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
-        return null;
     }
 
     public Collection<StoredDataMetadata> getHistoryFactoryList() {
@@ -131,7 +127,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM FACTORY_HISTORY")) {
             while (resultSet.next()) {
-                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata")));
+                result.add(migrationManager.readStoredFactoryMetadataLight(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata")));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

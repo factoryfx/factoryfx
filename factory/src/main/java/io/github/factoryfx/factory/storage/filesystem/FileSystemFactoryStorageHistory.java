@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -48,17 +47,9 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
     }
 
     public R getHistoryFactory(String id) {
-        StoredDataMetadata storedDataMetadata = null;
-        for (StoredDataMetadata metaData : getHistoryFactoryList()) {
-            if (metaData.id.equals(id)) {
-                storedDataMetadata = metaData;
-
-            }
-        }
-        if (storedDataMetadata == null) {
-            throw new IllegalStateException("cant find storedDataMetadata for factory: " + id + " in history");
-        }
-        return migrationManager.read(readFile(Paths.get(historyDirectory.toString() + "/" + id + ".json")), storedDataMetadata.dataStorageMetadataDictionary);
+        StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(readFile(historyDirectory.resolve(id + "_metadata.json")));
+        cache.put(metaData.id, metaData);
+        return migrationManager.read(readFile(historyDirectory.resolve(id + ".json")), metaData.dataStorageMetadataDictionary);
     }
 
     private void visitHistoryFiles(Consumer<Path> visitor) {
@@ -73,7 +64,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
         if (cache.isEmpty()) {
             visitHistoryFiles(path -> {
                 if (path.toString().endsWith("_metadata.json")) {
-                    StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path));
+                    StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadataLight(readFile(path));
                     cache.put(storedDataMetadata.id, storedDataMetadata);
                 }
             });
