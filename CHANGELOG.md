@@ -1,3 +1,7 @@
+# 4.1.2
+* **DataStorage**
+    * add lightweight metadata for factory history
+
 # 4.1.1
 * **SimpleObjectMapper**
     * cleanup
