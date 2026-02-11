@@ -54,7 +54,7 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
             pstmt.setString(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (!rs.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
-                StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(rs.getString(2));
+                StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(rs.getString(2), false);
                 return migrationManager.read(rs.getString(1),
                                              storedDataMetadata.dataStorageMetadataDictionary);
             }
@@ -64,13 +64,13 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
     }
 
     @Override
-    public Collection<StoredDataMetadata> getHistoryDataList() {
+    public Collection<StoredDataMetadata> getHistoryDataList(boolean light) {
         try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection());
              PreparedStatement pstmt = connection.prepareStatement("select cast (metadata as text) as metadata from configuration");
              ResultSet rs = pstmt.executeQuery()) {
             ArrayList<StoredDataMetadata> ret = new ArrayList<>();
             while (rs.next()) {
-                ret.add(migrationManager.readStoredFactoryMetadataLight(rs.getString(1)));
+                ret.add(migrationManager.readStoredFactoryMetadata(rs.getString(1), light));
             }
             return ret;
         } catch (SQLException e) {
@@ -88,7 +88,7 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
                 StoredDataMetadata metadata = initCurrentData(connection);
                 return new DataAndId<>(initialData, metadata.id);
             } else {
-                StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2));
+                StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2), false);
                 return new DataAndId<>(migrationManager.read(rs.getString(1), metaData.dataStorageMetadataDictionary), metaData.id);
             }
         } catch (SQLException e) {

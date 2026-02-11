@@ -113,7 +113,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
             statement.setString(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
-                StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
+                StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"), false);
                 return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.dataStorageMetadataDictionary);
             }
         } catch (SQLException e) {
@@ -121,13 +121,13 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
         }
     }
 
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata> getHistoryFactoryList(boolean light) {
         ArrayList<StoredDataMetadata> result = new ArrayList<>();
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM FACTORY_HISTORY")) {
             while (resultSet.next()) {
-                result.add(migrationManager.readStoredFactoryMetadataLight(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata")));
+                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"), light));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -95,7 +95,7 @@ public class MicroserviceRestIntegrationTest {
             microserviceRestClient.prepareNewFactory();
 
 
-            final ArrayList<StoredDataMetadata> historyFactoryList = new ArrayList<>(microserviceRestClient.getHistoryFactoryList());
+            final ArrayList<StoredDataMetadata> historyFactoryList = new ArrayList<>(microserviceRestClient.getHistoryFactoryList(false));
             microserviceRestClient.getHistoryFactory(historyFactoryList.get(0).id);
 
             Assertions.assertEquals(Locale.GERMAN, microserviceRestClient.getLocale());

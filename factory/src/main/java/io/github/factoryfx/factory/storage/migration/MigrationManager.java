@@ -156,17 +156,16 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         return migrate(migratedData,dataStorageMetadataDictionary);
     }
 
-    public StoredDataMetadata readStoredFactoryMetadata(String data) {
-        return objectMapper.readValue(data,StoredDataMetadata.class);
-    }
-
-    public StoredDataMetadata readStoredFactoryMetadataLight(String data) {
-        try {
-            JsonNode root = objectMapper.readTree(data);
-            return StoredDataMetadata.createLightStoredDataMetadata(root);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public StoredDataMetadata readStoredFactoryMetadata(String data, boolean light) {
+        if (light) {
+            try {
+                JsonNode root = objectMapper.readTree(data);
+                return StoredDataMetadata.createLightStoredDataMetadata(root);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+        return objectMapper.readValue(data,StoredDataMetadata.class);
     }
 
     public ScheduledUpdateMetadata readScheduledFactoryMetadata(String data) {

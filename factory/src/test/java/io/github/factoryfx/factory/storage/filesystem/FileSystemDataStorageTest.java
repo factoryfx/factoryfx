@@ -69,10 +69,10 @@ public class FileSystemDataStorageTest {
 
         fileSystemFactoryStorage.updateCurrentData(update,null);
         Assertions.assertNotEquals(id,fileSystemFactoryStorage.getCurrentData().id);
-        Assertions.assertEquals(2,fileSystemFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(2,fileSystemFactoryStorage.getHistoryDataList(false).size());
 
         HashSet<String> ids= new HashSet<>();
-        fileSystemFactoryStorage.getHistoryDataList().forEach(storedFactoryMetadata -> {
+        fileSystemFactoryStorage.getHistoryDataList(false).forEach(storedFactoryMetadata -> {
             ids.add(storedFactoryMetadata.id);
         });
         Assertions.assertTrue(ids.contains(id));

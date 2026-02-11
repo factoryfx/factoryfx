@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.factoryfx.factory.attribute.types.StringSetAttribute;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.base.Throwables;
@@ -68,7 +67,7 @@ public class MicroserviceTest {
 
 
 
-        final List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        final List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList(false));
         Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, Comparator.reverseOrder()));
 
 
@@ -135,7 +134,7 @@ public class MicroserviceTest {
 
 
 
-        final List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        final List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList(false));
         Collections.sort(historyFactoryList, (o1, o2) -> Objects.compare(o1.creationTime, o2.creationTime, Comparator.reverseOrder()));
 
         Assertions.assertEquals(4,historyFactoryList.size());
@@ -219,7 +218,7 @@ public class MicroserviceTest {
 
         microservice.start();
         Assertions.assertEquals(0,microservice.prepareNewFactory().root.referenceListAttribute.size());
-        Assertions.assertEquals(0,microservice.getHistoryFactory(new ArrayList<>(microservice.getHistoryFactoryList()).get(0).id).referenceListAttribute.size());
+        Assertions.assertEquals(0,microservice.getHistoryFactory(new ArrayList<>(microservice.getHistoryFactoryList(false)).get(0).id).referenceListAttribute.size());
 
         DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
         update.comment="XXXX for sort";
@@ -229,8 +228,8 @@ public class MicroserviceTest {
         Assertions.assertEquals(1,log.mergeDiffInfo.mergeInfos.size());
 //        Assertions.assertEquals(1,microservice.prepareNewFactory().root.referenceListAttribute.size());
 
-        Assertions.assertEquals(2,microservice.getHistoryFactoryList().size());
-        List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList());
+        Assertions.assertEquals(2,microservice.getHistoryFactoryList(false).size());
+        List<StoredDataMetadata> historyFactoryList = new ArrayList<>(microservice.getHistoryFactoryList(false));
         historyFactoryList.sort(Comparator.comparing(o -> o.comment));
         Collections.reverse(historyFactoryList);
 
@@ -372,10 +371,10 @@ public class MicroserviceTest {
 
         Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice().build();
         microservice.start();
-        Assertions.assertEquals(1,microservice.getHistoryFactoryList().size());
+        Assertions.assertEquals(1,microservice.getHistoryFactoryList(false).size());
         microservice.update((root, idToFactory) -> root.referenceAttribute.set(new ExampleFactoryB()));
 
-        Assertions.assertEquals(2,microservice.getHistoryFactoryList().size());
+        Assertions.assertEquals(2,microservice.getHistoryFactoryList(false).size());
     }
 
     public static class ExampleFactoryBDestroyTracking extends ExampleFactoryB{

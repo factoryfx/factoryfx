@@ -37,7 +37,7 @@ public class InMemoryDataStorage<R extends FactoryBase<?,R>> implements DataStor
     }
 
     @Override
-    public Collection<StoredDataMetadata> getHistoryDataList() {
+    public Collection<StoredDataMetadata> getHistoryDataList(boolean light) {
         return storage.values().stream().map(item -> item.metadata).collect(Collectors.toList());
     }
 

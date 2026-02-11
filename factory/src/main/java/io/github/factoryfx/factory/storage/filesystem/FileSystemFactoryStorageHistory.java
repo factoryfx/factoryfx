@@ -47,7 +47,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
     }
 
     public R getHistoryFactory(String id) {
-        StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(readFile(historyDirectory.resolve(id + "_metadata.json")));
+        StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(readFile(historyDirectory.resolve(id + "_metadata.json")), false);
         cache.put(metaData.id, metaData);
         return migrationManager.read(readFile(historyDirectory.resolve(id + ".json")), metaData.dataStorageMetadataDictionary);
     }
@@ -60,11 +60,11 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
         }
     }
 
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata> getHistoryFactoryList(boolean light) {
         if (cache.isEmpty()) {
             visitHistoryFiles(path -> {
                 if (path.toString().endsWith("_metadata.json")) {
-                    StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadataLight(readFile(path));
+                    StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path), light);
                     cache.put(storedDataMetadata.id, storedDataMetadata);
                 }
             });
@@ -127,7 +127,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
 
     private void houseKeeping() {
         if (maxConfigurationHistory == Integer.MAX_VALUE) {return;}
-        List<StoredDataMetadata> collect = getHistoryFactoryList().stream().toList();
+        List<StoredDataMetadata> collect = getHistoryFactoryList(true).stream().toList();
         int numToRemove = collect.size() - maxConfigurationHistory;
         if (numToRemove > 0) {
             collect.stream().sorted(Comparator.comparing(a -> a.creationTime)).limit(numToRemove).forEach(smd -> {

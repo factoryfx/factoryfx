@@ -36,7 +36,7 @@ public class FileSystemDataStorageHistoryTest {
     public void test_empty() {
         FileSystemFactoryStorageHistory<ExampleDataA> fileSystemFactoryStorage = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
 
-        Assertions.assertTrue(fileSystemFactoryStorage.getHistoryFactoryList().isEmpty());
+        Assertions.assertTrue(fileSystemFactoryStorage.getHistoryFactoryList(false).isEmpty());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class FileSystemDataStorageHistoryTest {
         StoredDataMetadata metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
 
-        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList(false).size());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class FileSystemDataStorageHistoryTest {
             fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
         }
 
-        Assertions.assertEquals(3,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assertions.assertEquals(3,fileSystemFactoryStorage.getHistoryFactoryList(false).size());
     }
 
     @Test
@@ -77,10 +77,10 @@ public class FileSystemDataStorageHistoryTest {
 
         StoredDataMetadata metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
-        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList().size());
+        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryFactoryList(false).size());
 
         FileSystemFactoryStorageHistory<ExampleDataA> restored = new FileSystemFactoryStorageHistory<>(Paths.get(folder.toFile().toURI()),createSerialisation(), ObjectMapperBuilder.build());
-        Assertions.assertEquals(1,restored.getHistoryFactoryList().size());
+        Assertions.assertEquals(1,restored.getHistoryFactoryList(false).size());
     }
 
     @Test
@@ -90,6 +90,6 @@ public class FileSystemDataStorageHistoryTest {
         StoredDataMetadata metadata = createDummyStoredDataMetadata();
         fileSystemFactoryStorage.updateHistory(new ExampleDataA(), metadata);
 
-        Assertions.assertNotNull(fileSystemFactoryStorage.getHistoryFactory(new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList()).get(0).id));
+        Assertions.assertNotNull(fileSystemFactoryStorage.getHistoryFactory(new ArrayList<>(fileSystemFactoryStorage.getHistoryFactoryList(false)).get(0).id));
     }
 }
