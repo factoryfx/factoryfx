@@ -53,8 +53,8 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
 
             try (ResultSet resultSet =statement.executeQuery(sql)) {
                 if (resultSet.next()) {
-                    ScheduledUpdateMetadata metadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"),metadata.dataStorageMetadataDictionary);
+                    ScheduledUpdateMetadata metadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper));
+                    return migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper),metadata.dataStorageMetadataDictionary);
                 }
             }
         } catch (SQLException e) {
@@ -72,7 +72,7 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
              ResultSet resultSet =statement.executeQuery("SELECT * FROM FACTORY_FUTURE")
             ){
             while (resultSet.next()) {
-                result.add(migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata")));
+                result.add(migrationManager.readScheduledFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper)));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

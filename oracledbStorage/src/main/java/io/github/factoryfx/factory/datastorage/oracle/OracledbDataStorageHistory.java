@@ -113,8 +113,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
             statement.setString(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.dataStorageMetadataDictionary);
+                    StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper));
+                    return migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), metadata.dataStorageMetadataDictionary);
                 }
             }
         } catch (SQLException e) {
@@ -131,7 +131,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM FACTORY_HISTORY")) {
             while (resultSet.next()) {
-                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata")));
+                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper)));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -164,11 +164,9 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
                 try (ResultSet resultSet = statement.executeQuery(sql)) {
                     while (resultSet.next()) {
-                        String dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
-                        String metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+                        JsonNode data = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
+                        JsonNode metadata = JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper);
 
-                        JsonNode data = objectMapper.readTree(dataString);
-                        JsonNode metadata = objectMapper.readTree(metadataString);
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
 
@@ -201,11 +199,9 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
-                        String dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
-                        String metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+                        JsonNode data = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
+                        JsonNode metadata = JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper);
 
-                        JsonNode data = objectMapper.readTree(dataString);
-                        JsonNode metadata = objectMapper.readTree(metadataString);
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
 

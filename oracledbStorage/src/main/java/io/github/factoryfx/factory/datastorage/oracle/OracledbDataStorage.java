@@ -82,8 +82,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 if (resultSet.next()) {
-                    StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return new DataAndId<>(migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), factoryMetadata.dataStorageMetadataDictionary), factoryMetadata.id);
+                    StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper));
+                    return new DataAndId<>(migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), factoryMetadata.dataStorageMetadataDictionary), factoryMetadata.id);
                 }
             }
         } catch (SQLException e) {
@@ -134,26 +134,24 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
     @Override
     public void patchCurrentData(DataStoragePatcher consumer) {
-        String dataString = null;
-        String metadataString = null;
+        JsonNode data;
+        JsonNode metadata;
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
             String sql = "SELECT * FROM FACTORY_CURRENT";
 
             try (ResultSet resultSet = statement.executeQuery(sql)) {
-                if (resultSet.next()) {
-                    dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
-                    metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+                if (!resultSet.next()) {
+                    throw new IllegalStateException("No data found");
                 }
+                data = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
+                metadata = JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        JsonNode data = objectMapper.readTree(dataString);
-        JsonNode metadata = objectMapper.readTree(metadataString);
         consumer.patch((ObjectNode) data, metadata, objectMapper);
-
         String metadataId = metadata.get("id").asText();
 
         try (Connection connection = connectionSupplier.get();

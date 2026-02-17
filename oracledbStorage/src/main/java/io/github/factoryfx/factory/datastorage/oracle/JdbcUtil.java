@@ -1,11 +1,12 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 
 public class JdbcUtil {
@@ -25,11 +26,10 @@ public class JdbcUtil {
         }
     }
 
-    public static String readStringFromBlob(ResultSet resultSet, String columnLabel) {
-        try {
-            Blob factoryBlob = resultSet.getBlob(columnLabel);
-            return new String(factoryBlob.getBytes(1L, (int) factoryBlob.length()), StandardCharsets.UTF_8);
-        } catch (SQLException e) {
+    public static JsonNode readTreeFromBlob(ResultSet resultSet, String columnLabel, SimpleObjectMapper objectMapper) {
+        try (InputStream blobStream = resultSet.getBinaryStream(columnLabel)) {
+            return objectMapper.readTree(blobStream);
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }

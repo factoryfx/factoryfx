@@ -1,3 +1,7 @@
+# 4.1.2
+* **OracledbDataStorage**
+    * optimize memory usage for storing and reading factory data
+
 # 4.1.1
 * **SimpleObjectMapper**
     * cleanup
