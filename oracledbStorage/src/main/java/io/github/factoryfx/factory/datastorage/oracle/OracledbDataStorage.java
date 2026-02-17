@@ -3,6 +3,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.*;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
@@ -161,8 +162,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadataId);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata), preparedStatement, 3);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, data, OutputStyle.DEFAULT);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -178,8 +179,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadata.id);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(update), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata), preparedStatement, 3);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, update, OutputStyle.DEFAULT);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

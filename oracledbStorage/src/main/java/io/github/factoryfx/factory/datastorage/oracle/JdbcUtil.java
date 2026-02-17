@@ -1,15 +1,26 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
-import java.io.ByteArrayInputStream;
+import io.github.factoryfx.factory.jackson.OutputStyle;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 
 public class JdbcUtil {
-    public static void writeStringToBlob(String value, PreparedStatement preparedStatement, int index) {
+    public static void writeObjectToBlob(PreparedStatement preparedStatement,
+                                         int index,
+                                         SimpleObjectMapper objectMapper,
+                                         Object value,
+                                         OutputStyle outputStyle) {
         try {
-            final byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-            preparedStatement.setBinaryStream(index, new ByteArrayInputStream(bytes), bytes.length);
-        } catch (SQLException e) {
+            Blob blob = preparedStatement.getConnection().createBlob();
+            try (OutputStream out = blob.setBinaryStream(1)) {
+                objectMapper.writeValue(out, value, outputStyle);
+            }
+            preparedStatement.setBlob(index, blob);
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }

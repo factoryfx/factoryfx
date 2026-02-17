@@ -145,8 +145,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
         try (Connection connection = connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_HISTORY(id,factory,factoryMetadata) VALUES (?,?,? )")) {
             preparedStatement.setString(1, id);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(factoryRoot, OutputStyle.COMPACT), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), preparedStatement, 3);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, factoryRoot, OutputStyle.COMPACT);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.COMPACT);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -173,8 +173,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
                         String metadataId = metadata.get("id").asText();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data, OutputStyle.COMPACT), updateStatement, 1);
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), updateStatement, 2);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 1, objectMapper, data, OutputStyle.COMPACT);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 2, objectMapper, metadata, OutputStyle.COMPACT);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {
@@ -210,8 +210,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
                         String metadataId = metadata.get("id").asText();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data, OutputStyle.COMPACT), updateStatement, 1);
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), updateStatement, 2);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 1, objectMapper, data, OutputStyle.COMPACT);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 2, objectMapper, metadata, OutputStyle.COMPACT);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {

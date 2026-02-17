@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
@@ -85,8 +86,8 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);
-             JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(factoryRoot),preparedStatement,2);
-             JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata),preparedStatement,3);
+             JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, factoryRoot, OutputStyle.DEFAULT);
+             JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

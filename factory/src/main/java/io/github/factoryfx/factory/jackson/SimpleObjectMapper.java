@@ -127,8 +127,12 @@ public class SimpleObjectMapper {
         writeInternal(() -> objectMapper.writeValue(gen, value));
     }
 
+    public void writeValue(OutputStream out, Object value, OutputStyle outputStyle) {
+        writeInternal(() -> outputStyle.getWriter(objectMapper).writeValue(out, value));
+    }
+
     public void writeValue(OutputStream out, Object value) {
-        writeInternal(() -> objectMapper.writeValue(out, value));
+        writeValue(out, value, OutputStyle.DEFAULT);
     }
 
     public void writeValue(Path path, Object value) {
