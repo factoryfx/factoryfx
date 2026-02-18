@@ -8,21 +8,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.*;
+import java.util.List;
 
 public class JdbcUtil {
     public static void writeObjectToBlob(PreparedStatement preparedStatement,
                                          int index,
                                          SimpleObjectMapper objectMapper,
                                          Object value,
-                                         OutputStyle outputStyle) {
+                                         OutputStyle outputStyle,
+                                         List<Blob> allocatedBlobs) {
         try {
             Blob blob = preparedStatement.getConnection().createBlob();
+            allocatedBlobs.add(blob);
             try (OutputStream out = blob.setBinaryStream(1)) {
                 objectMapper.writeValue(out, value, outputStyle);
             }
             preparedStatement.setBlob(index, blob);
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void freeBlobs(List<Blob> blobs) {
+        for (Blob blob : blobs) {
+            if (blob != null) {
+                try {
+                    blob.free();
+                } catch (SQLException ignored) {
+                }
+            }
         }
     }
 

@@ -9,7 +9,9 @@ import io.github.factoryfx.factory.storage.*;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -154,34 +156,40 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         consumer.patch((ObjectNode) data, metadata, objectMapper);
         String metadataId = metadata.get("id").asText();
 
+        List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection = connectionSupplier.get();
              PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadataId);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, data, OutputStyle.DEFAULT);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, data, OutputStyle.DEFAULT, allocatedBlobs);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT, allocatedBlobs);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.freeBlobs(allocatedBlobs);
         }
 
         oracledbDataStorageHistory.patchForId(consumer, metadataId);
     }
 
     private void update(R update, StoredDataMetadata metadata) {
+        List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection = connectionSupplier.get();
              PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadata.id);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, update, OutputStyle.DEFAULT);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, update, OutputStyle.DEFAULT, allocatedBlobs);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT, allocatedBlobs);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.freeBlobs(allocatedBlobs);
         }
         oracledbDataStorageHistory.updateHistory(metadata, update);
     }

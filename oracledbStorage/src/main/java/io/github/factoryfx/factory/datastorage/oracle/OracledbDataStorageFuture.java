@@ -10,6 +10,7 @@ import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
@@ -82,15 +83,17 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
 
     public void addFuture(ScheduledUpdateMetadata metadata, R factoryRoot) {
         String id=metadata.id;
-
+        List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);
-             JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, factoryRoot, OutputStyle.DEFAULT);
-             JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT);
+             JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, factoryRoot, OutputStyle.DEFAULT, allocatedBlobs);
+             JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT, allocatedBlobs);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.freeBlobs(allocatedBlobs);
         }
     }
 

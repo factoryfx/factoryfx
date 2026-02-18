@@ -12,6 +12,7 @@ import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
@@ -141,15 +142,17 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
     public void updateHistory(StoredDataMetadata metadata, R factoryRoot) {
         String id = metadata.id;
-
+        List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection = connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_HISTORY(id,factory,factoryMetadata) VALUES (?,?,? )")) {
             preparedStatement.setString(1, id);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, factoryRoot, OutputStyle.COMPACT);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.COMPACT);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, factoryRoot, OutputStyle.COMPACT, allocatedBlobs);
+            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.COMPACT, allocatedBlobs);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.freeBlobs(allocatedBlobs);
         }
     }
 
@@ -169,14 +172,17 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
+                        List<Blob> allocatedBlobs = new ArrayList<>();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeObjectToBlob(updateStatement, 1, objectMapper, data, OutputStyle.COMPACT);
-                            JdbcUtil.writeObjectToBlob(updateStatement, 2, objectMapper, metadata, OutputStyle.COMPACT);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 1, objectMapper, data, OutputStyle.COMPACT, allocatedBlobs);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 2, objectMapper, metadata, OutputStyle.COMPACT, allocatedBlobs);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {
                             throw new RuntimeException(e1);
+                        } finally {
+                            JdbcUtil.freeBlobs(allocatedBlobs);
                         }
                     }
                 }
@@ -205,13 +211,16 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
 
+                        List<Blob> allocatedBlobs = new ArrayList<>();
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeObjectToBlob(updateStatement, 1, objectMapper, data, OutputStyle.COMPACT);
-                            JdbcUtil.writeObjectToBlob(updateStatement, 2, objectMapper, metadata, OutputStyle.COMPACT);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 1, objectMapper, data, OutputStyle.COMPACT, allocatedBlobs);
+                            JdbcUtil.writeObjectToBlob(updateStatement, 2, objectMapper, metadata, OutputStyle.COMPACT, allocatedBlobs);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {
                             throw new RuntimeException(e1);
+                        } finally {
+                            JdbcUtil.freeBlobs(allocatedBlobs);
                         }
                     }
                 }
