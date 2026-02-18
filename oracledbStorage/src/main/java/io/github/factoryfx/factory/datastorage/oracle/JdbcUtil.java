@@ -1,7 +1,6 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 
 import java.io.IOException;
@@ -9,19 +8,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class JdbcUtil {
-    public static void writeObjectToBlob(PreparedStatement preparedStatement,
-                                         int index,
-                                         SimpleObjectMapper objectMapper,
-                                         Object value,
-                                         OutputStyle outputStyle,
-                                         List<Blob> allocatedBlobs) {
+
+    public static void writeToBlob(PreparedStatement preparedStatement,
+                                   int index,
+                                   Consumer<OutputStream> writer,
+                                   List<Blob> allocatedBlobs) {
         try {
             Blob blob = preparedStatement.getConnection().createBlob();
             allocatedBlobs.add(blob);
             try (OutputStream out = blob.setBinaryStream(1)) {
-                objectMapper.writeValue(out, value, outputStyle);
+                writer.accept(out);
             }
             preparedStatement.setBlob(index, blob);
         } catch (SQLException | IOException e) {

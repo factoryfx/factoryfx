@@ -163,8 +163,23 @@ public class SimpleObjectMapper {
         return writeInternal(() -> outputStyle.getWriter(objectMapper).writeValueAsString(value));
     }
 
+    public InputStream writeValueAsInputStream(JsonNode node) {
+        return writeValueAsInputStream(node, OutputStyle.DEFAULT);
+    }
+
+    public InputStream writeValueAsInputStream(JsonNode node, OutputStyle outputStyle) {
+        Object value = writeInternal(() -> objectMapper.treeToValue(node, Object.class));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeValue(out, value, outputStyle);
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    public static void copy(InputStream in, OutputStream out) {
+        writeInternal(() -> in.transferTo(out));
+    }
+
     @SuppressWarnings("unchecked")
-    private <T> T readInternal(ResultFunction<T> function) {
+    private static <T> T readInternal(ResultFunction<T> function) {
         try {
             T value = function.apply();
             if (value instanceof FactoryBase<?, ?>) {
@@ -172,30 +187,32 @@ public class SimpleObjectMapper {
             }
             return value;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
-    private void writeInternal(VoidFunction function) {
+    private static void writeInternal(VoidFunction function) {
         try {
             function.apply();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
-    private <T> T writeInternal(ResultFunction<T> function) {
+    private static <T> T writeInternal(ResultFunction<T> function) {
         try {
             return function.apply();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
+    @FunctionalInterface
     private interface VoidFunction {
         void apply() throws IOException;
     }
 
+    @FunctionalInterface
     private interface ResultFunction<T> {
         T apply() throws IOException;
     }

@@ -163,8 +163,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadataId);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, data, OutputStyle.DEFAULT, allocatedBlobs);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT, allocatedBlobs);
+            JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, data, OutputStyle.DEFAULT), allocatedBlobs);
+            JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -183,8 +183,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         ) {
             truncate.execute();
             preparedStatement.setString(1, metadata.id);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, update, OutputStyle.DEFAULT, allocatedBlobs);
-            JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT, allocatedBlobs);
+            JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, update, OutputStyle.DEFAULT), allocatedBlobs);
+            JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

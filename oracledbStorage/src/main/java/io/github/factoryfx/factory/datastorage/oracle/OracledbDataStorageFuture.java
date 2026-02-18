@@ -87,8 +87,8 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);
-             JdbcUtil.writeObjectToBlob(preparedStatement, 2, objectMapper, factoryRoot, OutputStyle.DEFAULT, allocatedBlobs);
-             JdbcUtil.writeObjectToBlob(preparedStatement, 3, objectMapper, metadata, OutputStyle.DEFAULT, allocatedBlobs);
+             JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, factoryRoot, OutputStyle.DEFAULT), allocatedBlobs);
+             JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
