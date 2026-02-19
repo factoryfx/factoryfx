@@ -163,19 +163,10 @@ public class SimpleObjectMapper {
         return writeInternal(() -> outputStyle.getWriter(objectMapper).writeValueAsString(value));
     }
 
-    public InputStream writeValueAsInputStream(JsonNode node) {
-        return writeValueAsInputStream(node, OutputStyle.DEFAULT);
-    }
-
-    public InputStream writeValueAsInputStream(JsonNode node, OutputStyle outputStyle) {
-        Object value = writeInternal(() -> objectMapper.treeToValue(node, Object.class));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        writeValue(out, value, outputStyle);
-        return new ByteArrayInputStream(out.toByteArray());
-    }
-
-    public static void copy(InputStream in, OutputStream out) {
-        writeInternal(() -> in.transferTo(out));
+    public static void writeBytes(byte[] bytes, OutputStream out) {
+        writeInternal(() -> {
+            if (bytes != null) {out.write(bytes);}
+        });
     }
 
     @SuppressWarnings("unchecked")
