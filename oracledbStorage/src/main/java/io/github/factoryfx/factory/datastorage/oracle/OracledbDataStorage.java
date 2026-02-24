@@ -59,11 +59,11 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
     public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, boolean withHistoryCompression) {
         this(connectionSupplier,
-             initialDataParam,
-             migrationManager,
-             new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, objectMapper, withHistoryCompression),
-             new OracledbDataStorageFuture<>(connectionSupplier, migrationManager, objectMapper),
-             objectMapper);
+                initialDataParam,
+                migrationManager,
+                new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, objectMapper, withHistoryCompression),
+                new OracledbDataStorageFuture<>(connectionSupplier, migrationManager, objectMapper),
+                objectMapper);
     }
 
     @Override
@@ -156,40 +156,54 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         consumer.patch((ObjectNode) data, metadata, objectMapper);
         String metadataId = metadata.get("id").asText();
 
-        List<Blob> allocatedBlobs = new ArrayList<>();
-        try (Connection connection = connectionSupplier.get();
-             PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
-        ) {
-            truncate.execute();
-            preparedStatement.setString(1, metadataId);
-            JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, data, OutputStyle.DEFAULT), allocatedBlobs);
-            JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
-            preparedStatement.executeUpdate();
+        try (Connection connection = connectionSupplier.get()) {
+            boolean initialAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            List<Blob> allocatedBlobs = new ArrayList<>();
+            try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
+                preparedStatement.setString(1, metadataId);
+                JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, data, OutputStyle.DEFAULT), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
+                delete.execute();
+                preparedStatement.executeUpdate();
+                connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
+                JdbcUtil.freeBlobs(allocatedBlobs);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            JdbcUtil.freeBlobs(allocatedBlobs);
         }
 
         oracledbDataStorageHistory.patchForId(consumer, metadataId);
     }
 
     private void update(R update, StoredDataMetadata metadata) {
-        List<Blob> allocatedBlobs = new ArrayList<>();
-        try (Connection connection = connectionSupplier.get();
-             PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
-        ) {
-            truncate.execute();
-            preparedStatement.setString(1, metadata.id);
-            JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, update, OutputStyle.DEFAULT), allocatedBlobs);
-            JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
-            preparedStatement.executeUpdate();
+        try (Connection connection = connectionSupplier.get()) {
+            boolean initialAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            List<Blob> allocatedBlobs = new ArrayList<>();
+            try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
+                preparedStatement.setString(1, metadata.id);
+                JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, update, OutputStyle.DEFAULT), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
+                delete.execute();
+                preparedStatement.executeUpdate();
+                connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
+                JdbcUtil.freeBlobs(allocatedBlobs);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            JdbcUtil.freeBlobs(allocatedBlobs);
         }
         oracledbDataStorageHistory.updateHistory(metadata, update);
     }

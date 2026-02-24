@@ -187,6 +187,9 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
                     }
                 }
                 connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
             } finally {
                 connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
             }
@@ -225,6 +228,9 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
                     }
                 }
                 connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
             } finally {
                 connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
             }
