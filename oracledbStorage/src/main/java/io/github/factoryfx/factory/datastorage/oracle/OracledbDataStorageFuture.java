@@ -83,7 +83,7 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
 
     public void addFuture(ScheduledUpdateMetadata metadata, R factoryRoot) {
         String id=metadata.id;
-        List<Blob> allocatedBlobs = new ArrayList<>();
+        final List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);

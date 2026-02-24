@@ -159,7 +159,7 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         try (Connection connection = connectionSupplier.get()) {
             boolean initialAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
-            List<Blob> allocatedBlobs = new ArrayList<>();
+            final List<Blob> allocatedBlobs = new ArrayList<>();
             try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
                  PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
                 preparedStatement.setString(1, metadataId);
@@ -186,7 +186,7 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         try (Connection connection = connectionSupplier.get()) {
             boolean initialAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
-            List<Blob> allocatedBlobs = new ArrayList<>();
+            final List<Blob> allocatedBlobs = new ArrayList<>();
             try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
                  PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
                 preparedStatement.setString(1, metadata.id);

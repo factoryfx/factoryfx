@@ -142,7 +142,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
     public void updateHistory(StoredDataMetadata metadata, R factoryRoot) {
         String id = metadata.id;
-        List<Blob> allocatedBlobs = new ArrayList<>();
+        final List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection = connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_HISTORY(id,factory,factoryMetadata) VALUES (?,?,? )")) {
             preparedStatement.setString(1, id);
@@ -172,7 +172,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
-                        List<Blob> allocatedBlobs = new ArrayList<>();
+                        final List<Blob> allocatedBlobs = new ArrayList<>();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
                             JdbcUtil.writeToBlob(updateStatement, 1, out -> objectMapper.writeValue(out, data, OutputStyle.COMPACT), allocatedBlobs);
@@ -214,7 +214,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
 
-                        List<Blob> allocatedBlobs = new ArrayList<>();
+                        final List<Blob> allocatedBlobs = new ArrayList<>();
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
                             JdbcUtil.writeToBlob(updateStatement, 1, out -> objectMapper.writeValue(out, data, OutputStyle.COMPACT), allocatedBlobs);
                             JdbcUtil.writeToBlob(updateStatement, 2, out -> objectMapper.writeValue(out, metadata, OutputStyle.COMPACT), allocatedBlobs);
