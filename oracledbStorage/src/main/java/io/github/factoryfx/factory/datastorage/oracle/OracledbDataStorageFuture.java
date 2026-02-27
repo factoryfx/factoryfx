@@ -2,6 +2,7 @@ package io.github.factoryfx.factory.datastorage.oracle;
 
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
@@ -9,6 +10,7 @@ import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
@@ -52,8 +54,8 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
 
             try (ResultSet resultSet =statement.executeQuery(sql)) {
                 if (resultSet.next()) {
-                    ScheduledUpdateMetadata metadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"),metadata.dataStorageMetadataDictionary);
+                    ScheduledUpdateMetadata metadata = migrationManager.readScheduledFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper));
+                    return migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper),metadata.dataStorageMetadataDictionary);
                 }
             }
         } catch (SQLException e) {
@@ -71,7 +73,7 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
              ResultSet resultSet =statement.executeQuery("SELECT * FROM FACTORY_FUTURE")
             ){
             while (resultSet.next()) {
-                result.add(migrationManager.readScheduledFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata")));
+                result.add(migrationManager.readScheduledFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper)));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -81,15 +83,17 @@ public class OracledbDataStorageFuture<R extends FactoryBase<?,R>> {
 
     public void addFuture(ScheduledUpdateMetadata metadata, R factoryRoot) {
         String id=metadata.id;
-
+        final List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection= connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_FUTURE(id,factory,factoryMetadata) VALUES (?,?,? )")){
              preparedStatement.setString(1, id);
-             JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(factoryRoot),preparedStatement,2);
-             JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata),preparedStatement,3);
+             JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, factoryRoot, OutputStyle.DEFAULT), allocatedBlobs);
+             JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
              preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.freeBlobs(allocatedBlobs);
         }
     }
 

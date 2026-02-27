@@ -3,12 +3,15 @@ package io.github.factoryfx.factory.datastorage.oracle;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.*;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -56,11 +59,11 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
     public OracledbDataStorage(Supplier<Connection> connectionSupplier, R initialDataParam, MigrationManager<R> migrationManager, SimpleObjectMapper objectMapper, boolean withHistoryCompression) {
         this(connectionSupplier,
-             initialDataParam,
-             migrationManager,
-             new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, objectMapper, withHistoryCompression),
-             new OracledbDataStorageFuture<>(connectionSupplier, migrationManager, objectMapper),
-             objectMapper);
+                initialDataParam,
+                migrationManager,
+                new OracledbDataStorageHistory<>(connectionSupplier, migrationManager, objectMapper, withHistoryCompression),
+                new OracledbDataStorageFuture<>(connectionSupplier, migrationManager, objectMapper),
+                objectMapper);
     }
 
     @Override
@@ -81,8 +84,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 if (resultSet.next()) {
-                    StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"));
-                    return new DataAndId<>(migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), factoryMetadata.dataStorageMetadataDictionary), factoryMetadata.id);
+                    StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper));
+                    return new DataAndId<>(migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), factoryMetadata.dataStorageMetadataDictionary), factoryMetadata.id);
                 }
             }
         } catch (SQLException e) {
@@ -133,37 +136,45 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
     @Override
     public void patchCurrentData(DataStoragePatcher consumer) {
-        String dataString = null;
-        String metadataString = null;
+        JsonNode data;
+        JsonNode metadata;
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
             String sql = "SELECT * FROM FACTORY_CURRENT";
 
             try (ResultSet resultSet = statement.executeQuery(sql)) {
-                if (resultSet.next()) {
-                    dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
-                    metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+                if (!resultSet.next()) {
+                    throw new IllegalStateException("No data found");
                 }
+                data = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
+                metadata = JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        JsonNode data = objectMapper.readTree(dataString);
-        JsonNode metadata = objectMapper.readTree(metadataString);
         consumer.patch((ObjectNode) data, metadata, objectMapper);
-
         String metadataId = metadata.get("id").asText();
 
-        try (Connection connection = connectionSupplier.get();
-             PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
-        ) {
-            truncate.execute();
-            preparedStatement.setString(1, metadataId);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata), preparedStatement, 3);
-            preparedStatement.executeUpdate();
+        try (Connection connection = connectionSupplier.get()) {
+            boolean initialAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            final List<Blob> allocatedBlobs = new ArrayList<>();
+            try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
+                preparedStatement.setString(1, metadataId);
+                JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, data, OutputStyle.DEFAULT), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
+                delete.execute();
+                preparedStatement.executeUpdate();
+                connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
+                JdbcUtil.freeBlobs(allocatedBlobs);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -172,15 +183,25 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
     }
 
     private void update(R update, StoredDataMetadata metadata) {
-        try (Connection connection = connectionSupplier.get();
-             PreparedStatement truncate = connection.prepareStatement("TRUNCATE TABLE FACTORY_CURRENT");
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")
-        ) {
-            truncate.execute();
-            preparedStatement.setString(1, metadata.id);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(update), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata), preparedStatement, 3);
-            preparedStatement.executeUpdate();
+        try (Connection connection = connectionSupplier.get()) {
+            boolean initialAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            final List<Blob> allocatedBlobs = new ArrayList<>();
+            try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
+                preparedStatement.setString(1, metadata.id);
+                JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, update, OutputStyle.DEFAULT), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
+                delete.execute();
+                preparedStatement.executeUpdate();
+                connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
+                JdbcUtil.freeBlobs(allocatedBlobs);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
