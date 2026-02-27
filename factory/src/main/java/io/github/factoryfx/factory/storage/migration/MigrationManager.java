@@ -72,7 +72,8 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         pathBasedRestorations.add(new PathDataRestore<>(path,setter,new AttributeValueListParser<>(new AttributeValueParser<>(objectMapper,clazz))));
     }
 
-    public R migrate(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
+    public R read(JsonNode rootNode, DataStorageMetadataDictionary dataStorageMetadataDictionary){
+
         DataJsonNode rootDataJson = new DataJsonNode((ObjectNode) rootNode);
         DataJsonNode previousRootDataJson = new DataJsonNode(rootNode.deepCopy());
         List<DataJsonNode> dataJsonNodes = rootDataJson.collectChildrenFromRoot();
@@ -147,25 +148,22 @@ public class MigrationManager<R extends FactoryBase<?,R>> {
         return root;
     }
 
-    public R read(JsonNode data, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        return read(objectMapper.writeValueAsString(data),dataStorageMetadataDictionary);
+    public R read(String data, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
+        return read(objectMapper.readTree(data), dataStorageMetadataDictionary);
     }
 
-    public R read(String data, DataStorageMetadataDictionary dataStorageMetadataDictionary) {
-        JsonNode migratedData = objectMapper.readTree(data);
-        return migrate(migratedData,dataStorageMetadataDictionary);
+    public StoredDataMetadata readStoredFactoryMetadata(JsonNode data, boolean light) {
+        return light ?
+                StoredDataMetadata.createLightStoredDataMetadata(data) :
+                objectMapper.readValue(data,StoredDataMetadata.class);
     }
 
     public StoredDataMetadata readStoredFactoryMetadata(String data, boolean light) {
-        if (light) {
-            try {
-                JsonNode root = objectMapper.readTree(data);
-                return StoredDataMetadata.createLightStoredDataMetadata(root);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return objectMapper.readValue(data,StoredDataMetadata.class);
+        return readStoredFactoryMetadata(objectMapper.readTree(data), light);
+    }
+
+    public ScheduledUpdateMetadata readScheduledFactoryMetadata(JsonNode data) {
+        return objectMapper.readValue(data,ScheduledUpdateMetadata.class);
     }
 
     public ScheduledUpdateMetadata readScheduledFactoryMetadata(String data) {

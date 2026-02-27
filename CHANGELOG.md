@@ -2,6 +2,11 @@
 * **DataStorage**
     * add lightweight metadata for factory history
 
+# 4.1.2
+* **OracledbDataStorage**
+    * optimize memory usage for storing and reading factory data
+    * make FACTORY_CURRENT update atomic
+
 # 4.1.1
 * **SimpleObjectMapper**
     * cleanup

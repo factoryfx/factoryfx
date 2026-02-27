@@ -12,6 +12,7 @@ import io.github.factoryfx.factory.storage.migration.MigrationManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
@@ -113,8 +114,8 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
             statement.setString(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
-                StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"), false);
-                return migrationManager.read(JdbcUtil.readStringFromBlob(resultSet, "factory"), metadata.dataStorageMetadataDictionary);
+                StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), false);
+                return migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), metadata.dataStorageMetadataDictionary);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -127,7 +128,7 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM FACTORY_HISTORY")) {
             while (resultSet.next()) {
-                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata"), light));
+                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), light));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -137,15 +138,17 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
     public void updateHistory(StoredDataMetadata metadata, R factoryRoot) {
         String id = metadata.id;
-
+        final List<Blob> allocatedBlobs = new ArrayList<>();
         try (Connection connection = connectionSupplier.get();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_HISTORY(id,factory,factoryMetadata) VALUES (?,?,? )")) {
             preparedStatement.setString(1, id);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(factoryRoot, OutputStyle.COMPACT), preparedStatement, 2);
-            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), preparedStatement, 3);
+            JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, factoryRoot, OutputStyle.COMPACT), allocatedBlobs);
+            JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.COMPACT), allocatedBlobs);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JdbcUtil.freeBlobs(allocatedBlobs);
         }
     }
 
@@ -160,25 +163,29 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
                 try (ResultSet resultSet = statement.executeQuery(sql)) {
                     while (resultSet.next()) {
-                        String dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
-                        String metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+                        JsonNode data = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
+                        JsonNode metadata = JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper);
 
-                        JsonNode data = objectMapper.readTree(dataString);
-                        JsonNode metadata = objectMapper.readTree(metadataString);
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
+                        final List<Blob> allocatedBlobs = new ArrayList<>();
 
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data, OutputStyle.COMPACT), updateStatement, 1);
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), updateStatement, 2);
+                            JdbcUtil.writeToBlob(updateStatement, 1, out -> objectMapper.writeValue(out, data, OutputStyle.COMPACT), allocatedBlobs);
+                            JdbcUtil.writeToBlob(updateStatement, 2, out -> objectMapper.writeValue(out, metadata, OutputStyle.COMPACT), allocatedBlobs);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {
                             throw new RuntimeException(e1);
+                        } finally {
+                            JdbcUtil.freeBlobs(allocatedBlobs);
                         }
                     }
                 }
                 connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
             } finally {
                 connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
             }
@@ -197,25 +204,29 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
 
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
-                        String dataString = JdbcUtil.readStringFromBlob(resultSet, "factory");
-                        String metadataString = JdbcUtil.readStringFromBlob(resultSet, "factoryMetadata");
+                        JsonNode data = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
+                        JsonNode metadata = JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper);
 
-                        JsonNode data = objectMapper.readTree(dataString);
-                        JsonNode metadata = objectMapper.readTree(metadataString);
                         consumer.patch((ObjectNode) data, metadata, objectMapper);
                         String metadataId = metadata.get("id").asText();
 
+                        final List<Blob> allocatedBlobs = new ArrayList<>();
                         try (PreparedStatement updateStatement = connection.prepareStatement("UPDATE FACTORY_HISTORY SET factory=?,factoryMetadata=? WHERE id=?")) {
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(data, OutputStyle.COMPACT), updateStatement, 1);
-                            JdbcUtil.writeStringToBlob(objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), updateStatement, 2);
+                            JdbcUtil.writeToBlob(updateStatement, 1, out -> objectMapper.writeValue(out, data, OutputStyle.COMPACT), allocatedBlobs);
+                            JdbcUtil.writeToBlob(updateStatement, 2, out -> objectMapper.writeValue(out, metadata, OutputStyle.COMPACT), allocatedBlobs);
                             updateStatement.setString(3, metadataId);
                             updateStatement.executeUpdate();
                         } catch (SQLException e1) {
                             throw new RuntimeException(e1);
+                        } finally {
+                            JdbcUtil.freeBlobs(allocatedBlobs);
                         }
                     }
                 }
                 connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
             } finally {
                 connection.setAutoCommit(initialAutoCommit);  //connection might be from a pool better restore state
             }

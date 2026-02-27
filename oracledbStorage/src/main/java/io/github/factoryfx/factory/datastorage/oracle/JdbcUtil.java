@@ -1,24 +1,48 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.databind.JsonNode;
+import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.*;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class JdbcUtil {
-    public static void writeStringToBlob(String value, PreparedStatement preparedStatement, int index) {
+
+    public static void writeToBlob(PreparedStatement preparedStatement,
+                                   int index,
+                                   Consumer<OutputStream> writer,
+                                   List<Blob> allocatedBlobs) {
         try {
-            final byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-            preparedStatement.setBinaryStream(index, new ByteArrayInputStream(bytes), bytes.length);
-        } catch (SQLException e) {
+            Blob blob = preparedStatement.getConnection().createBlob();
+            allocatedBlobs.add(blob);
+            try (OutputStream out = blob.setBinaryStream(1)) {
+                writer.accept(out);
+            }
+            preparedStatement.setBlob(index, blob);
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static String readStringFromBlob(ResultSet resultSet, String columnLabel) {
-        try {
-            Blob factoryBlob = resultSet.getBlob(columnLabel);
-            return new String(factoryBlob.getBytes(1L, (int) factoryBlob.length()), StandardCharsets.UTF_8);
-        } catch (SQLException e) {
+    public static void freeBlobs(List<Blob> blobs) {
+        for (Blob blob : blobs) {
+            if (blob != null) {
+                try {
+                    blob.free();
+                } catch (SQLException ignored) {
+                }
+            }
+        }
+    }
+
+    public static JsonNode readTreeFromBlob(ResultSet resultSet, String columnLabel, SimpleObjectMapper objectMapper) {
+        try (InputStream blobStream = resultSet.getBinaryStream(columnLabel)) {
+            return objectMapper.readTree(blobStream);
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }
