@@ -1,3 +1,7 @@
+# 4.1.3
+* **SelectFactoryDialog**
+    * add filter text field
+
 # 4.1.2
 * **OracledbDataStorage**
     * optimize memory usage for storing and reading factory data
