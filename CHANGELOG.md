@@ -1,6 +1,10 @@
-# 4.1.3
+# 4.1.4
 * **DataStorage**
     * add lightweight metadata for factory history
+
+# 4.1.3
+* **SelectFactoryDialog**
+    * add filter text field
 
 # 4.1.2
 * **OracledbDataStorage**
