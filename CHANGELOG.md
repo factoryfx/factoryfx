@@ -1,3 +1,9 @@
+# 4.1.4
+* **Microservice**
+  * modify config revert message to show timestamp and comment instead of id
+* **SimpleObjectMapperTest**
+  * add Windows OS compatibility to output style test
+
 # 4.1.3
 * **SelectFactoryDialog**
     * add filter text field

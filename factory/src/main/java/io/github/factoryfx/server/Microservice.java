@@ -49,7 +49,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         return updateCurrentFactory(new DataUpdate<>(
                 historyFactory,
                 user,
-                "revert to: "+storedDataMetadata.id,
+                "revert to: "+storedDataMetadata.creationTime + " " + storedDataMetadata.comment,
                 currentFactory.id)
         );
     }
