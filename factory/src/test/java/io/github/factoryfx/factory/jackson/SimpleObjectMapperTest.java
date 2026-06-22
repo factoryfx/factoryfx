@@ -29,7 +29,7 @@ class SimpleObjectMapperTest {
         String compactStr = simpleObjectMapper.writeValueAsString(factoryA, OutputStyle.COMPACT);
         String defaultStr = simpleObjectMapper.writeValueAsString(factoryA, OutputStyle.DEFAULT);
 
-        Function<String, Boolean> isStringPretty = s -> s.contains("\" : ") && s.contains("\n") && !s.contains("\":") && s.contains("{\n");
+        Function<String, Boolean> isStringPretty = s -> s.contains("\" : ") && s.contains("\n") && !s.contains("\":") && (s.contains("{\n") || s.contains("{\r\n"));
 
         assertEquals(prettyStr, defaultStr);
         assertTrue(isStringPretty.apply(prettyStr));
