@@ -48,9 +48,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
 
     public R getHistoryFactory(String id) {
         StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(readFile(historyDirectory.resolve(id + "_metadata.json")), false);
-        if (!cache.isEmpty()) {
-            cache.put(metaData.id, StoredDataMetadata.createLightStoredDataMetadata(metaData));
-        }
+        updateCache(metaData);
         return migrationManager.read(readFile(historyDirectory.resolve(id + ".json")), metaData.dataStorageMetadataDictionary);
     }
 
@@ -83,9 +81,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
 
         writeFile(historyDirectory.resolve(id + ".json"), objectMapper.writeValueAsString(factoryRoot, OutputStyle.COMPACT));
         writeFile(historyDirectory.resolve(id + "_metadata.json"), objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
-        if (!cache.isEmpty()) {
-            cache.put(id, StoredDataMetadata.createLightStoredDataMetadata(metadata));
-        }
+        updateCache(metadata);
         houseKeeping();
 
     }
@@ -130,6 +126,12 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
                 writeFile(metadataPath, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
             }
         });
+    }
+
+    private void updateCache(StoredDataMetadata metadata) {
+        if (!cache.isEmpty()) {
+            cache.put(metadata.id, StoredDataMetadata.createLightStoredDataMetadata(metadata));
+        }
     }
 
     private void houseKeeping() {

@@ -67,16 +67,14 @@ public class StoredDataMetadata {
     }
 
     public static StoredDataMetadata createLightStoredDataMetadata(StoredDataMetadata storedDataMetadata) {
-        return storedDataMetadata.isLight() ?
-                storedDataMetadata :
-                new StoredDataMetadata(storedDataMetadata.creationTime,
-                        storedDataMetadata.id,
-                        storedDataMetadata.user,
-                        storedDataMetadata.comment,
-                        storedDataMetadata.baseVersionId,
-                        null,
-                        null,
-                        storedDataMetadata.mergerVersionId);
+        return new StoredDataMetadata(storedDataMetadata.creationTime,
+                storedDataMetadata.id,
+                storedDataMetadata.user,
+                storedDataMetadata.comment,
+                storedDataMetadata.baseVersionId,
+                null,
+                null,
+                storedDataMetadata.mergerVersionId);
     }
 
     @JsonIgnore
@@ -84,8 +82,4 @@ public class StoredDataMetadata {
         return  mergerVersionId==null;
     }
 
-    @JsonIgnore
-    public boolean isLight() {
-        return changeSummary == null && dataStorageMetadataDictionary == null;
-    }
 }
