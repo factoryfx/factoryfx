@@ -1,5 +1,6 @@
 package io.github.factoryfx.server;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,8 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         return updateCurrentFactory(new DataUpdate<>(
                 historyFactory,
                 user,
-                "revert to: "+storedDataMetadata.id,
+                "revert to configuration of timestamp: "+ DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(storedDataMetadata.creationTime) +
+                        ", original comment: " + storedDataMetadata.comment,
                 currentFactory.id)
         );
     }
