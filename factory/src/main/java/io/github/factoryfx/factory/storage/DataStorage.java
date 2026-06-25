@@ -14,7 +14,7 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
 
     R getHistoryData(String id);
 
-    Collection<StoredDataMetadata> getHistoryDataList();
+    Collection<StoredDataMetadata> getHistoryDataList(boolean light);
 
     Collection<ScheduledUpdateMetadata> getFutureDataList();
 
@@ -43,7 +43,7 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
      * @return initial data
      * */
     default R getInitialData(){
-        for (StoredDataMetadata metadata : getHistoryDataList()) {
+        for (StoredDataMetadata metadata : getHistoryDataList(true)) {
             if (metadata.isInitialFactory()){
                 return getHistoryData(metadata.id);
             }

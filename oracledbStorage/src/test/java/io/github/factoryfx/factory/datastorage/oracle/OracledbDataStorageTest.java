@@ -31,7 +31,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
         OracledbDataStorage<ExampleFactoryA> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         oracledbFactoryStorage.getCurrentData();
 
-        Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList(false).size());
     }
 
     @Test
@@ -47,14 +47,14 @@ public class OracledbDataStorageTest extends DatabaseTest{
     public void test_update()  {
         OracledbDataStorage<ExampleFactoryA> oracledbFactoryStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         oracledbFactoryStorage.getCurrentData();//usually called in preparenew
-        Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,oracledbFactoryStorage.getHistoryDataList(false).size());
         oracledbFactoryStorage.updateCurrentData(createUpdate(),null);
-        Assertions.assertEquals(2,oracledbFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(2,oracledbFactoryStorage.getHistoryDataList(false).size());
 
-        StoredDataMetadata storedDataMetadata = new ArrayList<>(oracledbFactoryStorage.getHistoryDataList()).get(1);
+        StoredDataMetadata storedDataMetadata = new ArrayList<>(oracledbFactoryStorage.getHistoryDataList(false)).get(1);
         Assertions.assertEquals("update", oracledbFactoryStorage.getHistoryData(storedDataMetadata.id).stringAttribute.get());
         Assertions.assertEquals("update", oracledbFactoryStorage.getCurrentData().root.stringAttribute.get());
-        StoredDataMetadata storedDataMetadataFirst = new ArrayList<>(oracledbFactoryStorage.getHistoryDataList()).get(0);
+        StoredDataMetadata storedDataMetadataFirst = new ArrayList<>(oracledbFactoryStorage.getHistoryDataList(false)).get(0);
         Assertions.assertEquals("initial", oracledbFactoryStorage.getHistoryData(storedDataMetadataFirst.id).stringAttribute.get());
     }
 

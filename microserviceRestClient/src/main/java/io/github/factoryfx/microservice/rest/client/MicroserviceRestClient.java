@@ -89,8 +89,8 @@ public class MicroserviceRestClient<R extends FactoryBase<?, R>> {
         return historyFactory;
     }
 
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
-        return executeWithServerExceptionReporting(() -> microserviceResourceApi.getHistoryFactoryList(new VoidUserAwareRequest(user, passwordHash)));
+    public Collection<StoredDataMetadata> getHistoryFactoryList(boolean light) {
+        return executeWithServerExceptionReporting(() -> microserviceResourceApi.getHistoryFactoryList(new UserAwareRequest<>(user, passwordHash, light)));
     }
 
     public CheckUserResponse checkUser() {

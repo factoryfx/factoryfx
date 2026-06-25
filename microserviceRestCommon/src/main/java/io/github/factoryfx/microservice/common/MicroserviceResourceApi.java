@@ -62,7 +62,7 @@ public interface MicroserviceResourceApi<R extends FactoryBase<?,R>>  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("historyFactoryList")
-    Collection<StoredDataMetadata> getHistoryFactoryList(VoidUserAwareRequest request);
+    Collection<StoredDataMetadata> getHistoryFactoryList(UserAwareRequest<Boolean> request);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

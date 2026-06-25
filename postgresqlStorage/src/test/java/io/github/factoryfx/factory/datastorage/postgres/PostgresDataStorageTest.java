@@ -1,7 +1,6 @@
 package io.github.factoryfx.factory.datastorage.postgres;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -137,8 +136,8 @@ public class PostgresDataStorageTest {
         DataUpdate<ExampleFactoryA> update = createUpdate();
         postgresFactoryStorage.updateCurrentData(update, null);
         Assertions.assertNotEquals(id, postgresFactoryStorage.getCurrentData().id);
-        Assertions.assertEquals(2, postgresFactoryStorage.getHistoryDataList().size());
-        Assertions.assertEquals(id, new ArrayList<>(postgresFactoryStorage.getHistoryDataList()).get(0).id);
+        Assertions.assertEquals(2, postgresFactoryStorage.getHistoryDataList(false).size());
+        Assertions.assertEquals(id, new ArrayList<>(postgresFactoryStorage.getHistoryDataList(false)).get(0).id);
 
     }
 
@@ -165,7 +164,7 @@ public class PostgresDataStorageTest {
                                                                                                 ObjectMapperBuilder.build());
 
         postgresFactoryStorage.getCurrentData();
-        Assertions.assertEquals(1, postgresFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1, postgresFactoryStorage.getHistoryDataList(false).size());
     }
 
     @Test
@@ -192,7 +191,7 @@ public class PostgresDataStorageTest {
             postgresFactoryStorage.updateCurrentData(update, null);
         }
 
-        Assertions.assertEquals(4, postgresFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(4, postgresFactoryStorage.getHistoryDataList(false).size());
     }
 
     @Test
@@ -206,10 +205,10 @@ public class PostgresDataStorageTest {
 
         DataUpdate<ExampleFactoryA> update = createUpdate();
         postgresFactoryStorage.updateCurrentData(update, null);
-        Assertions.assertEquals(2, postgresFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(2, postgresFactoryStorage.getHistoryDataList(false).size());
 
         PostgresDataStorage<ExampleFactoryA> restored = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(), createDataMigrationManager(), ObjectMapperBuilder.build());
-        Assertions.assertEquals(2, restored.getHistoryDataList().size());
+        Assertions.assertEquals(2, restored.getHistoryDataList(false).size());
     }
 
     @Test
@@ -269,12 +268,12 @@ public class PostgresDataStorageTest {
 
         DataUpdate<ExampleFactoryA> update = createUpdate();
         postgresFactoryStorage.updateCurrentData(update, null);
-        Collection<StoredDataMetadata> list = postgresFactoryStorage.getHistoryDataList();
+        Collection<StoredDataMetadata> list = postgresFactoryStorage.getHistoryDataList(false);
         Assertions.assertEquals(2, list.size());//initial +1
 
         DataUpdate<ExampleFactoryA> update2 = createUpdate();
         postgresFactoryStorage.updateCurrentData(update2, null);
-        list = postgresFactoryStorage.getHistoryDataList();
+        list = postgresFactoryStorage.getHistoryDataList(false);
         Assertions.assertEquals(3, list.size());
 
         Assertions.assertNotNull(postgresFactoryStorage.getHistoryData(new ArrayList<>(list).get(0).id));

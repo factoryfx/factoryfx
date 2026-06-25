@@ -41,13 +41,13 @@ public class FileSystemFactoryStorageHistoryTest {
             time = time.plusSeconds(1);
             StoredDataMetadata md2 = randomMetadata(time, rf,"dummy2");
             history.updateHistory(rf, md2);
-            Assertions.assertEquals(2,history.getHistoryFactoryList().size());
+            Assertions.assertEquals(2,history.getHistoryFactoryList(false).size());
             Assertions.assertNotNull(history.getHistoryFactory(md1.id));
             Assertions.assertNotNull(history.getHistoryFactory(md2.id));
             time = time.plusSeconds(1);
             StoredDataMetadata md3 = randomMetadata(time, rf,"dummy3");
             history.updateHistory(rf, md3);
-            Assertions.assertEquals(2,history.getHistoryFactoryList().size());
+            Assertions.assertEquals(2,history.getHistoryFactoryList(false).size());
             Assertions.assertNotNull(history.getHistoryFactory(md2.id));
             Assertions.assertNotNull(history.getHistoryFactory(md3.id));
             try {

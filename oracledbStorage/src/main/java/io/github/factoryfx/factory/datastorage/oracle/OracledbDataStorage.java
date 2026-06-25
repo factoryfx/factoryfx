@@ -72,8 +72,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
     }
 
     @Override
-    public Collection<StoredDataMetadata> getHistoryDataList() {
-        return oracledbDataStorageHistory.getHistoryFactoryList();
+    public Collection<StoredDataMetadata> getHistoryDataList(boolean light) {
+        return oracledbDataStorageHistory.getHistoryFactoryList(light);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 if (resultSet.next()) {
-                    StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper));
+                    StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), false);
                     return new DataAndId<>(migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), factoryMetadata.dataStorageMetadataDictionary), factoryMetadata.id);
                 }
             }

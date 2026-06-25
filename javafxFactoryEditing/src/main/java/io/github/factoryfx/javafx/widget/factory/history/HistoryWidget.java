@@ -140,7 +140,7 @@ public class HistoryWidget<RS extends FactoryBase<?,RS>> implements Widget {
 
     private void update() {
         longRunningActionExecutor.execute(() -> {
-            final Collection<StoredDataMetadata> historyFactoryList = restClient.getHistoryFactoryList();
+            final Collection<StoredDataMetadata> historyFactoryList = restClient.getHistoryFactoryList(true);
             Platform.runLater(() -> tableUpdater.accept(historyFactoryList.stream().sorted((o1, o2) -> o2.creationTime.compareTo(o1.creationTime)).collect(Collectors.toList())));
         });
     }

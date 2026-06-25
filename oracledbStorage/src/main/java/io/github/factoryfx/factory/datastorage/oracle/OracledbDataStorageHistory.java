@@ -113,26 +113,22 @@ public class OracledbDataStorageHistory<R extends FactoryBase<?, R>> {
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM FACTORY_HISTORY WHERE id= ?")) {
             statement.setString(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper));
-                    return migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), metadata.dataStorageMetadataDictionary);
-                }
+                if (!resultSet.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
+                StoredDataMetadata metadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), false);
+                return migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), metadata.dataStorageMetadataDictionary);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
-        return null;
     }
 
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
+    public Collection<StoredDataMetadata> getHistoryFactoryList(boolean light) {
         ArrayList<StoredDataMetadata> result = new ArrayList<>();
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM FACTORY_HISTORY")) {
             while (resultSet.next()) {
-                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper)));
+                result.add(migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), light));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

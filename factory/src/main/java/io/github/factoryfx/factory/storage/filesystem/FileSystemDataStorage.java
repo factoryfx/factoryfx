@@ -53,8 +53,8 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
     }
 
     @Override
-    public Collection<StoredDataMetadata> getHistoryDataList() {
-        return fileSystemFactoryStorageHistory.getHistoryFactoryList();
+    public Collection<StoredDataMetadata> getHistoryDataList(boolean light) {
+        return fileSystemFactoryStorageHistory.getHistoryFactoryList(light);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
     @Override
     public DataAndId<R> getCurrentData() {
         loadInitialFactory();
-        StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata));
+        StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata), false);
         return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
     }
 

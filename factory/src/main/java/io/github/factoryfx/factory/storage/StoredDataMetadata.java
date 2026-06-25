@@ -3,6 +3,7 @@ package io.github.factoryfx.factory.storage;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
 /**
@@ -53,8 +54,32 @@ public class StoredDataMetadata {
         this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId);
     }
 
+    public static StoredDataMetadata createLightStoredDataMetadata(JsonNode root) {
+        return new StoredDataMetadata(
+                root.hasNonNull("creationTime") ? LocalDateTime.parse(root.get("creationTime").asText()) : null,
+                root.path("id").asText(null),
+                root.path("user").asText(null),
+                root.path("comment").asText(null),
+                root.path("baseVersionId").asText(null),
+                null,
+                null,
+                root.path("mergerVersionId").asText(null));
+    }
+
+    public static StoredDataMetadata createLightStoredDataMetadata(StoredDataMetadata storedDataMetadata) {
+        return new StoredDataMetadata(storedDataMetadata.creationTime,
+                storedDataMetadata.id,
+                storedDataMetadata.user,
+                storedDataMetadata.comment,
+                storedDataMetadata.baseVersionId,
+                null,
+                null,
+                storedDataMetadata.mergerVersionId);
+    }
+
     @JsonIgnore
     public boolean isInitialFactory() {
         return  mergerVersionId==null;
     }
+
 }

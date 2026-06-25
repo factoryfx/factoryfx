@@ -119,8 +119,8 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         return dataStorage.getHistoryData(id);
     }
 
-    public Collection<StoredDataMetadata> getHistoryFactoryList() {
-        return dataStorage.getHistoryDataList();
+    public Collection<StoredDataMetadata> getHistoryFactoryList(boolean light) {
+        return dataStorage.getHistoryDataList(light);
     }
 
     public synchronized L start() {

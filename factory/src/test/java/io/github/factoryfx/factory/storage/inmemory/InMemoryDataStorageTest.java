@@ -40,13 +40,13 @@ public class InMemoryDataStorageTest {
         InMemoryDataStorage<ExampleDataA> inMemoryDataStorage = new InMemoryDataStorage<>(new ExampleDataA());
 
         inMemoryDataStorage.getCurrentData();
-        Assertions.assertEquals(1,inMemoryDataStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,inMemoryDataStorage.getHistoryDataList(false).size());
 
 
         inMemoryDataStorage.updateCurrentData(createUpdate(),null);
 
 
-        Assertions.assertEquals(2,inMemoryDataStorage.getHistoryDataList().size());
+        Assertions.assertEquals(2,inMemoryDataStorage.getHistoryDataList(false).size());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class InMemoryDataStorageTest {
         Dummy dummy = new Dummy();
         InMemoryDataStorage<Dummy> fileSystemFactoryStorage = new InMemoryDataStorage<>(dummy);
 
-        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryDataList().size());
+        Assertions.assertEquals(1,fileSystemFactoryStorage.getHistoryDataList(false).size());
 
         ScheduledUpdate<Dummy> update = new ScheduledUpdate<>(
                 new Dummy(),

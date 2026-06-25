@@ -36,7 +36,7 @@ public class DataStorageTest {
             factoryStorage.updateCurrentData(new DataUpdate<>(preparedNewFactory, "user","xb",currentFactory.id),null);
         }
 
-        List<StoredDataMetadata> historyFactoryList = factoryStorage.getHistoryDataList().stream().sorted(Comparator.comparing(h -> h.comment)).collect(Collectors.toList());
+        List<StoredDataMetadata> historyFactoryList = factoryStorage.getHistoryDataList(false).stream().sorted(Comparator.comparing(h -> h.comment)).collect(Collectors.toList());
         Assertions.assertEquals("1",factoryStorage.getHistoryData(historyFactoryList.get(0).id).stringAttribute.get());
         Assertions.assertEquals("2",factoryStorage.getHistoryData(historyFactoryList.get(1).id).stringAttribute.get());
         Assertions.assertEquals("3",factoryStorage.getHistoryData(historyFactoryList.get(2).id).stringAttribute.get());
