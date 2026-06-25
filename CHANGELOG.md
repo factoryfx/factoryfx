@@ -1,6 +1,8 @@
 # 4.1.5
 * **DataStorage**
-  * add lightweight metadata for factory history
+  * add lightweight metadata for factory history (changeSummary == null && dataStorageMetadataDictionary == null)
+* **MicroserviceResource**
+  * getHistoryFactoryList returns factories with lightweight metadata by default
 
 # 4.1.4
 * **Microservice**

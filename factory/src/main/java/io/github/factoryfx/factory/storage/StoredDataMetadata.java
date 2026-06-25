@@ -66,8 +66,26 @@ public class StoredDataMetadata {
                 root.path("mergerVersionId").asText(null));
     }
 
+    public static StoredDataMetadata createLightStoredDataMetadata(StoredDataMetadata storedDataMetadata) {
+        return storedDataMetadata.isLight() ?
+                storedDataMetadata :
+                new StoredDataMetadata(storedDataMetadata.creationTime,
+                        storedDataMetadata.id,
+                        storedDataMetadata.user,
+                        storedDataMetadata.comment,
+                        storedDataMetadata.baseVersionId,
+                        null,
+                        null,
+                        storedDataMetadata.mergerVersionId);
+    }
+
     @JsonIgnore
     public boolean isInitialFactory() {
         return  mergerVersionId==null;
+    }
+
+    @JsonIgnore
+    public boolean isLight() {
+        return changeSummary == null && dataStorageMetadataDictionary == null;
     }
 }

@@ -48,7 +48,9 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
 
     public R getHistoryFactory(String id) {
         StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(readFile(historyDirectory.resolve(id + "_metadata.json")), false);
-        cache.put(metaData.id, metaData);
+        if (!cache.isEmpty()) {
+            cache.put(metaData.id, StoredDataMetadata.createLightStoredDataMetadata(metaData));
+        }
         return migrationManager.read(readFile(historyDirectory.resolve(id + ".json")), metaData.dataStorageMetadataDictionary);
     }
 
@@ -61,15 +63,19 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
     }
 
     public Collection<StoredDataMetadata> getHistoryFactoryList(boolean light) {
-        if (cache.isEmpty()) {
-            visitHistoryFiles(path -> {
-                if (path.toString().endsWith("_metadata.json")) {
-                    StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path), light);
-                    cache.put(storedDataMetadata.id, storedDataMetadata);
-                }
-            });
+        if (light && !cache.isEmpty()) {
+            return cache.values();
         }
-        return cache.values();
+
+        List<StoredDataMetadata> result = new ArrayList<>();
+        visitHistoryFiles(path -> {
+            if (path.toString().endsWith("_metadata.json")) {
+                StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(path), light);
+                result.add(storedDataMetadata);
+                cache.put(storedDataMetadata.id, StoredDataMetadata.createLightStoredDataMetadata(storedDataMetadata));
+            }
+        });
+        return result;
     }
 
     public void updateHistory(R factoryRoot, StoredDataMetadata metadata) {
@@ -77,8 +83,9 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
 
         writeFile(historyDirectory.resolve(id + ".json"), objectMapper.writeValueAsString(factoryRoot, OutputStyle.COMPACT));
         writeFile(historyDirectory.resolve(id + "_metadata.json"), objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
-        cache.put(id, metadata);
-
+        if (!cache.isEmpty()) {
+            cache.put(id, StoredDataMetadata.createLightStoredDataMetadata(metadata));
+        }
         houseKeeping();
 
     }

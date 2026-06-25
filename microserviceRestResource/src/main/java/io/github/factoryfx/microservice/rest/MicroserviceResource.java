@@ -92,7 +92,7 @@ public class MicroserviceResource<R extends FactoryBase<?, R>> implements Micros
     @Override
     public Collection<StoredDataMetadata> getHistoryFactoryList(UserAwareRequest<Boolean> request) {
         authenticate(request);
-        return microservice.getHistoryFactoryList(request.request);
+        return microservice.getHistoryFactoryList(request.request == null || request.request);
     }
 
     @Override
