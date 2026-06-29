@@ -1,3 +1,7 @@
+# 4.1.6
+* **ValueListAttributeVisualisation**
+    * fix readOnly not being applied to value list attribute visualisation
+
 # 4.1.5
 * **DataStorage**
   * add lightweight metadata for factory history (changeSummary == null && dataStorageMetadataDictionary == null)

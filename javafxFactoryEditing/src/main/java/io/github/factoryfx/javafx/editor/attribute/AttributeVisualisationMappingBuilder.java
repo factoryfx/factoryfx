@@ -314,7 +314,11 @@ public class AttributeVisualisationMappingBuilder {
         if (attribute instanceof ValueListAttribute<?, ?>) {
             Optional<AttributeVisualisationBuilder> detailEditorBuilderOptional = singleAttributeEditorBuilders.stream().filter(a -> a.isListItemEditorFor(attribute)).findAny();
             if (detailEditorBuilderOptional.isPresent()) {
-                return detailEditorBuilderOptional.get().createValueListVisualisation(attribute, attributeMetadata);
+                AttributeVisualisation valueListVisualisation = detailEditorBuilderOptional.get().createValueListVisualisation(attribute, attributeMetadata);
+                if (attribute.internal_isUserReadOnly()) {
+                    valueListVisualisation.setReadOnly();
+                }
+                return valueListVisualisation;
             }
         }
 
