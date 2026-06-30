@@ -75,6 +75,7 @@ public class TableControlWidget<T> implements Widget {
 
         final Label count = new Label("");
         filteredList.addListener((ListChangeListener.Change<? extends T> observable) -> count.setText(String.valueOf(observable.getList().size())));
+        target.getChildren().add(new Label("Filter:"));
         target.getChildren().add(filterField);
         target.getChildren().add(new Separator(Orientation.VERTICAL));
         target.getChildren().add(count);

@@ -48,9 +48,9 @@ public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>, A>,
         TableView<T> tableView = new TableView<>();
         tableView.setItems(readOnlyObservableList);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        TableColumn<T, String> test = new TableColumn<>("test");
-        test.setCellValueFactory(param -> new SimpleStringProperty("" + param.getValue()));
-        tableView.getColumns().add(test);
+        TableColumn<T, String> value = new TableColumn<>("value");
+        value.setCellValueFactory(param -> new SimpleStringProperty("" + param.getValue()));
+        tableView.getColumns().add(value);
         tableView.getStyleClass().add("hidden-tableview-headers");
 
 //        tableInitializer.initTable(tableView);
@@ -71,37 +71,25 @@ public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>, A>,
             valueListAttribute.get().set(selectedIndex, detailAttribute.get());
         });
 
-        Button deleteButton = new Button("");
-        uniformDesign.addDangerIcon(deleteButton, FontAwesome.Glyph.TIMES);
-        deleteButton.setOnAction(event -> {
-            valueListAttribute.get().remove(tableView.getSelectionModel().getSelectedItem());
-        });
-        deleteButton.disableProperty().bind(tableView.getSelectionModel().selectedItemProperty().isNull());
+        Button deleteButton = new Button("", uniformDesign.createIconDanger(FontAwesome.Glyph.TIMES));
+        deleteButton.setOnAction(event -> valueListAttribute.get().remove(tableView.getSelectionModel().getSelectedItem()));
 
-        tableView.getSelectionModel().selectedItemProperty().addListener(observable -> {
-            detailAttribute.set(tableView.getSelectionModel().getSelectedItem());
-        });
+        tableView.getSelectionModel().selectedItemProperty().addListener(observable -> detailAttribute.set(tableView.getSelectionModel().getSelectedItem()));
 
-        AttributeChangeListener<T, AD> detailAttributeChangeListener = (attribute1, value) -> {
-            Platform.runLater(() -> {
-                if (value instanceof String) {
-                    addButton.setDisable(readOnly.get() || "".equals(value));
+        AttributeChangeListener<T, AD> detailAttributeChangeListener =
+            (attribute1, newValue) -> Platform.runLater(() -> {
+                if (newValue instanceof String) {
+                    addButton.setDisable(readOnly.get() || "".equals(newValue));
                 } else {
-                    addButton.setDisable(readOnly.get() || value == null);
+                    addButton.setDisable(readOnly.get() || newValue == null);
                 }
-                if (!addButton.isDisabled()) {//bug workaround disable state styling doesn't work
-                    addButton.setOpacity(1);
-                } else {
-                    addButton.setOpacity(0.4);
-                }
-                replaceButton.setDisable(readOnly.get() || value == null || tableView.getSelectionModel().getSelectedItem() == null);
-                if (!replaceButton.isDisabled()) {//bug workaround disable state styling doesn't work
-                    replaceButton.setOpacity(1);
-                } else {
-                    replaceButton.setOpacity(0.4);
-                }
+                replaceButton.setDisable(readOnly.get() || newValue == null || tableView.getSelectionModel().isEmpty());
+                deleteButton.setDisable(readOnly.get() || tableView.getSelectionModel().isEmpty());
             });
-        };
+
+        tableView.selectionModelProperty()
+                 .addListener((observable, oldValue, newValue) ->
+                                  detailAttributeChangeListener.changed(detailAttribute, detailAttribute.get()));
         detailAttribute.internal_addListener(detailAttributeChangeListener);
         detailAttributeChangeListener.changed(detailAttribute, detailAttribute.get());
 
@@ -109,30 +97,22 @@ public class ValueListAttributeVisualisation<T, A extends Attribute<List<T>, A>,
         VBox.setVgrow(tableView, Priority.ALWAYS);
         vBox.getChildren().add(tableView);
         tableView.setMinHeight(100);
-        HBox listControls = new HBox();
-        listControls.setAlignment(Pos.CENTER_LEFT);
-        VBox.setMargin(listControls, new Insets(0, 0, 0, 0));
-        listControls.setSpacing(3);
-        listControls.getChildren().add(deleteButton);
-        vBox.getChildren().add(listControls);
 
         TableControlWidget<?> tableControlWidget = new TableControlWidget<>(tableView, uniformDesign);
         Node tableControlWidgetContent = tableControlWidget.createContent();
         HBox.setHgrow(tableControlWidgetContent, Priority.ALWAYS);
         HBox.setMargin(tableControlWidgetContent, new Insets(0, 1, 0, 0));
-        listControls.getChildren().add(tableControlWidgetContent);
+        vBox.getChildren().add(tableControlWidgetContent);
 
         HBox editorWrapper = new HBox(3);
         editorWrapper.setAlignment(Pos.CENTER_LEFT);
         editorWrapper.setPadding(new Insets(3));
-        editorWrapper.getChildren().add(new Label(uniformDesign.getLabelText(detailAttribute)));
-        Node content = detailAttributeVisualisation.createVisualisation();
 
+        Node content = detailAttributeVisualisation.createVisualisation();
         HBox.setHgrow(content, Priority.ALWAYS);
-        editorWrapper.getChildren().addAll(content, addButton, replaceButton);
+        editorWrapper.getChildren().addAll(content, addButton, deleteButton, replaceButton);
         vBox.getChildren().add(new Separator());
         vBox.getChildren().add(editorWrapper);
-
         return vBox;
     }
 

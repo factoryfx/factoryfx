@@ -6,15 +6,15 @@ buildscript {
     }
 }
 plugins {
-    id "com.github.spotbugs" version "6.4.7"
-    id "com.github.ben-manes.versions" version "0.53.0"
-    id "com.gradleup.nmcp" version "1.2.0"
-    id "com.gradleup.nmcp.aggregation" version "1.2.0"
+    id "com.github.spotbugs" version "6.5.8"
+    id "com.github.ben-manes.versions" version "0.54.0"
+    id "com.gradleup.nmcp" version "1.6.0"
+    id "com.gradleup.nmcp.aggregation" version "1.6.0"
     id "org.openjfx.javafxplugin" version "0.1.0" apply false
 }
 
 wrapper {
-    gradleVersion = "9.5.0"
+    gradleVersion = "9.6.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -32,7 +32,6 @@ tasks.named("nmcpZipAggregation"){
 }
 
 dependencies {
-    nmcpAggregation(project(":copperBridge"))
     nmcpAggregation(project(":domFactoryEditing"))
     nmcpAggregation(project(":factory"))
     nmcpAggregation(project(":initializr"))
@@ -95,7 +94,7 @@ subprojects {
     }
 
     group = "io.github.factoryfx"
-    version = "4.1.6"
+    version = "4.1.7"
 
     publishing {
         publications {
@@ -145,11 +144,11 @@ subprojects {
 
     dependencies {
         api("org.slf4j:slf4j-api:2.0.17")
-        api("com.google.guava:guava:33.5.0-jre")
+        api("com.google.guava:guava:33.6.0-jre")
 
-        testImplementation("org.mockito:mockito-core:5.20.0")
-        testImplementation("org.junit.jupiter:junit-jupiter:6.1.0-M1")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.0-M1")
+        testImplementation("org.mockito:mockito-core:5.23.0")
+        testImplementation("org.junit.jupiter:junit-jupiter:6.1.1")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.1")
     }
 
     test {
@@ -169,21 +168,6 @@ subprojects {
 
 }
 
-project(":copperBridge") {
-    dependencies {
-        api project(":factory")
-        api("org.copper-engine:copper-coreengine:6.0.0")
-        api("org.copper-engine:copper-ext:6.0.0")
-
-        api("jakarta.activation:jakarta.activation-api:2.1.4")
-        api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
-
-        api("org.ow2.asm:asm:9.9")
-        api("org.ow2.asm:asm-tree:9.9")
-        api("org.yaml:snakeyaml:2.5")
-    }
-}
-
 project(":microserviceRestResource") {
     dependencies {
         api project(":jettyFactory")
@@ -196,11 +180,11 @@ project(":microserviceRestClient") {
     dependencies {
         api project(":factory")
         api project(":microserviceRestCommon")
-        api("org.glassfish.jersey.ext:jersey-proxy-client:4.0.0")
-        api("org.glassfish.jersey.core:jersey-client:4.0.0")
-        api("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0")
-        api("org.glassfish.jersey.core:jersey-common:4.0.0")
-        api("org.glassfish.jersey.containers:jersey-container-servlet:4.0.0")
+        api("org.glassfish.jersey.ext:jersey-proxy-client:4.0.2")
+        api("org.glassfish.jersey.core:jersey-client:4.0.2")
+        api("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.2")
+        api("org.glassfish.jersey.core:jersey-common:4.0.2")
+        api("org.glassfish.jersey.containers:jersey-container-servlet:4.0.2")
     }
 
 }
@@ -218,7 +202,7 @@ project(":microserviceRestIntegrationTest") {
     dependencies {
         implementation project(":microserviceRestResource")
         implementation project(":microserviceRestClient")
-        implementation("ch.qos.logback:logback-classic:1.5.21")
+        implementation("ch.qos.logback:logback-classic:1.5.37")
         implementation("jakarta.activation:jakarta.activation-api:2.1.4")
     }
 }
@@ -226,13 +210,13 @@ project(":microserviceRestIntegrationTest") {
 
 project(":factory") {
     dependencies {
-        api("com.fasterxml.jackson.core:jackson-databind:2.20.1")
-        api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.20.1")
-        api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
-        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
+        api("com.fasterxml.jackson.core:jackson-databind:2.22.0")
+        api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.22.0")
+        api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.0")
+        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.22.0")
         testImplementation project(":testfactories")
-        testImplementation("ch.qos.logback:logback-classic:1.5.21")
-        testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
+        testImplementation("ch.qos.logback:logback-classic:1.5.37")
+        testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.0")
     }
 }
 
@@ -240,8 +224,8 @@ project(":postgresqlStorage") {
 
     dependencies {
         api project(":factory")
-        api("org.postgresql:postgresql:42.7.8")
-        testImplementation("io.zonky.test:embedded-postgres:2.2.0")
+        api("org.postgresql:postgresql:42.7.12")
+        testImplementation("io.zonky.test:embedded-postgres:2.2.2")
         testImplementation project(":testfactories")
     }
 
@@ -250,7 +234,7 @@ project(":postgresqlStorage") {
 project(":oracledbStorage") {
     dependencies {
         implementation project(":factory")
-        implementation("com.oracle.database.jdbc:ojdbc8:23.26.0.0.0")
+        implementation("com.oracle.database.jdbc:ojdbc8:23.26.2.0.0")
         testImplementation("com.h2database:h2:2.4.240")
         testImplementation project(":testfactories")
     }
@@ -260,28 +244,28 @@ project(":oracledbStorage") {
 project(":jettyFactory") {
     dependencies {
         api project(":factory")
-        api("org.eclipse.jetty:jetty-server:12.1.4")
-        api("org.eclipse.jetty:jetty-alpn-java-server:12.1.4")
-        api("org.eclipse.jetty.ee10:jetty-ee10-servlet:12.1.4")
-        api("org.eclipse.jetty.ee10:jetty-ee10-webapp:12.1.4")
-        api("org.eclipse.jetty.http2:jetty-http2-server:12.1.4")
-        api("org.eclipse.jetty.compression:jetty-compression-server:12.1.4")
-        api("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.4")
+        api("org.eclipse.jetty:jetty-server:12.1.10")
+        api("org.eclipse.jetty:jetty-alpn-java-server:12.1.10")
+        api("org.eclipse.jetty.ee10:jetty-ee10-servlet:12.1.10")
+        api("org.eclipse.jetty.ee10:jetty-ee10-webapp:12.1.10")
+        api("org.eclipse.jetty.http2:jetty-http2-server:12.1.10")
+        api("org.eclipse.jetty.compression:jetty-compression-server:12.1.10")
+        api("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.10")
 
         api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
 
-        api "org.glassfish.jersey.core:jersey-common:4.0.0"
-        api("org.glassfish.jersey.core:jersey-server:4.0.0")
-        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
-        api("org.glassfish.jersey.containers:jersey-container-servlet:4.0.0")
-        api("org.glassfish.jersey.inject:jersey-hk2:4.0.0")
+        api "org.glassfish.jersey.core:jersey-common:4.0.2"
+        api("org.glassfish.jersey.core:jersey-server:4.0.2")
+        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.22.0")
+        api("org.glassfish.jersey.containers:jersey-container-servlet:4.0.2")
+        api("org.glassfish.jersey.inject:jersey-hk2:4.0.2")
 
         api "jakarta.annotation:jakarta.annotation-api:3.0.0"
-        api "org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0"
+        api "org.glassfish.jersey.media:jersey-media-json-jackson:4.0.2"
 
         api("org.ini4j:ini4j:0.5.4")
 
-        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation("ch.qos.logback:logback-classic:1.5.37")
     }
 
 }
@@ -302,7 +286,7 @@ project(":example") {
         implementation project(":factory")
         implementation project(":domFactoryEditing")
 
-        implementation("ch.qos.logback:logback-classic:1.5.21")
+        implementation("ch.qos.logback:logback-classic:1.5.37")
         implementation("jakarta.activation:jakarta.activation-api:2.1.4")
     }
 
@@ -318,14 +302,14 @@ project(":javafxFactoryEditing") {
     }
     dependencies {
 
-        api("org.controlsfx:controlsfx:11.2.2")
+        api("org.controlsfx:controlsfx:11.2.3")
         api("org.fxmisc.richtext:richtextfx:0.11.7")
 
         api project(":factory")
         api project(":microserviceRestClient")
 
         testImplementation project(":testfactories")
-        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation("ch.qos.logback:logback-classic:1.5.37")
         testImplementation "jakarta.activation:jakarta.activation-api:2.1.4"
 
     }
@@ -338,7 +322,7 @@ project(":javafxDistributionServer") {
         api project(":factory")
         api("org.slf4j:slf4j-api:2.0.17")
 
-        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation("ch.qos.logback:logback-classic:1.5.37")
         testImplementation("jakarta.activation:jakarta.activation-api:2.1.4")
     }
 
@@ -354,15 +338,15 @@ project(":javafxDistributionClient") {
 
     dependencies {
         api("org.slf4j:slf4j-api:2.0.17")
-        api("com.fasterxml.jackson.core:jackson-databind:2.20.1") {
+        api("com.fasterxml.jackson.core:jackson-databind:2.22.0") {
             exclude group: "javax.annotation"
         }
 
-        api("org.glassfish.jersey.core:jersey-common:4.0.0")
-        api("org.glassfish.jersey.core:jersey-client:4.0.0")
-        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
-        api("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0")
-        api("org.glassfish.jersey.inject:jersey-hk2:4.0.0")
+        api("org.glassfish.jersey.core:jersey-common:4.0.2")
+        api("org.glassfish.jersey.core:jersey-client:4.0.2")
+        api("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.22.0")
+        api("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.2")
+        api("org.glassfish.jersey.inject:jersey-hk2:4.0.2")
         api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
     }
 
@@ -385,9 +369,9 @@ project(":docu") {
         implementation project(":initializr")
         implementation project(":domFactoryEditing")
 
-        implementation("io.dropwizard.metrics:metrics-jetty12:4.2.37")
-        implementation("io.zonky.test:embedded-postgres:2.2.0")
-        implementation("ch.qos.logback:logback-classic:1.5.21")
+        implementation("io.dropwizard.metrics:metrics-jetty12:4.2.39")
+        implementation("io.zonky.test:embedded-postgres:2.2.2")
+        implementation("ch.qos.logback:logback-classic:1.5.37")
         implementation("jakarta.activation:jakarta.activation-api:2.1.4")
 
         implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
@@ -401,7 +385,7 @@ project(":typescriptGenerator") {
         testImplementation project(":testfactories")
         testImplementation project(":jettyFactory")
         testImplementation project(":domFactoryEditing")
-        testImplementation("ch.qos.logback:logback-classic:1.5.21")
+        testImplementation("ch.qos.logback:logback-classic:1.5.37")
     }
 
     tasks.register("generateTestCode", JavaExec) {
@@ -443,7 +427,7 @@ project(":soapFactory") {
         api project(":factory")
         api project(":jettyFactory")
 
-        api("org.eclipse.jetty:jetty-server:12.1.4") {
+        api("org.eclipse.jetty:jetty-server:12.1.10") {
             exclude group: "javax.annotation"
         }
         api("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
@@ -451,11 +435,11 @@ project(":soapFactory") {
             exclude group: "javax.annotation"
         }
 
-        api("org.glassfish.jaxb:jaxb-runtime:4.0.6")
+        api("org.glassfish.jaxb:jaxb-runtime:4.0.9")
 
-        api("com.sun.xml.messaging.saaj:saaj-impl:3.0.4")
+        api("com.sun.xml.messaging.saaj:saaj-impl:3.0.6")
 
-        api("jakarta.xml.ws:jakarta.xml.ws-api:4.0.2")
+        api("jakarta.xml.ws:jakarta.xml.ws-api:4.0.3")
         api("jakarta.annotation:jakarta.annotation-api:3.0.0")
         api("jakarta.xml.soap:jakarta.xml.soap-api:3.0.2")
         api("jakarta.servlet:jakarta.servlet-api:6.1.0")
@@ -486,8 +470,8 @@ project(":domFactoryEditing") {
     dependencies {
         api project(":microserviceRestResource")
         api project(":typescriptGenerator")
-        testImplementation("ch.qos.logback:logback-classic:1.5.21")
-        testImplementation("org.eclipse.jetty.compression:jetty-compression-server:12.1.4")
-        testImplementation("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.4")
+        testImplementation("ch.qos.logback:logback-classic:1.5.37")
+        testImplementation("org.eclipse.jetty.compression:jetty-compression-server:12.1.10")
+        testImplementation("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.10")
     }
 }

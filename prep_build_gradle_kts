@@ -1,0 +1,467 @@
+import java.nio.charset.StandardCharsets
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.external.javadoc.CoreJavadocOptions
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id("wrapper")
+    id("java-library")
+    id("maven-publish")
+    id("com.github.spotbugs") version "6.4.7"
+    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.gradleup.nmcp") version "1.2.0"
+    id("com.gradleup.nmcp.aggregation") version "1.2.0"
+    id("org.openjfx.javafxplugin") version "0.1.0" apply false
+}
+
+tasks.wrapper {
+    gradleVersion = "9.6.1"
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+nmcpAggregation {
+    centralPortal {
+        username = System.getenv("SONATYPE_USER")
+        password = System.getenv("SONATYPE_PASSWORD")
+        publishingType = "AUTOMATIC"
+    }
+}
+
+tasks.named<Zip>("nmcpZipAggregation") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+dependencies {
+    nmcpAggregation(project(":domFactoryEditing"))
+    nmcpAggregation(project(":factory"))
+    nmcpAggregation(project(":initializr"))
+    nmcpAggregation(project(":javafxDistributionClient"))
+    nmcpAggregation(project(":javafxDistributionServer"))
+    nmcpAggregation(project(":javafxFactoryEditing"))
+    nmcpAggregation(project(":jettyFactory"))
+    nmcpAggregation(project(":microserviceRestClient"))
+    nmcpAggregation(project(":microserviceRestCommon"))
+    nmcpAggregation(project(":microserviceRestResource"))
+    nmcpAggregation(project(":oracledbStorage"))
+    nmcpAggregation(project(":postgresqlStorage"))
+    nmcpAggregation(project(":soapFactory"))
+    nmcpAggregation(project(":typescriptGenerator"))
+}
+
+subprojects {
+    apply(plugin = "com.github.spotbugs")
+    apply(plugin = "java-library")
+    apply(plugin = "maven-publish")
+    apply(plugin = "com.gradleup.nmcp")
+    apply(plugin = "signing")
+
+    extensions.configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_17
+    }
+
+    if (project.name != "benchmark") { // jmh does not work with module-info
+        tasks.named<JavaCompile>("compileJava") {
+            inputs.property("moduleName", "io.github.factoryfx.${project.name}")
+            doFirst {
+                options.compilerArgs = listOf("--module-path", classpath.asPath)
+                classpath = files()
+            }
+        }
+
+        tasks.register<Jar>("sourcesJar") {
+            archiveClassifier.set("sources")
+            from(project.extensions.getByType<SourceSetContainer>()["main"].allSource)
+        }
+
+        tasks.register<Jar>("javadocJar") {
+            archiveClassifier.set("javadoc")
+            from(tasks.named("javadoc"))
+        }
+
+        tasks.named<Javadoc>("javadoc") {
+            (options as StandardJavadocDocletOptions).apply {
+                isFailOnError = false
+                encoding = StandardCharsets.UTF_8.name()
+                addStringOption("Xdoclint:none", "-quiet")
+            }
+            doFirst {
+                (options as CoreJavadocOptions).modulePath = classpath.files.toMutableList()
+            }
+        }
+
+        tasks.named("assemble") {
+            dependsOn("sourcesJar")
+            dependsOn("javadocJar")
+        }
+    }
+
+    group = "io.github.factoryfx"
+    version = "4.1.7_SNAPSHOT"
+
+    extensions.configure<PublishingExtension> {
+        publications {
+            create<MavenPublication>("mavenJava") {
+                from(components["java"])
+                if (project.name != "benchmark") {
+                    artifact(tasks.named("sourcesJar"))
+                    artifact(tasks.named("javadocJar"))
+                }
+                pom {
+                    name.set("factoryfx")
+                    packaging = "jar"
+                    description.set("factoryfx dependency injection framework")
+                    url.set("http://factoryfx.github.io/factoryfx")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("SCOOP Software")
+                            name.set("SCOOP Software")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git@github.com:factoryfx/factoryfx.git")
+                        developerConnection.set("scm:git@github.com:factoryfx/factoryfx.git")
+                        url.set("scm:git@github.com:factoryfx/factoryfx.git")
+                    }
+                }
+            }
+        }
+    }
+
+    if (System.getenv("SECRING") != null) {
+        extensions.configure<SigningExtension> {
+            val signingKey = System.getenv("SECRING")
+            val signingPassword = System.getenv("SECRING_PASS")
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign(extensions.getByType<PublishingExtension>().publications["mavenJava"])
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        "api"("org.slf4j:slf4j-api:2.0.17")
+        "api"("com.google.guava:guava:33.5.0-jre")
+
+        "testImplementation"("org.mockito:mockito-core:5.20.0")
+        "testImplementation"("org.junit.jupiter:junit-jupiter:6.1.0-M1")
+        "testRuntimeOnly"("org.junit.platform:junit-platform-launcher:6.1.0-M1")
+    }
+
+    tasks.named<Test>("test") {
+        useJUnitPlatform()
+        failOnNoDiscoveredTests = false
+    }
+
+    extensions.configure<com.github.spotbugs.snom.SpotBugsExtension> {
+        toolVersion.set("4.9.8")
+        ignoreFailures.set(true)
+        excludeFilter.set(rootProject.file("findbugs/findbugs-exclude-filter.xml"))
+    }
+
+    tasks.named("spotbugsTest") {
+        enabled = false
+    }
+}
+
+project(":microserviceRestResource") {
+    dependencies {
+        "api"(project(":jettyFactory"))
+        "api"(project(":microserviceRestCommon"))
+        "testImplementation"(project(":testfactories"))
+    }
+}
+
+project(":microserviceRestClient") {
+    dependencies {
+        "api"(project(":factory"))
+        "api"(project(":microserviceRestCommon"))
+        "api"("org.glassfish.jersey.ext:jersey-proxy-client:4.0.0")
+        "api"("org.glassfish.jersey.core:jersey-client:4.0.0")
+        "api"("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0")
+        "api"("org.glassfish.jersey.core:jersey-common:4.0.0")
+        "api"("org.glassfish.jersey.containers:jersey-container-servlet:4.0.0")
+    }
+}
+
+project(":microserviceRestCommon") {
+    dependencies {
+        "api"(project(":factory"))
+        "api"("jakarta.ws.rs:jakarta.ws.rs-api:4.0.0")
+        "api"("jakarta.activation:jakarta.activation-api:2.1.4")
+        "api"("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
+    }
+}
+
+project(":microserviceRestIntegrationTest") {
+    dependencies {
+        "implementation"(project(":microserviceRestResource"))
+        "implementation"(project(":microserviceRestClient"))
+        "implementation"("ch.qos.logback:logback-classic:1.5.21")
+        "implementation"("jakarta.activation:jakarta.activation-api:2.1.4")
+    }
+}
+
+project(":factory") {
+    dependencies {
+        "api"("com.fasterxml.jackson.core:jackson-databind:2.20.1")
+        "api"("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.20.1")
+        "api"("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+        "api"("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
+        "testImplementation"(project(":testfactories"))
+        "testImplementation"("ch.qos.logback:logback-classic:1.5.21")
+        "testImplementation"("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.1")
+    }
+}
+
+project(":postgresqlStorage") {
+    dependencies {
+        "api"(project(":factory"))
+        "api"("org.postgresql:postgresql:42.7.8")
+        "testImplementation"("io.zonky.test:embedded-postgres:2.2.0")
+        "testImplementation"(project(":testfactories"))
+    }
+}
+
+project(":oracledbStorage") {
+    dependencies {
+        "implementation"(project(":factory"))
+        "implementation"("com.oracle.database.jdbc:ojdbc8:23.26.0.0.0")
+        "testImplementation"("com.h2database:h2:2.4.240")
+        "testImplementation"(project(":testfactories"))
+    }
+}
+
+project(":jettyFactory") {
+    dependencies {
+        "api"(project(":factory"))
+        "api"("org.eclipse.jetty:jetty-server:12.1.4")
+        "api"("org.eclipse.jetty:jetty-alpn-java-server:12.1.4")
+        "api"("org.eclipse.jetty.ee10:jetty-ee10-servlet:12.1.4")
+        "api"("org.eclipse.jetty.ee10:jetty-ee10-webapp:12.1.4")
+        "api"("org.eclipse.jetty.http2:jetty-http2-server:12.1.4")
+        "api"("org.eclipse.jetty.compression:jetty-compression-server:12.1.4")
+        "api"("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.4")
+
+        "api"("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
+
+        "api"("org.glassfish.jersey.core:jersey-common:4.0.0")
+        "api"("org.glassfish.jersey.core:jersey-server:4.0.0")
+        "api"("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
+        "api"("org.glassfish.jersey.containers:jersey-container-servlet:4.0.0")
+        "api"("org.glassfish.jersey.inject:jersey-hk2:4.0.0")
+
+        "api"("jakarta.annotation:jakarta.annotation-api:3.0.0")
+        "api"("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0")
+
+        "api"("org.ini4j:ini4j:0.5.4")
+
+        "testImplementation"("ch.qos.logback:logback-classic:1.5.21")
+    }
+}
+
+project(":example") {
+    apply(plugin = "org.openjfx.javafxplugin")
+    extensions.configure<org.openjfx.gradle.JavaFXOptions> {
+        version = "17.0.17"
+        modules = listOf("javafx.controls", "javafx.web", "javafx.graphics", "javafx.fxml", "javafx.media")
+        configuration = "api"
+    }
+
+    dependencies {
+        "implementation"(project(":javafxFactoryEditing"))
+        "implementation"(project(":jettyFactory"))
+        "implementation"(project(":microserviceRestResource"))
+        "implementation"(project(":factory"))
+        "implementation"(project(":domFactoryEditing"))
+
+        "implementation"("ch.qos.logback:logback-classic:1.5.21")
+        "implementation"("jakarta.activation:jakarta.activation-api:2.1.4")
+    }
+}
+
+project(":javafxFactoryEditing") {
+    apply(plugin = "org.openjfx.javafxplugin")
+    extensions.configure<org.openjfx.gradle.JavaFXOptions> {
+        version = "17.0.17"
+        modules = listOf("javafx.controls", "javafx.web", "javafx.graphics", "javafx.fxml", "javafx.media")
+        configuration = "api"
+    }
+
+    dependencies {
+        "api"("org.controlsfx:controlsfx:11.2.2")
+        "api"("org.fxmisc.richtext:richtextfx:0.11.7")
+
+        "api"(project(":factory"))
+        "api"(project(":microserviceRestClient"))
+
+        "testImplementation"(project(":testfactories"))
+        "testImplementation"("ch.qos.logback:logback-classic:1.5.21")
+        "testImplementation"("jakarta.activation:jakarta.activation-api:2.1.4")
+    }
+}
+
+project(":javafxDistributionServer") {
+    dependencies {
+        "api"(project(":jettyFactory"))
+        "api"(project(":factory"))
+        "api"("org.slf4j:slf4j-api:2.0.17")
+
+        "testImplementation"("ch.qos.logback:logback-classic:1.5.21")
+        "testImplementation"("jakarta.activation:jakarta.activation-api:2.1.4")
+    }
+}
+
+project(":javafxDistributionClient") {
+    apply(plugin = "org.openjfx.javafxplugin")
+    extensions.configure<org.openjfx.gradle.JavaFXOptions> {
+        version = "17.0.17"
+        modules = listOf("javafx.controls", "javafx.web", "javafx.graphics", "javafx.fxml", "javafx.media")
+        configuration = "api"
+    }
+
+    dependencies {
+        "api"("org.slf4j:slf4j-api:2.0.17")
+        "api"("com.fasterxml.jackson.core:jackson-databind:2.20.1") {
+            exclude(group = "javax.annotation")
+        }
+
+        "api"("org.glassfish.jersey.core:jersey-common:4.0.0")
+        "api"("org.glassfish.jersey.core:jersey-client:4.0.0")
+        "api"("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.20.1")
+        "api"("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.0")
+        "api"("org.glassfish.jersey.inject:jersey-hk2:4.0.0")
+        "api"("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
+    }
+}
+
+project(":testfactories") {
+    dependencies {
+        "implementation"(project(":factory"))
+    }
+}
+
+project(":docu") {
+    dependencies {
+        "implementation"(project(":factory"))
+        "implementation"(project(":jettyFactory"))
+        "implementation"(project(":postgresqlStorage"))
+
+        "implementation"(project(":microserviceRestResource"))
+        "implementation"(project(":microserviceRestClient"))
+        "implementation"(project(":initializr"))
+        "implementation"(project(":domFactoryEditing"))
+
+        "implementation"("io.dropwizard.metrics:metrics-jetty12:4.2.37")
+        "implementation"("io.zonky.test:embedded-postgres:2.2.0")
+        "implementation"("ch.qos.logback:logback-classic:1.5.21")
+        "implementation"("jakarta.activation:jakarta.activation-api:2.1.4")
+
+        "implementation"("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
+    }
+}
+
+project(":typescriptGenerator") {
+    dependencies {
+        "api"(project(":factory"))
+        "testImplementation"(project(":testfactories"))
+        "testImplementation"(project(":jettyFactory"))
+        "testImplementation"(project(":domFactoryEditing"))
+        "testImplementation"("ch.qos.logback:logback-classic:1.5.21")
+    }
+
+    tasks.register<JavaExec>("generateTestCode") {
+        classpath = extensions.getByType<SourceSetContainer>()["test"].runtimeClasspath
+        mainClass.set("io.github.factoryfx.factory.typescript.generator.data.TestGenerator")
+    }
+
+    tasks.register<Exec>("installNpm") {
+        dependsOn(":typescriptGenerator:generateTestCode")
+        workingDir("$projectDir/src/test/ts/")
+
+        if (org.gradle.internal.os.OperatingSystem.current().isWindows) {
+            commandLine("npm.cmd", "install")
+        } else {
+            commandLine("npm", "install")
+        }
+    }
+
+    tasks.register<Exec>("typescriptTest") {
+        dependsOn(":typescriptGenerator:installNpm")
+        workingDir("$projectDir/src/test/ts/")
+
+        if (org.gradle.internal.os.OperatingSystem.current().isWindows) {
+            commandLine("npm.cmd", "test")
+        } else {
+            commandLine("npm", "test")
+        }
+    }
+}
+
+project(":soapFactory") {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        "api"(project(":factory"))
+        "api"(project(":jettyFactory"))
+
+        "api"("org.eclipse.jetty:jetty-server:12.1.4") {
+            exclude(group = "javax.annotation")
+        }
+        "api"("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
+        "api"("com.sun.istack:istack-commons-runtime:4.2.0") {
+            exclude(group = "javax.annotation")
+        }
+
+        "api"("org.glassfish.jaxb:jaxb-runtime:4.0.6")
+
+        "api"("com.sun.xml.messaging.saaj:saaj-impl:3.0.4")
+
+        "api"("jakarta.xml.ws:jakarta.xml.ws-api:4.0.2")
+        "api"("jakarta.annotation:jakarta.annotation-api:3.0.0")
+        "api"("jakarta.xml.soap:jakarta.xml.soap-api:3.0.2")
+        "api"("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    }
+}
+
+project(":initializr") {
+    dependencies {
+        "api"(project(":factory"))
+        "api"(project(":jettyFactory"))
+        "api"("com.squareup:javapoet:1.13.0")
+    }
+}
+
+project(":benchmark") {
+    dependencies {
+        "implementation"(project(":factory"))
+        "implementation"(project(":testfactories"))
+
+        "implementation"("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+        "implementation"("org.openjdk.jmh:jmh-core:1.37")
+    }
+}
+
+project(":domFactoryEditing") {
+    dependencies {
+        "api"(project(":microserviceRestResource"))
+        "api"(project(":typescriptGenerator"))
+        "testImplementation"("ch.qos.logback:logback-classic:1.5.21")
+        "testImplementation"("org.eclipse.jetty.compression:jetty-compression-server:12.1.4")
+        "testImplementation"("org.eclipse.jetty.compression:jetty-compression-gzip:12.1.4")
+    }
+}
