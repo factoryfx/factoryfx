@@ -17,6 +17,9 @@ wrapper {
     gradleVersion = "9.6.1"
     distributionType = Wrapper.DistributionType.ALL
 }
+repositories {
+    mavenCentral()
+}
 
 apply plugin: "maven-publish"
 nmcpAggregation {
