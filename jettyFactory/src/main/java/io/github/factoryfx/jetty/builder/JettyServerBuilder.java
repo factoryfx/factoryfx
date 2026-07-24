@@ -8,6 +8,7 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -34,6 +35,8 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
     private final List<ServletBuilder<R>> additionalServletBuilders = new ArrayList<>();
     private final List<ServletFilterBuilder<R>> servletFilterBuilders = new ArrayList<>();
     private FactoryBase<Handler, R> firstHandler;
+    private FactoryBase<? extends Request.Handler, R> errorHandler;
+    private FactoryTemplateId<? extends FactoryBase<? extends Request.Handler, R>> errorHandlerTemplateId;
     private int threadPoolSize=200;
     private boolean enabledRequestLog=true;
 
@@ -201,6 +204,30 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
         return this;
     }
 
+    /**
+     * sets the jetty error handler ({@link org.eclipse.jetty.server.Server#setErrorHandler}).<br>
+     * Useful for low-level errors (e.g. HTTP 431) that are handled by jetty directly and never reach the jersey
+     * {@link jakarta.ws.rs.ext.ExceptionMapper}. Typically an {@link org.eclipse.jetty.server.handler.ErrorHandler} subclass.
+     * @param errorHandler error handler factory
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withErrorHandler(FactoryBase<? extends Request.Handler, R> errorHandler) {
+        this.errorHandler = errorHandler;
+        return this;
+    }
+
+    /**
+     * sets the jetty error handler ({@link org.eclipse.jetty.server.Server#setErrorHandler}).<br>
+     * Useful for low-level errors (e.g. HTTP 431) that are handled by jetty directly and never reach the jersey
+     * {@link jakarta.ws.rs.ext.ExceptionMapper}. Typically an {@link org.eclipse.jetty.server.handler.ErrorHandler} subclass.
+     * @param errorHandlerTemplateId {@link FactoryTemplateId} of the error handler factory
+     * @return builder
+     */
+    public JettyServerBuilder<R, JR> withErrorHandler(FactoryTemplateId<? extends FactoryBase<? extends Request.Handler, R>> errorHandlerTemplateId) {
+        this.errorHandlerTemplateId = errorHandlerTemplateId;
+        return this;
+    }
+
 
 
     /**
@@ -243,6 +270,11 @@ public class JettyServerBuilder<R extends FactoryBase<?,R>, JR extends JettyServ
             }
             for (ServerConnectorBuilder<R> connectorBuilder : serverConnectorBuilders) {
                 jettyServerFactory.connectors.add( ctx.get(connectorBuilder.getTemplateId()));
+            }
+            if (errorHandler!=null) {
+                jettyServerFactory.errorHandler.set(errorHandler);
+            } else if (errorHandlerTemplateId!=null) {
+                jettyServerFactory.errorHandler.set(ctx.get(errorHandlerTemplateId));
             }
 
             jettyServerFactory.handler.set(ctx.get(handlerCollectionFactoryTemplateId));

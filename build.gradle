@@ -17,9 +17,6 @@ wrapper {
     gradleVersion = "9.6.1"
     distributionType = Wrapper.DistributionType.ALL
 }
-repositories {
-    mavenCentral()
-}
 
 apply plugin: "maven-publish"
 nmcpAggregation {
@@ -97,7 +94,7 @@ subprojects {
     }
 
     group = "io.github.factoryfx"
-    version = "4.1.7"
+    version = "4.1.8"
 
     publishing {
         publications {
@@ -139,10 +136,6 @@ subprojects {
             useInMemoryPgpKeys(signingKey, signingPassword)
             sign publishing.publications.mavenJava
         }
-    }
-
-    repositories {
-        mavenCentral()
     }
 
     dependencies {

@@ -1,3 +1,7 @@
+# 4.1.8
+* **JettyServerFactory**
+    * add support for setting a jetty error handler (Server.setErrorHandler), configurable via JettyServerBuilder.withErrorHandler
+
 # 4.1.7
 * **Update dependencies**
 * **Remove copper bridge**

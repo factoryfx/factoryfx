@@ -18,6 +18,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.util.Callback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -143,6 +144,53 @@ public class JettyServerBuilderTest {
             HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087/test")).build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             Assertions.assertEquals("Hello World", response.body());
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            microservice.stop();
+        }
+    }
+
+    /**
+     * error handler that customizes the response jetty produces for low-level errors (e.g. HTTP 431) that never
+     * reach the jersey {@link jakarta.ws.rs.ext.ExceptionMapper}.
+     */
+    public static class CustomErrorHandler extends ErrorHandler {
+        @Override
+        public boolean handle(Request request, Response response, Callback callback) throws Exception {
+            response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/plain; charset=UTF-8");
+            response.write(true, UTF_8.encode("custom error handler: " + response.getStatus()), callback);
+            return true;
+        }
+    }
+
+    public static class CustomErrorHandlerFactory extends SimpleFactoryBase<Request.Handler, JettyServerRootFactory> {
+        @Override
+        protected Request.Handler createImpl() {
+            return new CustomErrorHandler();
+        }
+    }
+
+    @Test
+    public void test_error_handler() {
+        JettyFactoryTreeBuilder builder = new JettyFactoryTreeBuilder((jetty, ctx) -> jetty.
+                withHost("localhost").withPort(8087)
+                .withErrorHandler(new CustomErrorHandlerFactory())
+                .withResource(new FactoryTemplateId<>(Test2ResourceFactory.class))
+        );
+        builder.addFactory(Test2ResourceFactory.class, Scope.SINGLETON);
+
+        Microservice<Server, JettyServerRootFactory> microservice = builder.microservice().build();
+        microservice.start();
+        try {
+            HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+            // an oversized request header exceeds jetty's default request header size (8192) and triggers a
+            // low-level HTTP 431 that is handled by jetty directly, so the jersey ExceptionMapper is never reached
+            HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://localhost:8087"))
+                    .header("X-Large-Header", "x".repeat(16384)).build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            Assertions.assertEquals(431, response.statusCode());
+            Assertions.assertEquals("custom error handler: 431", response.body());
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         } finally {

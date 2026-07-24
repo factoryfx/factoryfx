@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -55,6 +56,13 @@ public class JettyServerFactory<R extends FactoryBase<?, R>> extends FactoryBase
         new FactoryPolymorphicAttribute<ThreadPool>().labelText("Thread Pool").nullable();
     public final FactoryPolymorphicAttribute<RequestLog> requestLog =
         new FactoryPolymorphicAttribute<RequestLog>().labelText("RequestLog").nullable();
+    /**
+     * Error handler for low-level errors that occur outside the servlet/jersey layer (e.g. HTTP 431, bad requests).
+     * Set via {@link Server#setErrorHandler(Request.Handler)}. Typically an {@link org.eclipse.jetty.server.handler.ErrorHandler}
+     * subclass to customize the response Jetty produces for such errors instead of the default html error page.
+     */
+    public final FactoryPolymorphicAttribute<Request.Handler> errorHandler =
+        new FactoryPolymorphicAttribute<Request.Handler>().labelText("ErrorHandler").nullable();
 
     public JettyServerFactory() {
         configLifeCycle().setCreator(this::createJetty);
@@ -79,6 +87,9 @@ public class JettyServerFactory<R extends FactoryBase<?, R>> extends FactoryBase
         server.setHandler(handler.instance());
 
         server.setRequestLog(requestLog.instance());
+        if (errorHandler.get() != null) {
+            server.setErrorHandler(errorHandler.instance());
+        }
         return server;
     }
 
