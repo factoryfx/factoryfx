@@ -1,3 +1,7 @@
+# 4.1.10
+* **FactoryTreeBuilder**
+    * fix: builders added via addBuilder() were only applied inside buildTreeUnvalidated(), so buildNewSubTree/buildSubTree/getScope failed with "builder missing Factory" when called before the tree was ever built. This broke server startup with existing stored data after 4.1.8 added the errorHandler attribute to JettyServerFactory: MigrationManager.read -> fillNewAttributes -> buildNewSubTree(root) hit the unapplied nested root creator of jetty-based builders. Nested builders are now applied lazily and exactly once from all context lookups
+
 # 4.1.9
 * **FactoryEditView**
     * fix listener accumulation: the FactoryRootChangeListener was registered on every view open, so after n opens a single save fired the widget's edit() n times; the listener is now registered once

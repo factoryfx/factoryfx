@@ -236,6 +236,23 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     private R rootFactory;
+    private boolean nestedBuildersApplied = false;
+
+    /** registers the creators from builders added via {@link #addBuilder(Function)}, exactly once.
+     * Must run before any factoryContext lookup, not just in buildTreeUnvalidated: e.g. the
+     * FactoryTreeBuilderAttributeFiller calls buildNewSubTree during MigrationManager.read before
+     * the tree is ever built, and the root creator may come from a nested builder. */
+    private void applyNestedBuilders(){
+        if (nestedBuildersApplied) {
+            return;
+        }
+        nestedBuildersApplied = true;
+        for (Function<FactoryContext<R>, NestedBuilder<R>> customBuildersCreator : customBuildersCreators) {
+            NestedBuilder<R> nestedBuilder = customBuildersCreator.apply(factoryContext);
+            nestedBuilder.internal_build(this);
+        }
+    }
+
     /**create the complete factory tree that represent the app dependencies
      * @return dependency tree
      * */
@@ -244,10 +261,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
         if (rootFactory!=null) {
             return rootFactory;
         }
-        for (Function<FactoryContext<R>, NestedBuilder<R>> customBuildersCreator : customBuildersCreators) {
-            NestedBuilder<R> nestedBuilder = customBuildersCreator.apply(factoryContext);
-            nestedBuilder.internal_build(this);
-        }
+        applyNestedBuilders();
         this.rootFactory = factoryContext.get(rootTemplateId);
         if (rootFactory==null){
             throw new IllegalStateException("FactoryCreator missing for root class "+ rootTemplateId.clazz);
@@ -266,6 +280,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
      * @return factory
      */
     public <LO, FO extends FactoryBase<LO,R>> FO buildNewSubTree(Class<FO> factoryClazz){
+        applyNestedBuilders();
         return factoryContext.getNew(factoryClazz);
     }
 
@@ -278,18 +293,22 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
      * @return factory
      */
     public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(Class<FO> factoryClazz){
+        applyNestedBuilders();
         return factoryContext.get(factoryClazz);
     }
 
     public <LO, FO extends FactoryBase<LO,R>> FO buildSubTree(FactoryTemplateId<FO> factoryTemplateId){
+        applyNestedBuilders();
         return factoryContext.get(factoryTemplateId);
     }
 
     public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTrees(Class<FO> factoryClazz){
+        applyNestedBuilders();
         return factoryContext.getList(factoryClazz);
     }
 
     public <LO, FO extends FactoryBase<LO,R>> List<FO> buildSubTreesForLiveObject(Class<LO> liveObjectClass){
+        applyNestedBuilders();
         return factoryContext.getListFromLiveObjectClass(liveObjectClass,null);
     }
 
@@ -310,10 +329,12 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     public Scope getScope(FactoryTemplateId<?> factoryTemplateId){
+        applyNestedBuilders();
         return factoryContext.getScope(factoryTemplateId);
     }
 
     public void fillFromExistingFactoryTree(R root) {
+        applyNestedBuilders();
         factoryContext.fillFromExistingFactoryTree(root);
     }
 
