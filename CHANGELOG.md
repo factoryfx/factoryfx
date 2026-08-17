@@ -1,3 +1,13 @@
+# 4.1.9
+* **FactoryEditView**
+    * fix listener accumulation: the FactoryRootChangeListener was registered on every view open, so after n opens a single save fired the widget's edit() n times; the listener is now registered once
+    * toolbar and root pane are built once instead of on every view open
+    * edit() deduplication: content.edit(root) is now called at most once per root instance (initial load and each save/update); re-opening a view with an unchanged factory no longer calls edit(). createContent() is still called on every open and remains the per-open signal for widgets to refresh non-factory data. Note: widgets that relied on the per-open edit() call to rebuild their UI now keep the previously built UI (including its state) across re-opens
+* **LifecycleFactoryAwareWidget** (new)
+    * opt-in base class for FactoryAwareWidget that splits the lifecycle into initContent() (once), refreshData() (every open and after every new factory version, started in parallel with the initial factory download) and applyFactory() (once per new root instance), so views can display and load data before the factory download completes
+* **FactoryAwareWidget**
+    * document the lifecycle contract
+
 # 4.1.8
 * **JettyServerFactory**
     * add support for setting a jetty error handler (Server.setErrorHandler), configurable via JettyServerBuilder.withErrorHandler

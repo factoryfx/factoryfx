@@ -4,7 +4,6 @@ import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
 
 import java.io.File;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 
 import io.github.factoryfx.factory.attribute.types.I18nAttribute;
@@ -35,6 +34,15 @@ import javafx.stage.FileChooser;
 import org.controlsfx.glyphfont.FontAwesome;
 
 /**
+ * Lifecycle contract towards the wrapped {@link FactoryAwareWidget}:
+ * <ul>
+ *   <li>{@code content.createContent()} is called on every view open, before the factory is available,
+ *       so widgets can display immediately and start loading non-factory data in parallel with the
+ *       factory download.</li>
+ *   <li>{@code content.edit(root)} is called at most once per root instance: after the initial factory
+ *       load and after every save/update that produces a new root. Re-opening the view with an unchanged
+ *       factory does NOT call {@code edit} again.</li>
+ * </ul>
  *
  * @param <R> server root
  */
@@ -57,6 +65,7 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
     private final DataEditor dataEditor;
     private BorderPane borderPane;
     private final DiffDialogBuilder<R> diffDialogBuilder;
+    private R lastEditedRoot;
 
     public FactoryEditView(LongRunningActionExecutor longRunningActionExecutor, FactoryEditManager<R> factoryEditManager, FactoryAwareWidget<R> content, UniformDesign uniformDesign, DataEditor dataEditor, DiffDialogBuilder<R> diffDialogBuilder) {
         this.LongRunningActionExecutor = longRunningActionExecutor;
@@ -69,8 +78,36 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
 
     @Override
     public Node createContent() {
-        factoryEditManager.registerListener(this);
-        borderPane = new BorderPane();
+        if (borderPane == null) {
+            //one-time setup: repeated registerListener calls on every open accumulated duplicate
+            //listeners, so a single save fired content.edit() once per previous open
+            factoryEditManager.registerListener(this);
+            borderPane = new BorderPane();
+            borderPane.setTop(createToolBar());
+        }
+
+        //every open: widgets typically return a cached node and use this call to refresh their data
+        borderPane.setCenter(content.createContent());
+
+        if (factoryEditManager.getLoadedFactory().isPresent()){
+            editIfNewRoot(factoryEditManager.getLoadedFactory().get());
+        } else {
+            LongRunningActionExecutor.execute(factoryEditManager::load);
+        }
+
+        return borderPane;
+    }
+
+    private void editIfNewRoot(R root) {
+        if (root == lastEditedRoot) {
+            return; //unchanged factory (e.g. view re-opened): edit() is only called for new root instances
+        }
+        lastEditedRoot = root;
+        content.edit(root);
+    }
+
+    /** creates the save/check/reset/export/import toolbar; overridable for headless tests */
+    protected ToolBar createToolBar() {
         final ToolBar toolBar = new ToolBar();
 
         {
@@ -178,28 +215,13 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
             toolBar.getItems().add(new Separator());
         }
 
-
-        borderPane.setTop(toolBar);
-
-        if (factoryEditManager.getLoadedFactory().isPresent()){
-            borderPane.setCenter(content.createContent());
-            content.edit((factoryEditManager.getLoadedFactory().get()));
-        } else {
-            borderPane.setCenter(content.createContent());
-            LongRunningActionExecutor.execute(factoryEditManager::load);
-        }
-
-        factoryUpdater=content::edit;
-
-        return borderPane;
+        return toolBar;
     }
 
-
-    private Consumer<R> factoryUpdater;
     @Override
     public void update(Optional<R> previousRoot, R newRoot) {
         previousRoot.ifPresent(serverFactory -> serverFactory.internal().endEditingDeepFromRoot());
-        factoryUpdater.accept(newRoot);
+        editIfNewRoot(newRoot);
     }
 
     private Optional<String> showCommitDialog(FactoryBase<?,?> root, DataEditor dataEditor, UniformDesign uniformDesign){
@@ -210,9 +232,6 @@ public class FactoryEditView<R extends FactoryBase<?,R>> implements Widget, Fact
         dialog.initOwner(borderPane.getScene().getWindow());
         dialog.setTitle(uniformDesign.getText(save));
         dialog.setHeaderText(uniformDesign.getText(save));
-
-//        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-//        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
         final BorderPane pane = new BorderPane();
         pane.setCenter(wrap(uniformDesign.getText(validation),validationWidget.createContent()));

@@ -94,7 +94,7 @@ subprojects {
     }
 
     group = "io.github.factoryfx"
-    version = "4.1.8"
+    version = "4.1.9"
 
     publishing {
         publications {
