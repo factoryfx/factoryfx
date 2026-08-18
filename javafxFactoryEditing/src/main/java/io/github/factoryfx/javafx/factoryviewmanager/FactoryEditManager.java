@@ -102,7 +102,7 @@ public class FactoryEditManager<R extends FactoryBase<?,R>> {
     public void loadFromFile(Path from) {
         try {
             RawFactoryDataAndMetadata wrapper = migrationManager.readRawFactoryDataAndMetadata(Files.readString(from));
-            R serverFactory = migrationManager.read(wrapper.root,wrapper.metadata.dataStorageMetadataDictionary);
+            R serverFactory = migrationManager.read(wrapper.root,wrapper.metadata);
 
             DataUpdate<R> previousRoot=loadedRoot;
             DataUpdate<R> update = client.prepareNewFactory();

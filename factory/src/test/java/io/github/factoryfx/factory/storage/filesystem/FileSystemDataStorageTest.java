@@ -80,13 +80,13 @@ public class FileSystemDataStorageTest {
     }
 
     @Test
-    public void test_patchCurrentData()  {
+    public void test_patchAll_currentAndItsHistoryCopyInSync()  {
         ExampleDataA initialExampleDataA = createInitialExampleDataA();
         initialExampleDataA.stringAttribute.set("123");
         FileSystemDataStorage<ExampleDataA> fileSystemFactoryStorage = new FileSystemDataStorage<>(Paths.get(folder.toFile().toURI()), initialExampleDataA, createDataMigrationManager(),ObjectMapperBuilder.build());
         fileSystemFactoryStorage.getCurrentData();//init
-        fileSystemFactoryStorage.patchCurrentData((root, metadata, objectMapper) -> {
-            ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
+        fileSystemFactoryStorage.patchAll((root, metadata, objectMapper) -> {
+            root.setAttributeValue("stringAttribute", new TextNode("qqq"));
         });
         Assertions.assertEquals("qqq",fileSystemFactoryStorage.getCurrentData().root.stringAttribute.get());
         Assertions.assertEquals("qqq",fileSystemFactoryStorage.getHistoryData(fileSystemFactoryStorage.getCurrentDataId()).stringAttribute.get());
@@ -101,7 +101,7 @@ public class FileSystemDataStorageTest {
         fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
 
         fileSystemFactoryStorage.patchAll((data, metadata,objectMapper) -> {
-            ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
+            data.setAttributeValue("stringAttribute", new TextNode("qqq"));
         });
         Assertions.assertEquals("qqq",fileSystemFactoryStorage.getHistoryData(id).stringAttribute.get());
     }
@@ -115,8 +115,7 @@ public class FileSystemDataStorageTest {
         fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
 
         fileSystemFactoryStorage.patchAll((root, metadata, objectMapper) -> {
-            DataJsonNode rootNode = new DataJsonNode(root);
-            for (DataJsonNode dataJsonNode : rootNode.collectChildrenFromRoot()) {
+            for (DataJsonNode dataJsonNode : root.collectChildrenFromRoot()) {
                 if (dataJsonNode.getDataClassName().equals(ExampleDataA.class.getName())) {
                     dataJsonNode.setAttributeValue("stringAttribute",new TextNode("qqq"));
                 }
@@ -161,8 +160,7 @@ public class FileSystemDataStorageTest {
         fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
 
         fileSystemFactoryStorage.patchAll((root, metadata, objectMapper) -> {
-            DataJsonNode rootNode = new DataJsonNode(root);
-            for (DataJsonNode dataJsonNode : rootNode.collectChildrenFromRoot()) {
+            for (DataJsonNode dataJsonNode : root.collectChildrenFromRoot()) {
                 if (dataJsonNode.getDataClassName().equals(ExampleDataA.class.getName())) {
                     dataJsonNode.setAttributeValue("stringAttribute",null);
                 }
@@ -181,8 +179,7 @@ public class FileSystemDataStorageTest {
         fileSystemFactoryStorage.updateCurrentData(createUpdate(),null);
 
         fileSystemFactoryStorage.patchAll((root, metadata, objectMapper) -> {
-            DataJsonNode rootNode = new DataJsonNode(root);
-            for (DataJsonNode dataJsonNode : rootNode.collectChildrenFromRoot()) {
+            for (DataJsonNode dataJsonNode : root.collectChildrenFromRoot()) {
                 if (dataJsonNode.getDataClassName().equals(ExampleDataA.class.getName())) {
                     //                    ArrayNode arrayNode = ObjectMapperBuilder.buildNewObjectMapper().createArrayNode();
                     dataJsonNode.setAttributeValue("referenceListAttribute", null);

@@ -2,14 +2,21 @@ package io.github.factoryfx.factory.builder;
 
 import io.github.factoryfx.factory.BranchSelector;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.attribute.Attribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryBaseAttribute;
+import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.validation.ValidationError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -370,6 +377,78 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
             }
         }
         return true;
+    }
+
+    /**
+     * rebuild for an existing (stored) configuration. the current configuration is the reference:
+     * existing factories keep their values and wiring and nothing is removed. the builder describes the technical
+     * configuration of the tree and only contributes the factories it newly introduces (templates without an
+     * instance in the current configuration) including the wiring into existing factories (only where the existing
+     * reference is empty, current wiring always wins).
+     *
+     * @param currentRoot current configuration root
+     * @return copy of currentRoot extended with the newly introduced factories
+     */
+    @SuppressWarnings({"unchecked","rawtypes"})
+    public R rebuildTreeForExistingConfiguration(R currentRoot) {
+        R target = currentRoot.utility().copy();
+        List<FactoryBase<?, R>> targetBases = target.internal().collectChildrenDeep();
+        List<FactoryBase<?, R>> builderCreatedBases = new ArrayList<>();
+        for (FactoryBase<?, R> factory : targetBases) {
+            if (factory.internal().getTreeBuilderName() != null || factory.internal().isTreeBuilderClassUsed()) {
+                builderCreatedBases.add(factory);
+            }
+        }
+        R rebuildRoot = rebuildTreeUnvalidated(builderCreatedBases);
+
+        Map<UUID, FactoryBase<?, R>> targetIdMap = target.internal().collectChildFactoryMap();
+        Set<FactoryTemplateId<?>> existingTemplates = new HashSet<>();
+        for (FactoryBase<?, R> factory : targetBases) {
+            existingTemplates.add(new FactoryTemplateId<>(factory));
+        }
+
+        //pairs of (existing factory, rebuilt counterpart), matched over the ids transferred in rebuildTreeUnvalidated. the roots always correspond
+        Map<FactoryBase<?, R>, FactoryBase<?, R>> matchedPairs = new LinkedHashMap<>();
+        matchedPairs.put(target, rebuildRoot);
+        for (FactoryBase<?, R> rebuilt : rebuildRoot.internal().collectChildrenDeep()) {
+            FactoryBase<?, R> targetFactory = targetIdMap.get(rebuilt.getId());
+            if (targetFactory != null && targetFactory.getClass() == rebuilt.getClass()) {
+                matchedPairs.put(targetFactory, rebuilt);
+            }
+        }
+        for (Map.Entry<FactoryBase<?, R>, FactoryBase<?, R>> pair : matchedPairs.entrySet()) {
+            adoptNewFactories(pair.getKey(), pair.getValue(), targetIdMap, existingTemplates);
+        }
+        target.internal().fixDuplicateFactories();
+        target.internal().finalise();
+        return target;
+    }
+
+    @SuppressWarnings({"unchecked","rawtypes"})
+    private void adoptNewFactories(FactoryBase<?, R> targetFactory, FactoryBase<?, R> rebuiltFactory, Map<UUID, FactoryBase<?, R>> targetIdMap, Set<FactoryTemplateId<?>> existingTemplates) {
+        Map<String, Attribute<?, ?>> rebuiltAttributes = new HashMap<>();
+        rebuiltFactory.internal().visitAttributesFlat((attributeMetadata, attribute) -> rebuiltAttributes.put(attributeMetadata.attributeVariableName, attribute));
+        targetFactory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
+            Attribute<?, ?> rebuiltAttribute = rebuiltAttributes.get(attributeMetadata.attributeVariableName);
+            if (attribute instanceof FactoryBaseAttribute targetReference && rebuiltAttribute instanceof FactoryBaseAttribute rebuiltReference) {
+                FactoryBase<?, ?> newFactory = (FactoryBase<?, ?>) rebuiltReference.get();
+                if (targetReference.get() == null && isNewFactory(newFactory, targetIdMap, existingTemplates)) {
+                    targetReference.set(newFactory);
+                }
+            }
+            if (attribute instanceof FactoryListBaseAttribute targetReferenceList && rebuiltAttribute instanceof FactoryListBaseAttribute rebuiltReferenceList) {
+                for (Object entry : rebuiltReferenceList) {
+                    FactoryBase<?, ?> newFactory = (FactoryBase<?, ?>) entry;
+                    if (isNewFactory(newFactory, targetIdMap, existingTemplates)) {
+                        targetReferenceList.add(newFactory);
+                    }
+                }
+            }
+        });
+    }
+
+    private boolean isNewFactory(FactoryBase<?, ?> factory, Map<UUID, FactoryBase<?, R>> targetIdMap, Set<FactoryTemplateId<?>> existingTemplates) {
+        return factory != null && !targetIdMap.containsKey(factory.getId()) && !existingTemplates.contains(new FactoryTemplateId<>(factory));
     }
 
     public R rebuildTreeUnvalidated(List<FactoryBase<?, R>> existingFactoryBases) {

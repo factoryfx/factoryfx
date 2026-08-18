@@ -20,6 +20,7 @@ import io.github.factoryfx.factory.log.FactoryUpdateLog;
 import io.github.factoryfx.factory.merge.AttributeDiffInfo;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.inmemory.InMemoryDataStorage;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
 import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
@@ -104,6 +105,42 @@ public class MicroserviceTest {
         String dtNew = theDiff.getAttributeDisplayText(log.mergeDiffInfo.getNewRootData());
         Assertions.assertNotEquals(dt,dtNew);
 
+    }
+
+    @Test
+    public void test_update_based_on_current_configuration_does_not_read_history() {
+        FactoryTreeBuilder<ExampleLiveObjectA,ExampleFactoryA> builder = new FactoryTreeBuilder<>(ExampleFactoryA.class, ctx -> {
+            ExampleFactoryA factory = new ExampleFactoryA();
+            factory.stringAttribute.set("initial");
+            return factory;
+        });
+
+        AtomicInteger historyReads = new AtomicInteger();
+        Microservice<ExampleLiveObjectA,ExampleFactoryA> microservice = builder.microservice()
+                .withStorage((initialFactory, migrationManager, objectMapper) -> new InMemoryDataStorage<>(initialFactory) {
+                    @Override
+                    public ExampleFactoryA getHistoryData(String id) {
+                        historyReads.incrementAndGet();
+                        return super.getHistoryData(id);
+                    }
+                })
+                .build();
+        microservice.start();
+
+        DataUpdate<ExampleFactoryA> update = microservice.prepareNewFactory();
+        update.root.stringAttribute.set("change");
+        FactoryUpdateLog<ExampleFactoryA> updateLog = microservice.updateCurrentFactory(update);
+
+        Assertions.assertTrue(updateLog.successfullyMerged());
+        Assertions.assertEquals(0, historyReads.get());
+        Assertions.assertEquals("initial", updateLog.mergeDiffInfo.getPreviousRootData().stringAttribute.get());
+        Assertions.assertEquals("change", updateLog.mergeDiffInfo.getNewRootData().stringAttribute.get());
+
+        //update based on an old version still reads the common version from the history
+        DataUpdate<ExampleFactoryA> staleUpdate = new DataUpdate<>(update.root.utility().copy(), "user", "comment", update.baseVersionId);
+        FactoryUpdateLog<ExampleFactoryA> staleUpdateLog = microservice.updateCurrentFactory(staleUpdate);
+        Assertions.assertTrue(staleUpdateLog.successfullyMerged());
+        Assertions.assertEquals(1, historyReads.get());
     }
 
     @Test

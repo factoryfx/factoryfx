@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.storage;
 
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.storage.migration.ConfigurationPatch;
 
 import java.util.*;
 
@@ -39,6 +40,21 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
     String getCurrentDataId();
 
     /**
+     * get the current data as stored (raw json, no patches or migrations applied), e.g. for a configuration snapshot
+     * @return raw current data and metadata
+     * */
+    RawFactoryDataAndMetadata getCurrentDataRaw();
+
+    /**
+     * store a raw configuration (json and complete metadata) as the new current configuration and add it to the history,
+     * exactly as given: no patches or migrations are applied and the metadata (including configurationSchemaVersion and
+     * dataStorageMetadataDictionary) is persisted unchanged. counterpart of {@link #getCurrentDataRaw()}, e.g. for
+     * restoring a configuration snapshot without baking the registered patches into the stored form
+     * @param rawDataAndMetadata raw json and complete metadata to store
+     */
+    void updateCurrentDataRaw(RawFactoryDataAndMetadata rawDataAndMetadata);
+
+    /**
      * get the initial data created from a FactoryTreeBuilder
      * @return initial data
      * */
@@ -52,25 +68,22 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
     }
 
     /**
-     * updateCurrentData and history
+     * updateCurrentData and history<br>
+     * implementations must not retain a reference to update.root after this method returns
+     * (the caller may pass the live factory tree and mutate it afterwards); implementations
+     * that store the object itself instead of a serialized form must copy it
      * @param update updata data
      * @param updateSummary update description
      */
     void updateCurrentData(DataUpdate<R> update, UpdateSummary updateSummary);
 
     /**
-     * for one-time migration
-     * apply patch to all stored data including history, changes to jsonNodes are stored
+     * apply a patch to all stored configurations including history, the patched json and metadata are written back to the storage.<br>
+     * persistence primitive for {@link io.github.factoryfx.server.Microservice#persistConfigurationPatches()} &ndash; projects
+     * should register their patches on the {@link io.github.factoryfx.factory.builder.MicroserviceBuilder} (withPatch) and persist
+     * them via persistConfigurationPatches instead of calling this directly
      * @param consumer called for all stored factories
      */
-    void patchAll(DataStoragePatcher consumer);
-
-    /**
-     * for one-time migration
-     * apply patch to current data
-     * @param consumer called for current factory, changes to jsonNodes are stored
-     */
-    void patchCurrentData(DataStoragePatcher consumer);
-
+    void patchAll(ConfigurationPatch consumer);
 
 }

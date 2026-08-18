@@ -1,5 +1,6 @@
 package io.github.factoryfx.factory.storage.migration.metadata;
 
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataA;
 import io.github.factoryfx.factory.merge.testdata.ExampleDataB;
@@ -36,6 +37,22 @@ public class DataStorageMetadataDictionaryTest {
         DataStorageMetadataDictionary dictionary = createDataStorageMetadataDictionaryFromRoot();
         dictionary.renameClass(ExampleDataA.class.getName(),"a.b.C");
         Assertions.assertEquals("a.b.C",dictionary.rootClass);
+    }
+
+    @Test
+    public void test_retype_attribute_class(){
+        DataStorageMetadataDictionary dictionary = createDataStorageMetadataDictionaryFromRoot();
+        //simulate a stored dictionary written before the attribute class was renamed to its current name
+        dictionary.retypeAttributeClass(StringAttribute.class.getName(),"a.b.OldStringAttribute");
+        dictionary.markRetypedAttributes();
+        Assertions.assertTrue(dictionary.isRetypedAttribute(ExampleDataA.class.getName(),"stringAttribute"));
+
+        DataStorageMetadataDictionary staleDictionary = createDataStorageMetadataDictionaryFromRoot();
+        staleDictionary.retypeAttributeClass(StringAttribute.class.getName(),"a.b.OldStringAttribute");
+        staleDictionary.retypeAttributeClass("a.b.OldStringAttribute",StringAttribute.class.getName());
+        staleDictionary.markRetypedAttributes();
+        Assertions.assertFalse(staleDictionary.isRetypedAttribute(ExampleDataA.class.getName(),"stringAttribute"));
+        Assertions.assertEquals(StringAttribute.class.getName(),staleDictionary.getAttributeStorageMetadata(ExampleDataA.class.getName(),"stringAttribute").getAttributeClassName());
     }
 
     @Test

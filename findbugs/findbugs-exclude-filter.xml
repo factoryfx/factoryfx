@@ -145,6 +145,39 @@
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
 
+    <!-- finalizer-attack hardening is irrelevant here: no security-sensitive constructors, finalization is deprecated -->
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+
+    <!-- public attribute fields are the core factoryfx api style -->
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+    </Match>
+
+    <!-- the framework intentionally hands out live internal objects (factories, attributes, javafx nodes); EI_EXPOSE_REP2 is already excluded above -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+
+    <!-- intentional shared singleton -->
+    <Match>
+        <Class name="io.github.factoryfx.factory.jackson.ObjectMapperBuilder" />
+        <Bug pattern="MS_EXPOSE_REP" />
+    </Match>
+
+    <!-- the name means "validation by exception", it is a Validation, not an Exception -->
+    <Match>
+        <Class name="io.github.factoryfx.factory.validation.ValidationByException" />
+        <Bug pattern="NM_CLASS_NOT_EXCEPTION" />
+    </Match>
+
+    <!-- getFileName() is never null for a file passed to visitFile -->
+    <Match>
+        <Class name="~io\.github\.factoryfx\.javafx\.distribution\.launcher\.ui\.UserInterfaceDistributionClientController.*" />
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
+    </Match>
+
 
 
 </FindBugsFilter>

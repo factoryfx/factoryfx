@@ -11,9 +11,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
+import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.*;
+import io.github.factoryfx.factory.storage.migration.ConfigurationPatch;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
 
 public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataStorage<R> {
     private final FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory;
@@ -23,6 +26,7 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
     private final Path currentFactoryPathMetadata;
     private final MigrationManager<R> migrationManager;
     private final SimpleObjectMapper objectMapper;
+    private String currentIdCache;
 
     public FileSystemDataStorage(Path basePath, R initialData, MigrationManager<R> migrationManager, FileSystemFactoryStorageHistory<R> fileSystemFactoryStorageHistory, SimpleObjectMapper objectMapper) {
         this.initialData = initialData;
@@ -81,12 +85,28 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
     public DataAndId<R> getCurrentData() {
         loadInitialFactory();
         StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata), false);
-        return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata.dataStorageMetadataDictionary), storedDataMetadata.id);
+        currentIdCache = storedDataMetadata.id;
+        return new DataAndId<>(migrationManager.read(readFile(currentFactoryPath), storedDataMetadata), storedDataMetadata.id);
+    }
+
+    @Override
+    public RawFactoryDataAndMetadata getCurrentDataRaw() {
+        loadInitialFactory();
+        RawFactoryDataAndMetadata raw = new RawFactoryDataAndMetadata();
+        raw.root = objectMapper.readTree(readFile(currentFactoryPath));
+        raw.metadata = objectMapper.readValue(readFile(currentFactoryPathMetadata), StoredDataMetadata.class);
+        return raw;
     }
 
     @Override
     public String getCurrentDataId() {
-        return getCurrentData().id;//TODO optimize
+        if (currentIdCache == null) {
+            loadInitialFactory();
+            if (currentIdCache == null) {
+                currentIdCache = migrationManager.readStoredFactoryMetadata(readFile(currentFactoryPathMetadata), true).id;
+            }
+        }
+        return currentIdCache;
     }
 
     @Override
@@ -97,31 +117,37 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
                 update.comment,
                 update.baseVersionId,
                 changeSummary,
-                update.root.internal().createDataStorageMetadataDictionaryFromRoot(), getCurrentDataId());
+                update.root.internal().createDataStorageMetadataDictionaryFromRoot(), getCurrentDataId(),
+                migrationManager.getCurrentConfigurationSchemaVersion());
         update(update.root, metadata);
     }
 
     @Override
-    public void patchAll(DataStoragePatcher consumer) {
-        patchCurrentData(consumer);
+    public void patchAll(ConfigurationPatch consumer) {
+        JsonNode data = objectMapper.readTree(currentFactoryPath);
+        StoredDataMetadata metadata = objectMapper.readValue(readFile(currentFactoryPathMetadata), StoredDataMetadata.class);
+        consumer.patch(new DataJsonNode((ObjectNode) data), metadata, objectMapper);
+        writeFile(currentFactoryPath, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
+        writeFile(currentFactoryPathMetadata, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
+
         fileSystemFactoryStorageHistory.patchAll(consumer);
     }
 
     @Override
-    public void patchCurrentData(DataStoragePatcher consumer) {
-        JsonNode data = objectMapper.readTree(currentFactoryPath);
-        JsonNode metadata = objectMapper.readTree(currentFactoryPathMetadata);
-        consumer.patch((ObjectNode) data, metadata, objectMapper);
-        writeFile(currentFactoryPath, objectMapper.writeValueAsString(data));
-        writeFile(currentFactoryPathMetadata, objectMapper.writeValueAsString(metadata));
-
-        fileSystemFactoryStorageHistory.patchForId(consumer, getCurrentDataId());
+    public void updateCurrentDataRaw(RawFactoryDataAndMetadata rawDataAndMetadata) {
+        update(objectMapper.writeValueAsString(rawDataAndMetadata.root, OutputStyle.COMPACT), rawDataAndMetadata.metadata);
     }
 
     private void update(R update, StoredDataMetadata metadata) {
-        writeFile(currentFactoryPath, objectMapper.writeValueAsString(update));
-        writeFile(currentFactoryPathMetadata, objectMapper.writeValueAsString(metadata));
-        fileSystemFactoryStorageHistory.updateHistory(update, metadata);
+        update(objectMapper.writeValueAsString(update, OutputStyle.COMPACT), metadata);
+    }
+
+    private void update(String rootJson, StoredDataMetadata metadata) {
+        String metadataJson = objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT);
+        writeFile(currentFactoryPath, rootJson);
+        writeFile(currentFactoryPathMetadata, metadataJson);
+        fileSystemFactoryStorageHistory.updateHistory(rootJson, metadataJson, metadata);
+        currentIdCache = metadata.id;
     }
 
     private void loadInitialFactory() {
@@ -133,8 +159,8 @@ public class FileSystemDataStorage<R extends FactoryBase<?, R>> implements DataS
                     UUID.randomUUID().toString(),
                     null,
                     initialData.internal().createDataStorageMetadataDictionaryFromRoot(),
-                    null
-
+                    null,
+                    migrationManager.getCurrentConfigurationSchemaVersion()
             );
             update(initialData, metadata);
         }

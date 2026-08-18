@@ -19,7 +19,15 @@ public class MergeResult<R extends FactoryBase<?,R>> {
     final HashMap<UUID, FactoryBase<?, R>> idToFactory;
 
     public MergeResult(R currentRoot, HashMap<UUID, FactoryBase<?, R>> idToFactory) {
-        this.previousRoot = currentRoot.internal().copy();
+        this(currentRoot, idToFactory, currentRoot.internal().copy());
+    }
+
+    /**
+     * @param previousRoot state of currentRoot before the merge, used for the diff display. callers that already
+     *                     have an equal tree can pass it to avoid the deep copy of currentRoot.
+     */
+    public MergeResult(R currentRoot, HashMap<UUID, FactoryBase<?, R>> idToFactory, R previousRoot) {
+        this.previousRoot = previousRoot;
         this.currentRoot = currentRoot;
         this.idToFactory = idToFactory;
     }

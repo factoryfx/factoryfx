@@ -1,6 +1,7 @@
 package io.github.factoryfx.factory.datastorage.oracle;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
@@ -59,13 +60,13 @@ public class OracledbDataStorageTest extends DatabaseTest{
     }
 
     @Test
-    public void test_patchCurrentData()  {
+    public void test_patchAll_currentAndItsHistoryCopyInSync()  {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
         initialExampleDataA.stringAttribute.set("123");
         OracledbDataStorage<ExampleFactoryA> oracleStorage = new OracledbDataStorage<>(connectionSupplier, createInitialExampleFactoryA(), createMigrationManager(), ObjectMapperBuilder.build());
         oracleStorage.getCurrentData();//init
-        oracleStorage.patchCurrentData((root, metadata, objectMapper) -> {
-            ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
+        oracleStorage.patchAll((root, metadata, objectMapper) -> {
+            root.setAttributeValue("stringAttribute", new TextNode("qqq"));
         });
         Assertions.assertEquals("qqq",oracleStorage.getCurrentData().root.stringAttribute.get());
         Assertions.assertEquals("qqq",oracleStorage.getHistoryData(oracleStorage.getCurrentData().id).stringAttribute.get());
@@ -82,7 +83,7 @@ public class OracledbDataStorageTest extends DatabaseTest{
         oracleStorage.updateCurrentData(createUpdate(),null);
 
         oracleStorage.patchAll((root, metadata, objectMapper) -> {
-            ((ObjectNode) root.get("stringAttribute")).put("v", "qqq");
+            root.setAttributeValue("stringAttribute", new TextNode("qqq"));
         });
         Assertions.assertEquals("qqq",oracleStorage.getHistoryData(id).stringAttribute.get());
     }

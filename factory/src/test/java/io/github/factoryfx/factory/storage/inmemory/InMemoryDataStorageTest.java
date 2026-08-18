@@ -70,4 +70,20 @@ public class InMemoryDataStorageTest {
         Assertions.assertEquals(1,fileSystemFactoryStorage.getFutureDataList().size());
     }
 
+    @Test
+    public void test_updateCurrentData_mutationOfLiveRootDoesNotAffectStoredData() {
+        InMemoryDataStorage<ExampleDataA> inMemoryDataStorage = new InMemoryDataStorage<>(new ExampleDataA());
+        inMemoryDataStorage.getCurrentData();
+
+        DataUpdate<ExampleDataA> update = createUpdate();
+        inMemoryDataStorage.updateCurrentData(update, null);
+        String currentId = inMemoryDataStorage.getCurrentDataId();
+
+        //the caller may pass the live factory tree and mutate it afterwards, the storage must not see the mutation
+        update.root.stringAttribute.set("mutated after save");
+
+        Assertions.assertEquals("update", inMemoryDataStorage.getCurrentData().root.stringAttribute.get());
+        Assertions.assertEquals("update", inMemoryDataStorage.getHistoryData(currentId).stringAttribute.get());
+    }
+
 }

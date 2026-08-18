@@ -11,7 +11,7 @@ public class AttributeStorageMetadata {
     @JsonProperty
     String variableName;
     @JsonProperty
-    final String attributeClassName;
+    String attributeClassName;
     @JsonProperty
     String referenceClass;
 
@@ -45,13 +45,45 @@ public class AttributeStorageMetadata {
     }
 
     private boolean retyped ;
-    public void markRetyped() {
+    private String retypedToAttributeClassName;
+    private boolean retypedToList;
+    private String retypedToReferenceClassName;
+    public void markRetyped(String retypedToAttributeClassName, boolean retypedToList, String retypedToReferenceClassName) {
         retyped=true;
+        this.retypedToAttributeClassName=retypedToAttributeClassName;
+        this.retypedToList=retypedToList;
+        this.retypedToReferenceClassName=retypedToReferenceClassName;
     }
 
     @JsonIgnore
     public boolean isRetyped() {
         return retyped;
+    }
+
+    @JsonIgnore
+    public String getRetypedToAttributeClassName() {
+        return retypedToAttributeClassName;
+    }
+
+    @JsonIgnore
+    public boolean isRetypedToList() {
+        return retypedToList;
+    }
+
+    /** reference class of the retype target attribute, null if the target is not a reference attribute */
+    @JsonIgnore
+    public String getRetypedToReferenceClassName() {
+        return retypedToReferenceClassName;
+    }
+
+    @JsonIgnore
+    public String getAttributeClassName() {
+        return attributeClassName;
+    }
+
+    /** set the attribute class after an explicit retype migration, so the attribute is no longer flagged as retyped */
+    public void retype(String newAttributeClassName) {
+        this.attributeClassName=newAttributeClassName;
     }
 
     public String getReferenceClass() {

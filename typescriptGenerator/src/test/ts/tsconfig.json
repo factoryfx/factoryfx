@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "strict": true,
+        "rootDir": "../../..",
         "target": "ESNext",
         "module": "commonjs",
         "sourceMap": true,
