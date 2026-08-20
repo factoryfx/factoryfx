@@ -75,7 +75,8 @@ public class MicroserviceDeployment<L, R extends FactoryBase<L, R>> {
      * stored configuration, WITHOUT starting the application. intended for deployment tooling before switching to a
      * new software version.<br>
      * checks: the current configuration deserializes through the regular load path (patches, migrations, json binding),
-     * the resulting factory tree has no validation errors and the treeBuilder rebuild succeeds.
+     * the resulting factory tree has no validation errors (client and server validations) and the treeBuilder rebuild
+     * succeeds.
      * {@link PreflightCheckOptions#createLiveObjects()} additionally creates all liveObjects without starting them.
      * {@link PreflightCheckOptions#includeHistory()} additionally validates the past configurations.
      *
@@ -95,6 +96,9 @@ public class MicroserviceDeployment<L, R extends FactoryBase<L, R>> {
                 for (FactoryBase<?, R> factory : currentRoot.internal().collectChildrenDeep()) {
                     for (ValidationError validationError : factory.internal().validateFlat()) {
                         problems.add("validation error:\n" + validationError.getSimpleErrorDescription());
+                    }
+                    for (ValidationError validationError : factory.internal().validateFlatServer()) {
+                        problems.add("server validation error:\n" + validationError.getSimpleErrorDescription());
                     }
                 }
                 if (options.createLiveObjects) {
@@ -179,7 +183,9 @@ public class MicroserviceDeployment<L, R extends FactoryBase<L, R>> {
      * restore a configuration snapshot created with {@link #saveConfigurationSnapshot(Path)}: the snapshot is loaded
      * through the regular load path (patches and migrations apply) and stored as a NEW configuration version, the
      * existing history is preserved. if the microservice is started the running application is updated as well.<br>
-     * the patched result is persisted, see {@link #loadConfigurationSnapshotRaw(Path)} to store the snapshot unchanged.
+     * the patched result is persisted, see {@link #loadConfigurationSnapshotRaw(Path)} to store the snapshot unchanged.<br>
+     * while the microservice is NOT started the snapshot is stored without running server validations &ndash; the
+     * rollback safety net must not be blockable, run the preflight check before starting.
      *
      * @param snapshot snapshot file
      * @return update log when the microservice is started, null otherwise
@@ -204,7 +210,9 @@ public class MicroserviceDeployment<L, R extends FactoryBase<L, R>> {
      * are stored unchanged as a NEW configuration version, the existing history is preserved. patches keep applying
      * on load as usual and the stored configuration remains readable by an older software version. if the microservice
      * is started the running application is updated as well (loaded through the regular load path, patches apply
-     * in-memory).
+     * in-memory).<br>
+     * while the microservice is NOT started the snapshot is stored without running server validations &ndash; the
+     * rollback safety net must not be blockable, run the preflight check before starting.
      *
      * @param snapshot snapshot file
      * @return update log when the microservice is started, null otherwise
@@ -218,6 +226,10 @@ public class MicroserviceDeployment<L, R extends FactoryBase<L, R>> {
             UpdateSummary changeSummary = null;
             if (factoryManager.isStarted()) {
                 R root = migrationManager.read(raw.root, raw.metadata);
+                List<String> validationErrors = microservice.validateServer(root);
+                if (!validationErrors.isEmpty()) {
+                    return FactoryUpdateLog.validationFailed(validationErrors);
+                }
                 //update the running application without persisting the patched tree, the snapshot is stored raw below
                 factoryLog = factoryManager.update(factoryManager.getCurrentFactory().utility().copy(), root, (permission) -> true, true);
                 if (factoryLog.failedUpdate() || !factoryLog.successfullyMerged()) {

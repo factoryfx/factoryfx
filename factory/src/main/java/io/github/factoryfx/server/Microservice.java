@@ -1,7 +1,9 @@
 package io.github.factoryfx.server;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,6 +14,7 @@ import io.github.factoryfx.factory.merge.DataMerger;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.storage.*;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.validation.ValidationError;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.FactoryManager;
 import io.github.factoryfx.factory.RootFactoryWrapper;
@@ -80,6 +83,10 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
     }
 
     public synchronized FactoryUpdateLog<R> updateCurrentFactory(DataUpdate<R> update) {
+        List<String> validationErrors = validateServer(update.root);
+        if (!validationErrors.isEmpty()) {
+            return FactoryUpdateLog.validationFailed(validationErrors);
+        }
         //update based on the current configuration (the usual case): the common version is the currently running
         //factory tree, an in-memory copy avoids reading and deserializing it from the storage
         boolean baseVersionIsCurrent = factoryManager.isStarted() && update.baseVersionId.equals(dataStorage.getCurrentDataId());
@@ -107,11 +114,36 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
 
 
     public synchronized MergeDiffInfo<R> simulateUpdateCurrentFactory(DataUpdate<R> possibleUpdate){
+        List<String> validationErrors = validateServer(possibleUpdate.root);
         boolean baseVersionIsCurrent = factoryManager.isStarted() && possibleUpdate.baseVersionId.equals(dataStorage.getCurrentDataId());
         R commonVersion = baseVersionIsCurrent
                 ? factoryManager.getCurrentFactory().utility().copy()
                 : dataStorage.getHistoryData(possibleUpdate.baseVersionId);
-        return factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, possibleUpdate.permissionChecker, baseVersionIsCurrent);
+        MergeDiffInfo<R> result = factoryManager.simulateUpdate(commonVersion , possibleUpdate.root, possibleUpdate.permissionChecker, baseVersionIsCurrent);
+        if (validationErrors.isEmpty()) {
+            return result;
+        }
+        return new MergeDiffInfo<>(result, validationErrors);
+    }
+
+    /**
+     * run the server validations ({@link io.github.factoryfx.factory.attribute.Attribute#serverValidation}) on the
+     * whole tree
+     * @param root root
+     * @return validation error descriptions, empty if valid
+     */
+    List<String> validateServer(R root) {
+        root.internal().finalise();//no-op when already finalised, the merge finalises the tree anyway
+        List<String> result = List.of();
+        for (FactoryBase<?, R> factory : root.internal().collectChildrenDeep()) {
+            for (ValidationError validationError : factory.internal().validateFlatServer()) {
+                if (result.isEmpty()) {
+                    result = new ArrayList<>();
+                }
+                result.add(validationError.getSimpleErrorDescription());
+            }
+        }
+        return result;
     }
 
     /**
@@ -193,7 +225,10 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
     }
 
     /**
-     * updates the current factories from the same process(jvm)
+     * updates the current factories from the same process(jvm).<br>
+     * server validations do NOT run here: this is the application's own programmatic self-update and trusted like
+     * any other code in the process, server validation guards externally submitted configurations
+     * ({@link #updateCurrentFactory(DataUpdate)})
      * @param updater update execution
      */
     public void update(FactoryUpdate<R> updater){

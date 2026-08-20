@@ -152,6 +152,37 @@ public class MicroservicePreflightTest {
         LifecycleExampleFactory.startCount = 0;
     }
 
+    public static class ServerValidatedPreflightFactory extends SimpleFactoryBase<Void, ServerValidatedPreflightFactory> {
+        public final StringAttribute stringAttribute = new StringAttribute().nullable()
+                .serverValidation(value -> new io.github.factoryfx.factory.validation.ValidationResult("serverInvalid".equals(value),
+                        new io.github.factoryfx.factory.util.LanguageText("server error")));
+
+        @Override
+        protected Void createImpl() {
+            return null;
+        }
+    }
+
+    private Microservice<Void, ServerValidatedPreflightFactory> buildServerValidated() {
+        FactoryTreeBuilder<Void, ServerValidatedPreflightFactory> builder = new FactoryTreeBuilder<>(ServerValidatedPreflightFactory.class, ctx -> new ServerValidatedPreflightFactory());
+        return builder.microservice().withFilesystemStorage(folder).build();
+    }
+
+    @Test
+    public void test_preflight_reportsServerValidationErrors() {
+        Microservice<Void, ServerValidatedPreflightFactory> setup = buildServerValidated();
+        setup.start();
+        //the in-JVM programmatic self-update is not server-validated, it can persist an invalid value
+        setup.update((root, idToFactory) -> root.stringAttribute.set("serverInvalid"));
+        setup.stop();
+
+        Microservice<Void, ServerValidatedPreflightFactory> microservice = buildServerValidated();
+        PreflightCheckReport report = microservice.deployment().preflightCheck();
+        Assertions.assertFalse(report.isOk());
+        Assertions.assertTrue(report.problems.get(0).contains("server validation error"), report.report());
+        Assertions.assertTrue(report.problems.get(0).contains("server error"), report.report());
+    }
+
     @Test
     public void test_preflight_createLiveObjects_createsButNeverStarts() {
         createStoredLifecycleConfiguration();

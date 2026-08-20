@@ -25,6 +25,21 @@
 * **InMemoryDataStorage**
   * fix: updateCurrentData stored a live reference to the factory tree, later in-place updates could corrupt stored history (now copies)
 
+## Server validation
+* **Attribute / FactoryBase**
+  * new validation category executed ONLY on the server, never in editor clients: Attribute.serverValidation(validation) and config().addServerValidation(validation, dependencies) (factory-level, at least one dependency attribute required). For validations that need server resources or are too expensive to run while typing. Server validations run against a finalised but not-started factory tree, so they must only inspect attribute values. The required/nullable check stays a client validation
+  * existing validation(...) rules are unchanged: editor clients + preflight check + treeBuilder build-time validation, they still do NOT run on configuration updates
+* **Microservice**
+  * updateCurrentFactory: runs the server validations on the submitted factory tree BEFORE the merge and REJECTS the update on failure: no liveObject change, no persistence, the returned FactoryUpdateLog carries the errors (failedValidation()). Covers revertTo and snapshot restore while started as well. Previously configuration updates ran no validation at all
+  * simulateUpdateCurrentFactory: reports the server validation errors in MergeDiffInfo.validationErrors without affecting the merge result
+  * update(FactoryUpdate) (in-JVM programmatic self-update) is intentionally NOT validated: it is the application's own trusted code, server validation guards externally submitted configurations
+* **MicroserviceDeployment**
+  * preflightCheck reports server validation errors of the stored configuration in addition to the normal validation errors ("server validation error" problems)
+  * snapshot restore while NOT started stays unvalidated by design (rollback safety net must not be blockable, the preflight check is the pre-start verification)
+* **FactoryUpdateLog / MergeDiffInfo**
+  * new field validationErrors (List of error descriptions, additive and empty for old payloads) and FactoryUpdateLog.failedValidation() / MergeDiffInfo.hasValidationErrors(). MergeDiffInfo.successfullyMerged() is unaffected by validation errors
+  * note: the javafx FactoryUpdateLogWidget does not display validationErrors yet, FactoryUpdateLog.dumpError includes them
+
 ## Preflight checks and configuration snapshots
 * **Microservice / MicroserviceDeployment**
   * new class MicroserviceDeployment, accessed via Microservice.deployment(): home of the deployment tooling below plus persistConfigurationPatches. intended for deployment scripts/tooling, the Microservice class itself stays the runtime API (start/stop/update/history)
