@@ -2,13 +2,19 @@ package io.github.factoryfx.microservice.test;
 
 import ch.qos.logback.classic.Level;
 import io.github.factoryfx.factory.attribute.types.EncryptedStringAttribute;
+import io.github.factoryfx.factory.attribute.types.StringAttribute;
 import io.github.factoryfx.factory.builder.FactoryTemplateId;
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
+import io.github.factoryfx.factory.log.FactoryUpdateLog;
+import io.github.factoryfx.factory.merge.MergeDiffInfo;
+import io.github.factoryfx.factory.storage.DataUpdate;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.SimpleFactoryBase;
 import io.github.factoryfx.factory.attribute.dependency.FactoryAttribute;
 import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.Scope;
+import io.github.factoryfx.factory.util.LanguageText;
+import io.github.factoryfx.factory.validation.ValidationResult;
 import io.github.factoryfx.jetty.JettyServerFactory;
 import io.github.factoryfx.jetty.builder.SimpleJettyServerBuilder;
 import io.github.factoryfx.microservice.rest.MicroserviceResourceFactory;
@@ -29,6 +35,8 @@ public class MicroserviceRestIntegrationTest {
 
     public static class TestJettyServer  extends SimpleFactoryBase<Server, TestJettyServer> {
         public final FactoryAttribute<Server, JettyServerFactory<TestJettyServer>> server = new FactoryAttribute<>();
+        public final StringAttribute serverValidatedAttribute = new StringAttribute().nullable()
+                .serverValidation(value -> new ValidationResult("serverInvalid".equals(value), new LanguageText("server validation error")));
 
         @Override
         protected Server createImpl() {
@@ -99,6 +107,23 @@ public class MicroserviceRestIntegrationTest {
             microserviceRestClient.getHistoryFactory(historyFactoryList.get(0).id);
 
             Assertions.assertEquals(Locale.GERMAN, microserviceRestClient.getLocale());
+
+            //server validation errors are reported to the client on simulate and save
+            DataUpdate<TestJettyServer> update = microserviceRestClient.prepareNewFactory();
+            update.root.serverValidatedAttribute.set("serverInvalid");
+
+            MergeDiffInfo<TestJettyServer> simulateResult = microserviceRestClient.simulateUpdateCurrentFactory(update);
+            Assertions.assertTrue(simulateResult.hasValidationErrors());
+            Assertions.assertTrue(simulateResult.validationErrors.get(0).contains("server validation error"), simulateResult.validationErrors.get(0));
+
+            FactoryUpdateLog<TestJettyServer> updateLog = microserviceRestClient.updateCurrentFactory(update, "rejected update");
+            Assertions.assertTrue(updateLog.failedValidation());
+            Assertions.assertFalse(updateLog.successfullyMerged());
+            Assertions.assertTrue(updateLog.validationErrors.get(0).contains("server validation error"), updateLog.validationErrors.get(0));
+            Assertions.assertNull(microserviceRestClient.prepareNewFactory().root.serverValidatedAttribute.get(), "rejected update must not be persisted");
+
+            update.root.serverValidatedAttribute.set("valid");
+            Assertions.assertFalse(microserviceRestClient.simulateUpdateCurrentFactory(update).hasValidationErrors());
         } finally {
             microservice.stop();
         }

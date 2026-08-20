@@ -38,7 +38,11 @@
   * snapshot restore while NOT started stays unvalidated by design (rollback safety net must not be blockable, the preflight check is the pre-start verification)
 * **FactoryUpdateLog / MergeDiffInfo**
   * new field validationErrors (List of error descriptions, additive and empty for old payloads) and FactoryUpdateLog.failedValidation() / MergeDiffInfo.hasValidationErrors(). MergeDiffInfo.successfullyMerged() is unaffected by validation errors
-  * note: the javafx FactoryUpdateLogWidget does not display validationErrors yet, FactoryUpdateLog.dumpError includes them
+* **javafx DiffDialogBuilder** (save/revert/simulate in the javafx editor)
+  * a save/revert rejected by server validation shows a "Validation failed - the changes were not applied" dialog listing the validation errors (previously a NullPointerException, the rejected FactoryUpdateLog has no merge result). The local changes stay loaded in the editor so they can be corrected and saved again
+  * the simulate ("show changes") dialog lists server validation errors above the diff when present
+* **web client SaveWidget** (domFactoryEditing/typescriptGenerator)
+  * the save result view shows the server validation errors when the update was rejected
 
 ## Preflight checks and configuration snapshots
 * **Microservice / MicroserviceDeployment**
