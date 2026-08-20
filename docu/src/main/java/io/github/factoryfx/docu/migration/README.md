@@ -62,7 +62,7 @@ builder.withPatch((root, metadata, objectMapper) -> {...})
 //version-gated, run-once semantics based on the configuration schema version stored in the metadata
 builder.withPatch(0, 1, (root, metadata, objectMapper) -> {...})
 ```
-Version-gated patches chain in version order and self-skip once a configuration has been saved with the current schema version. Use `Microservice#persistConfigurationPatches` to explicitly write patched configurations including the bumped schema version back to the storage.
+Version-gated patches chain in version order and self-skip once a configuration has been saved with the current schema version. Use `Microservice#deployment()#persistConfigurationPatches` to explicitly write patched configurations including the bumped schema version back to the storage.
 For one-off data changes you can still use the normal microservice update API or the DataStorage API.
 
 **Run-once vs every-time.** Pick the variant by what should happen after a user edits the patched data:
@@ -72,7 +72,7 @@ For one-off data changes you can still use the normal microservice update API or
 Unlike the declarative structure migrations (which self-skip because the stored metadata dictionary reveals whether the structure is already current), data patches leave nothing in the data that distinguishes "not yet applied" from "applied and later changed by a user" — the configuration schema version is exactly that marker, stored atomically with each configuration.
 
 ## Verifying an upgrade
-`Microservice#preflightCheck` verifies without starting the application that the current software version can load the stored configuration (patches, migrations, json binding, validation, treeBuilder rebuild). `Microservice#saveConfigurationSnapshot` saves the configuration in its raw stored form as a rollback safety net before an upgrade; `Microservice#loadConfigurationSnapshot` restores it through the regular load path.
+The deployment tooling lives on `Microservice#deployment()`. `preflightCheck` verifies without starting the application that the current software version can load the stored configuration (patches, migrations, json binding, validation, treeBuilder rebuild). With `new PreflightCheckOptions().createLiveObjects()` the check additionally creates all liveObjects without starting them, catching errors in the factories' create phase; the created objects are discarded (no start, no destroy — per the lifecycle contract external resources are claimed in start). `saveConfigurationSnapshot` saves the configuration in its raw stored form as a rollback safety net before an upgrade; `loadConfigurationSnapshot` restores it through the regular load path.
 
 
 ## Special case: Persisting patches
@@ -85,7 +85,7 @@ In some cases it can be convenient to write the patched configurations back to t
 Microservice<Server, ServerFactory> microservice = builder.microservice()
         .withPatch(0, 1, (root, metadata, objectMapper) -> {...})
         .build();
-microservice.persistConfigurationPatches();//applies the registered patches to all stored configurations (current and history) and writes them back, including the bumped configuration schema version
+microservice.deployment().persistConfigurationPatches();//applies the registered patches to all stored configurations (current and history) and writes them back, including the bumped configuration schema version
 ```
 
 ## Example

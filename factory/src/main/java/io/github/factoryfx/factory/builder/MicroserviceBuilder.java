@@ -268,7 +268,7 @@ public class MicroserviceBuilder<L, R extends FactoryBase<L, R>> {
     /**
      * register a patch applied only when the stored configuration schema version equals fromVersion (run-once semantics).<br>
      * the patch runs in-memory when a configuration (current or history) is loaded, afterwards the configuration's version is toVersion.
-     * patches chain in version order. use {@link io.github.factoryfx.server.Microservice#persistConfigurationPatches()} to write patched
+     * patches chain in version order. use {@link io.github.factoryfx.server.MicroserviceDeployment#persistConfigurationPatches()} to write patched
      * configurations including the bumped version back to the storage.
      * <p>
      * use for one-time data evolution (new defaults, newly wired factories, moved values): the patch runs once per

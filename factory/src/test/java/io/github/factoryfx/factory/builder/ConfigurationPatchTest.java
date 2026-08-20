@@ -117,7 +117,7 @@ public class ConfigurationPatchTest {
             patchCounter.incrementAndGet();
             root.setAttributeValue("stringAttribute", TextNode.valueOf("patched"));
         }));
-        microservice.persistConfigurationPatches();
+        microservice.deployment().persistConfigurationPatches();
         //patchAll visits the current configuration twice (current file + its history copy), the version gating skips repeated visits of already rewritten files:
         //current file (runs), history copy of current (runs), initial history entry (runs), current history entry revisited after rewrite (skipped)
         Assertions.assertEquals(3, patchCounter.get());

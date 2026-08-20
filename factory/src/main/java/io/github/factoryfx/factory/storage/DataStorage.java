@@ -79,7 +79,7 @@ public interface DataStorage<R extends FactoryBase<?,?>> {
 
     /**
      * apply a patch to all stored configurations including history, the patched json and metadata are written back to the storage.<br>
-     * persistence primitive for {@link io.github.factoryfx.server.Microservice#persistConfigurationPatches()} &ndash; projects
+     * persistence primitive for {@link io.github.factoryfx.server.MicroserviceDeployment#persistConfigurationPatches()} &ndash; projects
      * should register their patches on the {@link io.github.factoryfx.factory.builder.MicroserviceBuilder} (withPatch) and persist
      * them via persistConfigurationPatches instead of calling this directly
      * @param consumer called for all stored factories

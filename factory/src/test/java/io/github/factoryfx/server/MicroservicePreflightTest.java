@@ -7,6 +7,7 @@ import io.github.factoryfx.factory.builder.FactoryTreeBuilder;
 import io.github.factoryfx.factory.builder.MicroserviceBuilder;
 import io.github.factoryfx.factory.storage.DataUpdate;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -27,11 +28,42 @@ public class MicroservicePreflightTest {
         }
     }
 
+    public static class LifecycleExampleLiveObject {
+    }
+
+    public static class LifecycleExampleFactory extends SimpleFactoryBase<LifecycleExampleLiveObject, LifecycleExampleFactory> {
+        public static int createCount;
+        public static int startCount;
+        public static boolean failCreate;
+
+        public final StringAttribute stringAttribute = new StringAttribute().nullable();
+
+        public LifecycleExampleFactory() {
+            configLifeCycle().setStarter(liveObject -> startCount++);
+        }
+
+        @Override
+        protected LifecycleExampleLiveObject createImpl() {
+            if (failCreate) {
+                throw new IllegalStateException("create is broken");
+            }
+            createCount++;
+            return new LifecycleExampleLiveObject();
+        }
+    }
+
     @TempDir
     public Path folder;
 
     @TempDir
     public Path snapshotFolder;
+
+    @BeforeEach
+    public void resetLifecycleCounters() {
+        LifecycleExampleFactory.createCount = 0;
+        LifecycleExampleFactory.startCount = 0;
+        LifecycleExampleFactory.failCreate = false;
+    }
 
     private Microservice<Void, PreflightExampleFactory> build(Consumer<MicroserviceBuilder<Void, PreflightExampleFactory>> configurator) {
         FactoryTreeBuilder<Void, PreflightExampleFactory> builder = new FactoryTreeBuilder<>(PreflightExampleFactory.class, ctx -> {
@@ -59,7 +91,7 @@ public class MicroservicePreflightTest {
 
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> msb.withPatch(
                 (root, metadata, objectMapper) -> root.setAttributeValue("stringAttribute", TextNode.valueOf("patched"))));
-        PreflightCheckReport report = microservice.preflightCheck(true);
+        PreflightCheckReport report = microservice.deployment().preflightCheck(new PreflightCheckOptions().includeHistory());
         Assertions.assertTrue(report.isOk(), report.report());
     }
 
@@ -69,7 +101,7 @@ public class MicroservicePreflightTest {
         Files.writeString(folder.resolve("currentFactory.json"), "garbage - not json");
 
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> {});
-        PreflightCheckReport report = microservice.preflightCheck();
+        PreflightCheckReport report = microservice.deployment().preflightCheck();
         Assertions.assertFalse(report.isOk());
         Assertions.assertTrue(report.problems.get(0).contains("can't load the current configuration"), report.report());
     }
@@ -81,7 +113,7 @@ public class MicroservicePreflightTest {
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> msb.withPatch((root, metadata, objectMapper) -> {
             throw new IllegalStateException("patch is broken");
         }));
-        PreflightCheckReport report = microservice.preflightCheck();
+        PreflightCheckReport report = microservice.deployment().preflightCheck();
         Assertions.assertFalse(report.isOk());
         Assertions.assertTrue(report.problems.get(0).contains("patch is broken"), report.report());
     }
@@ -96,11 +128,69 @@ public class MicroservicePreflightTest {
         }
 
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> {});
-        Assertions.assertTrue(microservice.preflightCheck(false).isOk());
+        Assertions.assertTrue(microservice.deployment().preflightCheck().isOk());
 
-        PreflightCheckReport reportWithHistory = microservice.preflightCheck(true);
+        PreflightCheckReport reportWithHistory = microservice.deployment().preflightCheck(new PreflightCheckOptions().includeHistory());
         Assertions.assertFalse(reportWithHistory.isOk());
         Assertions.assertTrue(reportWithHistory.problems.get(0).contains("can't load the history configuration"), reportWithHistory.report());
+    }
+
+    private Microservice<LifecycleExampleLiveObject, LifecycleExampleFactory> buildLifecycle() {
+        FactoryTreeBuilder<LifecycleExampleLiveObject, LifecycleExampleFactory> builder = new FactoryTreeBuilder<>(LifecycleExampleFactory.class, ctx -> {
+            LifecycleExampleFactory factory = new LifecycleExampleFactory();
+            factory.stringAttribute.set("initial");
+            return factory;
+        });
+        return builder.microservice().withFilesystemStorage(folder).build();
+    }
+
+    private void createStoredLifecycleConfiguration() {
+        Microservice<LifecycleExampleLiveObject, LifecycleExampleFactory> microservice = buildLifecycle();
+        microservice.start();
+        microservice.stop();
+        LifecycleExampleFactory.createCount = 0;
+        LifecycleExampleFactory.startCount = 0;
+    }
+
+    @Test
+    public void test_preflight_createLiveObjects_createsButNeverStarts() {
+        createStoredLifecycleConfiguration();
+
+        Microservice<LifecycleExampleLiveObject, LifecycleExampleFactory> microservice = buildLifecycle();
+        PreflightCheckReport report = microservice.deployment().preflightCheck(new PreflightCheckOptions().createLiveObjects());
+        Assertions.assertTrue(report.isOk(), report.report());
+        Assertions.assertEquals(1, LifecycleExampleFactory.createCount);
+        Assertions.assertEquals(0, LifecycleExampleFactory.startCount);
+
+        //the fixture detects a real start
+        microservice.start();
+        Assertions.assertEquals(1, LifecycleExampleFactory.startCount);
+        microservice.stop();
+    }
+
+    @Test
+    public void test_preflight_withoutCreateLiveObjectsOption_doesNotCreate() {
+        createStoredLifecycleConfiguration();
+
+        Microservice<LifecycleExampleLiveObject, LifecycleExampleFactory> microservice = buildLifecycle();
+        Assertions.assertTrue(microservice.deployment().preflightCheck().isOk());
+        Assertions.assertTrue(microservice.deployment().preflightCheck(new PreflightCheckOptions().includeHistory()).isOk());
+        Assertions.assertEquals(0, LifecycleExampleFactory.createCount);
+        Assertions.assertEquals(0, LifecycleExampleFactory.startCount);
+    }
+
+    @Test
+    public void test_preflight_createLiveObjects_reportsCreateFailure_insteadOfThrowing() {
+        createStoredLifecycleConfiguration();
+        LifecycleExampleFactory.failCreate = true;
+
+        Microservice<LifecycleExampleLiveObject, LifecycleExampleFactory> microservice = buildLifecycle();
+        PreflightCheckReport report = microservice.deployment().preflightCheck(new PreflightCheckOptions().createLiveObjects());
+        Assertions.assertFalse(report.isOk());
+        Assertions.assertTrue(report.problems.get(0).contains("liveObject creation failed"), report.report());
+        Assertions.assertTrue(report.problems.get(0).contains("LifecycleExampleFactory"), report.report());
+        Assertions.assertTrue(report.problems.get(0).contains("create is broken"), report.report());
+        Assertions.assertEquals(0, LifecycleExampleFactory.startCount);
     }
 
     @Test
@@ -110,7 +200,7 @@ public class MicroservicePreflightTest {
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> msb.withPatch(
                 (root, metadata, objectMapper) -> root.setAttributeValue("stringAttribute", TextNode.valueOf("patched"))));
         Path snapshot = snapshotFolder.resolve("snapshot.json");
-        microservice.saveConfigurationSnapshot(snapshot);
+        microservice.deployment().saveConfigurationSnapshot(snapshot);
 
         String snapshotContent = Files.readString(snapshot);
         Assertions.assertTrue(snapshotContent.contains("v1"), snapshotContent);
@@ -124,7 +214,7 @@ public class MicroservicePreflightTest {
         Path snapshot = snapshotFolder.resolve("snapshot.json");
         {
             Microservice<Void, PreflightExampleFactory> microservice = build(msb -> {});
-            microservice.saveConfigurationSnapshot(snapshot);
+            microservice.deployment().saveConfigurationSnapshot(snapshot);
 
             //change the configuration after the snapshot
             microservice.start();
@@ -136,7 +226,7 @@ public class MicroservicePreflightTest {
 
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> {});
         int historySizeBefore = microservice.getHistoryFactoryList(true).size();
-        Assertions.assertNull(microservice.loadConfigurationSnapshot(snapshot));
+        Assertions.assertNull(microservice.deployment().loadConfigurationSnapshot(snapshot));
         Assertions.assertEquals(historySizeBefore + 1, microservice.getHistoryFactoryList(true).size());
 
         microservice.start();
@@ -150,7 +240,7 @@ public class MicroservicePreflightTest {
 
         Path snapshot = snapshotFolder.resolve("snapshot.json");
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> {});
-        microservice.saveConfigurationSnapshot(snapshot);
+        microservice.deployment().saveConfigurationSnapshot(snapshot);
         microservice.start();
 
         DataUpdate<PreflightExampleFactory> update = microservice.prepareNewFactory();
@@ -158,7 +248,7 @@ public class MicroservicePreflightTest {
         microservice.updateCurrentFactory(update);
         Assertions.assertEquals("v2", microservice.prepareNewFactory().root.stringAttribute.get());
 
-        Assertions.assertNotNull(microservice.loadConfigurationSnapshot(snapshot));
+        Assertions.assertNotNull(microservice.deployment().loadConfigurationSnapshot(snapshot));
         Assertions.assertEquals("v1", microservice.prepareNewFactory().root.stringAttribute.get());
         microservice.stop();
     }
@@ -168,12 +258,12 @@ public class MicroservicePreflightTest {
         createStoredConfiguration("v1");
 
         Path snapshot = snapshotFolder.resolve("snapshot.json");
-        build(msb -> {}).saveConfigurationSnapshot(snapshot);
+        build(msb -> {}).deployment().saveConfigurationSnapshot(snapshot);
 
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> msb.withPatch(0, 1,
                 (root, metadata, objectMapper) -> root.setAttributeValue("stringAttribute", TextNode.valueOf("patched"))));
         int historySizeBefore = microservice.getHistoryFactoryList(true).size();
-        Assertions.assertNull(microservice.loadConfigurationSnapshotRaw(snapshot));
+        Assertions.assertNull(microservice.deployment().loadConfigurationSnapshotRaw(snapshot));
         Assertions.assertEquals(historySizeBefore + 1, microservice.getHistoryFactoryList(true).size());
 
         //the stored form stays raw
@@ -193,14 +283,14 @@ public class MicroservicePreflightTest {
 
         Path snapshot = snapshotFolder.resolve("snapshot.json");
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> {});
-        microservice.saveConfigurationSnapshot(snapshot);
+        microservice.deployment().saveConfigurationSnapshot(snapshot);
         microservice.start();
 
         DataUpdate<PreflightExampleFactory> update = microservice.prepareNewFactory();
         update.root.stringAttribute.set("v2");
         microservice.updateCurrentFactory(update);
 
-        Assertions.assertNotNull(microservice.loadConfigurationSnapshotRaw(snapshot));
+        Assertions.assertNotNull(microservice.deployment().loadConfigurationSnapshotRaw(snapshot));
         Assertions.assertEquals("v1", microservice.prepareNewFactory().root.stringAttribute.get());
 
         String storedCurrent = Files.readString(folder.resolve("currentFactory.json"));
@@ -213,11 +303,11 @@ public class MicroservicePreflightTest {
         createStoredConfiguration("v1");
 
         Path snapshot = snapshotFolder.resolve("snapshot.json");
-        build(msb -> {}).saveConfigurationSnapshot(snapshot);
+        build(msb -> {}).deployment().saveConfigurationSnapshot(snapshot);
 
         Microservice<Void, PreflightExampleFactory> microservice = build(msb -> msb.withPatch(
                 (root, metadata, objectMapper) -> root.setAttributeValue("stringAttribute", TextNode.valueOf("patched"))));
-        microservice.loadConfigurationSnapshot(snapshot);
+        microservice.deployment().loadConfigurationSnapshot(snapshot);
         microservice.start();
         Assertions.assertEquals("patched", microservice.prepareNewFactory().root.stringAttribute.get());
         microservice.stop();

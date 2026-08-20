@@ -9,7 +9,7 @@ import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
  * registered on the {@link io.github.factoryfx.factory.builder.MicroserviceBuilder} (withPatch): applied in-memory
  * whenever a configuration (current or history) is loaded, after the declarative migrations and the removal handling,
  * so the patch sees the stored configuration lifted to the current model shape. The stored data is not changed unless
- * the patches are explicitly persisted via {@link io.github.factoryfx.server.Microservice#persistConfigurationPatches()}
+ * the patches are explicitly persisted via {@link io.github.factoryfx.server.MicroserviceDeployment#persistConfigurationPatches()}
  * (which uses {@link io.github.factoryfx.factory.storage.DataStorage#patchAll} to write the results back to the storage).
  */
 @FunctionalInterface
