@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
+import io.github.factoryfx.factory.storage.migration.metadata.AttributeStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadata;
 import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadataDictionary;
 
@@ -16,6 +17,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class DataJsonNode {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DataJsonNode.class);
+
     private final ObjectNode jsonNode;
 
 
@@ -85,6 +88,23 @@ public class DataJsonNode {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * set an attribute value forcing the json shape of the target attribute type, independent of the previously stored shape.<br>
+     * (list attributes are stored as bare json array, single value attributes wrapped as {"v": ...})
+     * @param attribute attribute variable name
+     * @param value unwrapped value, null clears the attribute (empty array for list attributes)
+     * @param listShape true if the target attribute is a list attribute
+     */
+    public void setAttributeValueTargetShape(String attribute, JsonNode value, boolean listShape) {
+        if (listShape) {
+            this.jsonNode.set(attribute, value == null ? JsonNodeFactory.instance.arrayNode() : value);
+        } else {
+            ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+            objectNode.set("v", value);
+            this.jsonNode.set(attribute, objectNode);
         }
     }
 
@@ -238,7 +258,9 @@ public class DataJsonNode {
     public void applyRetypedAttribute(DataStorageMetadataDictionary dataStorageMetadataDictionary){
         for (String attributeVariableName : this.getAttributes()) {
             if (dataStorageMetadataDictionary.isRetypedAttribute(getDataClassName(),attributeVariableName)){
-                this.setAttributeValue(attributeVariableName,null);
+                AttributeStorageMetadata attributeStorageMetadata = dataStorageMetadataDictionary.getAttributeStorageMetadata(getDataClassName(),attributeVariableName);
+                JsonNode converted = AutomaticRetypeConversion.convert(this.getAttributeValue(attributeVariableName),getDataClassName(),attributeStorageMetadata);
+                this.setAttributeValueTargetShape(attributeVariableName,converted,attributeStorageMetadata.isRetypedToList());
             }
         }
     }
@@ -254,6 +276,125 @@ public class DataJsonNode {
         });
     }
 
+
+    /**
+     * relocate factory definitions out of parts of the json that the removal handling will drop (attributes removed
+     * from the current model and factories of removed classes).<br>
+     * References are serialized first-occurrence-defines ({@code JsonIdentityInfo}): the first occurrence is the full
+     * object, all following occurrences are id references. When the first occurrence sits inside a removed attribute,
+     * deserializing &ndash; or roundtripping through the current factory classes, e.g. inside a
+     * {@link io.github.factoryfx.factory.storage.migration.ConfigurationPatch} &ndash; would silently drop the
+     * definition and leave the remaining id references dangling. This moves each such definition to its first
+     * remaining occurrence outside the removed parts, so removing an attribute or class no longer loses factories
+     * that are still referenced. Definitions that are not referenced anywhere else are left in place (they are
+     * dropped with the removed part, with a warning).<br>
+     * Idempotent and a cheap no-op when no removed part contains a factory definition. Must be called on the root
+     * node with a dictionary that is already marked ({@code markRemovedAttributes}/{@code markRemovedClasses}).
+     * @param dictionary stored metadata dictionary with removal marks
+     */
+    public void relocateDefinitionsFromRemovedParts(DataStorageMetadataDictionary dictionary) {
+        List<DoomedDefinition> doomedDefinitions = new ArrayList<>();
+        collectDoomedDefinitions(this.jsonNode, dictionary, false, doomedDefinitions);
+        for (DoomedDefinition doomed : doomedDefinitions) {
+            switch (placeAtFirstRemainingOccurrence(this.jsonNode, dictionary, doomed)) {
+                case PLACED -> {
+                    doomed.replaceWith.accept(TextNode.valueOf(doomed.id));
+                    logger.info("relocated factory {} ({}) out of a removed attribute/class to its first remaining reference", doomed.id, doomed.className);
+                }
+                case NOT_FOUND ->
+                    logger.warn("factory {} ({}) is stored only inside a removed attribute/class and not referenced anywhere else, it is dropped", doomed.id, doomed.className);
+                case ALREADY_PLACED -> {
+                    //nothing to do, the definition already sits at its first remaining occurrence
+                }
+            }
+        }
+    }
+
+    private record DoomedDefinition(ObjectNode node, String id, String className, Consumer<JsonNode> replaceWith) {}
+
+    private enum PlacementResult {PLACED, ALREADY_PLACED, NOT_FOUND}
+
+    private void collectDoomedDefinitions(ObjectNode dataNode, DataStorageMetadataDictionary dictionary, boolean insideDoomed, List<DoomedDefinition> out) {
+        String className = new DataJsonNode(dataNode).getDataClassName();
+        boolean doomed = insideDoomed || isRemovedClass(dictionary, className);
+        for (Map.Entry<String, JsonNode> attribute : dataNode.properties()) {
+            JsonNode attributeNode = attribute.getValue();
+            boolean attributeDoomed = doomed || dictionary.isRemovedAttribute(className, attribute.getKey());
+            if (attributeNode.isArray()) {
+                ArrayNode arrayNode = (ArrayNode) attributeNode;
+                for (int i = 0; i < arrayNode.size(); i++) {
+                    final int index = i;
+                    collectPossibleDefinition(arrayNode.get(i), value -> arrayNode.set(index, value), dictionary, attributeDoomed, out);
+                }
+            } else if (attributeNode.isObject()) {
+                ObjectNode wrapper = (ObjectNode) attributeNode;
+                collectPossibleDefinition(wrapper.get("v"), value -> wrapper.set("v", value), dictionary, attributeDoomed, out);
+            }
+        }
+    }
+
+    private void collectPossibleDefinition(JsonNode value, Consumer<JsonNode> replaceWith, DataStorageMetadataDictionary dictionary, boolean doomed, List<DoomedDefinition> out) {
+        if (!isData(value)) {
+            return;
+        }
+        ObjectNode definition = (ObjectNode) value;
+        DataJsonNode definitionData = new DataJsonNode(definition);
+        if (doomed && !isRemovedClass(dictionary, definitionData.getDataClassName())) {
+            out.add(new DoomedDefinition(definition, definitionData.getId(), definitionData.getDataClassName(), replaceWith));
+        }
+        collectDoomedDefinitions(definition, dictionary, doomed, out);
+    }
+
+    /** document-order scan for the first remaining (non-doomed) occurrence of the definition's id: an id reference is
+     * replaced with the definition, the definition node itself means it is already correctly placed */
+    private PlacementResult placeAtFirstRemainingOccurrence(ObjectNode dataNode, DataStorageMetadataDictionary dictionary, DoomedDefinition doomed) {
+        String className = new DataJsonNode(dataNode).getDataClassName();
+        if (isRemovedClass(dictionary, className)) {
+            return PlacementResult.NOT_FOUND;
+        }
+        for (Map.Entry<String, JsonNode> attribute : dataNode.properties()) {
+            JsonNode attributeNode = attribute.getValue();
+            if (dictionary.isRemovedAttribute(className, attribute.getKey())) {
+                continue;
+            }
+            if (attributeNode.isArray()) {
+                ArrayNode arrayNode = (ArrayNode) attributeNode;
+                for (int i = 0; i < arrayNode.size(); i++) {
+                    final int index = i;
+                    PlacementResult result = placeAtOccurrence(arrayNode.get(i), value -> arrayNode.set(index, value), dictionary, doomed);
+                    if (result != PlacementResult.NOT_FOUND) {
+                        return result;
+                    }
+                }
+            } else if (attributeNode.isObject()) {
+                ObjectNode wrapper = (ObjectNode) attributeNode;
+                PlacementResult result = placeAtOccurrence(wrapper.get("v"), value -> wrapper.set("v", value), dictionary, doomed);
+                if (result != PlacementResult.NOT_FOUND) {
+                    return result;
+                }
+            }
+        }
+        return PlacementResult.NOT_FOUND;
+    }
+
+    private PlacementResult placeAtOccurrence(JsonNode value, Consumer<JsonNode> replaceWith, DataStorageMetadataDictionary dictionary, DoomedDefinition doomed) {
+        if (value == doomed.node) {
+            return PlacementResult.ALREADY_PLACED;
+        }
+        if (value != null && value.isTextual() && value.asText().equals(doomed.id)) {
+            replaceWith.accept(doomed.node);
+            return PlacementResult.PLACED;
+        }
+        if (isData(value)) {
+            return placeAtFirstRemainingOccurrence((ObjectNode) value, dictionary, doomed);
+        }
+        return PlacementResult.NOT_FOUND;
+    }
+
+    private boolean isRemovedClass(DataStorageMetadataDictionary dictionary, String className) {
+        DataStorageMetadata dataStorageMetadata = dictionary.getDataStorageMetadata(className);
+        return dataStorageMetadata != null && dataStorageMetadata.isRemovedClass();
+    }
 
     /**
      * fix objects in removed attributes.
@@ -300,7 +441,7 @@ public class DataJsonNode {
     }
 
 
-    public JsonNode getJsonNode(){
+    public ObjectNode getJsonNode(){
         return this.jsonNode;
     }
 

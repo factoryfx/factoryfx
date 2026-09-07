@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
-import io.github.factoryfx.factory.storage.DataStoragePatcher;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
+import io.github.factoryfx.factory.storage.migration.ConfigurationPatch;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
     public R getHistoryFactory(String id) {
         StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(readFile(historyDirectory.resolve(id + "_metadata.json")), false);
         updateCache(metaData);
-        return migrationManager.read(readFile(historyDirectory.resolve(id + ".json")), metaData.dataStorageMetadataDictionary);
+        return migrationManager.read(readFile(historyDirectory.resolve(id + ".json")), metaData);
     }
 
     private void visitHistoryFiles(Consumer<Path> visitor) {
@@ -77,13 +78,16 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
     }
 
     public void updateHistory(R factoryRoot, StoredDataMetadata metadata) {
+        updateHistory(objectMapper.writeValueAsString(factoryRoot, OutputStyle.COMPACT), objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT), metadata);
+    }
+
+    public void updateHistory(String serializedRoot, String serializedMetadata, StoredDataMetadata metadata) {
         String id = metadata.id;
 
-        writeFile(historyDirectory.resolve(id + ".json"), objectMapper.writeValueAsString(factoryRoot, OutputStyle.COMPACT));
-        writeFile(historyDirectory.resolve(id + "_metadata.json"), objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
+        writeFile(historyDirectory.resolve(id + ".json"), serializedRoot);
+        writeFile(historyDirectory.resolve(id + "_metadata.json"), serializedMetadata);
         updateCache(metadata);
         houseKeeping();
-
     }
 
     private String readFile(Path path) {
@@ -102,30 +106,22 @@ public class FileSystemFactoryStorageHistory<R extends FactoryBase<?, R>> {
         }
     }
 
-    public void patchAll(DataStoragePatcher consumer) {
+    public void patchAll(ConfigurationPatch consumer) {
         visitHistoryFiles(path -> {
             if (!path.toString().endsWith("_metadata.json")) {
-                JsonNode data = objectMapper.readTree(path);
-                Path metadataPath = path.resolveSibling(path.getParent().resolve(path.getFileName().toString().replace(".json", "_metadata.json")));
-                JsonNode metadata = objectMapper.readTree(metadataPath);
-                consumer.patch((ObjectNode) data, metadata, objectMapper);
-                writeFile(path, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
-                writeFile(metadataPath, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
+                patchFile(consumer, path);
             }
         });
     }
 
-    public void patchForId(DataStoragePatcher consumer, String id) {
-        visitHistoryFiles(path -> {
-            if (!path.toString().endsWith("_metadata.json") && (id + ".json").equals(path.getFileName().toString())) {
-                JsonNode data = objectMapper.readTree(path);
-                Path metadataPath = path.resolveSibling(path.getParent().resolve(path.getFileName().toString().replace(".json", "_metadata.json")));
-                JsonNode metadata = objectMapper.readTree(metadataPath);
-                consumer.patch((ObjectNode) data, metadata, objectMapper);
-                writeFile(path, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
-                writeFile(metadataPath, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
-            }
-        });
+    private void patchFile(ConfigurationPatch consumer, Path path) {
+        JsonNode data = objectMapper.readTree(path);
+        Path metadataPath = path.resolveSibling(Objects.requireNonNull(path.getFileName()).toString().replace(".json", "_metadata.json"));
+        StoredDataMetadata metadata = objectMapper.readValue(readFile(metadataPath), StoredDataMetadata.class);
+        consumer.patch(new DataJsonNode((ObjectNode) data), metadata, objectMapper);
+        writeFile(path, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
+        writeFile(metadataPath, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
+        updateCache(metadata);
     }
 
     private void updateCache(StoredDataMetadata metadata) {

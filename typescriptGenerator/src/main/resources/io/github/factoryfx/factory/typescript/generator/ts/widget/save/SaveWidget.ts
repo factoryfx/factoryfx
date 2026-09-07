@@ -45,7 +45,11 @@ export class SaveWidget extends Widget {
                 this.model.baseVersionId,
                 textarea.value,
                 (response)=>{
-                    this.model.viewModel!.factoryUpdateResult.updatelog.set(response.log);
+                    let logText: string = response.log;
+                    if (response.validationErrors && response.validationErrors.length>0){
+                        logText="Validation failed - the changes were not applied:\n\n"+response.validationErrors.join("\n\n");
+                    }
+                    this.model.viewModel!.factoryUpdateResult.updatelog.set(logText);
                     this.model.viewModel!.showFactoryUpdateResult();
                 // this.view.show(new FactoryUpdateResult(response));
             })

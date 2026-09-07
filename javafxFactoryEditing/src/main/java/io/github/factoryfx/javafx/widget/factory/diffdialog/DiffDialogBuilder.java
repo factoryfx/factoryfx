@@ -1,5 +1,7 @@
 package io.github.factoryfx.javafx.widget.factory.diffdialog;
 
+import java.util.List;
+
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.merge.MergeDiffInfo;
 import io.github.factoryfx.factory.util.LanguageText;
@@ -9,12 +11,14 @@ import io.github.factoryfx.javafx.editor.attribute.AttributeVisualisationMapping
 import io.github.factoryfx.javafx.util.UniformDesign;
 import io.github.factoryfx.javafx.widget.factorydiff.FactoryDiffWidget;
 import io.github.factoryfx.javafx.widget.factory.factorylog.FactoryUpdateLogWidget;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Window;
 
@@ -22,6 +26,8 @@ public class DiffDialogBuilder<RS extends FactoryBase<?,RS>> {
 
     private LanguageText conflictText= new LanguageText().en("Changes").de("Konflikte");
     private LanguageText changesText= new LanguageText().en("Changes").de("Änderungen");
+    private LanguageText validationFailedText= new LanguageText().en("Validation failed").de("Validierung fehlgeschlagen");
+    private LanguageText validationFailedNotSavedText= new LanguageText().en("Validation failed - the changes were not applied").de("Validierung fehlgeschlagen - die Änderungen wurden nicht gespeichert");
 
     private final UniformDesign uniformDesign;
     private final AttributeVisualisationMappingBuilder attributeVisualisationMappingBuilder;
@@ -89,10 +95,24 @@ public class DiffDialogBuilder<RS extends FactoryBase<?,RS>> {
             diffWidgetContent.getStyleClass().add("error");
         }
 
+        if (mergeDiff.hasValidationErrors()){
+            dialog.setTitle(uniformDesign.getText(validationFailedText));
+            dialog.setHeaderText(uniformDesign.getText(validationFailedText));
+            TextArea validationErrorsArea = createValidationErrorsTextArea(mergeDiff.validationErrors);
+            validationErrorsArea.setPrefRowCount(6);
+            BorderPane.setMargin(validationErrorsArea,new Insets(0,0,6,0));
+            pane.setTop(validationErrorsArea);
+        }
+
         dialog.showAndWait();
     }
 
     public void createDiffDialog(FactoryUpdateLog<RS> factoryLog, String title, Window owner){
+        if (factoryLog.failedValidation()){
+            //the update was rejected by server validation: there is no merge result to show (mergeDiffInfo is null)
+            createValidationErrorDialog(factoryLog.validationErrors, owner);
+            return;
+        }
         final FactoryDiffWidget<RS> factoryDiffWidget = new FactoryDiffWidget<>(uniformDesign, attributeVisualisationMappingBuilder);
         factoryDiffWidget.updateMergeDiff(factoryLog.mergeDiffInfo);
 
@@ -139,5 +159,31 @@ public class DiffDialogBuilder<RS extends FactoryBase<?,RS>> {
 
 
         dialog.showAndWait();
+    }
+
+    private void createValidationErrorDialog(List<String> validationErrors, Window owner){
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.initOwner(owner);
+        dialog.setTitle(uniformDesign.getText(validationFailedNotSavedText));
+        dialog.setHeaderText(uniformDesign.getText(validationFailedNotSavedText));
+        dialog.getDialogPane().getButtonTypes().add(new ButtonType("OK", ButtonBar.ButtonData.OK_DONE));
+
+        final BorderPane pane = new BorderPane();
+        pane.setCenter(createValidationErrorsTextArea(validationErrors));
+        pane.setPrefWidth(1000);
+        pane.setPrefHeight(500);
+        dialog.getDialogPane().setContent(pane);
+        dialog.setResizable(true);
+
+        CssUtil.addToNode(dialog.getDialogPane());
+
+        dialog.showAndWait();
+    }
+
+    private TextArea createValidationErrorsTextArea(List<String> validationErrors){
+        TextArea textArea = new TextArea(String.join("\n\n", validationErrors));
+        textArea.setEditable(false);
+        textArea.getStyleClass().add("error");
+        return textArea;
     }
 }

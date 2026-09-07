@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.storage.*;
+import io.github.factoryfx.factory.storage.migration.ConfigurationPatch;
 
 
 /**
@@ -52,6 +53,16 @@ public class InMemoryDataStorage<R extends FactoryBase<?,R>> implements DataStor
     }
 
     @Override
+    public RawFactoryDataAndMetadata getCurrentDataRaw() {
+        throw new UnsupportedOperationException("in memory storage stores no raw json");
+    }
+
+    @Override
+    public void updateCurrentDataRaw(RawFactoryDataAndMetadata rawDataAndMetadata) {
+        throw new UnsupportedOperationException("in memory storage stores no raw json");
+    }
+
+    @Override
     public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
         StoredDataMetadata metadata = new StoredDataMetadata(LocalDateTime.now(),
                 UUID.randomUUID().toString(),
@@ -62,17 +73,12 @@ public class InMemoryDataStorage<R extends FactoryBase<?,R>> implements DataStor
                 update.root.internal().createDataStorageMetadataDictionaryFromRoot(),currentFactoryId
         );
 
-        storage.put(metadata.id, new DataAndStoredMetadata<>(update.root,metadata));
+        storage.put(metadata.id, new DataAndStoredMetadata<>(update.root.utility().copy(),metadata));
         currentFactoryId=metadata.id;
     }
 
     @Override
-    public void patchAll(DataStoragePatcher consumer) {
-        throw new UnsupportedOperationException("in memory format can't be outdated");
-    }
-
-    @Override
-    public void patchCurrentData(DataStoragePatcher consumer) {
+    public void patchAll(ConfigurationPatch consumer) {
         throw new UnsupportedOperationException("in memory format can't be outdated");
     }
 

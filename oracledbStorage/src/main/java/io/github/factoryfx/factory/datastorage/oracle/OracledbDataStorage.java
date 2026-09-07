@@ -6,7 +6,9 @@ import io.github.factoryfx.factory.FactoryBase;
 import io.github.factoryfx.factory.jackson.OutputStyle;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.*;
+import io.github.factoryfx.factory.storage.migration.ConfigurationPatch;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -85,7 +87,7 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 if (resultSet.next()) {
                     StoredDataMetadata factoryMetadata = migrationManager.readStoredFactoryMetadata(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), false);
-                    return new DataAndId<>(migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), factoryMetadata.dataStorageMetadataDictionary), factoryMetadata.id);
+                    return new DataAndId<>(migrationManager.read(JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper), factoryMetadata), factoryMetadata.id);
                 }
             }
         } catch (SQLException e) {
@@ -97,10 +99,31 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
     }
 
     private StoredDataMetadata initCurrentData() {
-        StoredDataMetadata metadata = new StoredDataMetadata(UUID.randomUUID().toString(), "System", "initial factory", UUID.randomUUID().toString(), null, initialData.internal().createDataStorageMetadataDictionaryFromRoot(), null);
+        StoredDataMetadata metadata = new StoredDataMetadata(UUID.randomUUID().toString(), "System", "initial factory", UUID.randomUUID().toString(), null, initialData.internal().createDataStorageMetadataDictionaryFromRoot(), null, migrationManager.getCurrentConfigurationSchemaVersion());
 
         update(initialData, metadata);
         return metadata;
+    }
+
+    @Override
+    public RawFactoryDataAndMetadata getCurrentDataRaw() {
+        getCurrentDataId();//ensure initial data populated
+        try (Connection connection = connectionSupplier.get();
+             Statement statement = connection.createStatement()) {
+            String sql = "SELECT * FROM FACTORY_CURRENT";
+
+            try (ResultSet resultSet = statement.executeQuery(sql)) {
+                if (!resultSet.next()) {
+                    throw new IllegalStateException("no current factory found");
+                }
+                RawFactoryDataAndMetadata raw = new RawFactoryDataAndMetadata();
+                raw.root = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
+                raw.metadata = objectMapper.readValue(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), StoredDataMetadata.class);
+                return raw;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -124,20 +147,14 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
     @Override
     public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
-        StoredDataMetadata metadata = update.createUpdateStoredDataMetadata(changeSummary, getCurrentDataId());
+        StoredDataMetadata metadata = update.createUpdateStoredDataMetadata(changeSummary, getCurrentDataId(), migrationManager.getCurrentConfigurationSchemaVersion());
         update(update.root, metadata);
     }
 
     @Override
-    public void patchAll(DataStoragePatcher consumer) {
-        patchCurrentData(consumer);
-        oracledbDataStorageHistory.patchAll(consumer);
-    }
-
-    @Override
-    public void patchCurrentData(DataStoragePatcher consumer) {
+    public void patchAll(ConfigurationPatch consumer) {
         JsonNode data;
-        JsonNode metadata;
+        StoredDataMetadata metadata;
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
             String sql = "SELECT * FROM FACTORY_CURRENT";
@@ -147,14 +164,14 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
                     throw new IllegalStateException("No data found");
                 }
                 data = JdbcUtil.readTreeFromBlob(resultSet, "factory", objectMapper);
-                metadata = JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper);
+                metadata = objectMapper.readValue(JdbcUtil.readTreeFromBlob(resultSet, "factoryMetadata", objectMapper), StoredDataMetadata.class);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        consumer.patch((ObjectNode) data, metadata, objectMapper);
-        String metadataId = metadata.get("id").asText();
+        consumer.patch(new DataJsonNode((ObjectNode) data), metadata, objectMapper);
+        String metadataId = metadata.id;
 
         try (Connection connection = connectionSupplier.get()) {
             boolean initialAutoCommit = connection.getAutoCommit();
@@ -163,8 +180,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
             try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
                  PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
                 preparedStatement.setString(1, metadataId);
-                JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, data, OutputStyle.DEFAULT), allocatedBlobs);
-                JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, data, OutputStyle.COMPACT), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.COMPACT), allocatedBlobs);
                 delete.execute();
                 preparedStatement.executeUpdate();
                 connection.commit();
@@ -179,10 +196,20 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
             throw new RuntimeException(e);
         }
 
-        oracledbDataStorageHistory.patchForId(consumer, metadataId);
+        oracledbDataStorageHistory.patchAll(consumer);
+    }
+
+    @Override
+    public void updateCurrentDataRaw(RawFactoryDataAndMetadata rawDataAndMetadata) {
+        update(objectMapper.writeValueAsBytes(rawDataAndMetadata.root, OutputStyle.COMPACT), rawDataAndMetadata.metadata);
     }
 
     private void update(R update, StoredDataMetadata metadata) {
+        update(objectMapper.writeValueAsBytes(update, OutputStyle.COMPACT), metadata);
+    }
+
+    private void update(byte[] rootJson, StoredDataMetadata metadata) {
+        byte[] metadataJson = objectMapper.writeValueAsBytes(metadata, OutputStyle.COMPACT);
         try (Connection connection = connectionSupplier.get()) {
             boolean initialAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -190,8 +217,8 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
             try (PreparedStatement delete = connection.prepareStatement("DELETE FROM FACTORY_CURRENT");
                  PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO FACTORY_CURRENT(id,factory,factoryMetadata) VALUES (?,?,? )")) {
                 preparedStatement.setString(1, metadata.id);
-                JdbcUtil.writeToBlob(preparedStatement, 2, out -> objectMapper.writeValue(out, update, OutputStyle.DEFAULT), allocatedBlobs);
-                JdbcUtil.writeToBlob(preparedStatement, 3, out -> objectMapper.writeValue(out, metadata, OutputStyle.DEFAULT), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 2, out -> SimpleObjectMapper.writeBytes(rootJson, out), allocatedBlobs);
+                JdbcUtil.writeToBlob(preparedStatement, 3, out -> SimpleObjectMapper.writeBytes(metadataJson, out), allocatedBlobs);
                 delete.execute();
                 preparedStatement.executeUpdate();
                 connection.commit();
@@ -205,7 +232,7 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        oracledbDataStorageHistory.updateHistory(metadata, update);
+        oracledbDataStorageHistory.updateHistory(metadata, rootJson, metadataJson);
     }
 
 

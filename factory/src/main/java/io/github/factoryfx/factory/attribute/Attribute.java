@@ -19,6 +19,9 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
     @JsonIgnore
     private Set<Validation<T>> validations;
 
+    @JsonIgnore
+    private Set<Validation<T>> serverValidations;
+
     public Attribute() {
 
     }
@@ -29,6 +32,27 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
             return validationErrors;
         }
         for (Validation<T> validation : validations) {
+            ValidationResult validationResult = validation.validate(get());
+            if (validationResult.validationFailed()){
+                validationErrors.add(validationResult.createValidationError(this,parent,attributeVariableName));
+            }
+        }
+        return validationErrors;
+    }
+
+    /**
+     * execute the server validations added with {@link #serverValidation(Validation)}, see there for the execution
+     * contexts. the required/nullable check is part of the client validations and deliberately not repeated here.
+     * @param parent parent factory
+     * @param attributeVariableName attribute variable name
+     * @return validation errors
+     */
+    public List<ValidationError> internal_validateServer(FactoryBase<?,?> parent, String attributeVariableName) {
+        if (serverValidations==null){
+            return List.of();
+        }
+        List<ValidationError> validationErrors = new ArrayList<>();
+        for (Validation<T> validation : serverValidations) {
             ValidationResult validationResult = validation.validate(get());
             if (validationResult.validationFailed()){
                 validationErrors.add(validationResult.createValidationError(this,parent,attributeVariableName));
@@ -124,6 +148,23 @@ public abstract class Attribute<T,A extends Attribute<T,A>> implements Attribute
             validations=new HashSet<>();
         }
         this.validations.add(validation);
+        return (A)this;
+    }
+
+    /**
+     * validation executed ONLY on the server (on configuration updates, simulateUpdate and the preflight check),
+     * never in editor clients &ndash; for validations that need server resources or are too expensive to run while
+     * typing. the validation runs against a finalised but not-started factory tree, so it must only inspect
+     * attribute values.
+     * @param validation validation
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    public A serverValidation(Validation<T> validation){
+        if (serverValidations==null){
+            serverValidations=new HashSet<>();
+        }
+        this.serverValidations.add(validation);
         return (A)this;
     }
     private static final Locale PORTUGUESE =new Locale("pt", "PT");

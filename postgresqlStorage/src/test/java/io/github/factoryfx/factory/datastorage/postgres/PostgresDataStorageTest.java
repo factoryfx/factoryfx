@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.storage.DataUpdate;
@@ -292,7 +293,7 @@ public class PostgresDataStorageTest {
 
     @Test
     @Disabled
-    public void test_patchCurrentData() {
+    public void test_patchAll_currentAndItsHistoryCopyInSync() {
         ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
         initialExampleDataA.stringAttribute.set("123");
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
@@ -300,8 +301,8 @@ public class PostgresDataStorageTest {
                                                                                                 createDataMigrationManager(),
                                                                                                 ObjectMapperBuilder.build());
         postgresFactoryStorage.getCurrentData();//init
-        postgresFactoryStorage.patchCurrentData((data, metadata, objectMapper) -> {
-            ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
+        postgresFactoryStorage.patchAll((data, metadata, objectMapper) -> {
+            data.setAttributeValue("stringAttribute", new TextNode("qqq"));
         });
         Assertions.assertEquals("qqq", postgresFactoryStorage.getCurrentData().root.stringAttribute.get());
         Assertions.assertEquals("qqq", postgresFactoryStorage.getHistoryData(postgresFactoryStorage.getCurrentDataId()).stringAttribute.get());
@@ -330,20 +331,6 @@ public class PostgresDataStorageTest {
         System.out.println(System.currentTimeMillis() - start);
     }
 
-    //TODO
-    //    @Test
-    //    public void test_patchAll()  {
-    //        ExampleFactoryA initialExampleDataA = createInitialExampleFactoryA();
-    //        initialExampleDataA.stringAttribute.set("123");
-    //        PostgresDataStorage<ExampleFactoryA,Void> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource, createInitialExampleFactoryA(),GeneralStorageMetadataBuilder.build(), createDataMigrationManager(),ObjectMapperBuilder.build());
-    //        String id=postgresFactoryStorage.getCurrentData().id;
-    //        postgresFactoryStorage.updateCurrentData(createUpdate(),null);
-    //
-    //        postgresFactoryStorage.patchAll((data, metadata) -> {
-    //            ((ObjectNode) data.get("stringAttribute")).put("v", "qqq");
-    //        });
-    //        Assertions.assertEquals("qqq",postgresFactoryStorage.getHistoryData(id).stringAttribute.get());
-    //    }
 
 }
 

@@ -127,7 +127,7 @@ Publishing artifacts to Maven Central directly from GitHub Actions
 
 ## Example
 
-[Example](https://github.com/factoryfx/factoryfx/tree/master/example/src/main/java/io/github/factoryfx/example)<br>An example that implements a simplified online store.
+[Example](https://github.com/factoryfx/factoryfx/tree/main/example/src/main/java/io/github/factoryfx/example)<br>An example that implements a simplified online store.
 
 ## License
 

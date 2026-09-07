@@ -30,6 +30,12 @@ public class StoredDataMetadata {
 
     public final DataStorageMetadataDictionary dataStorageMetadataDictionary;
 
+    /**
+     * configuration schema version used for version-gated patches, null means unversioned (treated as 0).<br>
+     * intentionally not final: configuration patches may update it, {@link DataStorage#patchAll} persists the mutation
+     */
+    public Integer configurationSchemaVersion;
+
     @JsonCreator
     public  StoredDataMetadata(
             @JsonProperty("creationTime")LocalDateTime creationTime,
@@ -39,7 +45,8 @@ public class StoredDataMetadata {
             @JsonProperty("baseVersionId")String baseVersionId,
             @JsonProperty("changeSummary")UpdateSummary changeSummary,
             @JsonProperty("dataStorageMetadataDictionary") DataStorageMetadataDictionary dataStorageMetadataDictionary,
-            @JsonProperty("mergerVersionId")String mergerVersionId) {
+            @JsonProperty("mergerVersionId")String mergerVersionId,
+            @JsonProperty("configurationSchemaVersion")Integer configurationSchemaVersion) {
         this.creationTime = creationTime;
         this.id = id;
         this.user = user;
@@ -48,10 +55,27 @@ public class StoredDataMetadata {
         this.changeSummary = changeSummary;
         this.dataStorageMetadataDictionary = dataStorageMetadataDictionary;
         this.mergerVersionId = mergerVersionId;
+        this.configurationSchemaVersion = configurationSchemaVersion;
+    }
+
+    public StoredDataMetadata(
+            LocalDateTime creationTime,
+            String id,
+            String user,
+            String comment,
+            String baseVersionId,
+            UpdateSummary changeSummary,
+            DataStorageMetadataDictionary dataStorageMetadataDictionary,
+            String mergerVersionId) {
+        this(creationTime,id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId,null);
     }
 
     public StoredDataMetadata(String id, String user, String comment, String baseVersionId, UpdateSummary changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary,String mergerVersionId) {
-        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId);
+        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId,null);
+    }
+
+    public StoredDataMetadata(String id, String user, String comment, String baseVersionId, UpdateSummary changeSummary, DataStorageMetadataDictionary dataStorageMetadataDictionary,String mergerVersionId, Integer configurationSchemaVersion) {
+        this(LocalDateTime.now(),id,user,comment,baseVersionId,changeSummary,dataStorageMetadataDictionary,mergerVersionId,configurationSchemaVersion);
     }
 
     public static StoredDataMetadata createLightStoredDataMetadata(JsonNode root) {
@@ -63,7 +87,8 @@ public class StoredDataMetadata {
                 root.path("baseVersionId").asText(null),
                 null,
                 null,
-                root.path("mergerVersionId").asText(null));
+                root.path("mergerVersionId").asText(null),
+                root.hasNonNull("configurationSchemaVersion") ? root.get("configurationSchemaVersion").asInt() : null);
     }
 
     public static StoredDataMetadata createLightStoredDataMetadata(StoredDataMetadata storedDataMetadata) {
@@ -74,7 +99,8 @@ public class StoredDataMetadata {
                 storedDataMetadata.baseVersionId,
                 null,
                 null,
-                storedDataMetadata.mergerVersionId);
+                storedDataMetadata.mergerVersionId,
+                storedDataMetadata.configurationSchemaVersion);
     }
 
     @JsonIgnore

@@ -147,6 +147,10 @@ public class SimpleObjectMapper {
         return writeInternal(() -> objectMapper.writeValueAsBytes(value));
     }
 
+    public byte[] writeValueAsBytes(Object value, OutputStyle outputStyle) {
+        return writeInternal(() -> outputStyle.getWriter(objectMapper).writeValueAsBytes(value));
+    }
+
     public String writeValueAsString(JsonNode node) {
         return writeInternal(() -> writeValueAsString(objectMapper.treeToValue(node, Object.class)));
     }

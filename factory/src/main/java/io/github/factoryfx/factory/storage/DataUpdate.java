@@ -45,6 +45,10 @@ public class DataUpdate<R extends FactoryBase<?, ?>> {
     }
 
     public StoredDataMetadata createUpdateStoredDataMetadata(UpdateSummary changeSummary, String mergerVersionId) {
+        return createUpdateStoredDataMetadata(changeSummary, mergerVersionId, null);
+    }
+
+    public StoredDataMetadata createUpdateStoredDataMetadata(UpdateSummary changeSummary, String mergerVersionId, Integer configurationSchemaVersion) {
         return new StoredDataMetadata(
             LocalDateTime.now(),
             UUID.randomUUID().toString(),
@@ -53,7 +57,8 @@ public class DataUpdate<R extends FactoryBase<?, ?>> {
             this.baseVersionId,
             changeSummary,
             root.internal().createDataStorageMetadataDictionaryFromRoot(),
-            mergerVersionId
+            mergerVersionId,
+            configurationSchemaVersion
         );
     }
 }

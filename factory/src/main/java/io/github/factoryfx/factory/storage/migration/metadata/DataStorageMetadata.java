@@ -80,6 +80,13 @@ public class DataStorageMetadata {
     public void renameAttribute(String previousAttributeName, String newAttributeName) {
         AttributeStorageMetadata attribute = getAttribute(previousAttributeName);
         if (attribute!=null) {
+            //renaming onto an attribute that already exists in the stored metadata (old and new attribute coexisted during
+            //a transition): the renamed attribute's metadata wins, so the retype detection sees the previously stored
+            //attribute class and can convert the value
+            AttributeStorageMetadata existingTarget = getAttribute(newAttributeName);
+            if (existingTarget!=null) {
+                attributes.remove(existingTarget);
+            }
             attribute.rename(newAttributeName);
             nameToAttributeMap=null;//reset cache
         } else {
@@ -92,6 +99,23 @@ public class DataStorageMetadata {
         if (attribute!=null) {
             attributes.remove(attribute);
             nameToAttributeMap=null;//reset cache
+        }
+    }
+
+    public void retypeAttribute(String attributeName, String newAttributeClassName) {
+        AttributeStorageMetadata attribute = getAttribute(attributeName);
+        if (attribute!=null) {
+            attribute.retype(newAttributeClassName);
+        } else {
+            throw new IllegalArgumentException("attribute not found: "+attributeName);
+        }
+    }
+
+    public void retypeAttributeClass(String previousAttributeClassName, String newAttributeClassName) {
+        for (AttributeStorageMetadata attribute : attributes) {
+            if (previousAttributeClassName.equals(attribute.getAttributeClassName())) {
+                attribute.retype(newAttributeClassName);
+            }
         }
     }
 
@@ -132,12 +156,14 @@ public class DataStorageMetadata {
             metadata.visitAttributeMetadata((currentAttributeMetadata) -> {
                 AttributeStorageMetadata attributeMetadata = getAttribute(currentAttributeMetadata.attributeVariableName);
                 if (attributeMetadata!=null) { //not a removed attribute
+                    boolean retypedToList = List.class.isAssignableFrom(currentAttributeMetadata.attributeClass);
+                    String retypedToReferenceClassName = currentAttributeMetadata.referenceClass==null ? null : currentAttributeMetadata.referenceClass.getName();
                     if (!attributeMetadata.attributeClassName.equals(currentAttributeMetadata.attributeClass.getName())) {
-                        attributeMetadata.markRetyped();
+                        attributeMetadata.markRetyped(currentAttributeMetadata.attributeClass.getName(),retypedToList,retypedToReferenceClassName);
                     } else {
                         if (currentAttributeMetadata.referenceClass!=null && attributeMetadata.referenceClass!=null){
                             if (!attributeMetadata.referenceClass.equals(currentAttributeMetadata.referenceClass.getName())) {
-                                attributeMetadata.markRetyped();
+                                attributeMetadata.markRetyped(currentAttributeMetadata.attributeClass.getName(),retypedToList,retypedToReferenceClassName);
                             }
                         }
                     }
@@ -170,6 +196,7 @@ public class DataStorageMetadata {
     }
 
     boolean removedClass=false;
+    @JsonIgnore
     public boolean isRemovedClass(){
         return removedClass;
     }

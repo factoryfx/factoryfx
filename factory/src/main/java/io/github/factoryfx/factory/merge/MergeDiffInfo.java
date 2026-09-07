@@ -19,6 +19,8 @@ public class MergeDiffInfo<R extends FactoryBase<?,?>> {
     public final List<AttributeDiffInfo> mergeInfos;
     public final List<AttributeDiffInfo> conflictInfos;
     public final List<AttributeDiffInfo> permissionViolations;
+    /** server validation errors, reported by simulateUpdate; does not affect {@link #successfullyMerged()} */
+    public final List<String> validationErrors;
 
     @JsonIgnore
     private final R previousRoot;
@@ -30,12 +32,14 @@ public class MergeDiffInfo<R extends FactoryBase<?,?>> {
             @JsonProperty("mergeInfos")List<AttributeDiffInfo> mergeInfos,
             @JsonProperty("conflictInfos")List<AttributeDiffInfo> conflictInfos,
             @JsonProperty("permissionViolations")List<AttributeDiffInfo> permissionViolations,
+            @JsonProperty("validationErrors")List<String> validationErrors,
             @JsonProperty("previousRoot")String previousRoot,
             @JsonProperty("newRoot")String newRoot,
             @JsonProperty("rootClazz")Class<R> rootClazz){
         this.mergeInfos=mergeInfos;
         this.conflictInfos=conflictInfos;
         this.permissionViolations = permissionViolations;
+        this.validationErrors = validationErrors == null ? List.of() : validationErrors;
         this.previousRoot= ObjectMapperBuilder.build().readValue(previousRoot,rootClazz);
         this.newRoot=ObjectMapperBuilder.build().readValue(newRoot,rootClazz);
         this.rootClazz=rootClazz;
@@ -51,9 +55,25 @@ public class MergeDiffInfo<R extends FactoryBase<?,?>> {
         this.mergeInfos=mergeInfos;
         this.conflictInfos=conflictInfos;
         this.permissionViolations = permissionViolations;
+        this.validationErrors = List.of();
         this.previousRoot=previousRoot;
         this.newRoot=newRoot;
         this.rootClazz = rootClazz;
+    }
+
+    /**
+     * copy with server validation errors attached
+     * @param base base
+     * @param validationErrors server validation errors
+     */
+    public MergeDiffInfo(MergeDiffInfo<R> base, List<String> validationErrors){
+        this.mergeInfos=base.mergeInfos;
+        this.conflictInfos=base.conflictInfos;
+        this.permissionViolations=base.permissionViolations;
+        this.validationErrors=validationErrors;
+        this.previousRoot=base.previousRoot;
+        this.newRoot=base.newRoot;
+        this.rootClazz=base.rootClazz;
     }
 
     //TODO refactor to use JsonNode instead of string
@@ -83,6 +103,11 @@ public class MergeDiffInfo<R extends FactoryBase<?,?>> {
     @JsonIgnore
     public boolean successfullyMerged() {
         return hasNoConflicts() && hasNoPermissionViolation();
+    }
+
+    @JsonIgnore
+    public boolean hasValidationErrors() {
+        return !validationErrors.isEmpty();
     }
 
     @JsonIgnore

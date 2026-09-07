@@ -57,6 +57,37 @@ public class DataStorageMetadataDictionary {
         throw new IllegalArgumentException("factory not found: "+dataClassNameFullQualified);
     }
 
+    public void retypeAttribute(String dataClassNameFullQualified, String attributeName, String newAttributeClassName) {
+        for (DataStorageMetadata dataStorageMetadata : this.dataList) {
+            if (dataStorageMetadata.getClassName().equals(dataClassNameFullQualified)){
+                dataStorageMetadata.retypeAttribute(attributeName,newAttributeClassName);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("factory not found: "+dataClassNameFullQualified);
+    }
+
+    /**
+     * rewrite the stored attribute class name for every attribute that recorded the previous class, across all factory classes.<br>
+     * used after renaming/moving a custom attribute class whose serialized form is unchanged, so the attributes are not
+     * detected as retyped (which would clear the stored values).
+     * @param previousAttributeClassNameFullQualified previous fully qualified attribute class name
+     * @param newAttributeClassNameFullQualified new fully qualified attribute class name
+     */
+    public void retypeAttributeClass(String previousAttributeClassNameFullQualified, String newAttributeClassNameFullQualified) {
+        for (DataStorageMetadata dataStorageMetadata : this.dataList) {
+            dataStorageMetadata.retypeAttributeClass(previousAttributeClassNameFullQualified,newAttributeClassNameFullQualified);
+        }
+    }
+
+    public AttributeStorageMetadata getAttributeStorageMetadata(String dataClass, String attributeName) {
+        DataStorageMetadata dataStorageMetadata = getDataStorageMetadata(dataClass);
+        if (dataStorageMetadata!=null){
+            return dataStorageMetadata.getAttribute(attributeName);
+        }
+        return null;
+    }
+
     public void renameClass(String previousDataClassNameFullQualified, String newNameFullQualified) {
         for (DataStorageMetadata dataStorageMetadata : this.dataList) {
             dataStorageMetadata.renameClass(previousDataClassNameFullQualified,newNameFullQualified);

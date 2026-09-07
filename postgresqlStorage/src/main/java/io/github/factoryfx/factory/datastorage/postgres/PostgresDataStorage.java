@@ -26,13 +26,15 @@ import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.storage.DataAndId;
 import io.github.factoryfx.factory.storage.DataAndStoredMetadata;
 import io.github.factoryfx.factory.storage.DataStorage;
-import io.github.factoryfx.factory.storage.DataStoragePatcher;
 import io.github.factoryfx.factory.storage.DataUpdate;
+import io.github.factoryfx.factory.storage.RawFactoryDataAndMetadata;
 import io.github.factoryfx.factory.storage.ScheduledUpdate;
 import io.github.factoryfx.factory.storage.ScheduledUpdateMetadata;
 import io.github.factoryfx.factory.storage.StoredDataMetadata;
 import io.github.factoryfx.factory.storage.UpdateSummary;
+import io.github.factoryfx.factory.storage.migration.ConfigurationPatch;
 import io.github.factoryfx.factory.storage.migration.MigrationManager;
+import io.github.factoryfx.factory.storage.migration.datamigration.DataJsonNode;
 
 public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataStorage<R> {
     private final R initialData;
@@ -55,8 +57,7 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (!rs.next()) {throw new IllegalArgumentException("No factory with id '" + id + "' found");}
                 StoredDataMetadata storedDataMetadata = migrationManager.readStoredFactoryMetadata(rs.getString(2), false);
-                return migrationManager.read(rs.getString(1),
-                                             storedDataMetadata.dataStorageMetadataDictionary);
+                return migrationManager.read(rs.getString(1), storedDataMetadata);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read current factory", e);
@@ -89,8 +90,26 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
                 return new DataAndId<>(initialData, metadata.id);
             } else {
                 StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2), false);
-                return new DataAndId<>(migrationManager.read(rs.getString(1), metaData.dataStorageMetadataDictionary), metaData.id);
+                return new DataAndId<>(migrationManager.read(rs.getString(1), metaData), metaData.id);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot read current factory", e);
+        }
+    }
+
+    @Override
+    public RawFactoryDataAndMetadata getCurrentDataRaw() {
+        getCurrentDataId();//ensure initial data populated
+        try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection());
+             PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
+             ResultSet rs = pstmt.executeQuery()) {
+            if (!rs.next()) {
+                throw new IllegalStateException("no current factory found");
+            }
+            RawFactoryDataAndMetadata raw = new RawFactoryDataAndMetadata();
+            raw.root = objectMapper.readTree(rs.getString(1));
+            raw.metadata = objectMapper.readValue(rs.getString(2), StoredDataMetadata.class);
+            return raw;
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read current factory", e);
         }
@@ -121,21 +140,22 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
                                                              UUID.randomUUID().toString(),
                                                              null,
                                                              initialData.internal().createDataStorageMetadataDictionaryFromRoot(),
-                                                             null);
+                                                             null,
+                                                             migrationManager.getCurrentConfigurationSchemaVersion());
 
-        updateCurrentFactory(connection, new DataAndStoredMetadata<>(initialData, metadata));
+        updateCurrentFactory(connection, objectMapper.writeValueAsString(initialData, OutputStyle.COMPACT), metadata);
         connection.commit();
         return metadata;
     }
 
     @Override
     public void updateCurrentData(DataUpdate<R> update, UpdateSummary changeSummary) {
-        StoredDataMetadata metadata = update.createUpdateStoredDataMetadata(changeSummary, getCurrentDataId());
+        StoredDataMetadata metadata = update.createUpdateStoredDataMetadata(changeSummary, getCurrentDataId(), migrationManager.getCurrentConfigurationSchemaVersion());
         update(update.root, metadata);
     }
 
     @Override
-    public void patchAll(DataStoragePatcher consumer) {
+    public void patchAll(ConfigurationPatch consumer) {
         String currentId = getCurrentDataId();//ensure initial data populated
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedSelect = connection.prepareStatement("select id, cast (root as text) as root, cast (metadata as text) as metadata from configuration order by createdat");
@@ -144,20 +164,22 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
             while (rs.next()) {
                 String id = rs.getString(1);
                 JsonNode data = objectMapper.readTree(rs.getString(2));
-                JsonNode metadata = objectMapper.readTree(rs.getString(3));
+                StoredDataMetadata metadata = objectMapper.readValue(rs.getString(3), StoredDataMetadata.class);
 
-                consumer.patch((ObjectNode) data, metadata, objectMapper);
+                consumer.patch(new DataJsonNode((ObjectNode) data), metadata, objectMapper);
 
+                String rootJson = objectMapper.writeValueAsString(data, OutputStyle.COMPACT);
+                String metadataJson = objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT);
                 try (PreparedStatement preparedUpdate = connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
-                    preparedUpdate.setString(1, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
-                    preparedUpdate.setString(2, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
+                    preparedUpdate.setString(1, rootJson);
+                    preparedUpdate.setString(2, metadataJson);
                     preparedUpdate.setString(3, id);
                     preparedUpdate.execute();
                 }
                 if(id.equals(currentId)){
                     try (PreparedStatement pstmt = connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
-                        pstmt.setString(1, objectMapper.writeValueAsString(data));
-                        pstmt.setString(2, objectMapper.writeValueAsString(metadata));
+                        pstmt.setString(1, rootJson);
+                        pstmt.setString(2, metadataJson);
                         pstmt.execute();
                     }
                 }
@@ -169,56 +191,24 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
     }
 
     @Override
-    public void patchCurrentData(DataStoragePatcher consumer) {
-        String dataString = null;
-        String metadataString = null;
-        String currentId = getCurrentDataId();//ensure initial data populated
-
-        try (Connection connection = dataSource.getConnection()) {
-
-            try (PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
-                 ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    dataString = rs.getString(1);
-                    metadataString = rs.getString(2);
-                }
-            }
-
-            JsonNode data = objectMapper.readTree(dataString);
-            JsonNode metadata = objectMapper.readTree(metadataString);
-            consumer.patch((ObjectNode) data, metadata, objectMapper);
-
-            try (PreparedStatement pstmt =
-                     connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json)")) {
-                pstmt.setString(1, objectMapper.writeValueAsString(data));
-                pstmt.setString(2, objectMapper.writeValueAsString(metadata));
-                pstmt.execute();
-            }
-
-            try (PreparedStatement pstmt =
-                     connection.prepareStatement("update configuration set root = cast (? as json), metadata = cast (? as json) where id = ?")) {
-                pstmt.setString(1, objectMapper.writeValueAsString(data, OutputStyle.COMPACT));
-                pstmt.setString(2, objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT));
-                pstmt.setString(3, currentId);
-                pstmt.execute();
-            }
-
-            connection.commit();
-        } catch (SQLException e) {
-            throw new RuntimeException("Cannot read current factory", e);
-        }
+    public void updateCurrentDataRaw(RawFactoryDataAndMetadata rawDataAndMetadata) {
+        update(objectMapper.writeValueAsString(rawDataAndMetadata.root, OutputStyle.COMPACT), rawDataAndMetadata.metadata);
     }
 
     private void update(R update, StoredDataMetadata metadata) {
+        update(objectMapper.writeValueAsString(update, OutputStyle.COMPACT), metadata);
+    }
+
+    private void update(String rootJson, StoredDataMetadata metadata) {
         try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection())) {
-            updateCurrentFactory(connection, new DataAndStoredMetadata<>(update, metadata));
+            updateCurrentFactory(connection, rootJson, metadata);
             connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException("Cannot update current factory", e);
         }
     }
 
-    private void updateCurrentFactory(Connection connection, DataAndStoredMetadata<R> update) throws SQLException {
+    private void updateCurrentFactory(Connection connection, String rootJson, StoredDataMetadata metadata) throws SQLException {
         try (PreparedStatement pstmtlockConfiguration = connection.prepareStatement("lock table currentconfiguration in exclusive mode")) {
             pstmtlockConfiguration.execute();
         }
@@ -238,20 +228,21 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
         }
         Timestamp createdAtTimestamp = new Timestamp(createdAt);
 
+        String metadataJson = objectMapper.writeValueAsString(metadata, OutputStyle.COMPACT);
         try (PreparedStatement pstmtInsertConfiguration = connection.prepareStatement("insert into configuration (root, metadata, createdAt, id) values (cast (? as json), cast (? as json), ?, ?)")) {
-            pstmtInsertConfiguration.setString(1, objectMapper.writeValueAsString(update.root, OutputStyle.COMPACT));
-            pstmtInsertConfiguration.setString(2, objectMapper.writeValueAsString(update.metadata, OutputStyle.COMPACT));
+            pstmtInsertConfiguration.setString(1, rootJson);
+            pstmtInsertConfiguration.setString(2, metadataJson);
             pstmtInsertConfiguration.setTimestamp(3, createdAtTimestamp);
-            pstmtInsertConfiguration.setString(4, update.metadata.id);
+            pstmtInsertConfiguration.setString(4, metadata.id);
             pstmtInsertConfiguration.execute();
         }
         try (PreparedStatement pstmtUpdateCurrentConfiguraion =
                  firstEntry ? connection.prepareStatement("insert into currentconfiguration (root,metadata,createdAt,id) values (cast (? as json), cast (? as json), ?, ?)")
                      : connection.prepareStatement("update currentconfiguration set root = cast (? as json), metadata = cast (? as json), createdAt = ?, id = ?")) {
-            pstmtUpdateCurrentConfiguraion.setString(1, objectMapper.writeValueAsString(update.root));
-            pstmtUpdateCurrentConfiguraion.setString(2, objectMapper.writeValueAsString(update.metadata));
+            pstmtUpdateCurrentConfiguraion.setString(1, rootJson);
+            pstmtUpdateCurrentConfiguraion.setString(2, metadataJson);
             pstmtUpdateCurrentConfiguraion.setTimestamp(3, createdAtTimestamp);
-            pstmtUpdateCurrentConfiguraion.setString(4, update.metadata.id);
+            pstmtUpdateCurrentConfiguraion.setString(4, metadata.id);
             pstmtUpdateCurrentConfiguraion.execute();
         }
     }

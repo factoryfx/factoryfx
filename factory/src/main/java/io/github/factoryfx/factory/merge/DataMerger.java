@@ -123,7 +123,16 @@ public final class DataMerger<R extends FactoryBase<?,R>> {//final cause thread 
     }
 
     public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker) {
-        MergeResult<R> mergeResult = new MergeResult<>(currentData,idToFactory);
+        return createMergeResult(permissionChecker,false);
+    }
+
+    /**
+     * @param commonVersionEqualsCurrent the caller guarantees that commonData is equal to currentData (update based
+     *                                   on the current configuration). commonData is then reused as the previous-state
+     *                                   root for the diff, skipping the deep copy of currentData.
+     */
+    public MergeResult<R> createMergeResult(Function<String,Boolean> permissionChecker, boolean commonVersionEqualsCurrent) {
+        MergeResult<R> mergeResult = new MergeResult<>(currentData,idToFactory,commonVersionEqualsCurrent?commonData:currentData.internal().copy());
 
         for (Triple<R> entry : mergeable) {
             FactoryBase<?,R> originalValue = entry.commonFactory;

@@ -59,8 +59,15 @@ public class RootFactoryWrapper<R extends FactoryBase<?,R>> {
     }
 
     public MergeResult<R> merge(R commonVersion, R newVersion, Function<String,Boolean> permissionChecker){
+        return merge(commonVersion, newVersion, permissionChecker, false);
+    }
+
+    /**
+     * @param commonVersionEqualsCurrent see {@link DataMerger#createMergeResult(Function, boolean)}
+     */
+    public MergeResult<R> merge(R commonVersion, R newVersion, Function<String,Boolean> permissionChecker, boolean commonVersionEqualsCurrent){
         DataMerger<R> dataMerger = new DataMerger<>(rootFactory, commonVersion, newVersion);
-        io.github.factoryfx.factory.merge.MergeResult<R> mergeResult = dataMerger.createMergeResult(permissionChecker);
+        io.github.factoryfx.factory.merge.MergeResult<R> mergeResult = dataMerger.createMergeResult(permissionChecker,commonVersionEqualsCurrent);
         MergeDiffInfo<R> result = mergeResult.executeMerge();
         rootFactory.internal().loopDetector();
         updateCachedChildren();

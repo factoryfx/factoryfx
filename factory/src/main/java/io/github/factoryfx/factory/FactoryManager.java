@@ -34,15 +34,25 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
     }
 
     public FactoryUpdateLog<R> update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker){
+        return update(commonVersion, newVersion, permissionChecker, false);
+    }
+
+    /**
+     * @param commonVersionEqualsCurrent the caller guarantees that commonVersion is equal to the currently running
+     *                                   configuration (update based on the current configuration). skips the deep copy
+     *                                   of the current factory tree for the diff previous state.
+     */
+    public FactoryUpdateLog<R> update(R commonVersion , R newVersion, Function<String,Boolean> permissionChecker, boolean commonVersionEqualsCurrent){
         if (currentFactoryRoot==null) {
             throw new IllegalStateException("update on a not started manager");
         }
+        //rewrapRoot=false: merge re-finalises the tree (executeMerge) and refreshes the wrapper caches (updateCachedChildren)
         return this.update((root, idToFactory) -> {
             Collection<FactoryBase<?,R>> previousFactories = currentFactoryRoot.getFactoriesInDestroyOrder();
             previousFactories.forEach((f) -> f.internal().resetLog());
-            RootFactoryWrapper.MergeResult<R> merge = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker);
+            RootFactoryWrapper.MergeResult<R> merge = currentFactoryRoot.merge(commonVersion, newVersion, permissionChecker, commonVersionEqualsCurrent);
             return merge.mergeDiffInfo;
-        });
+        }, false);
     }
 
     private FactoryUpdateLog<R> updateCurrentFactory(MergeDiffInfo<R> mergeDiffInfo) {
@@ -103,11 +113,21 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
      * @param permissionChecker permissionChecker
      * @return MergeDiffInfo*/
     public MergeDiffInfo<R> simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker){
+        return simulateUpdate(commonVersion, newVersion, permissionChecker, false);
+    }
+
+    /** get the merge result  but don't execute the merge and liveObjects updates
+     * @param commonVersion commonVersion
+     * @param newVersion newVersion
+     * @param permissionChecker permissionChecker
+     * @param commonVersionEqualsCurrent see {@link #update(FactoryBase, FactoryBase, Function, boolean)}
+     * @return MergeDiffInfo*/
+    public MergeDiffInfo<R> simulateUpdate(R commonVersion , R newVersion,  Function<String, Boolean> permissionChecker, boolean commonVersionEqualsCurrent){
         newVersion.internal().finalise();
         newVersion.internal().loopDetector();
 
         DataMerger<R> dataMerger = new DataMerger<>(currentFactoryRoot.copy(), commonVersion, newVersion);
-        return dataMerger.createMergeResult(permissionChecker).executeMerge();
+        return dataMerger.createMergeResult(permissionChecker,commonVersionEqualsCurrent).executeMerge();
     }
 
 
@@ -180,15 +200,17 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
         return currentFactoryRoot!=null;
     }
 
-    private FactoryUpdateLog<R> update(FactoryUpdateMerge<R> updater) {
+    private FactoryUpdateLog<R> update(FactoryUpdateMerge<R> updater, boolean rewrapRoot) {
         for (FactoryBase<?, R> factory : currentFactoryRoot.collectChildFactories()) {
             factory.internal().visitAttributesFlat((attributeMetadata, attribute) -> attribute.internal_startBatchEdit());
         }
 
         try {
             MergeDiffInfo<R> mergeDiffInfo = updater.update(currentFactoryRoot.getRoot(), currentFactoryRoot.getRoot().internal().collectChildFactoryMap());
-            currentFactoryRoot.getRoot().internal().needReFinalisation();
-            currentFactoryRoot=new RootFactoryWrapper<>(currentFactoryRoot.getRoot());
+            if (rewrapRoot) {
+                currentFactoryRoot.getRoot().internal().needReFinalisation();
+                currentFactoryRoot=new RootFactoryWrapper<>(currentFactoryRoot.getRoot());
+            }
             return this.updateCurrentFactory(mergeDiffInfo);
         } catch (Exception e){
             logger.error("factory reset after exception during update",e);
@@ -205,9 +227,10 @@ public class FactoryManager<L,R extends FactoryBase<L,R>> {
     }
 
     public FactoryUpdateLog<R> update(FactoryUpdate<R> updater) {
+        //rewrapRoot=true: the updater mutates the tree directly, re-finalise and refresh the wrapper caches
         return update((root, idToFactory) -> {
             updater.update(root,idToFactory);
             return null;
-        });
+        }, true);
     }
 }

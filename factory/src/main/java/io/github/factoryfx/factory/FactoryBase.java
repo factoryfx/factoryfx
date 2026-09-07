@@ -338,6 +338,35 @@ public class FactoryBase<L, R extends FactoryBase<?, R>> {
         }
     }
 
+    /**
+     * server-only validation of attributes and factory-level server validations, without visiting child factories
+     */
+    private List<ValidationError> validateFlatServer() {
+        final List<ValidationError> result = new ArrayList<>();
+        visitAttributesFlat((attributeMetadata, attribute) ->
+                result.addAll(attribute.internal_validateServer(this, attributeMetadata.attributeVariableName)));
+        if (dataValidationsServer != null) {
+            for (AttributeValidation<?> validation : dataValidationsServer) {
+                validation.validate(this).values().forEach(result::addAll);
+            }
+        }
+        return result;
+    }
+
+    private List<AttributeValidation<?>> dataValidationsServer;
+
+    private <T> void addServerValidation(Validation<T> validation, Attribute<?, ?>... dependencies) {
+        if (dependencies.length == 0) {
+            throw new IllegalArgumentException("at least one dependency attribute is required (validation errors are reported on the dependencies)");
+        }
+        if (dataValidationsServer == null) {
+            dataValidationsServer = new ArrayList<>();
+        }
+        for (Attribute<?, ?> dependency : dependencies) {
+            dataValidationsServer.add(new AttributeValidation<>(validation, dependency));
+        }
+    }
+
     private void merge(FactoryBase<?, R> originalValue, FactoryBase<?, R> newValue, MergeResult<R> mergeResult, Function<String, Boolean> permissionChecker) {
         this.visitAttributesTripleFlat(originalValue, newValue, (attributeName, currentMerger, originalMerger, newMerger) -> {
             //for performance to execute compare only once
@@ -852,6 +881,19 @@ public class FactoryBase<L, R extends FactoryBase<?, R>> {
         }
 
         /**
+         * factory validation executed ONLY on the server (on configuration updates, simulateUpdate and the
+         * preflight check), never in editor clients, see {@link Attribute#serverValidation(Validation)}
+         *
+         * @param validation   validation function
+         * @param dependencies attributes which affect the validation, the validation errors are reported on them
+         *                     (at least one is required)
+         * @param <T>          this
+         */
+        public <T> void addServerValidation(Validation<T> validation, Attribute<?, ?>... dependencies) {
+            factory.addServerValidation(validation, dependencies);
+        }
+
+        /**
          * mark factory as catalog item means that for semanticCopy the factory is considered as singleton
          *
          * @param <T> this
@@ -949,6 +991,10 @@ public class FactoryBase<L, R extends FactoryBase<?, R>> {
 
         public List<ValidationError> validateFlat() {
             return factory.validateFlat();
+        }
+
+        public List<ValidationError> validateFlatServer() {
+            return factory.validateFlatServer();
         }
 
         public <F extends FactoryBase<?, R>> void merge(F originalValue, F newValue, MergeResult<R> mergeResult, Function<String, Boolean> permissionChecker) {
@@ -1298,18 +1344,35 @@ public class FactoryBase<L, R extends FactoryBase<?, R>> {
         return new DataStorageMetadata(attributes, internal_getDataClass().getName(), count);
     }
 
-    //TODO model path with multiple parents
+    /**
+     * shortest path from the root to this factory (excluding this factory), empty for the root itself.<br>
+     * factories can have multiple parents, the path over the fewest intermediate factories is returned (bfs over the parents)
+     */
     private List<FactoryBase<?, ?>> getPathFromRoot() {
-        ArrayList<FactoryBase<?, ?>> result = new ArrayList<>();
-        FactoryBase<?, ?> current = this;
-        while (!current.getParents().isEmpty()) {
-            FactoryBase<?, ?> parent = current.getParents().iterator().next();
-            result.add(parent);
-            current = parent;
-
+        Map<FactoryBase<?, ?>, FactoryBase<?, ?>> childOnPath = new HashMap<>();//parent -> child over which the bfs reached it
+        ArrayDeque<FactoryBase<?, ?>> queue = new ArrayDeque<>();
+        HashSet<FactoryBase<?, ?>> visited = new HashSet<>();
+        queue.add(this);
+        visited.add(this);
+        while (!queue.isEmpty()) {
+            FactoryBase<?, ?> current = queue.poll();
+            for (FactoryBase<?, ?> parent : current.getParents()) {
+                if (visited.add(parent)) {
+                    childOnPath.put(parent, current);
+                    if (parent.getParents().isEmpty()) {//reached the root
+                        ArrayList<FactoryBase<?, ?>> result = new ArrayList<>();
+                        FactoryBase<?, ?> step = parent;
+                        while (step != this) {
+                            result.add(step);
+                            step = childOnPath.get(step);
+                        }
+                        return result;
+                    }
+                    queue.add(parent);
+                }
+            }
         }
-        Collections.reverse(result);
-        return result;
+        return new ArrayList<>();
     }
 
     private void assertRoot() {

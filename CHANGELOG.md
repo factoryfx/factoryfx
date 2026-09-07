@@ -1,3 +1,88 @@
+# 5.0.0
+
+## Breaking changes
+* **Microservice / FactoryTreeBuilder** (rebuild merge on start)
+  * the current configuration replaces the initial configuration as the reference for the treeBuilder rebuild merge. The FactoryTreeBuilder describes the technical configuration of the tree: on start it only contributes newly introduced factories (templates without an instance in the current configuration) including their wiring into empty references. Existing factories keep their current values and wiring, user added factories are preserved and factories removed from the builder are not removed from the current configuration. Builder default value changes are no longer propagated to existing configurations, use the new configuration patches for data changes
+* **DataStorage**
+  * the current configuration is now stored as compact json (previously pretty printed): FileSystemDataStorage currentFactory.json, PostgresDataStorage currentconfiguration, OracledbDataStorage FACTORY_CURRENT. The format change is cosmetic, all readers are whitespace-agnostic and previously stored pretty files remain readable
+  * updateCurrentData contract clarified: implementations must not retain a reference to update.root after the method returns (the caller may pass the live factory tree). Custom DataStorage implementations that store the object itself must copy it
+  * DataStoragePatcher is removed, patchAll/patchCurrentData now take the same ConfigurationPatch interface used for the patches registered on the MicroserviceBuilder. The patch callback receives the factory json wrapped as DataJsonNode (generic factory api, previously a raw ObjectNode) and the metadata as typed StoredDataMetadata (previously a raw JsonNode). Changes to StoredDataMetadata.configurationSchemaVersion and to the dataStorageMetadataDictionary are persisted, the rest of the metadata is read-only
+  * DataJsonNode.getJsonNode() now returns ObjectNode (previously JsonNode), removing the cast every raw patch needed
+  * DataStorage.patchCurrentData is removed and patchAll is demoted to the persistence primitive behind MicroserviceDeployment.persistConfigurationPatches: patching is declared on the MicroserviceBuilder (withPatch, applied in-memory on every load) and persisted explicitly via persistConfigurationPatches, the storage is no longer patched directly
+  * new method updateCurrentDataRaw(RawFactoryDataAndMetadata): store a raw configuration (json + complete metadata) unchanged as the new current configuration, counterpart of getCurrentDataRaw. implemented for filesystem/postgres/oracle, in-memory throws UnsupportedOperationException, custom DataStorage implementations must implement it
+
+## Improved performance on saving configurations
+* **Microservice / FactoryManager** (configuration update)
+  * updateCurrentFactory/simulateUpdateCurrentFactory: when the update is based on the current configuration (the usual case, baseVersionId is the current version) the common version for the merge is an in-memory copy of the running factory tree instead of being read and deserialized from the storage
+  * the merge no longer creates an additional deep copy of the running factory tree for the diff previous state when the update is based on the current configuration (the common version is reused), same for the treeBuilder rebuild merge on start. New DataMerger.createMergeResult(permissionChecker, commonVersionEqualsCurrent) overload
+  * FactoryManager.update via merge no longer re-finalises the factory tree and re-runs the loop detection and lifecycle-order collection a second time after the merge (the merge already does this), only the direct-mutation update(FactoryUpdate) still does
+* **DataStorage** (FileSystemDataStorage, PostgresDataStorage, OracledbDataStorage)
+  * root and metadata are serialized once per save and reused for the current and the history record (previously serialized twice)
+* **FileSystemDataStorage**
+  * getCurrentDataId no longer deserializes the whole configuration, the id is cached and read from the metadata file only
+* **Microservice**
+  * updateCurrentFactory no longer creates a defensive deep copy of the factory tree before storing it
+* **InMemoryDataStorage**
+  * fix: updateCurrentData stored a live reference to the factory tree, later in-place updates could corrupt stored history (now copies)
+
+## Server validation
+* **Attribute / FactoryBase**
+  * new validation category executed ONLY on the server, never in editor clients: Attribute.serverValidation(validation) and config().addServerValidation(validation, dependencies) (factory-level, at least one dependency attribute required). For validations that need server resources or are too expensive to run while typing. Server validations run against a finalised but not-started factory tree, so they must only inspect attribute values. The required/nullable check stays a client validation
+  * existing validation(...) rules are unchanged: editor clients + preflight check + treeBuilder build-time validation, they still do NOT run on configuration updates
+* **Microservice**
+  * updateCurrentFactory: runs the server validations on the submitted factory tree BEFORE the merge and REJECTS the update on failure: no liveObject change, no persistence, the returned FactoryUpdateLog carries the errors (failedValidation()). Covers revertTo and snapshot restore while started as well. Previously configuration updates ran no validation at all
+  * simulateUpdateCurrentFactory: reports the server validation errors in MergeDiffInfo.validationErrors without affecting the merge result
+  * update(FactoryUpdate) (in-JVM programmatic self-update) is intentionally NOT validated: it is the application's own trusted code, server validation guards externally submitted configurations
+* **MicroserviceDeployment**
+  * preflightCheck reports server validation errors of the stored configuration in addition to the normal validation errors ("server validation error" problems)
+  * snapshot restore while NOT started stays unvalidated by design (rollback safety net must not be blockable, the preflight check is the pre-start verification)
+* **FactoryUpdateLog / MergeDiffInfo**
+  * new field validationErrors (List of error descriptions, additive and empty for old payloads) and FactoryUpdateLog.failedValidation() / MergeDiffInfo.hasValidationErrors(). MergeDiffInfo.successfullyMerged() is unaffected by validation errors
+* **javafx DiffDialogBuilder** (save/revert/simulate in the javafx editor)
+  * a save/revert rejected by server validation shows a "Validation failed - the changes were not applied" dialog listing the validation errors (previously a NullPointerException, the rejected FactoryUpdateLog has no merge result). The local changes stay loaded in the editor so they can be corrected and saved again
+  * the simulate ("show changes") dialog lists server validation errors above the diff when present
+* **web client SaveWidget** (domFactoryEditing/typescriptGenerator)
+  * the save result view shows the server validation errors when the update was rejected
+
+## Preflight checks and configuration snapshots
+* **Microservice / MicroserviceDeployment**
+  * new class MicroserviceDeployment, accessed via Microservice.deployment(): home of the deployment tooling below plus persistConfigurationPatches. intended for deployment scripts/tooling, the Microservice class itself stays the runtime API (start/stop/update/history)
+  * preflightCheck(): verify WITHOUT starting the application that this software version can work with the stored configuration: the current configuration deserializes through the regular load path (patches, migrations, json binding), the factory tree has no validation errors and the treeBuilder rebuild succeeds. Returns a report with all found problems instead of failing on the first one, intended for deployment tooling before switching to a new software version
+  * preflightCheck(PreflightCheckOptions): additional checks are selected via the options object. PreflightCheckOptions.includeHistory() additionally verifies that every history configuration can be loaded. PreflightCheckOptions.createLiveObjects() additionally creates all liveObjects (the factories' create phase, on the tree the start would use including the treeBuilder rebuild merge) WITHOUT starting them; the created objects are discarded (no start, no destroy — per the lifecycle contract external resources are claimed in start)
+  * saveConfigurationSnapshot(Path): save the current configuration as stored (raw json, no patches/migrations applied) to a file. Since the stored form is unchanged the snapshot can also be restored by an older software version, making it a rollback safety net before an upgrade
+  * loadConfigurationSnapshot(Path): restore a snapshot through the regular load path (patches and migrations apply), stored as a new configuration version with the existing history preserved. Updates the running application when started
+  * loadConfigurationSnapshotRaw(Path): restore a snapshot WITHOUT baking the registered patches and migrations into the stored form: the snapshot json and its configuration schema version are stored unchanged as a new configuration version, so patches keep applying on load as usual and the stored configuration remains readable by an older software version. Updates the running application when started (loaded through the regular load path, patches apply in-memory)
+* **DataStorage**
+  * new method getCurrentDataRaw(): the current configuration as stored (raw json + metadata), implemented for filesystem/postgres/oracle (in-memory throws UnsupportedOperationException)
+
+## More reliable configuration migration
+* **Configuration patches** (applied dynamically on load, run-once or every-time)
+  * new builder api MicroserviceBuilder.withPatch: registered patches are applied in-memory whenever a configuration (current or history) is loaded, the stored files are not modified
+  * patches run after the declarative migrations (rename/retype), the removed/retyped attribute handling and the definition relocation: they always see the stored configuration lifted to the current model shape, so patches that roundtrip through the current factory classes are safe by construction
+  * withPatch(fromVersion, toVersion, patch): version-gated patch with run-once semantics based on the new configuration schema version stored in the metadata (StoredDataMetadata.configurationSchemaVersion, previously stored configurations without a version are treated as version 0). Patches chain in version order, the chain is validated in MicroserviceBuilder.build
+  * withPatch(patch): patch applied on every load regardless of version
+  * withConfigurationSchemaVersion(version): declare the schema version written on save (optional, defaults to the highest patch toVersion)
+  * Microservice.deployment().persistConfigurationPatches(): explicitly applies the declarative migrations and the registered patches to all stored configurations (same order as on load) and writes the results including the updated metadata dictionary and the bumped schema version back to the storage, afterwards version-gated patches self-skip
+  * loading a configuration with a newer schema version than the application declares logs a warning and skips version-gated patches (every-time patches still run)
+* **Retype migrations** (changing an attribute's type no longer drops the stored data)
+  * new builder api MicroserviceBuilder.withRetypeAttributeMigration / withRetypeListAttributeMigration: convert the previously stored value to the new attribute type with a converter function
+  * automatic conversions without a registered migration for the built-in scalar attribute types: single value to list, list with one element to single value, number/boolean to string, string to number/boolean when parseable. Lossy or unknown conversions clear the value as before, with a warning naming the factory class, attribute and the migration api to register
+  * automatic conversions also cover reference attributes when the reference class is unchanged: reference list to single reference (the first element is used, further elements are dropped with a warning), single reference to list, and pass-through for a changed attribute class with the same shape (e.g. a custom list attribute replaced with FactoryListAttribute)
+  * withRenameAttributeMigration no longer clobbers the target attribute when old and new attribute coexisted during a transition: an existing value of the target attribute wins, the stored value of the old attribute is dropped with a warning. Combined with the reference conversions this migrates a "deprecated list attribute replaced by a differently named single reference" without a hand-written patch
+* **Removed attributes/classes no longer lose referenced factories**
+  * references are serialized first-occurrence-defines (JsonIdentityInfo): when the first occurrence (the full definition) sat inside a removed attribute or a factory of a removed class, the definition was silently dropped and the remaining id references dangled (previously only partially rescued by an exception-driven fallback, and not at all inside patches that roundtrip through the current factory classes)
+  * on load such definitions are now relocated to their first remaining reference before the registered configuration patches run; definitions not referenced anywhere else are dropped with a warning
+* **Attribute class rename migrations** (renaming/moving a custom attribute class no longer drops the stored data)
+  * new builder api MicroserviceBuilder.withRenameAttributeClassMigration: for a renamed or moved custom attribute class whose serialized form is unchanged (e.g. an attribute class moved to a shared library). Rewrites the attribute class name recorded in the stored metadata dictionary so the attribute is not detected as retyped (which would clear the stored values)
+  * new api DataStorageMetadataDictionary.retypeAttributeClass(previousName, newName): the underlying primitive, usable from a ConfigurationPatch for storage-level one-time migrations
+
+## Diagnostics
+* **FactoryTreeBuilder / Microservice** (singleton usage check)
+  * new method FactoryTreeBuilder.checkSingletonUsage(root): reports factories created from SINGLETON templates that occur as more than one distinct instance in the tree, with the path of every occurrence. Factories are matched to templates by class and tree-builder name, so a class registered as several named singletons may legally occur once per name; multiple references to the same instance never warn (that is the point of a singleton). Typical duplicate source: a copied factory, since a copy keeps its tree-builder name
+  * Microservice.start logs the reported duplicates as warnings
+* **FactoryBase**
+  * getPathFromRoot returns the shortest path from the root for factories with multiple parents (previously an arbitrary and non-deterministic parent chain): validation error paths in the javafx diff dialog, the editor breadcrumb history and the singleton warnings now show where a factory sits via its most direct route
+
 # 4.1.10
 * **FactoryTreeBuilder**
     * fix: builders added via addBuilder() were only applied inside buildTreeUnvalidated(), so buildNewSubTree/buildSubTree/getScope failed with "builder missing Factory" when called before the tree was ever built. This broke server startup with existing stored data after 4.1.8 added the errorHandler attribute to JettyServerFactory: MigrationManager.read -> fillNewAttributes -> buildNewSubTree(root) hit the unapplied nested root creator of jetty-based builders. Nested builders are now applied lazily and exactly once from all context lookups

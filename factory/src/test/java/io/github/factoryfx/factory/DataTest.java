@@ -17,6 +17,9 @@ import io.github.factoryfx.factory.storage.migration.metadata.DataStorageMetadat
 import io.github.factoryfx.factory.util.LanguageText;
 import io.github.factoryfx.factory.validation.AttributeValidation;
 import io.github.factoryfx.factory.validation.ValidationResult;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryA;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryB;
+import io.github.factoryfx.factory.testfactories.ExampleFactoryC;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -549,6 +552,27 @@ public class DataTest {
 
         Assertions.assertEquals(1,exampleDataB.internal().getPathFromRoot().size());
         Assertions.assertEquals(data,exampleDataB.internal().getPathFromRoot().get(0));
+    }
+
+    @Test
+    public void test_getPathFromRoot_shortest_path_with_multiple_parents(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        ExampleFactoryB b1 = new ExampleFactoryB();
+        ExampleFactoryC c = new ExampleFactoryC();
+        ExampleFactoryB b2 = new ExampleFactoryB();
+        root.referenceAttribute.set(b1);
+        b1.referenceAttributeC.set(c);
+        c.referenceAttribute.set(b2);//long path to b2: root/b1/c
+        root.referenceListAttribute.add(b2);//short path to b2: root
+        root.internal().finalise();
+
+        List<FactoryBase<?,?>> path = b2.internal().getPathFromRoot();
+        Assertions.assertEquals(List.of(root), path);
+
+        path = c.internal().getPathFromRoot();
+        Assertions.assertEquals(List.of(root,b1), path);
+
+        Assertions.assertTrue(root.internal().getPathFromRoot().isEmpty());
     }
 
     @Test

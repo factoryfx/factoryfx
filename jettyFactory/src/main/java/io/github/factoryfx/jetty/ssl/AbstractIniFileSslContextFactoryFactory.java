@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -75,7 +76,7 @@ public abstract class AbstractIniFileSslContextFactoryFactory<L extends SslConte
         try {
             Ini ini = loadIniFile();
 
-            Path iniFileDir = Paths.get(iniFile.get()).getParent().toAbsolutePath();
+            Path iniFileDir = Objects.requireNonNull(Paths.get(iniFile.get()).toAbsolutePath().getParent());
             factoryFactory.keyStore.set(Files.readAllBytes(iniFileDir.resolve(ini.get(section.get(), "KEYSTORE"))));
             factoryFactory.keyStoreType.set(KeyStoreType.valueOf(ini.get(section.get(), "KEYSTORE_TYPE")));
             factoryFactory.keyStorePassword.set(ini.get(section.get(), "KEYSTORE_PASSWORD"));
