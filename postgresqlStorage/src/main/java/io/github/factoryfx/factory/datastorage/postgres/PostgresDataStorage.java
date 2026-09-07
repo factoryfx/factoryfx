@@ -82,19 +82,30 @@ public class PostgresDataStorage<R extends FactoryBase<?, R>> implements DataSto
     @Override
     public DataAndId<R> getCurrentData() {
         try (Connection connection = ensureTablesAreAvailable(dataSource.getConnection());
-             PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration");
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = connection.prepareStatement("select cast (root as text) as root, cast (metadata as text) as metadata from currentconfiguration")) {
 
-            if (!rs.next()) {//"No current factory found
-                StoredDataMetadata metadata = initCurrentData(connection);
-                return new DataAndId<>(initialData, metadata.id);
-            } else {
-                StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2), false);
-                return new DataAndId<>(migrationManager.read(rs.getString(1), metaData), metaData.id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return readCurrentData(rs);
+                }
+            }
+            //no current factory found: store the initial factory and load it back through the regular load
+            //path so the registered patches and migrations apply, same as on every later start
+            initCurrentData(connection);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.next()) {
+                    throw new IllegalStateException("initialisation of the current configuration failed");
+                }
+                return readCurrentData(rs);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Cannot read current factory", e);
         }
+    }
+
+    private DataAndId<R> readCurrentData(ResultSet rs) throws SQLException {
+        StoredDataMetadata metaData = migrationManager.readStoredFactoryMetadata(rs.getString(2), false);
+        return new DataAndId<>(migrationManager.read(rs.getString(1), metaData), metaData.id);
     }
 
     @Override

@@ -59,6 +59,19 @@ public class PostgresDataStorageTest {
     }
 
     @Test
+    public void test_init_initial_factory_loaded_through_patches() {
+        MigrationManager<ExampleFactoryA> migrationManager = createDataMigrationManager();
+        migrationManager.addPatch((root, metadata, objectMapper) -> root.setAttributeValue("stringAttribute", objectMapper.valueToTree("patched")));
+        PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,
+                                                                                                createInitialExampleFactoryA(),
+                                                                                                migrationManager,
+                                                                                                ObjectMapperBuilder.build());
+        //the initialisation of an empty storage must return the initial factory loaded through the regular
+        //load path, so the registered patches apply, same as on every later start
+        Assertions.assertEquals("patched", postgresFactoryStorage.getCurrentData().root.stringAttribute.get());
+    }
+
+    @Test
     @Disabled
     public void test_init_no_existing_factory() throws SQLException {
         PostgresDataStorage<ExampleFactoryA> postgresFactoryStorage = new PostgresDataStorage<>(postgresDatasource,

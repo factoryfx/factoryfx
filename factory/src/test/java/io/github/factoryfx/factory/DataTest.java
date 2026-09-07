@@ -555,6 +555,18 @@ public class DataTest {
     }
 
     @Test
+    public void test_collectChildrenDeep_shared_factory_collected_once(){
+        ExampleFactoryA root = new ExampleFactoryA();
+        ExampleFactoryB shared = new ExampleFactoryB();
+        root.referenceAttribute.set(shared);
+        root.referenceListAttribute.add(shared);//second parent edge to the same instance
+        root.internal().finalise();
+
+        List<FactoryBase<?,?>> children = new ArrayList<>(root.internal().collectChildrenDeep());
+        Assertions.assertEquals(2, children.size(), "expected root and the shared factory exactly once: " + children);
+    }
+
+    @Test
     public void test_getPathFromRoot_shortest_path_with_multiple_parents(){
         ExampleFactoryA root = new ExampleFactoryA();
         ExampleFactoryB b1 = new ExampleFactoryB();

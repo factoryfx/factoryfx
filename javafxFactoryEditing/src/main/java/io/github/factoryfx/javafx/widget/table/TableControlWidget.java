@@ -2,10 +2,12 @@ package io.github.factoryfx.javafx.widget.table;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
@@ -66,15 +68,34 @@ public class TableControlWidget<T> implements Widget {
 
         HBox.setHgrow(filterField, Priority.ALWAYS);
 
-        FilteredList<T> filteredList = new FilteredList<>(tableView.getItems() == null ? FXCollections.emptyObservableList() : tableView.getItems(), null);
-        SortedList<T> sortedList = new SortedList<>(filteredList);
-        tableView.setItems(sortedList);
-        sortedList.comparatorProperty().bind(tableView.comparatorProperty());
-
-        filterField.textProperty().addListener(new FilterTextFieldListener<>(filteredList));
-
         final Label count = new Label("");
-        filteredList.addListener((ListChangeListener.Change<? extends T> observable) -> count.setText(String.valueOf(observable.getList().size())));
+        FilterTextFieldListener<T> filterTextFieldListener = new FilterTextFieldListener<>();
+        filterField.textProperty().addListener(filterTextFieldListener);
+
+        //the items are replaced with an unmodifiable filtered/sorted view of the original list.
+        //re-wrap whenever someone later replaces the items via tableView.setItems(...), otherwise the
+        //filter field and the count label would silently operate on the discarded list. A SortedList is
+        //left untouched: it is either our own wrap (recursive trigger from setItems below) or an external
+        //wrapper around our chain (e.g. ControlsFX TableFilter), which keeps the filter functional
+        InvalidationListener itemsListener = observable -> {
+            ObservableList<T> items = tableView.getItems();
+            if (items instanceof SortedList) {
+                return;
+            }
+            FilteredList<T> filteredList = new FilteredList<>(items == null ? FXCollections.emptyObservableList() : items, null);
+            SortedList<T> sortedList = new SortedList<>(filteredList);
+            tableView.setItems(sortedList);
+            sortedList.comparatorProperty().bind(tableView.comparatorProperty());
+
+            filterTextFieldListener.setFilteredList(filteredList);
+            filterTextFieldListener.changed(filterField.textProperty(), null, filterField.getText());
+
+            count.setText(String.valueOf(filteredList.size()));
+            filteredList.addListener((ListChangeListener.Change<? extends T> change) -> count.setText(String.valueOf(change.getList().size())));
+        };
+        tableView.itemsProperty().addListener(itemsListener);
+        itemsListener.invalidated(tableView.itemsProperty());
+
         target.getChildren().add(new Label("Filter:"));
         target.getChildren().add(filterField);
         target.getChildren().add(new Separator(Orientation.VERTICAL));
@@ -116,7 +137,13 @@ public class TableControlWidget<T> implements Widget {
 
     }
 
-    private record FilterTextFieldListener<T>(FilteredList<T> filteredList) implements ChangeListener<String> {
+    private static class FilterTextFieldListener<T> implements ChangeListener<String> {
+        private FilteredList<T> filteredList;
+
+        void setFilteredList(FilteredList<T> filteredList) {
+            this.filteredList = filteredList;
+        }
+
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
             filteredList.setPredicate(data -> {

@@ -1,3 +1,11 @@
+# 5.0.1
+* **TableControlWidget**
+  * the widget replaces the table's items with an unmodifiable filtered/sorted view; code that later called tableView.setItems(...) silently disconnected the filter field and the count label, and code that mutated tableView.getItems() crashed with UnsupportedOperationException. The widget now listens on itemsProperty and re-wraps replaced items (keeping the current filter text), so setItems keeps working after the wrap. Mutating getItems() still throws: mutate the original backing list instead
+* **FactoryBase**
+  * fix collectChildrenDeep: a factory referenced by multiple parents (shared singletons, view attribute targets) was collected once per parent instead of once. Long-standing bug (predates 5.0.0), visible as duplicated validation errors for the same factory and as false duplicates in the new singleton usage check
+* **PostgresDataStorage / OracledbDataStorage**
+  * fix: initialising an empty storage returned the initial factory directly, bypassing the regular load path. Since 5.0.0 moved the configuration patches to load time, the first start after initialisation ran WITHOUT the registered patches (e.g. environment-specific settings patches saw no effect until the second start). The initial factory is now stored and loaded back through the regular load path, patches and migrations included (FileSystemDataStorage already did this)
+
 # 5.0.0
 
 ## Breaking changes

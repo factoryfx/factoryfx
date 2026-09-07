@@ -203,14 +203,15 @@ public class FactoryBase<L, R extends FactoryBase<?, R>> {
         ArrayList<FactoryBase<?, R>> result = new ArrayList<>();
         ArrayDeque<FactoryBase<?, R>> stack = new ArrayDeque<>();
         stack.push(this);
+        this.collectedTo = result;//mark on push, not on pop: a factory referenced by multiple parents was pushed once per parent and collected repeatedly
         while (!stack.isEmpty()) {
             FactoryBase<?, R> factory = stack.pop();
 
             result.add(factory);
-            factory.collectedTo = result;
 
             for (FactoryBase<?, R> child : factory.finalisedChildrenFlat) {
                 if (child.collectedTo != result) {
+                    child.collectedTo = result;
                     stack.push(child);
                 }
             }

@@ -80,6 +80,21 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
 
     @Override
     public DataAndId<R> getCurrentData() {
+        DataAndId<R> currentData = readCurrentData();
+        if (currentData != null) {
+            return currentData;
+        }
+        //no current factory found: store the initial factory and load it back through the regular load
+        //path so the registered patches and migrations apply, same as on every later start
+        initCurrentData();
+        currentData = readCurrentData();
+        if (currentData == null) {
+            throw new IllegalStateException("initialisation of the current configuration failed");
+        }
+        return currentData;
+    }
+
+    private DataAndId<R> readCurrentData() {
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement()) {
             String sql = "SELECT * FROM FACTORY_CURRENT";
@@ -93,9 +108,7 @@ public class OracledbDataStorage<R extends FactoryBase<?, R>> implements DataSto
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        StoredDataMetadata metadata = initCurrentData();
-        return new DataAndId<>(initialData, metadata.id);
+        return null;
     }
 
     private StoredDataMetadata initCurrentData() {
