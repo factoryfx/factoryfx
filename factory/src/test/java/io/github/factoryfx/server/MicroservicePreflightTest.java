@@ -330,6 +330,38 @@ public class MicroservicePreflightTest {
     }
 
     @Test
+    public void test_preflightSnapshot_checksTheSnapshot_notTheCurrentConfiguration() {
+        //the rollback case: the current configuration was written by the version being rolled back and fails the
+        //preflight of this version, the snapshot that will be restored on start is fine
+        Path snapshot = snapshotFolder.resolve("snapshot.json");
+        {
+            Microservice<Void, ServerValidatedPreflightFactory> setup = buildServerValidated();
+            setup.start();
+            setup.deployment().saveConfigurationSnapshot(snapshot);
+            //the in-JVM programmatic self-update is not server-validated, it can persist an invalid value
+            setup.update((root, idToFactory) -> root.stringAttribute.set("serverInvalid"));
+            setup.stop();
+        }
+
+        Microservice<Void, ServerValidatedPreflightFactory> microservice = buildServerValidated();
+        Assertions.assertFalse(microservice.deployment().preflightCheck().isOk());
+        PreflightCheckReport snapshotReport = microservice.deployment().preflightCheckSnapshot(snapshot, new PreflightCheckOptions().includeHistory().createLiveObjects());
+        Assertions.assertTrue(snapshotReport.isOk(), snapshotReport.report());
+    }
+
+    @Test
+    public void test_preflightSnapshot_reportsBrokenSnapshot_insteadOfThrowing() throws IOException {
+        createStoredConfiguration("v1");
+        Path snapshot = snapshotFolder.resolve("snapshot.json");
+        Files.writeString(snapshot, "garbage - not json");
+
+        Microservice<Void, PreflightExampleFactory> microservice = build(msb -> {});
+        PreflightCheckReport report = microservice.deployment().preflightCheckSnapshot(snapshot, new PreflightCheckOptions());
+        Assertions.assertFalse(report.isOk());
+        Assertions.assertTrue(report.problems.get(0).contains("can't load the configuration snapshot"), report.report());
+    }
+
+    @Test
     public void test_snapshot_restore_appliesPatches() {
         createStoredConfiguration("v1");
 

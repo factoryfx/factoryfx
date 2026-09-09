@@ -92,47 +92,79 @@ public class MicroserviceDeployment<L, R extends FactoryBase<L, R>> {
             } catch (RuntimeException e) {
                 problems.add("can't load the current configuration (patches/migrations/deserialization failed): " + exceptionSummary(e));
             }
-            if (currentRoot != null) {
-                for (FactoryBase<?, R> factory : currentRoot.internal().collectChildrenDeep()) {
-                    for (ValidationError validationError : factory.internal().validateFlat()) {
-                        problems.add("validation error:\n" + validationError.getSimpleErrorDescription());
-                    }
-                    for (ValidationError validationError : factory.internal().validateFlatServer()) {
-                        problems.add("server validation error:\n" + validationError.getSimpleErrorDescription());
-                    }
-                }
-                if (options.createLiveObjects) {
-                    currentRoot.internal().finalise();
-                    currentRoot.internal().setFactoryTreeBuilder(factoryTreeBuilder);
-                }
-                if (factoryTreeBuilder.isPersistentFactoryBuilder() && (currentRoot.internal().getTreeBuilderName() != null || currentRoot.internal().isTreeBuilderClassUsed())) {
-                    try {
-                        R rebuildRoot = factoryTreeBuilder.rebuildTreeForExistingConfiguration(currentRoot);
-                        if (options.createLiveObjects) {
-                            //merge like start() so creation runs on the tree start() would use, nothing is persisted
-                            MergeDiffInfo<R> mergeDiffInfo = new DataMerger<>(currentRoot, currentRoot.utility().copy(), rebuildRoot).createMergeResult((p) -> true, true).executeMerge();
-                            if (!mergeDiffInfo.successfullyMerged()) {
-                                problems.add("can't apply changes from FactoryTreeBuilder to the current configuration");
-                            }
-                        }
-                    } catch (RuntimeException e) {
-                        problems.add("treeBuilder rebuild for the current configuration failed: " + exceptionSummary(e));
-                    }
-                }
-                if (options.createLiveObjects) {
-                    createLiveObjects(currentRoot, problems);
-                }
-            }
-            if (options.includeHistory) {
-                for (StoredDataMetadata metadata : dataStorage.getHistoryDataList(true)) {
-                    try {
-                        dataStorage.getHistoryData(metadata.id);
-                    } catch (RuntimeException e) {
-                        problems.add("can't load the history configuration " + metadata.id + ": " + exceptionSummary(e));
-                    }
-                }
-            }
+            preflightCheckRoot(currentRoot, options, problems);
             return new PreflightCheckReport(problems);
+        }
+    }
+
+    /**
+     * preflight check like {@link #preflightCheck(PreflightCheckOptions)} but for a configuration snapshot created
+     * with {@link #saveConfigurationSnapshot(Path)} instead of the current configuration. intended for rollback
+     * deployments: when the start will restore a snapshot, the snapshot is what must be checked, the current
+     * configuration (written by the version being rolled back) is about to be replaced.
+     * {@link PreflightCheckOptions#includeHistory()} still validates the stored history, a snapshot restore
+     * preserves it.
+     *
+     * @param snapshot snapshot file
+     * @param options options
+     * @return report with all found problems, {@link PreflightCheckReport#isOk()} when safe to restore and start
+     */
+    public PreflightCheckReport preflightCheckSnapshot(Path snapshot, PreflightCheckOptions options) {
+        synchronized (microservice) {
+            checkMigrationManagerAvailable();
+            List<String> problems = new ArrayList<>();
+            R root = null;
+            try {
+                RawFactoryDataAndMetadata raw = readSnapshot(snapshot);
+                root = migrationManager.read(raw.root, raw.metadata);
+            } catch (RuntimeException e) {
+                problems.add("can't load the configuration snapshot (patches/migrations/deserialization failed): " + exceptionSummary(e));
+            }
+            preflightCheckRoot(root, options, problems);
+            return new PreflightCheckReport(problems);
+        }
+    }
+
+    private void preflightCheckRoot(R currentRoot, PreflightCheckOptions options, List<String> problems) {
+        if (currentRoot != null) {
+            for (FactoryBase<?, R> factory : currentRoot.internal().collectChildrenDeep()) {
+                for (ValidationError validationError : factory.internal().validateFlat()) {
+                    problems.add("validation error:\n" + validationError.getSimpleErrorDescription());
+                }
+                for (ValidationError validationError : factory.internal().validateFlatServer()) {
+                    problems.add("server validation error:\n" + validationError.getSimpleErrorDescription());
+                }
+            }
+            if (options.createLiveObjects) {
+                currentRoot.internal().finalise();
+                currentRoot.internal().setFactoryTreeBuilder(factoryTreeBuilder);
+            }
+            if (factoryTreeBuilder.isPersistentFactoryBuilder() && (currentRoot.internal().getTreeBuilderName() != null || currentRoot.internal().isTreeBuilderClassUsed())) {
+                try {
+                    R rebuildRoot = factoryTreeBuilder.rebuildTreeForExistingConfiguration(currentRoot);
+                    if (options.createLiveObjects) {
+                        //merge like start() so creation runs on the tree start() would use, nothing is persisted
+                        MergeDiffInfo<R> mergeDiffInfo = new DataMerger<>(currentRoot, currentRoot.utility().copy(), rebuildRoot).createMergeResult((p) -> true, true).executeMerge();
+                        if (!mergeDiffInfo.successfullyMerged()) {
+                            problems.add("can't apply changes from FactoryTreeBuilder to the current configuration");
+                        }
+                    }
+                } catch (RuntimeException e) {
+                    problems.add("treeBuilder rebuild for the current configuration failed: " + exceptionSummary(e));
+                }
+            }
+            if (options.createLiveObjects) {
+                createLiveObjects(currentRoot, problems);
+            }
+        }
+        if (options.includeHistory) {
+            for (StoredDataMetadata metadata : dataStorage.getHistoryDataList(true)) {
+                try {
+                    dataStorage.getHistoryData(metadata.id);
+                } catch (RuntimeException e) {
+                    problems.add("can't load the history configuration " + metadata.id + ": " + exceptionSummary(e));
+                }
+            }
         }
     }
 

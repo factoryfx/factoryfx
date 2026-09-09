@@ -1,3 +1,9 @@
+# 5.0.2
+* **DataStorageMetadataDictionary**
+  * new dataListView(): unmodifiable view of the class entries, for configuration patches that need to inspect or mutate attribute metadata across all classes (previously only reachable via the raw json, which the typed ConfigurationPatch callback no longer exposes)
+* **MicroserviceDeployment**
+  * new preflightCheckSnapshot(Path, PreflightCheckOptions): the preflight check run against a configuration snapshot file (created with saveConfigurationSnapshot) instead of the current configuration. For rollback deployments: when the start will restore a snapshot, the snapshot is what must pass the preflight — the current configuration was written by the (newer) version being rolled back and may legitimately be unreadable for the starting version. The options work as for preflightCheck; includeHistory still verifies the stored history, which a snapshot restore preserves
+
 # 5.0.1
 * **TableControlWidget**
   * the widget replaces the table's items with an unmodifiable filtered/sorted view; code that later called tableView.setItems(...) silently disconnected the filter field and the count label, and code that mutated tableView.getItems() crashed with UnsupportedOperationException. The widget now listens on itemsProperty and re-wraps replaced items (keeping the current filter text), so setItems keeps working after the wrap. Mutating getItems() still throws: mutate the original backing list instead

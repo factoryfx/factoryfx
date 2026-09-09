@@ -18,6 +18,17 @@ public class DataStorageMetadataDictionary {
         this.rootClass = rootClass;
     }
 
+    /**
+     * the class entries of this dictionary, e.g. to inspect or mutate attribute metadata in a
+     * {@link io.github.factoryfx.factory.storage.migration.ConfigurationPatch}. The list itself is unmodifiable,
+     * mutations go through the {@link DataStorageMetadata}/{@link AttributeStorageMetadata} methods.
+     * (intentionally not a bean-style getter: the json property is the field, detected via @JsonProperty)
+     * @return unmodifiable view of the class entries
+     */
+    public List<DataStorageMetadata> dataListView() {
+        return Collections.unmodifiableList(dataList);
+    }
+
     public DataStorageMetadata getDataStorageMetadata(String dataClassNameFullQualified){
         for (DataStorageMetadata dataStorageMetadata : this.dataList) {
             if (dataStorageMetadata.getClassName().equals(dataClassNameFullQualified)){
