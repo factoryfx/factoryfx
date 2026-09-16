@@ -21,6 +21,8 @@ open module io.github.factoryfx.docu {
     requires java.net.http;
     requires io.github.factoryfx.microserviceRestServer;
     requires io.github.factoryfx.microserviceRestClient;
+    requires org.glassfish.jersey.core.client;
+    requires org.glassfish.jersey.ext.proxy.client;
 //    requires jakarta.servlet.api;
     requires org.eclipse.jetty.server;
     requires io.github.factoryfx.starter;

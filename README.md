@@ -120,6 +120,8 @@ Different ways to change the configuration at runtime
 Configuration via web application
 * [Reuse Factories in mutiple projects](docu/src/main/java/io/github/factoryfx/docu/reusability)  
 Factory with generic RootFactory
+* [Coordinated configuration for multiple microservices](docu/src/main/java/io/github/factoryfx/docu/systemtree)  
+Deploy one system configuration to several microservices over the admin REST channel, with typed cross-service references
 * [Encrypted attributes](docu/src/main/java/io/github/factoryfx/docu/encryptedattributes)  
 Hiding information from the client like passwords
 * [Publishing to Maven Central](.github/README.md)  
