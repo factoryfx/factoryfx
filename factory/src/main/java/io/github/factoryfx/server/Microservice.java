@@ -186,6 +186,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         R currentFactoryRoot = currentFactory.root.internal().finalise();
         currentFactoryRoot.internal().setFactoryTreeBuilder(factoryTreeBuilder);
 
+        UpdateSummary pendingRebuildUpdate = null;
         if (factoryTreeBuilder.isPersistentFactoryBuilder()){
             //the current configuration is the reference: existing factories keep their values and wiring,
             //the FactoryTreeBuilder describes the technical configuration of the tree and only contributes newly introduced factories
@@ -196,8 +197,7 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
 
                 if (mergeDiffInfo.successfullyMerged()){
                     if (!mergeDiffInfo.mergeInfos.isEmpty()){
-                        DataUpdate<R> dataUpdate = new DataUpdate<>(currentFactoryRoot,"System","FactoryTreeBuilder update",currentFactory.id);
-                        dataStorage.updateCurrentData(dataUpdate,new UpdateSummary(mergeDiffInfo.mergeInfos));
+                        pendingRebuildUpdate = new UpdateSummary(mergeDiffInfo.mergeInfos);
                     }
                 } else {
                     logger.warn("can't apply changes from FactoryTreeBuilder to current storage Data");
@@ -217,7 +217,14 @@ public class Microservice<L,R extends FactoryBase<L,R>> {
         }
 
         currentFactoryRoot.internal().setMicroservice(this);//also mind ExceptionResponseAction#reset
-        return factoryManager.start(new RootFactoryWrapper<>(currentFactoryRoot));
+        L liveObject = factoryManager.start(new RootFactoryWrapper<>(currentFactoryRoot));
+        if (pendingRebuildUpdate != null) {
+            //persisted only after the merged tree proved it can start: a rebuild producing a
+            //non-startable tree must not poison the stored configuration for every following start
+            DataUpdate<R> dataUpdate = new DataUpdate<>(currentFactoryRoot,"System","FactoryTreeBuilder update",currentFactory.id);
+            dataStorage.updateCurrentData(dataUpdate,pendingRebuildUpdate);
+        }
+        return liveObject;
     }
 
     public synchronized void stop() {

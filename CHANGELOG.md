@@ -1,3 +1,9 @@
+# 5.0.3
+* **FactoryTreeBuilder** (rebuild merge on start)
+  * fix: configurations predating the tree builder identity (saved by ffx 4.x, migrated to 5.x) carry no identity on builder-created factories, so the start-up rebuild considered the builder's templates newly introduced and added duplicates next to the existing instances (e.g. a second jetty connector on the same port made the server block its own start with "Address already in use", persisted so every following start failed too). The rebuild now recognises the legacy case: for a class where NO stored instance carries the identity, an existing identity-less factory occupies its template — nothing is contributed for it and the template identity is stamped onto the factory (one-time adoption, carried into the next persisted configuration). With several identity-less candidates of the same class the choice is ambiguous: nothing is contributed and a warning is logged (stamp the identity manually, e.g. via a ConfigurationPatch). Classes with identity-carrying instances are unaffected: their identity-less instances are user-added data and never block new templates
+* **Microservice**
+  * the "FactoryTreeBuilder update" produced by the rebuild merge on start is now persisted AFTER the merged tree started successfully (previously before the start): a rebuild producing a non-startable tree no longer poisons the stored configuration for every following start
+
 # 5.0.2
 * **DataStorageMetadataDictionary**
   * new dataListView(): unmodifiable view of the class entries, for configuration patches that need to inspect or mutate attribute metadata across all classes (previously only reachable via the raw json, which the typed ConfigurationPatch callback no longer exposes)

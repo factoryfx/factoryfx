@@ -8,6 +8,8 @@ import io.github.factoryfx.factory.attribute.dependency.FactoryListBaseAttribute
 import io.github.factoryfx.factory.jackson.ObjectMapperBuilder;
 import io.github.factoryfx.factory.jackson.SimpleObjectMapper;
 import io.github.factoryfx.factory.validation.ValidationError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
  * @param <R> root factory
  * */
 public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
+    private static final Logger logger = LoggerFactory.getLogger(FactoryTreeBuilder.class);
 
     private final FactoryContext<R> factoryContext;
     protected final FactoryTemplateId<R> rootTemplateId;
@@ -448,6 +451,24 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
             existingTemplates.add(new FactoryTemplateId<>(factory));
         }
 
+        //factories predating the tree builder identity (legacy configurations): a same-class factory
+        //without identity occupies its template, the rebuild must not introduce a duplicate for it
+        Map<Class<?>, List<FactoryBase<?, R>>> identityLessTargetsByClass = new HashMap<>();
+        for (FactoryBase<?, R> factory : targetBases) {
+            if (!factory.internal().isCreatedWithBuilderTemplate()) {
+                identityLessTargetsByClass.computeIfAbsent(factory.getClass(), c -> new ArrayList<>()).add(factory);
+            }
+        }
+        //only classes with NO identity-carrying instance are legacy: once any instance of a class carries
+        //the identity, the configuration is post-identity for that class and identity-less instances are
+        //user-added data - they never block the builder from contributing new templates of the class
+        for (FactoryBase<?, R> factory : targetBases) {
+            if (factory.internal().isCreatedWithBuilderTemplate()) {
+                identityLessTargetsByClass.remove(factory.getClass());
+            }
+        }
+        LegacyFactoryGuard guard = new LegacyFactoryGuard(identityLessTargetsByClass, currentRoot.internal().collectChildFactoryMap());
+
         //pairs of (existing factory, rebuilt counterpart), matched over the ids transferred in rebuildTreeUnvalidated. the roots always correspond
         Map<FactoryBase<?, R>, FactoryBase<?, R>> matchedPairs = new LinkedHashMap<>();
         matchedPairs.put(target, rebuildRoot);
@@ -458,7 +479,7 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
             }
         }
         for (Map.Entry<FactoryBase<?, R>, FactoryBase<?, R>> pair : matchedPairs.entrySet()) {
-            adoptNewFactories(pair.getKey(), pair.getValue(), targetIdMap, existingTemplates);
+            adoptNewFactories(pair.getKey(), pair.getValue(), targetIdMap, existingTemplates, guard);
         }
         target.internal().fixDuplicateFactories();
         target.internal().finalise();
@@ -466,21 +487,21 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
-    private void adoptNewFactories(FactoryBase<?, R> targetFactory, FactoryBase<?, R> rebuiltFactory, Map<UUID, FactoryBase<?, R>> targetIdMap, Set<FactoryTemplateId<?>> existingTemplates) {
+    private void adoptNewFactories(FactoryBase<?, R> targetFactory, FactoryBase<?, R> rebuiltFactory, Map<UUID, FactoryBase<?, R>> targetIdMap, Set<FactoryTemplateId<?>> existingTemplates, LegacyFactoryGuard guard) {
         Map<String, Attribute<?, ?>> rebuiltAttributes = new HashMap<>();
         rebuiltFactory.internal().visitAttributesFlat((attributeMetadata, attribute) -> rebuiltAttributes.put(attributeMetadata.attributeVariableName, attribute));
         targetFactory.internal().visitAttributesFlat((attributeMetadata, attribute) -> {
             Attribute<?, ?> rebuiltAttribute = rebuiltAttributes.get(attributeMetadata.attributeVariableName);
             if (attribute instanceof FactoryBaseAttribute targetReference && rebuiltAttribute instanceof FactoryBaseAttribute rebuiltReference) {
                 FactoryBase<?, ?> newFactory = (FactoryBase<?, ?>) rebuiltReference.get();
-                if (targetReference.get() == null && isNewFactory(newFactory, targetIdMap, existingTemplates)) {
+                if (targetReference.get() == null && isNewFactory(newFactory, targetIdMap, existingTemplates) && guard.templateUnoccupied(newFactory)) {
                     targetReference.set(newFactory);
                 }
             }
             if (attribute instanceof FactoryListBaseAttribute targetReferenceList && rebuiltAttribute instanceof FactoryListBaseAttribute rebuiltReferenceList) {
                 for (Object entry : rebuiltReferenceList) {
                     FactoryBase<?, ?> newFactory = (FactoryBase<?, ?>) entry;
-                    if (isNewFactory(newFactory, targetIdMap, existingTemplates)) {
+                    if (isNewFactory(newFactory, targetIdMap, existingTemplates) && guard.templateUnoccupied(newFactory)) {
                         targetReferenceList.add(newFactory);
                     }
                 }
@@ -490,6 +511,64 @@ public class FactoryTreeBuilder<L,R extends FactoryBase<L,R>> {
 
     private boolean isNewFactory(FactoryBase<?, ?> factory, Map<UUID, FactoryBase<?, R>> targetIdMap, Set<FactoryTemplateId<?>> existingTemplates) {
         return factory != null && !targetIdMap.containsKey(factory.getId()) && !existingTemplates.contains(new FactoryTemplateId<>(factory));
+    }
+
+    /**
+     * guard for configurations predating the tree builder identity: when NO stored instance of a class
+     * carries the identity, an existing factory of that class is assumed to BE the template's instance,
+     * so the rebuild contributes nothing for that template - it must never introduce a duplicate next to
+     * it (e.g. a second jetty connector on the same port makes the server block its own start with
+     * "Address already in use"). With exactly one such factory the template identity is stamped onto it
+     * (in the rebuilt tree AND the passed current root, so the next persisted configuration carries it and
+     * the adoption is one-time); with several same-class candidates the choice is ambiguous and only a
+     * warning is logged. Classes with identity-carrying instances are post-identity: their identity-less
+     * instances are user-added data and never enter the guard (see the construction of the map).
+     */
+    private class LegacyFactoryGuard {
+        private final Map<Class<?>, List<FactoryBase<?, R>>> identityLessTargetsByClass;
+        private final Map<UUID, FactoryBase<?, R>> currentIdMap;
+        private final Set<UUID> suppressed = new HashSet<>();
+
+        LegacyFactoryGuard(Map<Class<?>, List<FactoryBase<?, R>>> identityLessTargetsByClass, Map<UUID, FactoryBase<?, R>> currentIdMap) {
+            this.identityLessTargetsByClass = identityLessTargetsByClass;
+            this.currentIdMap = currentIdMap;
+        }
+
+        boolean templateUnoccupied(FactoryBase<?, ?> newFactory) {
+            if (suppressed.contains(newFactory.getId())) {
+                return false;
+            }
+            List<FactoryBase<?, R>> occupants = identityLessTargetsByClass.get(newFactory.getClass());
+            if (occupants == null) {
+                return true;
+            }
+            suppressed.add(newFactory.getId());
+            if (occupants.size() == 1) {
+                FactoryBase<?, R> occupant = occupants.get(0);
+                stampIdentity(occupant, newFactory);
+                FactoryBase<?, R> currentOccupant = currentIdMap.get(occupant.getId());
+                if (currentOccupant != null) {
+                    stampIdentity(currentOccupant, newFactory);
+                }
+                identityLessTargetsByClass.remove(newFactory.getClass());
+                logger.info("rebuild: existing {} (id {}) carries no tree builder identity and occupies template '{}': identity stamped instead of introducing a duplicate",
+                            occupant.getClass().getSimpleName(), occupant.getId(), templateDisplayText(newFactory));
+            } else {
+                logger.warn("rebuild: {} existing {} factories carry no tree builder identity, can't decide which one occupies template '{}': contributing nothing (stamp the identity manually)",
+                            occupants.size(), newFactory.getClass().getSimpleName(), templateDisplayText(newFactory));
+            }
+            return false;
+        }
+
+        private void stampIdentity(FactoryBase<?, R> factory, FactoryBase<?, ?> templateFactory) {
+            factory.internal().setTreeBuilderName(templateFactory.internal().getTreeBuilderName());
+            factory.internal().setTreeBuilderClassUsed(templateFactory.internal().isTreeBuilderClassUsed());
+        }
+
+        private String templateDisplayText(FactoryBase<?, ?> templateFactory) {
+            String name = templateFactory.internal().getTreeBuilderName();
+            return name != null ? name : templateFactory.getClass().getSimpleName();
+        }
     }
 
     public R rebuildTreeUnvalidated(List<FactoryBase<?, R>> existingFactoryBases) {
